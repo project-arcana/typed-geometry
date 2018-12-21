@@ -14,3 +14,5 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 add_library(typed-math INTERFACE)
 
 target_include_directories(typed-math INTERFACE "src")
+
+add_custom_target(typed-math-src SOURCES ${SOURCES})
