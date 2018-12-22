@@ -4,14 +4,14 @@
 
 namespace tg
 {
-#define TG_DEFINE_BOOL_TRAIT(trait, default_val)   \
-    template <class T>                             \
-    struct trait##_t                               \
-    {                                              \
-        static constexpr bool value = default_val; \
-    };                                             \
-    template <class T>                             \
-    constexpr bool trait = trait##_t<T>::value // enforce ;
+#define TG_DEFINE_TRAIT(trait, result_type, default_val)  \
+    template <class T>                                    \
+    struct trait##_t                                      \
+    {                                                     \
+        static constexpr result_type value = default_val; \
+    };                                                    \
+    template <class T>                                    \
+    constexpr result_type trait = trait##_t<T>::value // enforce ;
 
 #define TG_DEFINE_TYPE_TRAIT(trait, default_type) \
     template <class T>                            \
@@ -22,11 +22,11 @@ namespace tg
     template <class T>                            \
     using trait = typename trait##_t<T>::type // enforce ;
 
-#define TG_ADD_BOOL_TRAIT(trait, type, val) \
-    template <>                             \
-    struct trait##_t<type>                  \
-    {                                       \
-        static constexpr bool value = val;  \
+#define TG_ADD_TRAIT(trait, result_type, type, val) \
+    template <>                                     \
+    struct trait##_t<type>                          \
+    {                                               \
+        static constexpr result_type value = val;   \
     } // enforce ;
 #define TG_ADD_TYPE_TRAIT(trait, ttype, result_type) \
     template <>                                      \
@@ -71,61 +71,112 @@ namespace tg
         static constexpr bool value = has_multiplication<ScalarT>; \
     }; // enforce ;
 
+// name traits
+TG_DEFINE_TRAIT(type_name_prefix, char const*, "");
+TG_DEFINE_TRAIT(type_name, char const*, "");
+TG_DEFINE_TRAIT(type_name_suffix, char const*, "");
+
 // shape traits
-TG_DEFINE_BOOL_TRAIT(is_scalar, false);
-TG_DEFINE_BOOL_TRAIT(is_vector, false);
-TG_DEFINE_BOOL_TRAIT(is_matrix, false);
-TG_DEFINE_BOOL_TRAIT(is_quaternion, false);
+TG_DEFINE_TRAIT(is_scalar, bool, false);
+TG_DEFINE_TRAIT(is_vector, bool, false);
+TG_DEFINE_TRAIT(is_matrix, bool, false);
+TG_DEFINE_TRAIT(is_quaternion, bool, false);
 
 // field traits
-TG_DEFINE_BOOL_TRAIT(is_integer, false);
-TG_DEFINE_BOOL_TRAIT(is_floating_point, false);
-TG_DEFINE_BOOL_TRAIT(is_signed_integer, false);
-TG_DEFINE_BOOL_TRAIT(is_unsigned_integer, false);
-TG_DEFINE_BOOL_TRAIT(has_multiplication, true);
+TG_DEFINE_TRAIT(is_integer, bool, false);
+TG_DEFINE_TRAIT(is_floating_point, bool, false);
+TG_DEFINE_TRAIT(is_signed_integer, bool, false);
+TG_DEFINE_TRAIT(is_unsigned_integer, bool, false);
+TG_DEFINE_TRAIT(has_multiplication, bool, true);
+
+// numbers
+template <int D>
+struct type_name_number_t
+{
+    static constexpr char const* value = "";
+};
+template <>
+struct type_name_number_t<1>
+{
+    static constexpr char const* value = "1";
+};
+template <>
+struct type_name_number_t<2>
+{
+    static constexpr char const* value = "2";
+};
+template <>
+struct type_name_number_t<3>
+{
+    static constexpr char const* value = "3";
+};
+template <>
+struct type_name_number_t<4>
+{
+    static constexpr char const* value = "4";
+};
+template <int D>
+constexpr char const* type_name_number = type_name_number_t<D>::value;
 
 // scalars
-TG_ADD_BOOL_TRAIT(is_scalar, i8, true);
-TG_ADD_BOOL_TRAIT(is_scalar, i16, true);
-TG_ADD_BOOL_TRAIT(is_scalar, i32, true);
-TG_ADD_BOOL_TRAIT(is_scalar, i64, true);
+TG_ADD_TRAIT(type_name, char const*, bool, "b");
 
-TG_ADD_BOOL_TRAIT(is_scalar, u8, true);
-TG_ADD_BOOL_TRAIT(is_scalar, u16, true);
-TG_ADD_BOOL_TRAIT(is_scalar, u32, true);
-TG_ADD_BOOL_TRAIT(is_scalar, u64, true);
+TG_ADD_TRAIT(type_name, char const*, i8, "i8");
+TG_ADD_TRAIT(type_name, char const*, i16, "i16");
+TG_ADD_TRAIT(type_name, char const*, i32, "i32");
+TG_ADD_TRAIT(type_name, char const*, i64, "i64");
 
-TG_ADD_BOOL_TRAIT(is_scalar, f8, true);
-TG_ADD_BOOL_TRAIT(is_scalar, f16, true);
-TG_ADD_BOOL_TRAIT(is_scalar, f32, true);
-TG_ADD_BOOL_TRAIT(is_scalar, f64, true);
+TG_ADD_TRAIT(type_name, char const*, u8, "u8");
+TG_ADD_TRAIT(type_name, char const*, u16, "u16");
+TG_ADD_TRAIT(type_name, char const*, u32, "u32");
+TG_ADD_TRAIT(type_name, char const*, u64, "u64");
 
-TG_ADD_BOOL_TRAIT(is_integer, i8, true);
-TG_ADD_BOOL_TRAIT(is_integer, i16, true);
-TG_ADD_BOOL_TRAIT(is_integer, i32, true);
-TG_ADD_BOOL_TRAIT(is_integer, i64, true);
+TG_ADD_TRAIT(type_name, char const*, f8, "f8");
+TG_ADD_TRAIT(type_name, char const*, f16, "f16");
+TG_ADD_TRAIT(type_name, char const*, f32, "f32");
+TG_ADD_TRAIT(type_name, char const*, f64, "f64");
 
-TG_ADD_BOOL_TRAIT(is_signed_integer, i8, true);
-TG_ADD_BOOL_TRAIT(is_signed_integer, i16, true);
-TG_ADD_BOOL_TRAIT(is_signed_integer, i32, true);
-TG_ADD_BOOL_TRAIT(is_signed_integer, i64, true);
+TG_ADD_TRAIT(is_scalar, bool, i8, true);
+TG_ADD_TRAIT(is_scalar, bool, i16, true);
+TG_ADD_TRAIT(is_scalar, bool, i32, true);
+TG_ADD_TRAIT(is_scalar, bool, i64, true);
 
-TG_ADD_BOOL_TRAIT(is_integer, u8, true);
-TG_ADD_BOOL_TRAIT(is_integer, u16, true);
-TG_ADD_BOOL_TRAIT(is_integer, u32, true);
-TG_ADD_BOOL_TRAIT(is_integer, u64, true);
+TG_ADD_TRAIT(is_scalar, bool, u8, true);
+TG_ADD_TRAIT(is_scalar, bool, u16, true);
+TG_ADD_TRAIT(is_scalar, bool, u32, true);
+TG_ADD_TRAIT(is_scalar, bool, u64, true);
 
-TG_ADD_BOOL_TRAIT(is_unsigned_integer, u8, true);
-TG_ADD_BOOL_TRAIT(is_unsigned_integer, u16, true);
-TG_ADD_BOOL_TRAIT(is_unsigned_integer, u32, true);
-TG_ADD_BOOL_TRAIT(is_unsigned_integer, u64, true);
+TG_ADD_TRAIT(is_scalar, bool, f8, true);
+TG_ADD_TRAIT(is_scalar, bool, f16, true);
+TG_ADD_TRAIT(is_scalar, bool, f32, true);
+TG_ADD_TRAIT(is_scalar, bool, f64, true);
 
-TG_ADD_BOOL_TRAIT(is_floating_point, f8, true);
-TG_ADD_BOOL_TRAIT(is_floating_point, f16, true);
-TG_ADD_BOOL_TRAIT(is_floating_point, f32, true);
-TG_ADD_BOOL_TRAIT(is_floating_point, f64, true);
+TG_ADD_TRAIT(is_integer, bool, i8, true);
+TG_ADD_TRAIT(is_integer, bool, i16, true);
+TG_ADD_TRAIT(is_integer, bool, i32, true);
+TG_ADD_TRAIT(is_integer, bool, i64, true);
 
-TG_ADD_BOOL_TRAIT(has_multiplication, bool, false);
+TG_ADD_TRAIT(is_signed_integer, bool, i8, true);
+TG_ADD_TRAIT(is_signed_integer, bool, i16, true);
+TG_ADD_TRAIT(is_signed_integer, bool, i32, true);
+TG_ADD_TRAIT(is_signed_integer, bool, i64, true);
+
+TG_ADD_TRAIT(is_integer, bool, u8, true);
+TG_ADD_TRAIT(is_integer, bool, u16, true);
+TG_ADD_TRAIT(is_integer, bool, u32, true);
+TG_ADD_TRAIT(is_integer, bool, u64, true);
+
+TG_ADD_TRAIT(is_unsigned_integer, bool, u8, true);
+TG_ADD_TRAIT(is_unsigned_integer, bool, u16, true);
+TG_ADD_TRAIT(is_unsigned_integer, bool, u32, true);
+TG_ADD_TRAIT(is_unsigned_integer, bool, u64, true);
+
+TG_ADD_TRAIT(is_floating_point, bool, f8, true);
+TG_ADD_TRAIT(is_floating_point, bool, f16, true);
+TG_ADD_TRAIT(is_floating_point, bool, f32, true);
+TG_ADD_TRAIT(is_floating_point, bool, f64, true);
+
+TG_ADD_TRAIT(has_multiplication, bool, bool, false);
 
 // type mapping
 TG_DEFINE_TYPE_TRAIT(fractional_result, float);
@@ -133,17 +184,69 @@ TG_ADD_TYPE_TRAIT(fractional_result, f64, f64);
 TG_ADD_TYPE_TRAIT(fractional_result, i64, f64);
 TG_ADD_TYPE_TRAIT(fractional_result, u64, f64);
 
+TG_DEFINE_TYPE_TRAIT(squared_result, void);
+
+TG_ADD_TYPE_TRAIT(squared_result, i8, i16);
+TG_ADD_TYPE_TRAIT(squared_result, i16, i32);
+TG_ADD_TYPE_TRAIT(squared_result, i32, i64);
+TG_ADD_TYPE_TRAIT(squared_result, i64, i64);
+
+TG_ADD_TYPE_TRAIT(squared_result, u8, u16);
+TG_ADD_TYPE_TRAIT(squared_result, u16, u32);
+TG_ADD_TYPE_TRAIT(squared_result, u32, u64);
+TG_ADD_TYPE_TRAIT(squared_result, u64, u64);
+
+TG_ADD_TYPE_TRAIT(squared_result, f8, f32);
+TG_ADD_TYPE_TRAIT(squared_result, f16, f32);
+TG_ADD_TYPE_TRAIT(squared_result, f32, f32);
+TG_ADD_TYPE_TRAIT(squared_result, f64, f64);
+
 // vectors
 template <int D, class ScalarT>
 struct is_vector_t<vec<D, ScalarT>>
 {
     static constexpr bool value = true;
 };
+template <int D, class ScalarT>
+struct type_name_prefix_t<vec<D, ScalarT>>
+{
+    static constexpr char const* value = type_name<ScalarT>;
+};
+template <int D>
+struct type_name_prefix_t<vec<D, f32>>
+{
+    static constexpr char const* value = "";
+};
+template <int D>
+struct type_name_prefix_t<vec<D, f64>>
+{
+    static constexpr char const* value = "d";
+};
+template <int D>
+struct type_name_prefix_t<vec<D, i32>>
+{
+    static constexpr char const* value = "i";
+};
+template <int D>
+struct type_name_prefix_t<vec<D, u32>>
+{
+    static constexpr char const* value = "u";
+};
+template <int D, class ScalarT>
+struct type_name_t<vec<D, ScalarT>>
+{
+    static constexpr char const* value = "vec";
+};
+template <int D, class ScalarT>
+struct type_name_suffix_t<vec<D, ScalarT>>
+{
+    static constexpr char const* value = type_name_number<D>;
+};
 TG_INHERIT_TRAITS_D(vec);
 
-#undef TG_DEFINE_BOOL_TRAIT
+#undef TG_DEFINE_TRAIT
 #undef TG_DEFINE_TYPE_TRAIT
-#undef TG_ADD_BOOL_TRAIT
+#undef TG_ADD_TRAIT
 #undef TG_ADD_TYPE_TRAIT
 #undef TG_INHERIT_TRAITS_D
 #undef TG_INHERIT_TRAITS_FIELDS_D

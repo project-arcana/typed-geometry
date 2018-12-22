@@ -134,6 +134,10 @@ struct vec<1, ScalarT>
 
     constexpr vec() = default;
     constexpr explicit vec(scalar_t v) : x(v) {}
+    template <class T>
+    constexpr explicit vec(vec<1, T> const& v) : x(ScalarT(v.x))
+    {
+    }
 };
 template <class ScalarT>
 constexpr vec<1, ScalarT> vec<1, ScalarT>::zero = {ScalarT(0)};
@@ -162,6 +166,10 @@ struct vec<2, ScalarT>
     constexpr vec() = default;
     constexpr explicit vec(scalar_t v) : x(v), y(v) {}
     constexpr vec(scalar_t x, scalar_t y) : x(x), y(y) {}
+    template <class T>
+    constexpr explicit vec(vec<2, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y))
+    {
+    }
 };
 template <class ScalarT>
 constexpr vec<2, ScalarT> vec<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
@@ -194,6 +202,10 @@ struct vec<3, ScalarT>
     constexpr vec() = default;
     constexpr explicit vec(scalar_t v) : x(v), y(v), z(v) {}
     constexpr vec(scalar_t x, scalar_t y, scalar_t z) : x(x), y(y), z(z) {}
+    template <class T>
+    constexpr explicit vec(vec<3, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
+    {
+    }
 };
 template <class ScalarT>
 constexpr vec<3, ScalarT> vec<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
@@ -230,6 +242,10 @@ struct vec<4, ScalarT>
     constexpr vec() = default;
     constexpr explicit vec(scalar_t v) : x(v), y(v), z(v), w(v) {}
     constexpr vec(scalar_t x, scalar_t y, scalar_t z, scalar_t w) : x(x), y(y), z(z), w(w) {}
+    template <class T>
+    constexpr explicit vec(vec<4, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
+    {
+    }
 };
 template <class ScalarT>
 constexpr vec<4, ScalarT> vec<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
