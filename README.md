@@ -27,3 +27,7 @@ Why not `tm::vec3`?
 ## Dependencies
 
 None.
+
+## TODO
+
+* Benchmark how compile times are affected by includes

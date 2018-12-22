@@ -2,8 +2,6 @@
 
 #include <limits>
 
-#include "types.hh"
-
 namespace tg
 {
 template <class T>
@@ -15,4 +13,4 @@ constexpr T min = std::numeric_limits<T>::min();
 
 template <class T>
 constexpr T max = std::numeric_limits<T>::max();
-}
+} // namespace tg
