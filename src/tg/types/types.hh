@@ -7,7 +7,7 @@
 #include "size.hh"
 #include "vec.hh"
 
-#include "aabb.hh"
+#include "box.hh"
 #include "line.hh"
 #include "mat.hh"
 #include "quat.hh"

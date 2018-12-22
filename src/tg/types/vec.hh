@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scalar.hh"
 #include "shape.hh"
 
 /**
@@ -134,9 +135,14 @@ struct vec<1, ScalarT>
 
     constexpr vec() = default;
     constexpr explicit vec(scalar_t v) : x(v) {}
-    template <class T>
-    constexpr explicit vec(vec<1, T> const& v) : x(ScalarT(v.x))
+    template <int D, class T, class = std::enable_if_t<D >= 1>>
+    constexpr explicit vec(vec<D, T> const& v) : x(ScalarT(v.x))
     {
+    }
+    template <int D, class T, class = std::enable_if_t<D <= 1>>
+    constexpr explicit operator vec<D, T>() const
+    {
+        return vec<D, T>(*this);
     }
 };
 template <class ScalarT>
@@ -166,9 +172,14 @@ struct vec<2, ScalarT>
     constexpr vec() = default;
     constexpr explicit vec(scalar_t v) : x(v), y(v) {}
     constexpr vec(scalar_t x, scalar_t y) : x(x), y(y) {}
-    template <class T>
-    constexpr explicit vec(vec<2, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y))
+    template <int D, class T, class = std::enable_if_t<D >= 2>>
+    constexpr explicit vec(vec<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y))
     {
+    }
+    template <int D, class T, class = std::enable_if_t<D <= 2>>
+    constexpr explicit operator vec<D, T>() const
+    {
+        return vec<D, T>(*this);
     }
 };
 template <class ScalarT>
@@ -202,9 +213,14 @@ struct vec<3, ScalarT>
     constexpr vec() = default;
     constexpr explicit vec(scalar_t v) : x(v), y(v), z(v) {}
     constexpr vec(scalar_t x, scalar_t y, scalar_t z) : x(x), y(y), z(z) {}
-    template <class T>
-    constexpr explicit vec(vec<3, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
+    template <int D, class T, class = std::enable_if_t<D >= 3>>
+    constexpr explicit vec(vec<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
     {
+    }
+    template <int D, class T, class = std::enable_if_t<D <= 3>>
+    constexpr explicit operator vec<D, T>() const
+    {
+        return vec<D, T>(*this);
     }
 };
 template <class ScalarT>
@@ -242,9 +258,14 @@ struct vec<4, ScalarT>
     constexpr vec() = default;
     constexpr explicit vec(scalar_t v) : x(v), y(v), z(v), w(v) {}
     constexpr vec(scalar_t x, scalar_t y, scalar_t z, scalar_t w) : x(x), y(y), z(z), w(w) {}
-    template <class T>
-    constexpr explicit vec(vec<4, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
+    template <int D, class T, class = std::enable_if_t<D >= 4>>
+    constexpr explicit vec(vec<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
     {
+    }
+    template <int D, class T, class = std::enable_if_t<D <= 4>>
+    constexpr explicit operator vec<D, T>() const
+    {
+        return vec<D, T>(*this);
     }
 };
 template <class ScalarT>

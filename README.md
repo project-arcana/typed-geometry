@@ -22,6 +22,7 @@ Why not `tm::vec3`?
 * `struct tm` in `time.h` conflicts with this namespace
 * `tgm` is too long
 * This library closely works with `typed-graphics` anyways
+* May be thought of as `typed-geometry`
 
 
 ## Dependencies
