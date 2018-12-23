@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typed-math-lean.hh"
+#include "typed-geometry-lean.hh"
 
 #include "detail/constants.hh"
 #include "detail/half.hh"
