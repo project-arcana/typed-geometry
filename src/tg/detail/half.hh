@@ -7,9 +7,16 @@ namespace tg
 // software emulation of 16bit math
 struct half
 {
+    constexpr half() = default;
+    constexpr half(float f)
+    {
+        // TODO
+        data = 0;
+    }
+
     // TODO
 private:
-    uint16_t data;
+    std::uint16_t data = 0;
 };
 
 // TODO

@@ -43,5 +43,82 @@ struct size
 {
 };
 
+template <class ScalarT>
+struct size<1, ScalarT>
+{
+    using scalar_t = ScalarT;
+    static constexpr shape<1> shape = make_shape(1);
+
+    scalar_t width = static_cast<scalar_t>(0);
+
+    constexpr scalar_t& operator[](int i) { return (&width)[i]; }
+    constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
+
+    constexpr size() = default;
+    constexpr explicit size(scalar_t v) : width(v) {}
+    template <int D, class T, class = std::enable_if_t<D >= 1>>
+    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width))
+    {
+    }
+    template <int D, class T, class = std::enable_if_t<D <= 1>>
+    constexpr explicit operator size<D, T>() const
+    {
+        return size<D, T>(*this);
+    }
+};
+
+template <class ScalarT>
+struct size<2, ScalarT>
+{
+    using scalar_t = ScalarT;
+    static constexpr shape<1> shape = make_shape(2);
+
+    scalar_t width = static_cast<scalar_t>(0);
+    scalar_t height = static_cast<scalar_t>(0);
+
+    constexpr scalar_t& operator[](int i) { return (&width)[i]; }
+    constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
+
+    constexpr size() = default;
+    constexpr explicit size(scalar_t v) : width(v), height(v) {}
+    constexpr size(scalar_t width, scalar_t height) : width(width), height(height) {}
+    template <int D, class T, class = std::enable_if_t<D >= 2>>
+    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height))
+    {
+    }
+    template <int D, class T, class = std::enable_if_t<D <= 2>>
+    constexpr explicit operator size<D, T>() const
+    {
+        return size<D, T>(*this);
+    }
+};
+
+template <class ScalarT>
+struct size<3, ScalarT>
+{
+    using scalar_t = ScalarT;
+    static constexpr shape<1> shape = make_shape(3);
+
+    scalar_t width = static_cast<scalar_t>(0);
+    scalar_t height = static_cast<scalar_t>(0);
+    scalar_t depth = static_cast<scalar_t>(0);
+
+    constexpr scalar_t& operator[](int i) { return (&width)[i]; }
+    constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
+
+    constexpr size() = default;
+    constexpr explicit size(scalar_t v) : width(v), height(v), depth(v) {}
+    constexpr size(scalar_t width, scalar_t height, scalar_t depth) : width(width), height(height), depth(depth) {}
+    template <int D, class T, class = std::enable_if_t<D >= 3>>
+    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth))
+    {
+    }
+    template <int D, class T, class = std::enable_if_t<D <= 3>>
+    constexpr explicit operator size<D, T>() const
+    {
+        return size<D, T>(*this);
+    }
+};
+
 // TODO
 } // namespace tg
