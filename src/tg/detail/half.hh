@@ -14,6 +14,12 @@ struct half
         data = 0;
     }
 
+    constexpr operator float() const
+    {
+        // TODO
+        return 0;
+    }
+
     // TODO
 private:
     std::uint16_t data = 0;
@@ -22,4 +28,5 @@ private:
 // TODO
 constexpr half operator-(half const& v) { return v; }
 constexpr bool operator<(half const& a, float b) { return true; }
+constexpr bool operator<(half const& a, int b) { return true; }
 } // namespace tg
