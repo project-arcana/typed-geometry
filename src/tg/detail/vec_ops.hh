@@ -1,6 +1,7 @@
 #pragma once
 
 #include "op_helper.hh"
+#include "traits.hh"
 
 #include "../types/vec.hh"
 
