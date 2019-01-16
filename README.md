@@ -1,18 +1,68 @@
-# typed-math
+# typed-geometry
 
 Header-only strongly typed math library for graphics and geometry.
 
 
 ## Usage / Example
 
+Type definitions only, no functions:
+```
+#include <tg/typed-geometry.hh>
+```
 
+All functionality:
 ```
 #include <tg/typed-geometry.hh>
 
 tg::vec3 v;
+tg::pos3 p;
 
 // TODO
 ```
+
+Most functionality is implemented as free functions, overloaded by type and with consistent vocabulary:
+
+### Vectors
+
+Types `vec3`, `ivec4`, `dvec2`, ...
+
+* `normalize(a)`: returns normalized version of `a`
+* `dot(a, b)`: dot product
+* `cross(a, b)`: cross product
+* component-wise math functions: `sin`, `cos`, `abs`, `sqrt`, ...
+
+### Transformations
+
+* Matrix types `mat3`, `imat3x4`, ...
+* Quaternion types `quat`, `dquat`, ...
+* Transform types `transform3`, `dtransform2`, ...
+
+### Objects
+
+Types `pos3`, `iline2`, `ray3`, `dbox2`, ...
+
+Represent individual points or sets of points.
+
+* `contains(a, b)`: true iff `a` contains `b` (i.e. if each point in `b` is also contained in `a`)
+* `intersects(a, b)`: true iff `a` and `b` intersect (i.e. if at least one point is in `a` and in `b`)
+* `intersection(a, b)`: returns the appropriate object describing the intersection of two objects
+
+### Interpolation
+
+* `mix(a, b, t)`: linearly interpolates `a` and `b` with parameter `t` from 0..1.
+* `lerp(a, b, t)`: same as `mix`
+* `slerp(a, b, t)`: same as `mix` but with spherical interpolation (i.e. for quaternions)
+* `smoothstep(x0, x1, x)`: see GLSL smoothstep
+* `smootherstep(x0, x1, x)`: see GLSL smootherstep
+* `lmap(x, {x0_from, x1_from}, {x0_to, x1_to})`: linearly maps a value from one range to another
+
+TODO: splines
+
+### Random
+
+* `uniform(rng, a)`: uniformly samples a point from the object `a`
+* `uniform(rng, a, b)`: same as `mix(a, b, uniform(t, 0.0f, 1.0f))`
+
 
 ## Dependencies
 
