@@ -140,16 +140,6 @@ constexpr pos<3, ScalarT> operator*(pos<3, ScalarT> const& a, size<3, ScalarT> c
     r.z = a.z * b.depth;
     return r;
 }
-template <class ScalarT>
-constexpr pos<4, ScalarT> operator*(pos<4, ScalarT> const& a, size<4, ScalarT> const& b)
-{
-    pos<4, ScalarT> r;
-    r.x = a.x * b.width;
-    r.y = a.y * b.height;
-    r.z = a.z * b.depth;
-    r.w = a.w * b[0]; // TODO
-    return r;
-}
 
 template <int D, class ScalarT>
 constexpr pos<D, fractional_result<ScalarT>> operator/(pos<D, ScalarT> const& a, ScalarT b)
