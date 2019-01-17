@@ -3,8 +3,8 @@
 #include <cmath>
 #include <type_traits>
 
-#include "../detail/traits.hh"
-#include "../types/scalar.hh"
+#include "../../detail/traits.hh"
+#include "../../types/scalar.hh"
 
 // TODO:
 // proper f8, f16
