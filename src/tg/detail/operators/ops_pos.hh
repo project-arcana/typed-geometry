@@ -119,35 +119,35 @@ constexpr pos<D, ScalarT> operator*(pos<D, ScalarT> const& a, ScalarT b)
 }
 
 template <class ScalarT>
-constexpr pos<1, ScalarT> operator*(pos<1, ScalarT> const& a, size<1, ScalarT> b)
+constexpr pos<1, ScalarT> operator*(pos<1, ScalarT> const& a, size<1, ScalarT> const& b)
 {
-    return a.x * b.x;
+    return a.x * b.width;
 }
 template <class ScalarT>
-constexpr pos<2, ScalarT> operator*(pos<2, ScalarT> const& a, size<2, ScalarT> b)
+constexpr pos<2, ScalarT> operator*(pos<2, ScalarT> const& a, size<2, ScalarT> const& b)
 {
     pos<2, ScalarT> r;
-    r.x = a.x * b.x;
-    r.y = a.y * b.y;
+    r.x = a.x * b.width;
+    r.y = a.y * b.height;
     return r;
 }
 template <class ScalarT>
-constexpr pos<3, ScalarT> operator*(pos<3, ScalarT> const& a, size<3, ScalarT> b)
+constexpr pos<3, ScalarT> operator*(pos<3, ScalarT> const& a, size<3, ScalarT> const& b)
 {
     pos<3, ScalarT> r;
-    r.x = a.x * b.x;
-    r.y = a.y * b.y;
-    r.z = a.z * b.z;
+    r.x = a.x * b.width;
+    r.y = a.y * b.height;
+    r.z = a.z * b.depth;
     return r;
 }
 template <class ScalarT>
-constexpr pos<4, ScalarT> operator*(pos<4, ScalarT> const& a, size<4, ScalarT> b)
+constexpr pos<4, ScalarT> operator*(pos<4, ScalarT> const& a, size<4, ScalarT> const& b)
 {
     pos<4, ScalarT> r;
-    r.x = a.x * b.x;
-    r.y = a.y * b.y;
-    r.z = a.z * b.z;
-    r.w = a.w * b.w;
+    r.x = a.x * b.width;
+    r.y = a.y * b.height;
+    r.z = a.z * b.depth;
+    r.w = a.w * b[0]; // TODO
     return r;
 }
 
