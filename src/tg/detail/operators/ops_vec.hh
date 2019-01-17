@@ -1,9 +1,8 @@
 #pragma once
 
-#include "op_helper.hh"
-#include "traits.hh"
-
-#include "../types/vec.hh"
+#include "../../types/vec.hh"
+#include "../op_helper.hh"
+#include "../traits.hh"
 
 namespace tg
 {
