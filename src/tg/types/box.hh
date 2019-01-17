@@ -47,14 +47,10 @@ struct box
     using pos_t = pos<D, ScalarT>;
     using size_t = size<D, ScalarT>;
 
-    // TODO: better?
-    pos_t center;
-    size_t half_extent;
-
-    constexpr pos_t min() const { return center - half_extent; }
-    constexpr pos_t max() const { return center + half_extent; }
+    pos_t min;
+    pos_t max;
 
     constexpr box() = default;
-    constexpr box(pos_t center, size_t half_extent) : center(center), half_extent(half_extent) {}
+    constexpr box(pos_t min, pos_t max) : min(min), max(max) {}
 };
 } // namespace tg
