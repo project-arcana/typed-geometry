@@ -30,6 +30,38 @@ constexpr pos<D, ScalarT> operator+(pos<D, ScalarT> const& a, ScalarT b)
     return detail::compwise<ScalarT>(a, b, detail::add<ScalarT>);
 }
 
+template <class ScalarT>
+constexpr pos<1, ScalarT> operator+(pos<1, ScalarT> const& a, vec<1, ScalarT> const& b)
+{
+    return a.x + b.x;
+}
+template <class ScalarT>
+constexpr pos<2, ScalarT> operator+(pos<2, ScalarT> const& a, vec<2, ScalarT> const& b)
+{
+    pos<2, ScalarT> r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    return r;
+}
+template <class ScalarT>
+constexpr pos<3, ScalarT> operator+(pos<3, ScalarT> const& a, vec<3, ScalarT> const& b)
+{
+    pos<3, ScalarT> r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    r.z = a.z + b.z;
+    return r;
+}
+template <class ScalarT>
+constexpr pos<4, ScalarT> operator+(pos<4, ScalarT> const& a, vec<4, ScalarT> const& b)
+{
+    pos<4, ScalarT> r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    r.z = a.z + b.z;
+    r.w = a.w + b.w;
+    return r;
+}
 // TODO
 // template <int D, class ScalarT>
 // constexpr pos<D, ScalarT> operator-(pos<D, ScalarT> const& a, vec<D, ScalarT> const& b)
@@ -47,11 +79,68 @@ constexpr pos<D, ScalarT> operator-(pos<D, ScalarT> const& a)
     return detail::compwise<ScalarT>(a, detail::neg<ScalarT>);
 }
 
+template <class ScalarT>
+constexpr pos<1, ScalarT> operator-(pos<1, ScalarT> const& a, vec<1, ScalarT> const& b)
+{
+    return a.x - b.x;
+}
+template <class ScalarT>
+constexpr pos<2, ScalarT> operator-(pos<2, ScalarT> const& a, vec<2, ScalarT> const& b)
+{
+    pos<2, ScalarT> r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    return r;
+}
+template <class ScalarT>
+constexpr pos<3, ScalarT> operator-(pos<3, ScalarT> const& a, vec<3, ScalarT> const& b)
+{
+    pos<3, ScalarT> r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    r.z = a.z - b.z;
+    return r;
+}
+template <class ScalarT>
+constexpr pos<4, ScalarT> operator-(pos<4, ScalarT> const& a, vec<4, ScalarT> const& b)
+{
+    pos<4, ScalarT> r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    r.z = a.z - b.z;
+    r.w = a.w - b.w;
+    return r;
+}
+
 template <int D, class ScalarT>
 constexpr pos<D, ScalarT> operator*(pos<D, ScalarT> const& a, ScalarT b)
 {
     return detail::compwise<ScalarT>(a, b, detail::mul<ScalarT>);
 }
+
+template <class ScalarT>
+constexpr pos<1, ScalarT> operator*(pos<1, ScalarT> const& a, size<1, ScalarT> const& b)
+{
+    return a.x * b.width;
+}
+template <class ScalarT>
+constexpr pos<2, ScalarT> operator*(pos<2, ScalarT> const& a, size<2, ScalarT> const& b)
+{
+    pos<2, ScalarT> r;
+    r.x = a.x * b.width;
+    r.y = a.y * b.height;
+    return r;
+}
+template <class ScalarT>
+constexpr pos<3, ScalarT> operator*(pos<3, ScalarT> const& a, size<3, ScalarT> const& b)
+{
+    pos<3, ScalarT> r;
+    r.x = a.x * b.width;
+    r.y = a.y * b.height;
+    r.z = a.z * b.depth;
+    return r;
+}
+
 template <int D, class ScalarT>
 constexpr pos<D, fractional_result<ScalarT>> operator/(pos<D, ScalarT> const& a, ScalarT b)
 {
