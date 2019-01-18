@@ -6,6 +6,11 @@
 
 namespace tg
 {
+namespace detail
+{
+using unused = int;
+}
+
 #define TG_DEFINE_TRAIT(trait, result_type, default_val)  \
     template <class T>                                    \
     struct trait##_t                                      \

@@ -43,9 +43,9 @@ public:
     }
 };
 
-constexpr shape<1> make_shape(int w) { return {{w}}; }
-constexpr shape<2> make_shape(int w, int h) { return {{w, h}}; }
-constexpr shape<3> make_shape(int w, int h, int d) { return {{w, h, d}}; }
+constexpr shape<1> make_shape(int w) { return {{{w}}}; }
+constexpr shape<2> make_shape(int w, int h) { return {{{w, h}}}; }
+constexpr shape<3> make_shape(int w, int h, int d) { return {{{w, h, d}}}; }
 template <int Order>
 constexpr shape<Order> make_shape(std::array<int, Order> const& dims)
 {
