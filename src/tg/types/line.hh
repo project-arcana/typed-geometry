@@ -5,6 +5,8 @@
 #include "size.hh"
 #include "vec.hh"
 
+// A line has a direction and a point lying on it
+// The direction is assumed to be normalized
 namespace tg
 {
 template <int D, class ScalarT>
@@ -46,10 +48,16 @@ struct line
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 
-    pos_t a;
-    pos_t b;
+    pos_t p;
+    vec_t dir;
 
     constexpr line() = default;
-    constexpr line(pos_t a, pos_t b) : a(a), b(b) {}
+    constexpr line(pos_t p, vec_t dir) : p(p), dir(dir) {}
+
+    // create a line from two points
+    static constexpr line from_points(pos_t a, pos_t b)
+    {
+        return line(a, normalize(b - a));
+    }
 };
 } // namespace tg
