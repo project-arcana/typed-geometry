@@ -9,12 +9,21 @@
  *  - xorshift
  *  - pcg
  *
+ * Default rng: tg::rng
+ *
  * Provides detail::uniform01<float / double>(rng) for 0..1 (inclusive)
  */
 
 namespace tg
 {
-class splitmix
+struct splitmix;
+struct xorshift;
+struct pcg;
+
+// default rng type
+using rng = xorshift;
+
+struct splitmix
 {
 public:
     using result_type = uint32_t;
@@ -49,7 +58,7 @@ private:
 inline bool operator==(splitmix const &lhs, splitmix const &rhs) { return lhs.m_seed == rhs.m_seed; }
 inline bool operator!=(splitmix const &lhs, splitmix const &rhs) { return lhs.m_seed != rhs.m_seed; }
 
-class xorshift
+struct xorshift
 {
 public:
     using result_type = uint32_t;
@@ -86,7 +95,7 @@ private:
 inline bool operator==(xorshift const &lhs, xorshift const &rhs) { return lhs.m_seed == rhs.m_seed; }
 inline bool operator!=(xorshift const &lhs, xorshift const &rhs) { return lhs.m_seed != rhs.m_seed; }
 
-class pcg
+struct pcg
 {
 public:
     using result_type = uint32_t;
