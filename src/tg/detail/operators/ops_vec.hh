@@ -43,7 +43,7 @@ constexpr vec<3, ScalarT> cross(vec<3, ScalarT> const& a, vec<3, ScalarT> const&
 template <class ScalarT>
 constexpr ScalarT cross(vec<2, ScalarT> const& a, vec<2, ScalarT> const& b)
 {
-    return a.y * b.z - a.z * b.y;
+    return a.x * b.y - a.y * b.x;
 }
 
 template <int D, class ScalarT>
