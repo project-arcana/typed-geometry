@@ -13,8 +13,8 @@ TG_IMPL_DEFINE_BINARY_OP(pos, vec, pos, +);
 TG_IMPL_DEFINE_BINARY_OP(pos, vec, pos, -);
 
 // pos */ size = pos
-TG_IMPL_DEFINE_BINARY_OP(pos, vec, size, *);
-TG_IMPL_DEFINE_BINARY_OP(pos, vec, size, /);
+TG_IMPL_DEFINE_BINARY_OP(pos, size, pos, *);
+TG_IMPL_DEFINE_BINARY_OP(pos, size, pos, /);
 
 // pos - pos = vec
 TG_IMPL_DEFINE_BINARY_OP(pos, pos, vec, -);
@@ -33,7 +33,7 @@ TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(pos);
 template <class ScalarT>
 constexpr ScalarT cross(pos<2, ScalarT> const& a, pos<2, ScalarT> const& b)
 {
-    return a.y * b.z - a.z * b.y;
+    return a.x * b.y - a.y * b.x;
 }
 
 template <class ScalarT>
