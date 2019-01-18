@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../detail/macros.hh"
 #include "scalar.hh"
 #include "shape.hh"
 
@@ -304,5 +305,8 @@ template <class ScalarT>
 constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)};
 template <class ScalarT>
 constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
+
+TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator==, &&, ==);
+TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator!=, ||, !=);
 
 } // namespace tg

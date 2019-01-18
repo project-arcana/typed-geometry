@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../types/box.hh"
+#include "../../types/pos.hh"
 #include "../../types/scalar.hh"
 #include "../random.hh"
 #include "../traits.hh"
@@ -50,6 +51,33 @@ template <class Rng>
 u64 uniform(Rng& rng, u64 a, u64 b)
 {
     return std::uniform_int_distribution<i64>(a, b)(rng);
+}
+
+template <class ScalarT, class Rng>
+pos<1, ScalarT> uniform(Rng& rng, box<1, ScalarT> const& b)
+{
+    return {uniform(rng, b.min.x, b.max.x)};
+}
+template <class ScalarT, class Rng>
+pos<2, ScalarT> uniform(Rng& rng, box<2, ScalarT> const& b)
+{
+    return {uniform(rng, b.min.x, b.max.x), //
+            uniform(rng, b.min.y, b.max.y)};
+}
+template <class ScalarT, class Rng>
+pos<3, ScalarT> uniform(Rng& rng, box<3, ScalarT> const& b)
+{
+    return {uniform(rng, b.min.x, b.max.x), //
+            uniform(rng, b.min.y, b.max.y), //
+            uniform(rng, b.min.z, b.max.z)};
+}
+template <class ScalarT, class Rng>
+pos<4, ScalarT> uniform(Rng& rng, box<4, ScalarT> const& b)
+{
+    return {uniform(rng, b.min.x, b.max.x), //
+            uniform(rng, b.min.y, b.max.y), //
+            uniform(rng, b.min.z, b.max.z), //
+            uniform(rng, b.min.w, b.max.w)};
 }
 
 template <int D, class ScalarT, class Rng, class = std::enable_if_t<is_floating_point<ScalarT>>>

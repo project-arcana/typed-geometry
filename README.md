@@ -63,6 +63,12 @@ TODO: splines
 * `uniform(rng, a)`: uniformly samples a point from the object `a`
 * `uniform(rng, a, b)`: same as `mix(a, b, uniform(t, 0.0f, 1.0f))`
 
+### Naming Scheme
+
+* `foo(a, b)` should read in the same order as english
+* if not possible, `a.foo(b)` should make sense (e.g. `contains(a, b)` is interpreted as `a.contains(b)`)
+* if still ambiguous: faster changing parameters go last (e.g. `coordinates(tri, point)` or `mix(a, b, t)`)
+
 
 ## Dependencies
 

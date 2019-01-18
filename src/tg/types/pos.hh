@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../detail/macros.hh"
 #include "scalar.hh"
 #include "shape.hh"
 
@@ -187,5 +188,8 @@ struct pos<4, ScalarT>
 };
 template <class ScalarT>
 constexpr pos<4, ScalarT> pos<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
+
+TG_IMPL_DEFINE_REDUCTION_OP_BINARY(pos, pos, bool, operator==, &&, ==);
+TG_IMPL_DEFINE_REDUCTION_OP_BINARY(pos, pos, bool, operator!=, ||, !=);
 
 } // namespace tg

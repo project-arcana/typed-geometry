@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../detail/macros.hh"
 #include "scalar.hh"
 #include "shape.hh"
 
@@ -120,5 +121,34 @@ struct size<3, ScalarT>
     }
 };
 
-// TODO
+template <class ScalarT>
+struct size<4, ScalarT>
+{
+    using scalar_t = ScalarT;
+    static constexpr shape<1> shape = make_shape(4);
+
+    scalar_t width = static_cast<scalar_t>(0);
+    scalar_t height = static_cast<scalar_t>(0);
+    scalar_t depth = static_cast<scalar_t>(0);
+    scalar_t w = static_cast<scalar_t>(0);
+
+    constexpr scalar_t& operator[](int i) { return (&width)[i]; }
+    constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
+
+    constexpr size() = default;
+    constexpr explicit size(scalar_t v) : width(v), height(v), depth(v), w(v) {}
+    constexpr size(scalar_t width, scalar_t height, scalar_t depth, scalar_t w) : width(width), height(height), depth(depth), w(w) {}
+    template <int D, class T, class = std::enable_if_t<D >= 4>>
+    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth)), w(ScalarT(v.w))
+    {
+    }
+    template <int D, class T, class = std::enable_if_t<D <= 4>>
+    constexpr explicit operator size<D, T>() const
+    {
+        return size<D, T>(*this);
+    }
+};
+
+TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator==, &&, ==);
+TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator!=, ||, !=);
 } // namespace tg

@@ -1,114 +1,34 @@
 #pragma once
 
 #include "../../types/vec.hh"
-#include "../op_helper.hh"
 #include "../traits.hh"
 
 namespace tg
 {
-template <int D, class ScalarT>
-constexpr ScalarT const* data_ptr(vec<D, ScalarT> const& v)
-{
-    return &v.x;
-}
-template <int D, class ScalarT>
-constexpr ScalarT* data_ptr(vec<D, ScalarT>& v)
-{
-    return &v.x;
-}
-
 // -- operator@ --
 
-template <int D, class ScalarT>
-constexpr vec<D, ScalarT> operator+(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
-{
-    return detail::compwise<ScalarT>(a, b, detail::add<ScalarT>);
-}
-template <int D, class ScalarT>
-constexpr vec<D, ScalarT> operator+(vec<D, ScalarT> const& a, ScalarT b)
-{
-    return detail::compwise<ScalarT>(a, b, detail::add<ScalarT>);
-}
+// vec +- vec = vec
+TG_IMPL_DEFINE_BINARY_OP(vec, vec, vec, +);
+TG_IMPL_DEFINE_BINARY_OP(vec, vec, vec, -);
 
-template <int D, class ScalarT>
-constexpr vec<D, ScalarT> operator-(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
-{
-    return detail::compwise<ScalarT>(a, b, detail::sub<ScalarT>);
-}
-template <int D, class ScalarT>
-constexpr vec<D, ScalarT> operator-(vec<D, ScalarT> const& a, ScalarT b)
-{
-    return detail::compwise<ScalarT>(a, b, detail::sub<ScalarT>);
-}
-template <int D, class ScalarT>
-constexpr vec<D, ScalarT> operator-(vec<D, ScalarT> const& a)
-{
-    return detail::compwise<ScalarT>(a, detail::neg<ScalarT>);
-}
+// vec */ size = vec
+TG_IMPL_DEFINE_BINARY_OP(vec, vec, size, *);
+TG_IMPL_DEFINE_BINARY_OP(vec, vec, size, /);
 
-template <int D, class ScalarT>
-constexpr vec<D, ScalarT> operator*(vec<D, ScalarT> const& a, ScalarT b)
-{
-    return detail::compwise<ScalarT>(a, b, detail::mul<ScalarT>);
-}
-template <int D, class ScalarT>
-constexpr vec<D, fractional_result<ScalarT>> operator/(vec<D, ScalarT> const& a, ScalarT b)
-{
-    return detail::compwise<ScalarT>(a, 1 / fractional_result<ScalarT>(b), detail::mul<ScalarT>);
-}
+// +vec, -vec
+TG_IMPL_DEFINE_UNARY_OP(vec, +);
+TG_IMPL_DEFINE_UNARY_OP(vec, -);
 
-template <int D, class ScalarT>
-constexpr bool operator==(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
-{
-    return all(equals(a, b));
-}
-template <int D, class ScalarT>
-constexpr bool operator!=(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
-{
-    return !(a == b);
-}
+// scalar OP vec, vec OP scalar
+TG_IMPL_DEFINE_BINARY_OP_SCALAR(vec, -);
+TG_IMPL_DEFINE_BINARY_OP_SCALAR(vec, +);
+TG_IMPL_DEFINE_BINARY_OP_SCALAR(vec, *);
+TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(vec);
 
-template <int D>
-constexpr vec<D, bool> operator&&(vec<D, bool> const& a, vec<D, bool> const& b)
-{
-    return detail::compwise<bool>(a, b, detail::logic_and);
-}
-template <int D>
-constexpr vec<D, bool> operator||(vec<D, bool> const& a, vec<D, bool> const& b)
-{
-    return detail::compwise<bool>(a, b, detail::logic_or);
-}
-template <int D>
-constexpr vec<D, bool> operator!(vec<D, bool> const& a)
-{
-    return detail::compwise<bool>(a, detail::logic_not);
-}
 
 // -- functions --
 
-template <int D, class ScalarT>
-constexpr vec<D, bool> equals(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
-{
-    return detail::compwise<bool>(a, b, detail::eq<ScalarT>);
-}
-template <int D>
-constexpr bool any(vec<D, bool> const& v)
-{
-    return detail::reduce(v, detail::logic_or);
-}
-template <int D>
-constexpr bool all(vec<D, bool> const& v)
-{
-    return detail::reduce(v, detail::logic_and);
-}
-
-template <int D, class ScalarT>
-constexpr ScalarT dot(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
-{
-    vec<D, ScalarT> r;
-    detail::apply(r, a, b, detail::mul<ScalarT>);
-    return detail::reduce(r, detail::add<ScalarT>);
-}
+TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, ScalarT, dot, +, *);
 
 template <class ScalarT>
 constexpr vec<3, ScalarT> cross(vec<3, ScalarT> const& a, vec<3, ScalarT> const& b)
