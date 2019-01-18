@@ -1,31 +1,33 @@
 #pragma once
 
 #include <cmath>
+#include <cstdlib>
 #include <type_traits>
 
-#include "../detail/traits.hh"
-#include "../types/scalar.hh"
+#include "../../detail/traits.hh"
+#include "../../types/scalar.hh"
 
 // TODO:
-// proper f8, f16
-// constexpr sqrt, pow, ...
+// - proper f8, f16
+// - constexpr abs, sqrt, pow, ...
+// - asm sqrt
 
 namespace tg
 {
-constexpr i8 abs(i8 v) { return v < 0 ? -v : v; }
-constexpr i16 abs(i16 v) { return v < 0 ? -v : v; }
-constexpr i32 abs(i32 v) { return v < 0 ? -v : v; }
-constexpr i64 abs(i64 v) { return v < 0 ? -v : v; }
+inline i8 abs(i8 v) { return std::abs(v); }
+inline i16 abs(i16 v) { return std::abs(v); }
+inline i32 abs(i32 v) { return std::abs(v); }
+inline i64 abs(i64 v) { return std::abs(v); }
 
-constexpr u8 abs(u8 v) { return v; }
-constexpr u16 abs(u16 v) { return v; }
-constexpr u32 abs(u32 v) { return v; }
-constexpr u64 abs(u64 v) { return v; }
+inline u8 abs(u8 v) { return v; }
+inline u16 abs(u16 v) { return v; }
+inline u32 abs(u32 v) { return v; }
+inline u64 abs(u64 v) { return v; }
 
-constexpr f8 abs(f8 v) { return v < 0 ? -v : v; }
-constexpr f16 abs(f16 v) { return v < 0 ? -v : v; }
-constexpr f32 abs(f32 v) { return v < 0 ? -v : v; }
-constexpr f64 abs(f64 v) { return v < 0 ? -v : v; }
+inline f8 abs(f8 v) { return v; }
+inline f16 abs(f16 v) { return std::abs(v); }
+inline f32 abs(f32 v) { return std::abs(v); }
+inline f64 abs(f64 v) { return std::abs(v); }
 
 
 inline f32 sin(f32 v) { return std::sin(v); }

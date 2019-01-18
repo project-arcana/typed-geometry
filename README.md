@@ -70,4 +70,5 @@ None.
 
 ## TODO
 
-* Benchmark how compile times are affected by includes
+* Benchmark how compile times are affected by includes / templates
+* Add tests that verify optimal assembly generated

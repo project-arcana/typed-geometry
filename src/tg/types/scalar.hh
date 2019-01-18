@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "../detail/half.hh"
-#include "../detail/quarter.hh"
+#include "../detail/scalars/half.hh"
+#include "../detail/scalars/quarter.hh"
 
 namespace tg
 {
