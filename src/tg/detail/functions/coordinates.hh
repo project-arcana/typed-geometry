@@ -18,7 +18,7 @@
 namespace tg
 {
 template <int D, class ScalarT>
-constexpr std::array<3, ScalarT> coordinates(triangle<D, ScalarT> const& t, pos<D, ScalarT> const& p)
+constexpr std::array<ScalarT, 3> coordinates(triangle<D, ScalarT> const& t, pos<D, ScalarT> const& p)
 {
     auto pv0 = t.v0 - p;
     auto pv1 = t.v1 - p;
