@@ -15,7 +15,7 @@ constexpr squared_result<ScalarT> distance2(pos<D, ScalarT> const& a, pos<D, Sca
 }
 
 template <int D, class ScalarT>
-constexpr squared_result<ScalarT> distance(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+constexpr fractional_result<ScalarT> distance(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     return sqrt(distance2(a, b));
 }

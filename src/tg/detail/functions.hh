@@ -1,6 +1,7 @@
 #pragma once
 
 #include "functions/aabb.hh"
+#include "functions/centroid.hh"
 #include "functions/contains.hh"
 #include "functions/coordinates.hh"
 #include "functions/data_ptr.hh"

@@ -214,28 +214,28 @@ struct is_vector_t<vec<D, ScalarT>>
 {
     static constexpr bool value = true;
 };
-template <int D, class ScalarT>
-struct type_name_prefix_t<vec<D, ScalarT>>
+template <int D, class ScalarT, template <int, class> class Type>
+struct type_name_prefix_t<Type<D, ScalarT>>
 {
     static constexpr char const* value = type_name<ScalarT>;
 };
-template <int D>
-struct type_name_prefix_t<vec<D, f32>>
+template <int D, template <int, class> class Type>
+struct type_name_prefix_t<Type<D, f32>>
 {
     static constexpr char const* value = "";
 };
-template <int D>
-struct type_name_prefix_t<vec<D, f64>>
+template <int D, template <int, class> class Type>
+struct type_name_prefix_t<Type<D, f64>>
 {
     static constexpr char const* value = "d";
 };
-template <int D>
-struct type_name_prefix_t<vec<D, i32>>
+template <int D, template <int, class> class Type>
+struct type_name_prefix_t<Type<D, i32>>
 {
     static constexpr char const* value = "i";
 };
-template <int D>
-struct type_name_prefix_t<vec<D, u32>>
+template <int D, template <int, class> class Type>
+struct type_name_prefix_t<Type<D, u32>>
 {
     static constexpr char const* value = "u";
 };
@@ -245,7 +245,22 @@ struct type_name_t<vec<D, ScalarT>>
     static constexpr char const* value = "vec";
 };
 template <int D, class ScalarT>
-struct type_name_suffix_t<vec<D, ScalarT>>
+struct type_name_t<pos<D, ScalarT>>
+{
+    static constexpr char const* value = "pos";
+};
+template <int D, class ScalarT>
+struct type_name_t<size<D, ScalarT>>
+{
+    static constexpr char const* value = "size";
+};
+template <int D, class ScalarT>
+struct type_name_t<box<D, ScalarT>>
+{
+    static constexpr char const* value = "box";
+};
+template <int D, class ScalarT, template <int, class> class Type>
+struct type_name_suffix_t<Type<D, ScalarT>>
 {
     static constexpr char const* value = type_name_number<D>;
 };

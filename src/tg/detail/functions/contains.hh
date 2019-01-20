@@ -41,7 +41,13 @@ constexpr bool contains(box<4, ScalarT> const& b, pos<4, ScalarT> const& o)
 }
 
 template <int D, class ScalarT>
-constexpr bool contains(triangle<D, ScalarT> const& t, pos<D, ScalarT> const& p)
+constexpr bool contains(box<D, ScalarT> const& b, box<D, ScalarT> const& o)
+{
+    return contains(b, o.min) && contains(b, o.max);
+}
+
+template <class ScalarT>
+constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
 {
     auto pv0 = t.v0 - p;
     auto pv1 = t.v1 - p;

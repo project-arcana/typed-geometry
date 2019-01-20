@@ -71,7 +71,7 @@ public:
     explicit xorshift(std::random_device &rd) { seed(rd); }
 
     void seed(std::random_device &rd) { m_seed = uint64_t(rd()) << 31 | uint64_t(rd()); }
-    void seed(size_t seed) { m_seed = uint64_t(seed) << 31 | uint64_t(seed); }
+    void seed(size_t seed) { m_seed = uint64_t(seed | 1) << 31 | uint64_t(seed | 1); }
 
     result_type operator()()
     {
