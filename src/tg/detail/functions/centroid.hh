@@ -1,7 +1,7 @@
 #pragma once
 
-#include <tg/typed-geometry-lean.hh>
-
+#include "../../types/box.hh"
+#include "../../types/triangle.hh"
 #include "../traits.hh"
 
 // returns the arithmetic mean of all points contained in an object

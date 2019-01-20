@@ -13,6 +13,12 @@
 
 namespace tg
 {
+template <int D, class ScalarT>
+constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o)
+{
+    return b == o;
+}
+
 template <class ScalarT>
 constexpr bool contains(box<1, ScalarT> const& b, pos<1, ScalarT> const& o)
 {
