@@ -56,7 +56,7 @@ u64 uniform(Rng& rng, u64 a, u64 b)
 template <class ScalarT, class Rng>
 pos<1, ScalarT> uniform(Rng& rng, box<1, ScalarT> const& b)
 {
-    return {uniform(rng, b.min.x, b.max.x)};
+    return pos<1, ScalarT>{uniform(rng, b.min.x, b.max.x)};
 }
 template <class ScalarT, class Rng>
 pos<2, ScalarT> uniform(Rng& rng, box<2, ScalarT> const& b)
