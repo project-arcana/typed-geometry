@@ -11,6 +11,6 @@ namespace tg
 template <int D, class ScalarT>
 constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
-    return dot(a, b) / length(b);
+    return b * (dot(a, b) / dot(b, b));
 }
 } // namespace tg
