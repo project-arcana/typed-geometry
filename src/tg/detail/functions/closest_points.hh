@@ -19,7 +19,12 @@ constexpr std::pair<pos<D, ScalarT>, pos<D, ScalarT>> closest_points(pos<D, Scal
 template <int D, class ScalarT>
 constexpr std::pair<pos<D, ScalarT>, pos<D, ScalarT>> closest_points(line<D, ScalarT> const& l, pos<D, ScalarT> const& p)
 {
-    auto pointOnLine = l.p + project(p - l.p, l.dir);
-    return {pointOnLine, p};
+    return {project(p, l), p};
+}
+
+template <class ScalarT>
+constexpr std::pair<pos<3, ScalarT>, pos<3, ScalarT>> closest_points(plane<ScalarT> const& pl, pos<3, ScalarT> const& p)
+{
+    return {project(p, pl), p};
 }
 } // namespace tg
