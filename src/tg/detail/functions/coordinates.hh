@@ -29,6 +29,6 @@ constexpr std::array<ScalarT, 3> coordinates(triangle<D, ScalarT> const& t, pos<
     auto A2 = cross(pv0, pv1);
 
     auto A_inv = ScalarT(1.0) / A;
-    return {A0 * A_inv, A1 * A_inv, A2 * A_inv};
+    return {{A0 * A_inv, A1 * A_inv, A2 * A_inv}};
 }
 } // namespace tg
