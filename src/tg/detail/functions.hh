@@ -2,6 +2,8 @@
 
 #include "functions/aabb.hh"
 #include "functions/centroid.hh"
+#include "functions/clamp.hh"
+#include "functions/closest_points.hh"
 #include "functions/contains.hh"
 #include "functions/coordinates.hh"
 #include "functions/data_ptr.hh"
@@ -9,6 +11,7 @@
 #include "functions/length.hh"
 #include "functions/minmax.hh"
 #include "functions/mix.hh"
+#include "functions/project.hh"
 #include "functions/rasterize.hh"
 #include "functions/round.hh"
 #include "functions/uniform.hh"
