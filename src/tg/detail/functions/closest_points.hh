@@ -3,8 +3,10 @@
 #include <utility>
 
 #include "../../types/line.hh"
+#include "../../types/segment.hh"
 #include "../../types/pos.hh"
 #include "project.hh"
+#include "coordinates.hh"
 
 // closest_points(a, b) returns points {p_a, p_b} such that contains(a, p_a) and contains(b, p_b) and |p_a - p_b| is minimal
 
@@ -20,6 +22,13 @@ template <int D, class ScalarT>
 constexpr std::pair<pos<D, ScalarT>, pos<D, ScalarT>> closest_points(line<D, ScalarT> const& l, pos<D, ScalarT> const& p)
 {
     return {project(p, l), p};
+}
+
+template <int D, class ScalarT>
+constexpr std::pair<pos<D, ScalarT>, pos<D, ScalarT>> closest_points(segment<D, ScalarT> const& s, pos<D, ScalarT> const& p)
+{
+    auto t = coordinates(s, p);
+    return {t < ScalarT(0.5) ? s.a : s.b, p};
 }
 
 template <class ScalarT>

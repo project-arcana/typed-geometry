@@ -12,15 +12,14 @@
 namespace tg
 {
 template <class ScalarT>
-using plane3 = hyperplane<3, ScalarT>;
+using plane = hyperplane<3, ScalarT>;
 
 // Common plane types
 
-using plane = plane3<f32>;
-using fplane = plane3<f32>;
-using dplane = plane3<f64>;
-using iplane = plane3<i32>;
-using uplane = plane3<u32>;
+using fplane = plane<f32>;
+using dplane = plane<f64>;
+using iplane = plane<i32>;
+using uplane = plane<u32>;
 
 
 // ======== IMPLEMENTATION ========

@@ -1,24 +1,25 @@
 #pragma once
 
 #include <array>
-#include "../../types/line.hh"
 #include "../../types/pos.hh"
+#include "../../types/segment.hh"
 #include "../../types/triangle.hh"
 #include "../operators/ops_vec.hh"
+#include "length.hh"
 
 // For a given primitive and a position, return the position's relative coordinates
 
 // Contained functions:
 // - coords
 //      - triangle (barycoords)
-//      - line (t-parameter)
+//      - segment (t-parameter)
 
 // Note: Passing a position that does not lie inside the given primitive,
-// the behavior is undefined
+// the behavior is (yet) undefined
 namespace tg
 {
-template <int D, class ScalarT>
-constexpr std::array<ScalarT, 3> coordinates(triangle<D, ScalarT> const& t, pos<D, ScalarT> const& p)
+template <class ScalarT>
+constexpr std::array<ScalarT, 3> coordinates(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
 {
     auto pv0 = t.v0 - p;
     auto pv1 = t.v1 - p;
@@ -31,4 +32,15 @@ constexpr std::array<ScalarT, 3> coordinates(triangle<D, ScalarT> const& t, pos<
     auto A_inv = ScalarT(1.0) / A;
     return {{A0 * A_inv, A1 * A_inv, A2 * A_inv}};
 }
+
+
+template <int D, class ScalarT>
+constexpr ScalarT coordinates(segment<D, ScalarT> const& s, pos<D, ScalarT> const& p)
+{
+    auto d = s.b - s.a;
+    auto t = dot(p - s.a, d) / dot(d, d);
+    return t;
+}
+
+
 } // namespace tg
