@@ -23,7 +23,7 @@
     template <class ScalarT>                                                                                                             \
     constexpr TYPE<1, ScalarT> operator OP(TYPE<1, ScalarT> const& a)                                                                    \
     {                                                                                                                                    \
-        return {OP a.TG_IMPL_MEMBER(TYPE, 0)};                                                                                           \
+        return TYPE<1, ScalarT>{OP a.TG_IMPL_MEMBER(TYPE, 0)};                                                                                           \
     }                                                                                                                                    \
     template <class ScalarT>                                                                                                             \
     constexpr TYPE<2, ScalarT> operator OP(TYPE<2, ScalarT> const& a)                                                                    \
@@ -45,7 +45,7 @@
     template <class ScalarT>                                                                                                             \
     constexpr TYPE_R<1, ScalarT> operator OP(TYPE_A<1, ScalarT> const& a, TYPE_B<1, ScalarT> const& b)                                   \
     {                                                                                                                                    \
-        return {a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0)};                                                             \
+        return TYPE_R<1, ScalarT>{a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0)};                                                             \
     }                                                                                                                                    \
     template <class ScalarT>                                                                                                             \
     constexpr TYPE_R<2, ScalarT> operator OP(TYPE_A<2, ScalarT> const& a, TYPE_B<2, ScalarT> const& b)                                   \
@@ -69,7 +69,7 @@
     template <class ScalarT>                                                                                                                     \
     constexpr TYPE<1, ScalarT> operator OP(TYPE<1, ScalarT> const& a, ScalarT const& b)                                                          \
     {                                                                                                                                            \
-        return {a.TG_IMPL_MEMBER(TYPE, 0) OP b};                                                                                                 \
+        return TYPE<1, ScalarT>{a.TG_IMPL_MEMBER(TYPE, 0) OP b};                                                                                                 \
     }                                                                                                                                            \
     template <class ScalarT>                                                                                                                     \
     constexpr TYPE<2, ScalarT> operator OP(TYPE<2, ScalarT> const& a, ScalarT const& b)                                                          \
@@ -91,7 +91,7 @@
     template <class ScalarT>                                                                                                                     \
     constexpr TYPE<1, ScalarT> operator OP(ScalarT const& a, TYPE<1, ScalarT> const& b)                                                          \
     {                                                                                                                                            \
-        return {a OP b.TG_IMPL_MEMBER(TYPE, 0)};                                                                                                 \
+        return TYPE<1, ScalarT>{a OP b.TG_IMPL_MEMBER(TYPE, 0)};                                                                                                 \
     }                                                                                                                                            \
     template <class ScalarT>                                                                                                                     \
     constexpr TYPE<2, ScalarT> operator OP(ScalarT const& a, TYPE<2, ScalarT> const& b)                                                          \
@@ -114,7 +114,7 @@
     constexpr TYPE<1, ScalarT> operator/(TYPE<1, ScalarT> const& a, ScalarT const& b)                                                                        \
     {                                                                                                                                                        \
         auto inv_b = ScalarT(1) / b;                                                                                                                         \
-        return {a.TG_IMPL_MEMBER(TYPE, 0) * inv_b};                                                                                                          \
+        return TYPE<1, ScalarT>{a.TG_IMPL_MEMBER(TYPE, 0) * inv_b};                                                                                                          \
     }                                                                                                                                                        \
     template <class ScalarT, class = std::enable_if_t<is_floating_point<ScalarT>>>                                                                           \
     constexpr TYPE<2, ScalarT> operator/(TYPE<2, ScalarT> const& a, ScalarT const& b)                                                                        \
@@ -141,7 +141,7 @@
     template <class ScalarT>                                                                                                                     \
     constexpr TYPE<1, ScalarT> FUN(TYPE<1, ScalarT> const& a)                                                                                    \
     {                                                                                                                                            \
-        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0))};                                                                                                 \
+        return TYPE<1, ScalarT>{FUN(a.TG_IMPL_MEMBER(TYPE, 0))};                                                                                                 \
     }                                                                                                                                            \
     template <class ScalarT>                                                                                                                     \
     constexpr TYPE<2, ScalarT> FUN(TYPE<2, ScalarT> const& a)                                                                                    \
