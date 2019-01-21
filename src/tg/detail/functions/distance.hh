@@ -3,7 +3,6 @@
 #include "../../types/vec.hh"
 #include "../operators/ops_pos.hh"
 #include "../operators/ops_vec.hh"
-#include "../traits.hh"
 #include "../scalars/scalar_math.hh"
 
 namespace tg

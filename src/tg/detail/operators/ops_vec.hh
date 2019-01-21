@@ -47,18 +47,6 @@ constexpr ScalarT cross(vec<2, ScalarT> const& a, vec<2, ScalarT> const& b)
 }
 
 template <int D, class ScalarT>
-constexpr squared_result<ScalarT> length2(vec<D, ScalarT> const& v)
-{
-    auto a = vec<D, squared_result<ScalarT>>(v);
-    return dot(a, a);
-}
-template <int D, class ScalarT>
-constexpr fractional_result<ScalarT> length(vec<D, ScalarT> const& v)
-{
-    return sqrt(length2(vec<D, fractional_result<ScalarT>>(v)));
-}
-
-template <int D, class ScalarT>
 constexpr vec<D, fractional_result<ScalarT>> normalize(vec<D, ScalarT> const& v)
 {
     return v / length(v);
