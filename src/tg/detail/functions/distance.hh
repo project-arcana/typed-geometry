@@ -40,13 +40,13 @@ constexpr fractional_result<ScalarT> distance(pos<D, ScalarT> const& a, pos<D, S
 
 // signed distance is positive if p lies above pl, 0 if it lies on the plane and negative if below pl
 template <class ScalarT>
-constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, plane<ScalarT> const& pl)
+constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, plane const& pl)
 {
-    return dot(p, pl.n) - pl.d;
+    return dot(p - pos<3, ScalarT>::zero, pl.n) - pl.d;
 }
 
 template <class ScalarT>
-constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const& p, plane<ScalarT> const& pl)
+constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const& p, plane const& pl)
 {
     return abs(signed_distance(p, pl));
 }

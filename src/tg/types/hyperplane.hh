@@ -49,13 +49,13 @@ using uhyperplane4 = hyperplane<4, u32>;
 template <int D, class ScalarT>
 struct hyperplane
 {
-    using dis_t = ScalarT;
     using vec_t = vec<D, ScalarT>;
+    using dis_t = ScalarT;
 
-    dis_t d;
     vec_t n;
+    dis_t d;
 
     constexpr hyperplane() = default;
-    constexpr hyperplane(dis_t d, vec_t n) : d(d), n(n) {}
+    constexpr hyperplane(vec_t n, dis_t d) : n(n), d(d) {}
 };
 } // namespace tg
