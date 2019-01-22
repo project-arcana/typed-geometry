@@ -3,6 +3,7 @@
 #include "../../types/box.hh"
 #include "../../types/pos.hh"
 #include "../../types/scalar.hh"
+#include "../../types/triangle.hh"
 #include "../random.hh"
 #include "../traits.hh"
 
@@ -89,5 +90,20 @@ template <int D, class ScalarT, class Rng, class = std::enable_if_t<is_floating_
 pos<D, ScalarT> uniform(Rng& rng, pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     return mix(a, b, detail::uniform01<ScalarT>(rng));
+}
+
+template <int D, class ScalarT, class Rng, class = std::enable_if_t<is_floating_point<ScalarT>>>
+pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> const& t)
+{
+    auto e0 = t.v1 - t.v0;
+    auto e1 = t.v2 - t.v0;
+    auto u0 = uniform(rng, ScalarT(0), ScalarT(1));
+    auto u1 = uniform(rng, ScalarT(0), ScalarT(1));
+    if(u0 + u1 > ScalarT(1))
+    {
+        u0 = ScalarT(1) - u0;
+        u1 = ScalarT(1) - u1;
+    }
+    return t.v0 + u0 * e0 + u1 * e1;
 }
 } // namespace tg
