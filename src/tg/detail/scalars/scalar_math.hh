@@ -46,18 +46,18 @@ inline f64 pow(f64 b, i32 e) { return std::pow(b, e); }
 
 inline f32 floor(f32 v) { return std::floor(v); }
 inline f64 floor(f64 v) { return std::floor(v); }
-inline i32 ifloor(f32 v) { return v >= 0 ? int(v) : int(v) - 1; }
-inline i64 ifloor(f64 v) { return v >= 0 ? int(v) : int(v) - 1; }
+inline i32 ifloor(f32 v) { return v >= 0 || i32(v) == v ? i32(v) : i32(v) - 1; }
+inline i64 ifloor(f64 v) { return v >= 0 || i64(v) == v ? i64(v) : i64(v) - 1; }
 
 inline f32 ceil(f32 v) { return std::ceil(v); }
 inline f64 ceil(f64 v) { return std::ceil(v); }
-inline i32 iceil(f32 v) { return v > 0 ? int(v) + 1 : int(v); }
-inline i64 iceil(f64 v) { return v > 0 ? int(v) + 1 : int(v); }
+inline i32 iceil(f32 v) { return v <= 0 || i32(v) == v ? i32(v) : i32(v) + 1; }
+inline i64 iceil(f64 v) { return v <= 0 || i32(v) == v ? i32(v) : i32(v) + 1; }
 
 inline f32 round(f32 v) { return std::round(v); }
 inline f64 round(f64 v) { return std::round(v); }
-inline i32 iround(f32 v) { return v >= 0 ? int(v + 0.5f) : int(v - 0.5f); }
-inline i64 iround(f64 v) { return v >= 0 ? int(v + 0.5f) : int(v - 0.5f); }
+inline i32 iround(f32 v) { return v >= 0 ? i32(v + 0.5f) : i32(v - 0.5f); }
+inline i64 iround(f64 v) { return v >= 0 ? i64(v + 0.5) : i64(v - 0.5); }
 
 template <class T, class = std::enable_if_t<is_scalar<T>>>
 constexpr T min(T const& a, T const& b)
