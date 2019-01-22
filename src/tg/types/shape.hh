@@ -26,7 +26,7 @@ public:
     template <int Order2>
     constexpr bool operator==(shape<Order2> const& rhs) const
     {
-        if constexpr (Order == Order2)
+        if (Order == Order2)
         {
             for (auto i = 0; i < Order; ++i)
                 if (dims[i] != rhs[i])
