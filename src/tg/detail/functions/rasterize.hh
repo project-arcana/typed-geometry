@@ -3,6 +3,7 @@
 #include "../../types/triangle.hh"
 #include "aabb.hh"
 #include "coordinates.hh"
+#include "round.hh"
 
 
 /**
@@ -21,8 +22,8 @@ void rasterize(triangle<2, ScalarT> const& t, F&& f)
     auto b = aabb(t);
 
     // margin so that we can safely round/clamp to integer coords
-    auto minPix = ipos2(b.min.x + 1, b.min.y + 1);
-    auto maxPix = ipos2(b.max.x + 1, b.max.y + 1);
+    auto minPix = ifloor(b.min);
+    auto maxPix = iceil(b.max);
 
     // TODO: Bresenham on two of the triangle edges, then scanline
     for (auto y = minPix.y; y <= maxPix.y; ++y)

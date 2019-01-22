@@ -139,22 +139,22 @@
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_UNARY(TYPE, FUN)                                                                                            \
     template <class ScalarT>                                                                                                                     \
-    constexpr TYPE<1, ScalarT> FUN(TYPE<1, ScalarT> const& a)                                                                                    \
+    constexpr TYPE<1, decltype(FUN(ScalarT(0)))> FUN(TYPE<1, ScalarT> const& a)                                                                  \
     {                                                                                                                                            \
         return {FUN(a.TG_IMPL_MEMBER(TYPE, 0))};                                                                                                 \
     }                                                                                                                                            \
     template <class ScalarT>                                                                                                                     \
-    constexpr TYPE<2, ScalarT> FUN(TYPE<2, ScalarT> const& a)                                                                                    \
+    constexpr TYPE<2, decltype(FUN(ScalarT(0)))> FUN(TYPE<2, ScalarT> const& a)                                                                  \
     {                                                                                                                                            \
         return {FUN(a.TG_IMPL_MEMBER(TYPE, 0)), FUN(a.TG_IMPL_MEMBER(TYPE, 1))};                                                                 \
     }                                                                                                                                            \
     template <class ScalarT>                                                                                                                     \
-    constexpr TYPE<3, ScalarT> FUN(TYPE<3, ScalarT> const& a)                                                                                    \
+    constexpr TYPE<3, decltype(FUN(ScalarT(0)))> FUN(TYPE<3, ScalarT> const& a)                                                                  \
     {                                                                                                                                            \
         return {FUN(a.TG_IMPL_MEMBER(TYPE, 0)), FUN(a.TG_IMPL_MEMBER(TYPE, 1)), FUN(a.TG_IMPL_MEMBER(TYPE, 2))};                                 \
     }                                                                                                                                            \
     template <class ScalarT>                                                                                                                     \
-    constexpr TYPE<4, ScalarT> FUN(TYPE<4, ScalarT> const& a)                                                                                    \
+    constexpr TYPE<4, decltype(FUN(ScalarT(0)))> FUN(TYPE<4, ScalarT> const& a)                                                                  \
     {                                                                                                                                            \
         return {FUN(a.TG_IMPL_MEMBER(TYPE, 0)), FUN(a.TG_IMPL_MEMBER(TYPE, 1)), FUN(a.TG_IMPL_MEMBER(TYPE, 2)), FUN(a.TG_IMPL_MEMBER(TYPE, 3))}; \
     }

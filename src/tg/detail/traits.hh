@@ -186,10 +186,18 @@ TG_ADD_TRAIT(is_floating_point, bool, f64, true);
 TG_ADD_TRAIT(has_multiplication, bool, bool, false);
 
 // type mapping
-TG_DEFINE_TYPE_TRAIT(fractional_result, float);
+TG_DEFINE_TYPE_TRAIT(fractional_result, f32);
 TG_ADD_TYPE_TRAIT(fractional_result, f64, f64);
 TG_ADD_TYPE_TRAIT(fractional_result, i64, f64);
 TG_ADD_TYPE_TRAIT(fractional_result, u64, f64);
+
+TG_DEFINE_TYPE_TRAIT(integer_result, i32);
+TG_ADD_TYPE_TRAIT(integer_result, f64, i64);
+TG_ADD_TYPE_TRAIT(integer_result, i64, i64);
+TG_ADD_TYPE_TRAIT(integer_result, u8, u8);
+TG_ADD_TYPE_TRAIT(integer_result, u16, u16);
+TG_ADD_TYPE_TRAIT(integer_result, u32, u32);
+TG_ADD_TYPE_TRAIT(integer_result, u64, u64);
 
 TG_DEFINE_TYPE_TRAIT(squared_result, void);
 
@@ -258,6 +266,11 @@ template <int D, class ScalarT>
 struct type_name_t<box<D, ScalarT>>
 {
     static constexpr char const* value = "box";
+};
+template <int D, class ScalarT>
+struct type_name_t<triangle<D, ScalarT>>
+{
+    static constexpr char const* value = "triangle";
 };
 template <int D, class ScalarT, template <int, class> class Type>
 struct type_name_suffix_t<Type<D, ScalarT>>
