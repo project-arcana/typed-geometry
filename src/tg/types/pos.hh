@@ -58,7 +58,7 @@ struct pos<1, ScalarT>
     constexpr scalar_t const& operator[](int i) const { return (&x)[i]; }
 
     constexpr pos() = default;
-    constexpr explicit pos(scalar_t v) : x(v) {}
+    constexpr pos(scalar_t v) : x(v) {}
     template <int D, class T, class = std::enable_if_t<D >= 1>>
     constexpr explicit pos(pos<D, T> const& v, scalar_t = ScalarT(0)) : x(ScalarT(v.x))
     {

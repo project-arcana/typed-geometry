@@ -135,7 +135,7 @@ struct vec<1, ScalarT>
     constexpr scalar_t const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
-    constexpr explicit vec(scalar_t v) : x(v) {}
+    constexpr vec(scalar_t v) : x(v) {}
     template <int D, class T, class = std::enable_if_t<D >= 1>>
     constexpr explicit vec(vec<D, T> const& v, scalar_t = ScalarT(0)) : x(ScalarT(v.x))
     {

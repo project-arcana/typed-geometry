@@ -56,7 +56,7 @@ struct size<1, ScalarT>
     constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
-    constexpr explicit size(scalar_t v) : width(v) {}
+    constexpr size(scalar_t v) : width(v) {}
     template <int D, class T, class = std::enable_if_t<D >= 1>>
     constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width))
     {
@@ -111,7 +111,8 @@ struct size<3, ScalarT>
     constexpr explicit size(scalar_t v) : width(v), height(v), depth(v) {}
     constexpr size(scalar_t width, scalar_t height, scalar_t depth) : width(width), height(height), depth(depth) {}
     template <int D, class T, class = std::enable_if_t<D >= 3>>
-    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth))
+    constexpr explicit size(size<D, T> const& v)
+      : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth))
     {
     }
     template <int D, class T, class = std::enable_if_t<D <= 3>>
@@ -137,9 +138,13 @@ struct size<4, ScalarT>
 
     constexpr size() = default;
     constexpr explicit size(scalar_t v) : width(v), height(v), depth(v), w(v) {}
-    constexpr size(scalar_t width, scalar_t height, scalar_t depth, scalar_t w) : width(width), height(height), depth(depth), w(w) {}
+    constexpr size(scalar_t width, scalar_t height, scalar_t depth, scalar_t w)
+      : width(width), height(height), depth(depth), w(w)
+    {
+    }
     template <int D, class T, class = std::enable_if_t<D >= 4>>
-    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth)), w(ScalarT(v.w))
+    constexpr explicit size(size<D, T> const& v)
+      : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth)), w(ScalarT(v.w))
     {
     }
     template <int D, class T, class = std::enable_if_t<D <= 4>>
