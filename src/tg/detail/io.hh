@@ -72,11 +72,22 @@ std::ostream& operator<<(std::ostream& out, size<D, ScalarT> const& v)
 template <int D, class ScalarT>
 std::ostream& operator<<(std::ostream& out, box<D, ScalarT> const& v)
 {
-    using T = vec<D, ScalarT>;
+    using T = box<D, ScalarT>;
     out << type_name_prefix<T>;
     out << type_name<T>;
     out << type_name_suffix<T>;
     out << "(" << v.min << ", " << v.max << ")";
+    return out;
+}
+
+template <int D, class ScalarT>
+std::ostream& operator<<(std::ostream& out, triangle<D, ScalarT> const& v)
+{
+    using T = triangle<D, ScalarT>;
+    out << type_name_prefix<T>;
+    out << type_name<T>;
+    out << type_name_suffix<T>;
+    out << "(" << v.v0 << ", " << v.v1 << ", " << v.v2 << ")";
     return out;
 }
 } // namespace tg
