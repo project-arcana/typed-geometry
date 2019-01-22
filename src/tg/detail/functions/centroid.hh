@@ -18,12 +18,14 @@ pos<D, ScalarT> centroid(pos<D, ScalarT> const& p)
 template <int D, class ScalarT>
 pos<D, fractional_result<ScalarT>> centroid(box<D, ScalarT> const& p)
 {
-    return p.min + (p.max - p.min) * 0.5f;
+    auto z = pos<D, ScalarT>::zero;
+    return z + ((p.min - z) + (p.max - z)) / ScalarT(2);
 }
 
 template <int D, class ScalarT>
 pos<D, fractional_result<ScalarT>> centroid(triangle<D, ScalarT> const& p)
 {
-    return p.v0 + (p.v1 - p.v0) * (1 / 3.0f) + (p.v2 - p.v0) * (1 / 3.0f);
+    auto z = pos<D, ScalarT>::zero;
+    return z + ((p.v0 - z) + (p.v1 - z) + (p.v2 - z)) / ScalarT(3);
 }
 } // namespace tg
