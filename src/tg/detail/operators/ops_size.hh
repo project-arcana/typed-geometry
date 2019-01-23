@@ -6,8 +6,6 @@
 
 namespace tg
 {
-// -- operator@ --
-
 // size +- size = size
 TG_IMPL_DEFINE_BINARY_OP(size, size, size, +);
 TG_IMPL_DEFINE_BINARY_OP(size, size, size, -);
@@ -25,5 +23,4 @@ TG_IMPL_DEFINE_BINARY_OP_SCALAR(size, -);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR(size, +);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR(size, *);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(size);
-
 } // namespace tg

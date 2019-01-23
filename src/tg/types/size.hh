@@ -3,6 +3,7 @@
 #include "../detail/macros.hh"
 #include "scalar.hh"
 #include "shape.hh"
+#include "vec.hh"
 
 namespace tg
 {
@@ -61,6 +62,10 @@ struct size<1, ScalarT>
     constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width))
     {
     }
+    template <int D, class T, class = std::enable_if_t<D >= 1>>
+    constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x))
+    {
+    }
     template <int D, class T, class = std::enable_if_t<D <= 1>>
     constexpr explicit operator size<D, T>() const
     {
@@ -87,6 +92,10 @@ struct size<2, ScalarT>
     constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height))
     {
     }
+    template <int D, class T, class = std::enable_if_t<D >= 2>>
+    constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y))
+    {
+    }
     template <int D, class T, class = std::enable_if_t<D <= 2>>
     constexpr explicit operator size<D, T>() const
     {
@@ -111,8 +120,11 @@ struct size<3, ScalarT>
     constexpr explicit size(scalar_t v) : width(v), height(v), depth(v) {}
     constexpr size(scalar_t width, scalar_t height, scalar_t depth) : width(width), height(height), depth(depth) {}
     template <int D, class T, class = std::enable_if_t<D >= 3>>
-    constexpr explicit size(size<D, T> const& v)
-      : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth))
+    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth))
+    {
+    }
+    template <int D, class T, class = std::enable_if_t<D >= 3>>
+    constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y)), depth(ScalarT(v.z))
     {
     }
     template <int D, class T, class = std::enable_if_t<D <= 3>>
@@ -138,13 +150,13 @@ struct size<4, ScalarT>
 
     constexpr size() = default;
     constexpr explicit size(scalar_t v) : width(v), height(v), depth(v), w(v) {}
-    constexpr size(scalar_t width, scalar_t height, scalar_t depth, scalar_t w)
-      : width(width), height(height), depth(depth), w(w)
+    constexpr size(scalar_t width, scalar_t height, scalar_t depth, scalar_t w) : width(width), height(height), depth(depth), w(w) {}
+    template <int D, class T, class = std::enable_if_t<D >= 4>>
+    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth)), w(ScalarT(v.w))
     {
     }
     template <int D, class T, class = std::enable_if_t<D >= 4>>
-    constexpr explicit size(size<D, T> const& v)
-      : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth)), w(ScalarT(v.w))
+    constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y)), depth(ScalarT(v.z)), w(ScalarT(v.w))
     {
     }
     template <int D, class T, class = std::enable_if_t<D <= 4>>

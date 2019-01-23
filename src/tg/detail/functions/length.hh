@@ -19,4 +19,16 @@ constexpr fractional_result<ScalarT> length(vec<D, ScalarT> const& v)
 {
     return sqrt(length2(vec<D, fractional_result<ScalarT>>(v)));
 }
+
+template <int D, class ScalarT>
+constexpr fractional_result<ScalarT> length2(segment<D, ScalarT> const& s)
+{
+    return length2(s.a - s.b);
+}
+
+template <int D, class ScalarT>
+constexpr fractional_result<ScalarT> length(segment<D, ScalarT> const& s)
+{
+    return sqrt(length2(segment<D, fractional_result<ScalarT>>(s)));
+}
 } // namespace tg
