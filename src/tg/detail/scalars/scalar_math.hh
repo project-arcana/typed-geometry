@@ -39,6 +39,9 @@ inline f64 cos(f64 v) { return std::cos(v); }
 inline f32 sqrt(f32 v) { return std::sqrt(v); }
 inline f64 sqrt(f64 v) { return std::sqrt(v); }
 
+inline f32 cbrt(f32 v) { return std::cbrt(v); }
+inline f64 cbrt(f64 v) { return std::cbrt(v); }
+
 inline f32 pow(f32 b, f32 e) { return std::pow(b, e); }
 inline f32 pow(f32 b, i32 e) { return std::pow(b, e); }
 inline f64 pow(f64 b, f64 e) { return std::pow(b, e); }
@@ -52,7 +55,7 @@ inline i64 ifloor(f64 v) { return v >= 0 || i64(v) == v ? i64(v) : i64(v) - 1; }
 inline f32 ceil(f32 v) { return std::ceil(v); }
 inline f64 ceil(f64 v) { return std::ceil(v); }
 inline i32 iceil(f32 v) { return v <= 0 || i32(v) == v ? i32(v) : i32(v) + 1; }
-inline i64 iceil(f64 v) { return v <= 0 || i32(v) == v ? i32(v) : i32(v) + 1; }
+inline i64 iceil(f64 v) { return v <= 0 || i64(v) == v ? i64(v) : i64(v) + 1; }
 
 inline f32 round(f32 v) { return std::round(v); }
 inline f64 round(f64 v) { return std::round(v); }
