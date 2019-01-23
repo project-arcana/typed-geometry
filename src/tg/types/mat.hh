@@ -1,0 +1,105 @@
+#pragma once
+
+#include "scalar.hh"
+#include "vec.hh"
+
+namespace tg
+{
+template <int R, int C, class ScalarT>
+struct mat;
+
+// square matrices
+
+using mat1 = mat<1, 1, f32>;
+using mat2 = mat<2, 2, f32>;
+using mat3 = mat<3, 3, f32>;
+using mat4 = mat<4, 4, f32>;
+
+using fmat1 = mat<1, 1, f32>;
+using fmat2 = mat<2, 2, f32>;
+using fmat3 = mat<3, 3, f32>;
+using fmat4 = mat<4, 4, f32>;
+
+using dmat1 = mat<1, 1, f64>;
+using dmat2 = mat<2, 2, f64>;
+using dmat3 = mat<3, 3, f64>;
+using dmat4 = mat<4, 4, f64>;
+
+using imat1 = mat<1, 1, i32>;
+using imat2 = mat<2, 2, i32>;
+using imat3 = mat<3, 3, i32>;
+using imat4 = mat<4, 4, i32>;
+
+using umat1 = mat<1, 1, u32>;
+using umat2 = mat<2, 2, u32>;
+using umat3 = mat<3, 3, u32>;
+using umat4 = mat<4, 4, u32>;
+
+// rectangle matrices
+
+using mat2x2 = mat<2, 2, f32>;
+using mat2x3 = mat<2, 3, f32>;
+using mat2x4 = mat<2, 4, f32>;
+using mat3x2 = mat<3, 2, f32>;
+using mat3x3 = mat<3, 3, f32>;
+using mat3x4 = mat<3, 4, f32>;
+using mat4x2 = mat<4, 2, f32>;
+using mat4x3 = mat<4, 3, f32>;
+using mat4x4 = mat<4, 4, f32>;
+
+using fmat2x2 = mat<2, 2, f32>;
+using fmat2x3 = mat<2, 3, f32>;
+using fmat2x4 = mat<2, 4, f32>;
+using fmat3x2 = mat<3, 2, f32>;
+using fmat3x3 = mat<3, 3, f32>;
+using fmat3x4 = mat<3, 4, f32>;
+using fmat4x2 = mat<4, 2, f32>;
+using fmat4x3 = mat<4, 3, f32>;
+using fmat4x4 = mat<4, 4, f32>;
+
+using dmat2x2 = mat<2, 2, f64>;
+using dmat2x3 = mat<2, 3, f64>;
+using dmat2x4 = mat<2, 4, f64>;
+using dmat3x2 = mat<3, 2, f64>;
+using dmat3x3 = mat<3, 3, f64>;
+using dmat3x4 = mat<3, 4, f64>;
+using dmat4x2 = mat<4, 2, f64>;
+using dmat4x3 = mat<4, 3, f64>;
+using dmat4x4 = mat<4, 4, f64>;
+
+using imat2x2 = mat<2, 2, i32>;
+using imat2x3 = mat<2, 3, i32>;
+using imat2x4 = mat<2, 4, i32>;
+using imat3x2 = mat<3, 2, i32>;
+using imat3x3 = mat<3, 3, i32>;
+using imat3x4 = mat<3, 4, i32>;
+using imat4x2 = mat<4, 2, i32>;
+using imat4x3 = mat<4, 3, i32>;
+using imat4x4 = mat<4, 4, i32>;
+
+using umat2x2 = mat<2, 2, u32>;
+using umat2x3 = mat<2, 3, u32>;
+using umat2x4 = mat<2, 4, u32>;
+using umat3x2 = mat<3, 2, u32>;
+using umat3x3 = mat<3, 3, u32>;
+using umat3x4 = mat<3, 4, u32>;
+using umat4x2 = mat<4, 2, u32>;
+using umat4x3 = mat<4, 3, u32>;
+using umat4x4 = mat<4, 4, u32>;
+
+
+// ======== IMPLEMENTATION ========
+
+template <int C, int R, class ScalarT>
+struct mat
+{
+    using row_t = vec<C, ScalarT>;
+    using col_t = vec<R, ScalarT>;
+    using transpose_t = mat<C, R, ScalarT>;
+
+    col_t m[R];
+
+    mat() = default;
+};
+
+} // namespace tg
