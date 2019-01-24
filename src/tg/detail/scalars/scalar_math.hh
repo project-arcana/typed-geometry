@@ -6,6 +6,7 @@
 
 #include "../../detail/traits.hh"
 #include "../../types/scalar.hh"
+#include "../utility.hh"
 
 // TODO:
 // - proper f8, f16
@@ -62,34 +63,34 @@ inline f64 round(f64 v) { return std::round(v); }
 inline i32 iround(f32 v) { return v >= 0 ? i32(v + 0.5f) : i32(v - 0.5f); }
 inline i64 iround(f64 v) { return v >= 0 ? i64(v + 0.5) : i64(v - 0.5); }
 
-template <class T, class = std::enable_if_t<is_scalar<T>>>
+template <class T, class = enable_if<is_scalar<T>>>
 constexpr T min(T const& a, T const& b)
 {
     return std::min(b, a);
 }
-template <class T, class = std::enable_if_t<is_scalar<T>>>
+template <class T, class = enable_if<is_scalar<T>>>
 constexpr T max(T const& a, T const& b)
 {
     return std::max(b, a);
 }
 
-template <class T, class = std::enable_if_t<has_multiplication<T>>>
+template <class T, class = enable_if<has_multiplication<T>>>
 constexpr T pow2(T const& v)
 {
     return v * v;
 }
-template <class T, class = std::enable_if_t<has_multiplication<T>>>
+template <class T, class = enable_if<has_multiplication<T>>>
 constexpr T pow3(T const& v)
 {
     return v * v * v;
 }
-template <class T, class = std::enable_if_t<has_multiplication<T>>>
+template <class T, class = enable_if<has_multiplication<T>>>
 constexpr T pow4(T const& v)
 {
     auto v2 = v * v;
     return v2 * v2;
 }
-template <class T, class = std::enable_if_t<has_multiplication<T>>>
+template <class T, class = enable_if<has_multiplication<T>>>
 constexpr T pow5(T const& v)
 {
     auto v2 = v * v;

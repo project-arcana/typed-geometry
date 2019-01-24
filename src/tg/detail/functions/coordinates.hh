@@ -1,10 +1,10 @@
 #pragma once
 
-#include <array>
 #include "../../types/pos.hh"
 #include "../../types/segment.hh"
 #include "../../types/triangle.hh"
 #include "../operators/ops_vec.hh"
+#include "../utility.hh"
 #include "length.hh"
 
 // For a given primitive and a position, return the position's relative coordinates
@@ -19,7 +19,7 @@
 namespace tg
 {
 template <class ScalarT>
-constexpr std::array<ScalarT, 3> coordinates(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
+constexpr array<ScalarT, 3> coordinates(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
 {
     auto pv0 = t.v0 - p;
     auto pv1 = t.v1 - p;
@@ -32,7 +32,6 @@ constexpr std::array<ScalarT, 3> coordinates(triangle<2, ScalarT> const& t, pos<
     auto A_inv = ScalarT(1.0) / A;
     return {{A0 * A_inv, A1 * A_inv, A2 * A_inv}};
 }
-
 
 template <int D, class ScalarT>
 constexpr ScalarT coordinates(segment<D, ScalarT> const& s, pos<D, ScalarT> const& p)

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <limits>
 #include "../../detail/traits.hh"
 #include "../../types/pos.hh"
 #include "../../types/size.hh"
+#include "../limits.hh"
+#include "../scalars/scalar_math.hh"
 
 // Contained functions:
 // - min
@@ -20,12 +21,12 @@ namespace tg
 template <class T>
 constexpr T min()
 {
-    return std::numeric_limits<T>::lowest();
+    return detail::limits<T>::min();
 }
 template <class T>
 constexpr T max()
 {
-    return std::numeric_limits<T>::max();
+    return detail::limits<T>::max();
 }
 
 template <class ScalarT>

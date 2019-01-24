@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 namespace tg
 {
 // software emulation of a 8bit float, i.e. 0..1 normalized
@@ -13,8 +11,10 @@ struct quarter
 
     // TODO
 private:
-    std::uint8_t data = 0;
+    unsigned char data = 0;
 };
+
+static_assert(sizeof(quarter) == 1, "quarter is not 16bit");
 
 // TODO
 constexpr quarter operator-(quarter const& v) { return v; }

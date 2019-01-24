@@ -1,10 +1,10 @@
 #pragma once
 
-#include <array>
-
 #include "pos.hh"
 #include "scalar.hh"
 #include "vec.hh"
+
+#include "../detail/utility.hh"
 
 namespace tg
 {
@@ -48,6 +48,6 @@ struct triangle
 
     constexpr triangle() = default;
     constexpr triangle(pos_t v0, pos_t v1, pos_t v2) : v0(v0), v1(v1), v2(v2) {}
-    constexpr triangle(std::array<pos_t, 3> const& v) : v0(v[0]), v1(v[1]), v2(v[2]) {}
+    constexpr triangle(array<pos_t, 3> const& v) : v0(v[0]), v1(v[1]), v2(v[2]) {}
 };
 } // namespace tg

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 namespace tg
 {
 // software emulation of 16bit math
@@ -22,8 +20,10 @@ struct half
 
     // TODO
 private:
-    std::uint16_t data = 0;
+    unsigned short data = 0;
 };
+
+static_assert(sizeof(half) == 2, "half is not 16bit");
 
 // TODO
 constexpr half operator-(half const& v) { return v; }

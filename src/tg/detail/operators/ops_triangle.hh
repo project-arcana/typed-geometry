@@ -48,7 +48,7 @@ constexpr triangle<D, ScalarT> operator*(triangle<D, ScalarT> const& a, size<D, 
     return r;
 }
 
-template <int D, class ScalarT, class = std::enable_if_t<is_floating_point<ScalarT>>>
+template <int D, class ScalarT, class = enable_if<is_floating_point<ScalarT>>>
 constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, ScalarT b)
 {
     triangle<D, ScalarT> r;
@@ -59,7 +59,7 @@ constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, ScalarT 
     return r;
 }
 
-template <int D, class IntegerT, class ScalarT, class = std::enable_if_t<is_floating_point<ScalarT> && is_integer<IntegerT>>>
+template <int D, class IntegerT, class ScalarT, class = enable_if<is_floating_point<ScalarT> && is_integer<IntegerT>>>
 constexpr triangle<D, ScalarT> operator/(triangle<D, IntegerT> const& a, ScalarT b)
 {
     triangle<D, ScalarT> r;
@@ -70,7 +70,7 @@ constexpr triangle<D, ScalarT> operator/(triangle<D, IntegerT> const& a, ScalarT
     return r;
 }
 
-template <int D, class ScalarT, class = std::enable_if_t<is_integer<ScalarT>>, class = detail::unused>
+template <int D, class ScalarT, class = enable_if<is_integer<ScalarT>>, class = detail::unused>
 constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, ScalarT b)
 {
     triangle<D, ScalarT> r;

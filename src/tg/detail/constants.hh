@@ -1,7 +1,5 @@
 #pragma once
 
-#include <limits>
-
 namespace tg
 {
 template <class T>

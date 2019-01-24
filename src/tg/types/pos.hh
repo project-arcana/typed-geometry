@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../detail/macros.hh"
+#include "../detail/utility.hh"
 #include "scalar.hh"
 #include "shape.hh"
 
@@ -59,7 +60,7 @@ struct pos<1, ScalarT>
 
     constexpr pos() = default;
     constexpr pos(scalar_t v) : x(v) {}
-    template <int D, class T, class = std::enable_if_t<D >= 1>>
+    template <int D, class T, class = enable_if<D >= 1>>
     constexpr explicit pos(pos<D, T> const& v, scalar_t = ScalarT(0)) : x(ScalarT(v.x))
     {
     }
@@ -89,7 +90,7 @@ struct pos<2, ScalarT>
     constexpr pos() = default;
     constexpr explicit pos(scalar_t v) : x(v), y(v) {}
     constexpr pos(scalar_t x, scalar_t y) : x(x), y(y) {}
-    template <int D, class T, class = std::enable_if_t<D >= 2>>
+    template <int D, class T, class = enable_if<D >= 2>>
     constexpr explicit pos(pos<D, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y))
     {
     }
@@ -124,7 +125,7 @@ struct pos<3, ScalarT>
     constexpr pos() = default;
     constexpr explicit pos(scalar_t v) : x(v), y(v), z(v) {}
     constexpr pos(scalar_t x, scalar_t y, scalar_t z) : x(x), y(y), z(z) {}
-    template <int D, class T, class = std::enable_if_t<D >= 3>>
+    template <int D, class T, class = enable_if<D >= 3>>
     constexpr explicit pos(pos<D, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
     {
     }
@@ -136,7 +137,7 @@ struct pos<3, ScalarT>
     constexpr explicit pos(pos<1, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill)
     {
     }
-    template <int D, class T, class = std::enable_if_t<D <= 3>>
+    template <int D, class T, class = enable_if<D <= 3>>
     constexpr explicit operator pos<D, T>() const
     {
         return pos<D, T>(*this);
@@ -164,7 +165,7 @@ struct pos<4, ScalarT>
     constexpr pos() = default;
     constexpr explicit pos(scalar_t v) : x(v), y(v), z(v), w(v) {}
     constexpr pos(scalar_t x, scalar_t y, scalar_t z, scalar_t w) : x(x), y(y), z(z), w(w) {}
-    template <int D, class T, class = std::enable_if_t<D >= 4>>
+    template <int D, class T, class = enable_if<D >= 4>>
     constexpr explicit pos(pos<D, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
     {
     }
@@ -180,7 +181,7 @@ struct pos<4, ScalarT>
     constexpr explicit pos(pos<1, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill), w(fill)
     {
     }
-    template <int D, class T, class = std::enable_if_t<D <= 4>>
+    template <int D, class T, class = enable_if<D <= 4>>
     constexpr explicit operator pos<D, T>() const
     {
         return pos<D, T>(*this);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+
 #include "../../types/box.hh"
 #include "../../types/pos.hh"
 #include "../../types/triangle.hh"

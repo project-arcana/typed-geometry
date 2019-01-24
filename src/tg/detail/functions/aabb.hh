@@ -28,7 +28,7 @@ constexpr auto aabb(PrimA const& pa, PrimB const& pb, PrimsT const&... prims) ->
 {
     auto ba = aabb(pa);
     auto bb = aabb(pb);
-    static_assert(std::is_same<decltype(ba), decltype(bb)>::value, "all arguments must have the same aabb box type");
+    static_assert(is_same<decltype(ba), decltype(bb)>, "all arguments must have the same aabb box type");
     auto b = decltype(ba)(min(ba.min, bb.min), max(ba.max, bb.max));
     return aabb(b, prims...);
 }

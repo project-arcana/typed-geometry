@@ -1,7 +1,5 @@
 #pragma once
 
-// TODO
-
 #define TG_IMPL_MEMBER_pos_0 x
 #define TG_IMPL_MEMBER_pos_1 y
 #define TG_IMPL_MEMBER_pos_2 z
@@ -110,25 +108,25 @@
     }
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(TYPE)                                                                                                            \
-    template <class ScalarT, class = std::enable_if_t<is_floating_point<ScalarT>>>                                                                           \
+    template <class ScalarT, class = enable_if<is_floating_point<ScalarT>>>                                                                           \
     constexpr TYPE<1, ScalarT> operator/(TYPE<1, ScalarT> const& a, ScalarT const& b)                                                                        \
     {                                                                                                                                                        \
         auto inv_b = ScalarT(1) / b;                                                                                                                         \
         return {a.TG_IMPL_MEMBER(TYPE, 0) * inv_b};                                                                                                          \
     }                                                                                                                                                        \
-    template <class ScalarT, class = std::enable_if_t<is_floating_point<ScalarT>>>                                                                           \
+    template <class ScalarT, class = enable_if<is_floating_point<ScalarT>>>                                                                           \
     constexpr TYPE<2, ScalarT> operator/(TYPE<2, ScalarT> const& a, ScalarT const& b)                                                                        \
     {                                                                                                                                                        \
         auto inv_b = ScalarT(1) / b;                                                                                                                         \
         return {a.TG_IMPL_MEMBER(TYPE, 0) * inv_b, a.TG_IMPL_MEMBER(TYPE, 1) * inv_b};                                                                       \
     }                                                                                                                                                        \
-    template <class ScalarT, class = std::enable_if_t<is_floating_point<ScalarT>>>                                                                           \
+    template <class ScalarT, class = enable_if<is_floating_point<ScalarT>>>                                                                           \
     constexpr TYPE<3, ScalarT> operator/(TYPE<3, ScalarT> const& a, ScalarT const& b)                                                                        \
     {                                                                                                                                                        \
         auto inv_b = ScalarT(1) / b;                                                                                                                         \
         return {a.TG_IMPL_MEMBER(TYPE, 0) * inv_b, a.TG_IMPL_MEMBER(TYPE, 1) * inv_b, a.TG_IMPL_MEMBER(TYPE, 2) * inv_b};                                    \
     }                                                                                                                                                        \
-    template <class ScalarT, class = std::enable_if_t<is_floating_point<ScalarT>>>                                                                           \
+    template <class ScalarT, class = enable_if<is_floating_point<ScalarT>>>                                                                           \
     constexpr TYPE<4, ScalarT> operator/(TYPE<4, ScalarT> const& a, ScalarT const& b)                                                                        \
     {                                                                                                                                                        \
         auto inv_b = ScalarT(1) / b;                                                                                                                         \

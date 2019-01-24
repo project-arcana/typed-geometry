@@ -1,8 +1,7 @@
 #pragma once
 
-#include <type_traits>
-
 #include "../types/types.hh"
+#include "utility.hh"
 
 namespace tg
 {
