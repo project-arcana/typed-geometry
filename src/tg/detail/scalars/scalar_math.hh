@@ -14,10 +14,10 @@
 
 namespace tg
 {
-inline i8 abs(i8 v) { return std::abs(v); }
-inline i16 abs(i16 v) { return std::abs(v); }
-inline i32 abs(i32 v) { return std::abs(v); }
-inline i64 abs(i64 v) { return std::abs(v); }
+inline i8 abs(i8 v) { return v < 0 ? -v : v; }
+inline i16 abs(i16 v) { return v < 0 ? -v : v; }
+inline i32 abs(i32 v) { return v < 0 ? -v : v; }
+inline i64 abs(i64 v) { return v < 0 ? -v : v; }
 
 inline u8 abs(u8 v) { return v; }
 inline u16 abs(u16 v) { return v; }
@@ -42,7 +42,7 @@ inline f32 cbrt(f32 v) { return std::cbrt(v); }
 inline f64 cbrt(f64 v) { return std::cbrt(v); }
 
 inline f32 pow(f32 b, f32 e) { return std::pow(b, e); }
-inline f32 pow(f32 b, i32 e) { return std::pow(b, e); }
+inline f32 pow(f32 b, i32 e) { return f32(std::pow(b, e)); }
 inline f64 pow(f64 b, f64 e) { return std::pow(b, e); }
 inline f64 pow(f64 b, i32 e) { return std::pow(b, e); }
 

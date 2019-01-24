@@ -7,7 +7,7 @@ namespace tg
 struct quarter
 {
     constexpr quarter() = default;
-    constexpr quarter(float f) { data = f < 0 ? 0 : f >= 1 ? 255 : static_cast<int>(f * 256); }
+    constexpr quarter(float f) { data = static_cast<unsigned char>(f < 0 ? 0 : f >= 1 ? 255 : f * 256); }
 
     // TODO
 private:
