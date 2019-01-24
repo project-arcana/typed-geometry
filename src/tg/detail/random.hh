@@ -44,7 +44,7 @@ public:
     {
         m_seed = u64(rd()) << 31 | u64(rd());
     }
-    void seed(size_t seed) { m_seed = (seed ^ 0x2b41a160bab708aduLL) + size_t(seed == 0x2b41a160bab708aduLL); }
+    void seed(u64 seed) { m_seed = (seed ^ 0x2b41a160bab708aduLL) + u64(seed == 0x2b41a160bab708aduLL); }
 
     result_type operator()()
     {
@@ -88,7 +88,7 @@ public:
     {
         m_seed = u64(rd()) << 31 | u64(rd());
     }
-    void seed(size_t seed) { m_seed = (seed ^ 0x2b41a160bab708aduLL) + size_t(seed == 0x2b41a160bab708aduLL); }
+    void seed(u64 seed) { m_seed = (seed ^ 0x2b41a160bab708aduLL) + u64(seed == 0x2b41a160bab708aduLL); }
 
     result_type operator()()
     {

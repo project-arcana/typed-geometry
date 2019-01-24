@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <cstdlib>
-#include <type_traits>
 
 #include "../../detail/traits.hh"
 #include "../../types/scalar.hh"
@@ -66,12 +64,12 @@ inline i64 iround(f64 v) { return v >= 0 ? i64(v + 0.5) : i64(v - 0.5); }
 template <class T, class = enable_if<is_scalar<T>>>
 constexpr T min(T const& a, T const& b)
 {
-    return std::min(b, a);
+    return a < b ? a : b;
 }
 template <class T, class = enable_if<is_scalar<T>>>
 constexpr T max(T const& a, T const& b)
 {
-    return std::max(b, a);
+    return a < b ? b : a;
 }
 
 template <class T, class = enable_if<has_multiplication<T>>>
