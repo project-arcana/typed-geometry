@@ -116,6 +116,9 @@ struct mat
     constexpr col_t& operator[](int i) { return m[i]; }
     constexpr col_t const& operator[](int i) const { return m[i]; }
 
+    constexpr col_t& col(int i) { return m[i]; }
+    constexpr col_t const& col(int i) const { return m[i]; }
+
     mat() = default;
 };
 
