@@ -167,6 +167,19 @@ struct size<4, ScalarT>
     }
 };
 
+// comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator!=, ||, !=);
+
+// deduction guides
+#ifdef TG_SUPPORT_CXX17
+template <class T>
+size(T const& x)->size<1, T>;
+template <class T>
+size(T const& x, T const& y)->size<2, T>;
+template <class T>
+size(T const& x, T const& y, T const& z)->size<3, T>;
+template <class T>
+size(T const& x, T const& y, T const& z, T const& w)->size<4, T>;
+#endif
 } // namespace tg

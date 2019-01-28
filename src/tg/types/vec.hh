@@ -307,7 +307,20 @@ constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), Sca
 template <class ScalarT>
 constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
 
+// comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator!=, ||, !=);
+
+// deduction guides
+#ifdef TG_SUPPORT_CXX17
+template <class T>
+vec(T const& x)->vec<1, T>;
+template <class T>
+vec(T const& x, T const& y)->vec<2, T>;
+template <class T>
+vec(T const& x, T const& y, T const& z)->vec<3, T>;
+template <class T>
+vec(T const& x, T const& y, T const& z, T const& w)->vec<4, T>;
+#endif
 
 } // namespace tg

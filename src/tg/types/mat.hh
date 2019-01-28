@@ -90,6 +90,20 @@ using umat4x4 = mat<4, 4, u32>;
 
 // ======== IMPLEMENTATION ========
 
+/*
+ * Memory layout of a 4x4:
+ *  0  4  8 12
+ *  1  5  9 13
+ *  2  6 10 14
+ *  3  7 11 15
+ *
+ * i.e. col-major
+ *
+ * matCxR (cols x rows)
+ *
+ * mat3x4 has no translational part
+ * mat4x3 has no projective part
+ */
 template <int C, int R, class ScalarT>
 struct mat
 {
@@ -97,7 +111,12 @@ struct mat
     using col_t = vec<R, ScalarT>;
     using transpose_t = mat<C, R, ScalarT>;
 
+    static constexpr shape<2> shape = make_shape(C, R);
+
     col_t m[R];
+
+    constexpr col_t& operator[](int i) { return m[i]; }
+    constexpr col_t const& operator[](int i) const { return m[i]; }
 
     mat() = default;
 };

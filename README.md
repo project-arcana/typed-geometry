@@ -70,6 +70,11 @@ TODO: splines
 * if still ambiguous: faster changing parameters go last (e.g. `coordinates(tri, point)` or `mix(a, b, t)`)
 
 
+### C++ 17 Features
+
+* deduction guides: `auto v = tg::vec(1.0f, 2.0f, 3.0f)`
+* structured binding: `auto [x, y, z] = tg::vec3(...)`
+
 ## Dependencies
 
 None.
@@ -79,4 +84,3 @@ None.
 * Benchmark how compile times are affected by includes / templates
 * Add tests that verify optimal assembly generated
 * Fractional and bigint data types
-* Deduction guides
