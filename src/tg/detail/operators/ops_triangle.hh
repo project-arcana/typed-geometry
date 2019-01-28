@@ -90,11 +90,4 @@ constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, size<D, 
     r.v2 = a.v2 * inv_b;
     return r;
 }
-
-// assignment ops
-TG_IMPL_DEFINE_ASSIGNMENT_OP(triangle, +);
-TG_IMPL_DEFINE_ASSIGNMENT_OP(triangle, -);
-TG_IMPL_DEFINE_ASSIGNMENT_OP(triangle, *);
-TG_IMPL_DEFINE_ASSIGNMENT_OP(triangle, /);
-
 } // namespace tg
