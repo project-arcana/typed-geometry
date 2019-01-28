@@ -61,6 +61,9 @@ inline f64 round(f64 v) { return std::round(v); }
 inline i32 iround(f32 v) { return v >= 0 ? i32(v + 0.5f) : i32(v - 0.5f); }
 inline i64 iround(f64 v) { return v >= 0 ? i64(v + 0.5) : i64(v - 0.5); }
 
+inline f32 fract(f32 v) { return v - floor(v); }
+inline f64 fract(f64 v) { return v - floor(v); }
+
 template <class T, class = enable_if<is_scalar<T>>>
 constexpr T min(T const& a, T const& b)
 {
