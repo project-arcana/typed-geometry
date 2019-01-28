@@ -3,7 +3,6 @@
 #include "../detail/macros.hh"
 #include "../detail/utility.hh"
 #include "scalar.hh"
-#include "shape.hh"
 
 /**
  * TODO:
@@ -124,7 +123,6 @@ template <class ScalarT>
 struct vec<1, ScalarT>
 {
     using scalar_t = ScalarT;
-    static constexpr shape<1> shape = make_shape(1);
 
     static const vec zero;
     static const vec one;
@@ -158,7 +156,6 @@ template <class ScalarT>
 struct vec<2, ScalarT>
 {
     using scalar_t = ScalarT;
-    static constexpr shape<1> shape = make_shape(2);
 
     scalar_t x = static_cast<scalar_t>(0);
     scalar_t y = static_cast<scalar_t>(0);
@@ -201,7 +198,6 @@ template <class ScalarT>
 struct vec<3, ScalarT>
 {
     using scalar_t = ScalarT;
-    static constexpr shape<1> shape = make_shape(3);
 
     scalar_t x = static_cast<scalar_t>(0);
     scalar_t y = static_cast<scalar_t>(0);
@@ -252,7 +248,6 @@ template <class ScalarT>
 struct vec<4, ScalarT>
 {
     using scalar_t = ScalarT;
-    static constexpr shape<1> shape = make_shape(4);
 
     static const vec zero;
     static const vec one;

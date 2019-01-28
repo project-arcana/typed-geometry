@@ -111,8 +111,6 @@ struct mat
     using col_t = vec<R, ScalarT>;
     using transpose_t = mat<C, R, ScalarT>;
 
-    static constexpr shape<2> shape = make_shape(C, R);
-
     col_t m[R];
 
     constexpr col_t& operator[](int i) { return m[i]; }

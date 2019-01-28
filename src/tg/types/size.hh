@@ -3,7 +3,6 @@
 #include "../detail/macros.hh"
 #include "../detail/utility.hh"
 #include "scalar.hh"
-#include "shape.hh"
 #include "vec.hh"
 
 namespace tg
@@ -50,7 +49,6 @@ template <class ScalarT>
 struct size<1, ScalarT>
 {
     using scalar_t = ScalarT;
-    static constexpr shape<1> shape = make_shape(1);
 
     scalar_t width = static_cast<scalar_t>(0);
 
@@ -78,7 +76,6 @@ template <class ScalarT>
 struct size<2, ScalarT>
 {
     using scalar_t = ScalarT;
-    static constexpr shape<1> shape = make_shape(2);
 
     scalar_t width = static_cast<scalar_t>(0);
     scalar_t height = static_cast<scalar_t>(0);
@@ -108,7 +105,6 @@ template <class ScalarT>
 struct size<3, ScalarT>
 {
     using scalar_t = ScalarT;
-    static constexpr shape<1> shape = make_shape(3);
 
     scalar_t width = static_cast<scalar_t>(0);
     scalar_t height = static_cast<scalar_t>(0);
@@ -139,7 +135,6 @@ template <class ScalarT>
 struct size<4, ScalarT>
 {
     using scalar_t = ScalarT;
-    static constexpr shape<1> shape = make_shape(4);
 
     scalar_t width = static_cast<scalar_t>(0);
     scalar_t height = static_cast<scalar_t>(0);
