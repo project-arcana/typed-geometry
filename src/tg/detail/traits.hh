@@ -19,6 +19,15 @@ using unused = int;
     template <class T>                                    \
     constexpr result_type trait = trait##_t<T>::value // enforce ;
 
+#define TG_DEFINE_BINARY_TRAIT(trait, result_type, default_val) \
+    template <class A, class B>                                 \
+    struct trait##_t                                            \
+    {                                                           \
+        static constexpr result_type value = default_val;       \
+    };                                                          \
+    template <class A, class B>                                 \
+    constexpr result_type trait = trait##_t<A, B>::value // enforce ;
+
 #define TG_DEFINE_TYPE_TRAIT(trait, default_type) \
     template <class T>                            \
     struct trait##_t                              \
@@ -28,17 +37,44 @@ using unused = int;
     template <class T>                            \
     using trait = typename trait##_t<T>::type // enforce ;
 
+#define TG_DEFINE_BINARY_TYPE_TRAIT(trait, default_type) \
+    template <class A, class B>                          \
+    struct trait##_t                                     \
+    {                                                    \
+        using type = default_type;                       \
+    };                                                   \
+    template <class A, class B>                          \
+    using trait = typename trait##_t<A, B>::type // enforce ;
+
 #define TG_ADD_TRAIT(trait, result_type, type, val) \
     template <>                                     \
     struct trait##_t<type>                          \
     {                                               \
         static constexpr result_type value = val;   \
     } // enforce ;
+#define TG_ADD_BINARY_TRAIT(trait, result_type, typeA, typeB, val) \
+    template <>                                                    \
+    struct trait##_t<typeA, typeB>                                 \
+    {                                                              \
+        static constexpr result_type value = val;                  \
+    } // enforce ;
 #define TG_ADD_TYPE_TRAIT(trait, ttype, result_type) \
     template <>                                      \
     struct trait##_t<ttype>                          \
     {                                                \
         using type = result_type;                    \
+    } // enforce ;
+#define TG_ADD_BINARY_TYPE_TRAIT(trait, ttypeA, ttypeB, result_type) \
+    template <>                                                      \
+    struct trait##_t<ttypeA, ttypeB>                                 \
+    {                                                                \
+        using type = result_type;                                    \
+    } // enforce ;
+#define TG_ADD_SCALAR_TYPE(basetype, bits, rtype) \
+    template <>                                   \
+    struct scalar_t<basetype, bits>               \
+    {                                             \
+        using type = rtype;                       \
     } // enforce ;
 
 #define TG_INHERIT_TRAITS_D(ttype)                                  \
@@ -76,6 +112,17 @@ using unused = int;
     {                                                              \
         static constexpr bool value = has_multiplication<ScalarT>; \
     }; // enforce ;
+
+// scalar traits
+template <class Base, int Bits>
+struct scalar_t
+{
+    using type = void;
+};
+template <class Base, int Bits>
+using scalar = typename scalar_t<Base, Bits>::type;
+TG_DEFINE_TRAIT(scalar_bit_width, int, 0);
+TG_DEFINE_TYPE_TRAIT(scalar_base_type, void);
 
 // name traits
 TG_DEFINE_TRAIT(type_name_prefix, char const*, "");
@@ -125,6 +172,51 @@ template <int D>
 constexpr char const* type_name_number = type_name_number_t<D>::value;
 
 // scalars
+TG_ADD_SCALAR_TYPE(int, 8, i8);
+TG_ADD_SCALAR_TYPE(int, 16, i16);
+TG_ADD_SCALAR_TYPE(int, 32, i32);
+TG_ADD_SCALAR_TYPE(int, 64, i64);
+
+TG_ADD_SCALAR_TYPE(unsigned, 8, u8);
+TG_ADD_SCALAR_TYPE(unsigned, 16, u16);
+TG_ADD_SCALAR_TYPE(unsigned, 32, u32);
+TG_ADD_SCALAR_TYPE(unsigned, 64, u64);
+
+TG_ADD_SCALAR_TYPE(float, 8, f8);
+TG_ADD_SCALAR_TYPE(float, 16, f16);
+TG_ADD_SCALAR_TYPE(float, 32, f32);
+TG_ADD_SCALAR_TYPE(float, 64, f64);
+
+TG_ADD_TRAIT(scalar_bit_width, int, i8, 8);
+TG_ADD_TRAIT(scalar_bit_width, int, i16, 16);
+TG_ADD_TRAIT(scalar_bit_width, int, i32, 32);
+TG_ADD_TRAIT(scalar_bit_width, int, i64, 64);
+
+TG_ADD_TRAIT(scalar_bit_width, int, u8, 8);
+TG_ADD_TRAIT(scalar_bit_width, int, u16, 16);
+TG_ADD_TRAIT(scalar_bit_width, int, u32, 32);
+TG_ADD_TRAIT(scalar_bit_width, int, u64, 64);
+
+TG_ADD_TRAIT(scalar_bit_width, int, f8, 8);
+TG_ADD_TRAIT(scalar_bit_width, int, f16, 16);
+TG_ADD_TRAIT(scalar_bit_width, int, f32, 32);
+TG_ADD_TRAIT(scalar_bit_width, int, f64, 64);
+
+TG_ADD_TYPE_TRAIT(scalar_base_type, i8, int);
+TG_ADD_TYPE_TRAIT(scalar_base_type, i16, int);
+TG_ADD_TYPE_TRAIT(scalar_base_type, i32, int);
+TG_ADD_TYPE_TRAIT(scalar_base_type, i64, int);
+
+TG_ADD_TYPE_TRAIT(scalar_base_type, u8, unsigned);
+TG_ADD_TYPE_TRAIT(scalar_base_type, u16, unsigned);
+TG_ADD_TYPE_TRAIT(scalar_base_type, u32, unsigned);
+TG_ADD_TYPE_TRAIT(scalar_base_type, u64, unsigned);
+
+TG_ADD_TYPE_TRAIT(scalar_base_type, f8, float);
+TG_ADD_TYPE_TRAIT(scalar_base_type, f16, float);
+TG_ADD_TYPE_TRAIT(scalar_base_type, f32, float);
+TG_ADD_TYPE_TRAIT(scalar_base_type, f64, float);
+
 TG_ADD_TRAIT(type_name, char const*, bool, "b");
 
 TG_ADD_TRAIT(type_name, char const*, i8, "i8");
@@ -214,6 +306,28 @@ TG_ADD_TYPE_TRAIT(squared_result, f8, f32);
 TG_ADD_TYPE_TRAIT(squared_result, f16, f32);
 TG_ADD_TYPE_TRAIT(squared_result, f32, f32);
 TG_ADD_TYPE_TRAIT(squared_result, f64, f64);
+
+// promotions
+TG_DEFINE_BINARY_TYPE_TRAIT(promoted_scalar_base, void);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, int, int, int);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, int, unsigned, int);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, int, float, float);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, unsigned, int, int);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, unsigned, unsigned, unsigned);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, unsigned, float, float);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, float, int, float);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, float, unsigned, float);
+TG_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, float, float, float);
+
+template <class A, class B>
+struct promoted_scalar_t
+{
+    static constexpr int bitmax(int a, int b) { return a > b ? a : b; }
+    using type = scalar<promoted_scalar_base<A, B>, bitmax(scalar_bit_width<A>, scalar_bit_width<B>)>;
+};
+template <class A, class B>
+using promoted_scalar = typename promoted_scalar_t<A, B>::type;
+
 
 // vectors
 template <int D, class ScalarT>

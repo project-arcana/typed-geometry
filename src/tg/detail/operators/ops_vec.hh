@@ -10,8 +10,8 @@ TG_IMPL_DEFINE_BINARY_OP(vec, vec, vec, +);
 TG_IMPL_DEFINE_BINARY_OP(vec, vec, vec, -);
 
 // vec */ size = vec
-TG_IMPL_DEFINE_BINARY_OP(vec, vec, size, *);
-TG_IMPL_DEFINE_BINARY_OP(vec, vec, size, /);
+TG_IMPL_DEFINE_BINARY_OP(vec, size, vec, *);
+TG_IMPL_DEFINE_BINARY_OP(vec, size, vec, /);
 
 // +vec, -vec
 TG_IMPL_DEFINE_UNARY_OP(vec, +);
