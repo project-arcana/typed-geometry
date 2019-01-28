@@ -215,3 +215,19 @@
         return ((a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1)))REDUCE( \
             (a.TG_IMPL_MEMBER(TYPE_A, 2) OP b.TG_IMPL_MEMBER(TYPE_B, 2))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 3) OP b.TG_IMPL_MEMBER(TYPE_B, 3)));           \
     }
+
+#define TG_IMPL_DEFINE_ASSIGNMENT_OP(TYPE_THIS, TYPE_THAT, OP)                                                                                    \
+    template <int D, class ScalarA, class ScalarB>                                                                                                \
+    constexpr auto operator OP##=(TYPE_THIS<D, ScalarA>& lhs, TYPE_THAT<D, ScalarB> const& rhs)->decltype(TYPE_THIS<D, ScalarA>(lhs OP rhs), lhs) \
+    {                                                                                                                                             \
+        lhs = TYPE_THIS<D, ScalarA>(lhs OP rhs);                                                                                                  \
+        return lhs;                                                                                                                               \
+    }
+
+#define TG_IMPL_DEFINE_ASSIGNMENT_OP_SCALAR(TYPE_THIS, OP)                                                                          \
+    template <int D, class ScalarA, class ScalarB>                                                                                  \
+    constexpr auto operator OP##=(TYPE_THIS<D, ScalarA>& lhs, ScalarB const& rhs)->decltype(TYPE_THIS<D, ScalarA>(lhs OP rhs), lhs) \
+    {                                                                                                                               \
+        lhs = TYPE_THIS<D, ScalarA>(lhs OP rhs);                                                                                    \
+        return lhs;                                                                                                                 \
+    }

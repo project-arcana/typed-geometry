@@ -78,3 +78,4 @@ None.
 
 * Benchmark how compile times are affected by includes / templates
 * Add tests that verify optimal assembly generated
+* Fractional and bigint data types

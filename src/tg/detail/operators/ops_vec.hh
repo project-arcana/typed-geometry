@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../types/vec.hh"
+#include "../macros.hh"
 #include "../traits.hh"
 
 namespace tg
@@ -22,4 +23,15 @@ TG_IMPL_DEFINE_BINARY_OP_SCALAR(vec, -);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR(vec, +);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR(vec, *);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(vec);
+
+// assignment ops
+TG_IMPL_DEFINE_ASSIGNMENT_OP(vec, vec, +);
+TG_IMPL_DEFINE_ASSIGNMENT_OP(vec, vec, -);
+TG_IMPL_DEFINE_ASSIGNMENT_OP(vec, size, *);
+TG_IMPL_DEFINE_ASSIGNMENT_OP(vec, size, /);
+
+TG_IMPL_DEFINE_ASSIGNMENT_OP_SCALAR(vec, +);
+TG_IMPL_DEFINE_ASSIGNMENT_OP_SCALAR(vec, -);
+TG_IMPL_DEFINE_ASSIGNMENT_OP_SCALAR(vec, *);
+TG_IMPL_DEFINE_ASSIGNMENT_OP_SCALAR(vec, /);
 } // namespace tg
