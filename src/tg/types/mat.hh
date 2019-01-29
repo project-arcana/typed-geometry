@@ -90,6 +90,31 @@ using umat4x4 = mat<4, 4, u32>;
 
 // ======== IMPLEMENTATION ========
 
+
+namespace detail
+{
+template <int R, class ScalarT>
+constexpr vec<1, ScalarT> mat_row(mat<1, R, ScalarT> const& m, int i)
+{
+    return {m[0][i]};
+}
+template <int R, class ScalarT>
+constexpr vec<2, ScalarT> mat_row(mat<2, R, ScalarT> const& m, int i)
+{
+    return {m[0][i], m[1][i]};
+}
+template <int R, class ScalarT>
+constexpr vec<3, ScalarT> mat_row(mat<3, R, ScalarT> const& m, int i)
+{
+    return {m[0][i], m[1][i], m[2][i]};
+}
+template <int R, class ScalarT>
+constexpr vec<4, ScalarT> mat_row(mat<4, R, ScalarT> const& m, int i)
+{
+    return {m[0][i], m[1][i], m[2][i], m[3][i]};
+}
+} // namespace detail
+
 /*
  * Memory layout of a 4x4:
  *  0  4  8 12
@@ -109,15 +134,14 @@ struct mat
 {
     using row_t = vec<C, ScalarT>;
     using col_t = vec<R, ScalarT>;
-    using transpose_t = mat<C, R, ScalarT>;
 
     col_t m[R];
 
     constexpr col_t& operator[](int i) { return m[i]; }
     constexpr col_t const& operator[](int i) const { return m[i]; }
 
-    constexpr col_t& col(int i) { return m[i]; }
-    constexpr col_t const& col(int i) const { return m[i]; }
+    constexpr col_t col(int i) const { return m[i]; }
+    constexpr row_t row(int i) const { return detail::mat_row(*this, i); }
 
     mat() = default;
 };

@@ -36,4 +36,15 @@ constexpr ScalarT* data_ptr(size<D, ScalarT>& v)
 {
     return &v.width;
 }
+
+template <int C, int R, class ScalarT>
+constexpr ScalarT const* data_ptr(mat<C, R, ScalarT> const& m)
+{
+    return &m[0][0];
+}
+template <int C, int R, class ScalarT>
+constexpr ScalarT* data_ptr(mat<C, R, ScalarT>& m)
+{
+    return &m[0][0];
+}
 } // namespace tg
