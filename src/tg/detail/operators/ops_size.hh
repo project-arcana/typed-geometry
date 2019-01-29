@@ -2,7 +2,7 @@
 
 #include "../../types/size.hh"
 #include "../macros.hh"
-#include "../traits.hh"
+#include "../scalar_traits.hh"
 
 namespace tg
 {

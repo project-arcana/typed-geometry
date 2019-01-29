@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../types/scalar.hh"
 #include "minmax.hh"
 

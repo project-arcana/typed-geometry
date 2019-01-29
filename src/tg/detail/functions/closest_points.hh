@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../types/line.hh"
+#include "../../types/plane.hh"
 #include "../../types/pos.hh"
 #include "../../types/segment.hh"
 #include "../utility.hh"

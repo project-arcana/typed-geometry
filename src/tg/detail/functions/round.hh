@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../../types/pos.hh"
+#include "../../types/size.hh"
 #include "../../types/vec.hh"
+#include "../scalar_traits.hh"
 #include "../scalars/scalar_math.hh"
-#include "../traits.hh"
 
 namespace tg
 {

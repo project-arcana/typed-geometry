@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../../types/line.hh"
-#include "../../types/segment.hh"
 #include "../../types/plane.hh"
 #include "../../types/pos.hh"
+#include "../../types/segment.hh"
 #include "../../types/vec.hh"
 #include "../operators/ops_vec.hh"
 #include "coordinates.hh"

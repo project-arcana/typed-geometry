@@ -2,6 +2,11 @@
 
 namespace tg
 {
+namespace detail
+{
+using unused = int;
+}
+
 template <class A, class B>
 struct pair
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../types/scalar.hh"
-#include "../traits.hh"
+#include "../scalar_traits.hh"
 
 namespace tg
 {

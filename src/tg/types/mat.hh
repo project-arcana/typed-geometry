@@ -5,6 +5,20 @@
 
 namespace tg
 {
+/*
+ * Memory layout of a 4x4:
+ *  0  4  8 12
+ *  1  5  9 13
+ *  2  6 10 14
+ *  3  7 11 15
+ *
+ * i.e. col-major
+ *
+ * matCxR (cols x rows)
+ *
+ * mat3x4 has no translational part
+ * mat4x3 has no projective part
+ */
 template <int R, int C, class ScalarT>
 struct mat;
 
@@ -115,20 +129,6 @@ constexpr vec<4, ScalarT> mat_row(mat<4, R, ScalarT> const& m, int i)
 }
 } // namespace detail
 
-/*
- * Memory layout of a 4x4:
- *  0  4  8 12
- *  1  5  9 13
- *  2  6 10 14
- *  3  7 11 15
- *
- * i.e. col-major
- *
- * matCxR (cols x rows)
- *
- * mat3x4 has no translational part
- * mat4x3 has no projective part
- */
 template <int C, int R, class ScalarT>
 struct mat
 {

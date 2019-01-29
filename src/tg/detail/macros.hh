@@ -15,6 +15,11 @@
 #define TG_IMPL_MEMBER_size_2 depth
 #define TG_IMPL_MEMBER_size_3 w
 
+#define TG_IMPL_MEMBER_mat_0 m[0]
+#define TG_IMPL_MEMBER_mat_1 m[1]
+#define TG_IMPL_MEMBER_mat_2 m[2]
+#define TG_IMPL_MEMBER_mat_3 m[3]
+
 #define TG_IMPL_MEMBER(TYPE, COMP) TG_IMPL_MEMBER_##TYPE##_##COMP
 
 #define TG_IMPL_DEFINE_UNARY_OP(TYPE, OP)                                                                                                \
@@ -223,3 +228,107 @@
         lhs = TYPE_THIS<D, ScalarA>(lhs OP rhs);                                                                              \
         return lhs;                                                                                                           \
     }
+
+
+#define TG_IMPL_DEFINE_TRAIT(trait, result_type, default_val) \
+    template <class T>                                        \
+    struct trait##_t                                          \
+    {                                                         \
+        static constexpr result_type value = default_val;     \
+    };                                                        \
+    template <class T>                                        \
+    constexpr result_type trait = trait##_t<T>::value // enforce ;
+
+#define TG_IMPL_DEFINE_BINARY_TRAIT(trait, result_type, default_val) \
+    template <class A, class B>                                      \
+    struct trait##_t                                                 \
+    {                                                                \
+        static constexpr result_type value = default_val;            \
+    };                                                               \
+    template <class A, class B>                                      \
+    constexpr result_type trait = trait##_t<A, B>::value // enforce ;
+
+#define TG_IMPL_DEFINE_TYPE_TRAIT(trait, default_type) \
+    template <class T>                                 \
+    struct trait##_t                                   \
+    {                                                  \
+        using type = default_type;                     \
+    };                                                 \
+    template <class T>                                 \
+    using trait = typename trait##_t<T>::type // enforce ;
+
+#define TG_IMPL_DEFINE_BINARY_TYPE_TRAIT(trait, default_type) \
+    template <class A, class B>                               \
+    struct trait##_t                                          \
+    {                                                         \
+        using type = default_type;                            \
+    };                                                        \
+    template <class A, class B>                               \
+    using trait = typename trait##_t<A, B>::type // enforce ;
+
+#define TG_IMPL_ADD_TRAIT(trait, result_type, type, val) \
+    template <>                                          \
+    struct trait##_t<type>                               \
+    {                                                    \
+        static constexpr result_type value = val;        \
+    } // enforce ;
+#define TG_IMPL_ADD_BINARY_TRAIT(trait, result_type, typeA, typeB, val) \
+    template <>                                                         \
+    struct trait##_t<typeA, typeB>                                      \
+    {                                                                   \
+        static constexpr result_type value = val;                       \
+    } // enforce ;
+#define TG_IMPL_ADD_TYPE_TRAIT(trait, ttype, result_type) \
+    template <>                                           \
+    struct trait##_t<ttype>                               \
+    {                                                     \
+        using type = result_type;                         \
+    } // enforce ;
+#define TG_IMPL_ADD_BINARY_TYPE_TRAIT(trait, ttypeA, ttypeB, result_type) \
+    template <>                                                           \
+    struct trait##_t<ttypeA, ttypeB>                                      \
+    {                                                                     \
+        using type = result_type;                                         \
+    } // enforce ;
+#define TG_IMPL_ADD_SCALAR_TYPE(basetype, bits, rtype) \
+    template <>                                        \
+    struct scalar_t<basetype, bits>                    \
+    {                                                  \
+        using type = rtype;                            \
+    } // enforce ;
+
+#define TG_IMPL_INHERIT_TRAITS_D(ttype)                             \
+    template <int D, class ScalarT>                                 \
+    struct is_integer_t<ttype<D, ScalarT>>                          \
+    {                                                               \
+        static constexpr bool value = is_integer<ScalarT>;          \
+    };                                                              \
+    template <int D, class ScalarT>                                 \
+    struct is_signed_integer_t<ttype<D, ScalarT>>                   \
+    {                                                               \
+        static constexpr bool value = is_signed_integer<ScalarT>;   \
+    };                                                              \
+    template <int D, class ScalarT>                                 \
+    struct is_unsigned_integer_t<ttype<D, ScalarT>>                 \
+    {                                                               \
+        static constexpr bool value = is_unsigned_integer<ScalarT>; \
+    };                                                              \
+    template <int D, class ScalarT>                                 \
+    struct is_floating_point_t<ttype<D, ScalarT>>                   \
+    {                                                               \
+        static constexpr bool value = is_floating_point<ScalarT>;   \
+    };                                                              \
+    template <int D, class ScalarT>                                 \
+    struct fractional_result_t<ttype<D, ScalarT>>                   \
+    {                                                               \
+        using type = ttype<D, fractional_result<ScalarT>>;          \
+    } // enforce ;
+
+
+#define TG_IMPL_INHERIT_TRAITS_FIELD_D(ttype)                      \
+    TG_IMPL_INHERIT_TRAITS_D(ttype);                               \
+    template <int D, class ScalarT>                                \
+    struct has_multiplication_t<ttype<D, ScalarT>>                 \
+    {                                                              \
+        static constexpr bool value = has_multiplication<ScalarT>; \
+    }; // enforce ;

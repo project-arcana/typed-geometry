@@ -2,7 +2,7 @@
 
 #include "../../types/box.hh"
 #include "../../types/triangle.hh"
-#include "../traits.hh"
+#include "../scalar_traits.hh"
 
 // returns the arithmetic mean of all points contained in an object
 // has variadic versions

@@ -4,7 +4,7 @@
 #include "../../types/size.hh"
 #include "../../types/vec.hh"
 #include "../macros.hh"
-#include "../traits.hh"
+#include "../scalar_traits.hh"
 
 namespace tg
 {

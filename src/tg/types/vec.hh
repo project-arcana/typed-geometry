@@ -1,12 +1,13 @@
 #pragma once
 
 #include "../detail/macros.hh"
+#include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
 #include "scalar.hh"
 
 /**
  * TODO:
- * maybe move scalar_t and shape into traits
+ * maybe move ScalarT and shape into traits
  * maybe move zero/one/etc into constants
  * maybe no bvec?
  */
@@ -122,21 +123,19 @@ struct vec
 template <class ScalarT>
 struct vec<1, ScalarT>
 {
-    using scalar_t = ScalarT;
-
     static const vec zero;
     static const vec one;
     static const vec unit_x;
 
-    scalar_t x = static_cast<scalar_t>(0);
+    ScalarT x = static_cast<ScalarT>(0);
 
-    constexpr scalar_t& operator[](int i) { return (&x)[i]; }
-    constexpr scalar_t const& operator[](int i) const { return (&x)[i]; }
+    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
-    constexpr vec(scalar_t v) : x(v) {}
+    constexpr vec(ScalarT v) : x(v) {}
     template <int D, class T, class = enable_if<D >= 1>>
-    constexpr explicit vec(vec<D, T> const& v, scalar_t = ScalarT(0)) : x(ScalarT(v.x))
+    constexpr explicit vec(vec<D, T> const& v, ScalarT = ScalarT(0)) : x(ScalarT(v.x))
     {
     }
     template <int D, class T>
@@ -155,28 +154,26 @@ constexpr vec<1, ScalarT> vec<1, ScalarT>::unit_x = {ScalarT(1)};
 template <class ScalarT>
 struct vec<2, ScalarT>
 {
-    using scalar_t = ScalarT;
-
-    scalar_t x = static_cast<scalar_t>(0);
-    scalar_t y = static_cast<scalar_t>(0);
+    ScalarT x = static_cast<ScalarT>(0);
+    ScalarT y = static_cast<ScalarT>(0);
 
     static const vec zero;
     static const vec one;
     static const vec unit_x;
     static const vec unit_y;
 
-    constexpr scalar_t& operator[](int i) { return (&x)[i]; }
-    constexpr scalar_t const& operator[](int i) const { return (&x)[i]; }
+    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
-    constexpr explicit vec(scalar_t v) : x(v), y(v) {}
-    constexpr vec(scalar_t x, scalar_t y) : x(x), y(y) {}
+    constexpr explicit vec(ScalarT v) : x(v), y(v) {}
+    constexpr vec(ScalarT x, ScalarT y) : x(x), y(y) {}
     template <int D, class T, class = enable_if<D >= 2>>
-    constexpr explicit vec(vec<D, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y))
+    constexpr explicit vec(vec<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y))
     {
     }
     template <class T>
-    constexpr explicit vec(vec<1, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill)
+    constexpr explicit vec(vec<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill)
     {
     }
     template <int D, class T>
@@ -197,11 +194,9 @@ constexpr vec<2, ScalarT> vec<2, ScalarT>::unit_y = {ScalarT(0), ScalarT(1)};
 template <class ScalarT>
 struct vec<3, ScalarT>
 {
-    using scalar_t = ScalarT;
-
-    scalar_t x = static_cast<scalar_t>(0);
-    scalar_t y = static_cast<scalar_t>(0);
-    scalar_t z = static_cast<scalar_t>(0);
+    ScalarT x = static_cast<ScalarT>(0);
+    ScalarT y = static_cast<ScalarT>(0);
+    ScalarT z = static_cast<ScalarT>(0);
 
     static const vec zero;
     static const vec one;
@@ -209,22 +204,22 @@ struct vec<3, ScalarT>
     static const vec unit_y;
     static const vec unit_z;
 
-    constexpr scalar_t& operator[](int i) { return (&x)[i]; }
-    constexpr scalar_t const& operator[](int i) const { return (&x)[i]; }
+    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
-    constexpr explicit vec(scalar_t v) : x(v), y(v), z(v) {}
-    constexpr vec(scalar_t x, scalar_t y, scalar_t z) : x(x), y(y), z(z) {}
+    constexpr explicit vec(ScalarT v) : x(v), y(v), z(v) {}
+    constexpr vec(ScalarT x, ScalarT y, ScalarT z) : x(x), y(y), z(z) {}
     template <int D, class T, class = enable_if<D >= 3>>
-    constexpr explicit vec(vec<D, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
+    constexpr explicit vec(vec<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
     {
     }
     template <class T>
-    constexpr explicit vec(vec<2, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(fill)
+    constexpr explicit vec(vec<2, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(fill)
     {
     }
     template <class T>
-    constexpr explicit vec(vec<1, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill)
+    constexpr explicit vec(vec<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill)
     {
     }
     template <int D, class T, class = enable_if<D <= 3>>
@@ -247,8 +242,6 @@ constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), Sca
 template <class ScalarT>
 struct vec<4, ScalarT>
 {
-    using scalar_t = ScalarT;
-
     static const vec zero;
     static const vec one;
     static const vec unit_x;
@@ -256,31 +249,31 @@ struct vec<4, ScalarT>
     static const vec unit_z;
     static const vec unit_w;
 
-    scalar_t x = static_cast<scalar_t>(0);
-    scalar_t y = static_cast<scalar_t>(0);
-    scalar_t z = static_cast<scalar_t>(0);
-    scalar_t w = static_cast<scalar_t>(0);
+    ScalarT x = static_cast<ScalarT>(0);
+    ScalarT y = static_cast<ScalarT>(0);
+    ScalarT z = static_cast<ScalarT>(0);
+    ScalarT w = static_cast<ScalarT>(0);
 
-    constexpr scalar_t& operator[](int i) { return (&x)[i]; }
-    constexpr scalar_t const& operator[](int i) const { return (&x)[i]; }
+    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
-    constexpr explicit vec(scalar_t v) : x(v), y(v), z(v), w(v) {}
-    constexpr vec(scalar_t x, scalar_t y, scalar_t z, scalar_t w) : x(x), y(y), z(z), w(w) {}
+    constexpr explicit vec(ScalarT v) : x(v), y(v), z(v), w(v) {}
+    constexpr vec(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : x(x), y(y), z(z), w(w) {}
     template <int D, class T, class = enable_if<D >= 4>>
-    constexpr explicit vec(vec<D, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
+    constexpr explicit vec(vec<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
     {
     }
     template <class T>
-    constexpr explicit vec(vec<3, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(fill)
+    constexpr explicit vec(vec<3, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(fill)
     {
     }
     template <class T>
-    constexpr explicit vec(vec<2, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(fill), w(fill)
+    constexpr explicit vec(vec<2, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(fill), w(fill)
     {
     }
     template <class T>
-    constexpr explicit vec(vec<1, T> const& v, scalar_t fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill), w(fill)
+    constexpr explicit vec(vec<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill), w(fill)
     {
     }
     template <int D, class T, class = enable_if<D <= 4>>
@@ -308,14 +301,14 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator!=, ||, !=);
 
 // deduction guides
 #ifdef TG_SUPPORT_CXX17
-template <class T>
-vec(T const& x)->vec<1, T>;
-template <class T>
-vec(T const& x, T const& y)->vec<2, T>;
-template <class T>
-vec(T const& x, T const& y, T const& z)->vec<3, T>;
-template <class T>
-vec(T const& x, T const& y, T const& z, T const& w)->vec<4, T>;
+template <class A>
+vec(A const& x)->vec<1, A>;
+template <class A, class B>
+vec(A const& x, B const& y)->vec<2, promoted_scalar<A, B>>;
+template <class A, class B, class C>
+vec(A const& x, B const& y, C const& z)->vec<3, promoted_scalar<A, promoted_scalar<B, C>>>;
+template <class A, class B, class C, class D>
+vec(A const& x, B const& y, C const& z, D const& w)->vec<4, promoted_scalar<promoted_scalar<A, B>, promoted_scalar<C, D>>>;
 #endif
 
 } // namespace tg

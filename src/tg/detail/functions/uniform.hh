@@ -5,7 +5,7 @@
 #include "../../types/scalar.hh"
 #include "../../types/triangle.hh"
 #include "../random.hh"
-#include "../traits.hh"
+#include "../scalar_traits.hh"
 
 #include "mix.hh"
 #include "round.hh"

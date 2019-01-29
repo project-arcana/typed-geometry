@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../detail/traits.hh"
 #include "../../types/pos.hh"
 #include "../../types/size.hh"
 #include "../limits.hh"

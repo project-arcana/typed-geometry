@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "../../detail/traits.hh"
+#include "../../detail/scalar_traits.hh"
 #include "../../types/scalar.hh"
 #include "../utility.hh"
 

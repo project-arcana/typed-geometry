@@ -3,9 +3,10 @@
 #include "typed-geometry-lean.hh"
 
 #include "detail/constants.hh"
-#include "detail/random.hh"
-#include "detail/traits.hh"
 #include "detail/limits.hh"
+#include "detail/random.hh"
+#include "detail/scalar_traits.hh"
+#include "detail/tg_traits.hh"
 #include "detail/utility.hh"
 
 #include "detail/scalars/half.hh"
