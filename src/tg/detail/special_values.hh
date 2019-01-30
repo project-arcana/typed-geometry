@@ -4,6 +4,7 @@
 #include "../types/pos.hh"
 #include "../types/size.hh"
 #include "../types/vec.hh"
+#include "scalars/scalar_math.hh"
 
 /*
  * Special values of certain types:
@@ -124,6 +125,78 @@ template <int C, int R, class ScalarT>
 struct special_values<mat<C, R, ScalarT>>
 {
     static constexpr mat<C, R, ScalarT> ones() { return mat<C, R, ScalarT>() + ScalarT(1); }
+    static constexpr mat<C, R, ScalarT> identity()
+    {
+        mat<C, R, ScalarT> m;
+        mat_set_00(m, ScalarT(1));
+        mat_set_11(m, ScalarT(1));
+        mat_set_22(m, ScalarT(1));
+        mat_set_33(m, ScalarT(1));
+        return m;
+    }
+    static constexpr mat<C, R, ScalarT> diag(ScalarT v)
+    {
+        mat<C, R, ScalarT> m;
+        mat_set_00(m, v);
+        mat_set_11(m, v);
+        mat_set_22(m, v);
+        mat_set_33(m, v);
+        return m;
+    }
+    static constexpr mat<C, R, ScalarT> diag(vec<min(C, R), ScalarT> const& v)
+    {
+        mat<C, R, ScalarT> m;
+        mat_set_00(m, ScalarT(v));
+        mat_set_11(m, ScalarT(v));
+        mat_set_22(m, ScalarT(v));
+        mat_set_33(m, ScalarT(v));
+        return m;
+    }
+
+    static constexpr void mat_set_00(mat<C, R, ScalarT>& m, ScalarT v) { m[0][0] = v; }
+    static constexpr void mat_set_00(mat<C, R, ScalarT>& m, vec<min(C, R), ScalarT> const& v) { m[0][0] = v.x; }
+
+    template <int CC, class = enable_if<CC >= 2 && R >= 2>>
+    static constexpr void mat_set_11(mat<CC, R, ScalarT>& m, ScalarT v)
+    {
+        m[1][1] = v;
+    }
+    template <int CC, class = enable_if<CC >= 2 && R >= 2>>
+    static constexpr void mat_set_11(mat<CC, R, ScalarT>& m, vec<min(C, R), ScalarT> const& v)
+    {
+        m[1][1] = v.y;
+    }
+    static constexpr void mat_set_11(...)
+    { /* nothing */
+    }
+
+    template <int CC, class = enable_if<CC >= 3 && R >= 3>>
+    static constexpr void mat_set_22(mat<CC, R, ScalarT>& m, ScalarT v)
+    {
+        m[2][2] = v;
+    }
+    template <int CC, class = enable_if<CC >= 3 && R >= 3>>
+    static constexpr void mat_set_22(mat<CC, R, ScalarT>& m, vec<min(C, R), ScalarT> const& v)
+    {
+        m[2][2] = v.z;
+    }
+    static constexpr void mat_set_22(...)
+    { /* nothing */
+    }
+
+    template <int CC, class = enable_if<CC >= 4 && R >= 4>>
+    static constexpr void mat_set_33(mat<CC, R, ScalarT>& m, ScalarT v)
+    {
+        m[3][3] = v;
+    }
+    template <int CC, class = enable_if<CC >= 4 && R >= 4>>
+    static constexpr void mat_set_33(mat<CC, R, ScalarT>& m, vec<min(C, R), ScalarT> const& v)
+    {
+        m[3][3] = v.w;
+    }
+    static constexpr void mat_set_33(...)
+    { /* nothing */
+    }
 };
 } // namespace detail
 

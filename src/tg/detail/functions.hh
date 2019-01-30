@@ -9,6 +9,7 @@
 #include "functions/coordinates.hh"
 #include "functions/cross.hh"
 #include "functions/data_ptr.hh"
+#include "functions/diag.hh"
 #include "functions/direction.hh"
 #include "functions/distance.hh"
 #include "functions/dot.hh"
