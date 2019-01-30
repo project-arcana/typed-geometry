@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../detail/macros.hh"
+#include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
 #include "scalar.hh"
 #include "vec.hh"

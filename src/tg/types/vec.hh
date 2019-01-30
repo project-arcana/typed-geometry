@@ -123,6 +123,10 @@ struct vec
 template <class ScalarT>
 struct vec<1, ScalarT>
 {
+    static const vec zero;
+    static const vec one;
+    static const vec unit_x;
+
     ScalarT x = static_cast<ScalarT>(0);
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
@@ -139,17 +143,24 @@ struct vec<1, ScalarT>
     {
         return vec<D, T>(*this);
     }
-
-    static constexpr vec<1, ScalarT> zero() { return {ScalarT(0)}; }
-    static constexpr vec<1, ScalarT> unit_x() { return {ScalarT(1)}; }
-    static constexpr vec<1, ScalarT> ones() { return {ScalarT(1)}; }
 };
+template <class ScalarT>
+constexpr vec<1, ScalarT> vec<1, ScalarT>::zero = {ScalarT(0)};
+template <class ScalarT>
+constexpr vec<1, ScalarT> vec<1, ScalarT>::one = {ScalarT(1)};
+template <class ScalarT>
+constexpr vec<1, ScalarT> vec<1, ScalarT>::unit_x = {ScalarT(1)};
 
 template <class ScalarT>
 struct vec<2, ScalarT>
 {
     ScalarT x = static_cast<ScalarT>(0);
     ScalarT y = static_cast<ScalarT>(0);
+
+    static const vec zero;
+    static const vec one;
+    static const vec unit_x;
+    static const vec unit_y;
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
@@ -170,12 +181,15 @@ struct vec<2, ScalarT>
     {
         return vec<D, T>(*this);
     }
-
-    static constexpr vec<2, ScalarT> zero() { return {ScalarT(0), ScalarT(0)}; }
-    static constexpr vec<2, ScalarT> unit_x() { return {ScalarT(1), ScalarT(0)}; }
-    static constexpr vec<2, ScalarT> unit_y() { return {ScalarT(0), ScalarT(1)}; }
-    static constexpr vec<2, ScalarT> ones() { return {ScalarT(1), ScalarT(1)}; }
 };
+template <class ScalarT>
+constexpr vec<2, ScalarT> vec<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<2, ScalarT> vec<2, ScalarT>::one = {ScalarT(1), ScalarT(1)};
+template <class ScalarT>
+constexpr vec<2, ScalarT> vec<2, ScalarT>::unit_x = {ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<2, ScalarT> vec<2, ScalarT>::unit_y = {ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
 struct vec<3, ScalarT>
@@ -183,6 +197,12 @@ struct vec<3, ScalarT>
     ScalarT x = static_cast<ScalarT>(0);
     ScalarT y = static_cast<ScalarT>(0);
     ScalarT z = static_cast<ScalarT>(0);
+
+    static const vec zero;
+    static const vec one;
+    static const vec unit_x;
+    static const vec unit_y;
+    static const vec unit_z;
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
@@ -207,17 +227,28 @@ struct vec<3, ScalarT>
     {
         return vec<D, T>(*this);
     }
-
-    static constexpr vec<3, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0)}; }
-    static constexpr vec<3, ScalarT> unit_x() { return {ScalarT(1), ScalarT(0), ScalarT(0)}; }
-    static constexpr vec<3, ScalarT> unit_y() { return {ScalarT(0), ScalarT(1), ScalarT(0)}; }
-    static constexpr vec<3, ScalarT> unit_z() { return {ScalarT(0), ScalarT(0), ScalarT(1)}; }
-    static constexpr vec<3, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
+template <class ScalarT>
+constexpr vec<3, ScalarT> vec<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<3, ScalarT> vec<3, ScalarT>::one = {ScalarT(1), ScalarT(1), ScalarT(1)};
+template <class ScalarT>
+constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_x = {ScalarT(1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_y = {ScalarT(0), ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
 struct vec<4, ScalarT>
 {
+    static const vec zero;
+    static const vec one;
+    static const vec unit_x;
+    static const vec unit_y;
+    static const vec unit_z;
+    static const vec unit_w;
+
     ScalarT x = static_cast<ScalarT>(0);
     ScalarT y = static_cast<ScalarT>(0);
     ScalarT z = static_cast<ScalarT>(0);
@@ -250,14 +281,19 @@ struct vec<4, ScalarT>
     {
         return vec<D, T>(*this);
     }
-
-    static constexpr vec<4, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)}; }
-    static constexpr vec<4, ScalarT> unit_x() { return {ScalarT(1), ScalarT(0), ScalarT(0), ScalarT(0)}; }
-    static constexpr vec<4, ScalarT> unit_y() { return {ScalarT(0), ScalarT(1), ScalarT(0), ScalarT(0)}; }
-    static constexpr vec<4, ScalarT> unit_z() { return {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)}; }
-    static constexpr vec<4, ScalarT> unit_w() { return {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)}; }
-    static constexpr vec<4, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
+template <class ScalarT>
+constexpr vec<4, ScalarT> vec<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<4, ScalarT> vec<4, ScalarT>::one = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
+template <class ScalarT>
+constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_x = {ScalarT(1), ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_y = {ScalarT(0), ScalarT(1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
 
 // comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator==, &&, ==);
