@@ -141,8 +141,6 @@ struct mat
     using row_t = vec<C, ScalarT>;
     using col_t = vec<R, ScalarT>;
 
-    static const mat id;
-
     col_t m[R];
 
     constexpr col_t& operator[](int i) { return m[i]; }
@@ -150,6 +148,37 @@ struct mat
 
     constexpr col_t col(int i) const { return m[i]; }
     constexpr row_t row(int i) const { return detail::mat_row(*this, i); }
+
+    static constexpr mat<C, R, ScalarT> zero() { return {}; }
+    static constexpr mat<C, R, ScalarT> ones()
+    {
+        mat<C, R, ScalarT> m;
+        for (auto c = 0; c < C; ++c)
+            for (auto r = 0; r < R; ++r)
+                m[c][r] = ScalarT(1);
+        return m;
+    }
+    static constexpr mat<C, R, ScalarT> identity()
+    {
+        mat<C, R, ScalarT> m;
+        for (auto i = 0; i < (C < R ? C : R); ++i)
+            m[i][i] = ScalarT(1);
+        return m;
+    }
+    static constexpr mat<C, R, ScalarT> diag(ScalarT v)
+    {
+        mat<C, R, ScalarT> m;
+        for (auto i = 0; i < (C < R ? C : R); ++i)
+            m[i][i] = v;
+        return m;
+    }
+    static constexpr mat<C, R, ScalarT> diag(vec<(C < R ? C : R), ScalarT> const& v)
+    {
+        mat<C, R, ScalarT> m;
+        for (auto i = 0; i < (C < R ? C : R); ++i)
+            m[i][i] = v[i];
+        return m;
+    }
 };
 
 } // namespace tg

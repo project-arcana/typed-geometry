@@ -64,6 +64,9 @@ struct pos<1, ScalarT>
     {
         return pos<D, T>(*this);
     }
+
+    static constexpr pos<1, ScalarT> zero() { return {ScalarT(0)}; }
+    static constexpr pos<1, ScalarT> ones() { return {ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -91,6 +94,9 @@ struct pos<2, ScalarT>
     {
         return pos<D, T>(*this);
     }
+
+    static constexpr pos<2, ScalarT> zero() { return {ScalarT(0), ScalarT(0)}; }
+    static constexpr pos<2, ScalarT> ones() { return {ScalarT(1), ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -123,6 +129,9 @@ struct pos<3, ScalarT>
     {
         return pos<D, T>(*this);
     }
+
+    static constexpr pos<3, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0)}; }
+    static constexpr pos<3, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -160,6 +169,9 @@ struct pos<4, ScalarT>
     {
         return pos<D, T>(*this);
     }
+
+    static constexpr pos<4, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)}; }
+    static constexpr pos<4, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
 
 // comparison operators

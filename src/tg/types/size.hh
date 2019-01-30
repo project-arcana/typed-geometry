@@ -68,6 +68,10 @@ struct size<1, ScalarT>
     {
         return size<D, T>(*this);
     }
+
+    static constexpr size<1, ScalarT> zero() { return {ScalarT(0)}; }
+    static constexpr size<1, ScalarT> ones() { return {ScalarT(1)}; }
+    static constexpr size<1, ScalarT> unit() { return {ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -95,6 +99,10 @@ struct size<2, ScalarT>
     {
         return size<D, T>(*this);
     }
+
+    static constexpr size<2, ScalarT> zero() { return {ScalarT(0), ScalarT(0)}; }
+    static constexpr size<2, ScalarT> ones() { return {ScalarT(1), ScalarT(1)}; }
+    static constexpr size<2, ScalarT> unit() { return {ScalarT(1), ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -123,6 +131,10 @@ struct size<3, ScalarT>
     {
         return size<D, T>(*this);
     }
+
+    static constexpr size<3, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0)}; }
+    static constexpr size<3, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1)}; }
+    static constexpr size<3, ScalarT> unit() { return {ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -152,6 +164,10 @@ struct size<4, ScalarT>
     {
         return size<D, T>(*this);
     }
+
+    static constexpr size<4, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)}; }
+    static constexpr size<4, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)}; }
+    static constexpr size<4, ScalarT> unit() { return {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
 
 // comparison operators

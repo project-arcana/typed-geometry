@@ -139,6 +139,10 @@ struct vec<1, ScalarT>
     {
         return vec<D, T>(*this);
     }
+
+    static constexpr vec<1, ScalarT> zero() { return {ScalarT(0)}; }
+    static constexpr vec<1, ScalarT> unit_x() { return {ScalarT(1)}; }
+    static constexpr vec<1, ScalarT> ones() { return {ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -166,6 +170,11 @@ struct vec<2, ScalarT>
     {
         return vec<D, T>(*this);
     }
+
+    static constexpr vec<2, ScalarT> zero() { return {ScalarT(0), ScalarT(0)}; }
+    static constexpr vec<2, ScalarT> unit_x() { return {ScalarT(1), ScalarT(0)}; }
+    static constexpr vec<2, ScalarT> unit_y() { return {ScalarT(0), ScalarT(1)}; }
+    static constexpr vec<2, ScalarT> ones() { return {ScalarT(1), ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -198,6 +207,12 @@ struct vec<3, ScalarT>
     {
         return vec<D, T>(*this);
     }
+
+    static constexpr vec<3, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0)}; }
+    static constexpr vec<3, ScalarT> unit_x() { return {ScalarT(1), ScalarT(0), ScalarT(0)}; }
+    static constexpr vec<3, ScalarT> unit_y() { return {ScalarT(0), ScalarT(1), ScalarT(0)}; }
+    static constexpr vec<3, ScalarT> unit_z() { return {ScalarT(0), ScalarT(0), ScalarT(1)}; }
+    static constexpr vec<3, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
 
 template <class ScalarT>
@@ -235,6 +250,13 @@ struct vec<4, ScalarT>
     {
         return vec<D, T>(*this);
     }
+
+    static constexpr vec<4, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)}; }
+    static constexpr vec<4, ScalarT> unit_x() { return {ScalarT(1), ScalarT(0), ScalarT(0), ScalarT(0)}; }
+    static constexpr vec<4, ScalarT> unit_y() { return {ScalarT(0), ScalarT(1), ScalarT(0), ScalarT(0)}; }
+    static constexpr vec<4, ScalarT> unit_z() { return {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)}; }
+    static constexpr vec<4, ScalarT> unit_w() { return {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)}; }
+    static constexpr vec<4, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
 
 // comparison operators
