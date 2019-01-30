@@ -187,7 +187,7 @@ template <class A, class B>
 struct promoted_scalar_t
 {
     static constexpr int bitmax(int a, int b) { return a > b ? a : b; }
-    using type = scalar<promoted_scalar_base<A, B>, bitmax(scalar_bit_width<A>, scalar_bit_width<B>)>;
+    using type = scalar<promoted_scalar_base<scalar_base_type<A>, scalar_base_type<B>>, bitmax(scalar_bit_width<A>, scalar_bit_width<B>)>;
 };
 template <class A, class B>
 using promoted_scalar = typename promoted_scalar_t<A, B>::type;

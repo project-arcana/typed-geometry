@@ -48,15 +48,13 @@ struct size
 template <class ScalarT>
 struct size<1, ScalarT>
 {
-    using scalar_t = ScalarT;
+    ScalarT width = static_cast<ScalarT>(0);
 
-    scalar_t width = static_cast<scalar_t>(0);
-
-    constexpr scalar_t& operator[](int i) { return (&width)[i]; }
-    constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
+    constexpr ScalarT& operator[](int i) { return (&width)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
-    constexpr size(scalar_t v) : width(v) {}
+    constexpr size(ScalarT v) : width(v) {}
     template <int D, class T, class = enable_if<D >= 1>>
     constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width))
     {
@@ -75,17 +73,15 @@ struct size<1, ScalarT>
 template <class ScalarT>
 struct size<2, ScalarT>
 {
-    using scalar_t = ScalarT;
+    ScalarT width = static_cast<ScalarT>(0);
+    ScalarT height = static_cast<ScalarT>(0);
 
-    scalar_t width = static_cast<scalar_t>(0);
-    scalar_t height = static_cast<scalar_t>(0);
-
-    constexpr scalar_t& operator[](int i) { return (&width)[i]; }
-    constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
+    constexpr ScalarT& operator[](int i) { return (&width)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
-    constexpr explicit size(scalar_t v) : width(v), height(v) {}
-    constexpr size(scalar_t width, scalar_t height) : width(width), height(height) {}
+    constexpr explicit size(ScalarT v) : width(v), height(v) {}
+    constexpr size(ScalarT width, ScalarT height) : width(width), height(height) {}
     template <int D, class T, class = enable_if<D >= 2>>
     constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height))
     {
@@ -104,18 +100,16 @@ struct size<2, ScalarT>
 template <class ScalarT>
 struct size<3, ScalarT>
 {
-    using scalar_t = ScalarT;
+    ScalarT width = static_cast<ScalarT>(0);
+    ScalarT height = static_cast<ScalarT>(0);
+    ScalarT depth = static_cast<ScalarT>(0);
 
-    scalar_t width = static_cast<scalar_t>(0);
-    scalar_t height = static_cast<scalar_t>(0);
-    scalar_t depth = static_cast<scalar_t>(0);
-
-    constexpr scalar_t& operator[](int i) { return (&width)[i]; }
-    constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
+    constexpr ScalarT& operator[](int i) { return (&width)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
-    constexpr explicit size(scalar_t v) : width(v), height(v), depth(v) {}
-    constexpr size(scalar_t width, scalar_t height, scalar_t depth) : width(width), height(height), depth(depth) {}
+    constexpr explicit size(ScalarT v) : width(v), height(v), depth(v) {}
+    constexpr size(ScalarT width, ScalarT height, ScalarT depth) : width(width), height(height), depth(depth) {}
     template <int D, class T, class = enable_if<D >= 3>>
     constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth))
     {
@@ -134,19 +128,17 @@ struct size<3, ScalarT>
 template <class ScalarT>
 struct size<4, ScalarT>
 {
-    using scalar_t = ScalarT;
+    ScalarT width = static_cast<ScalarT>(0);
+    ScalarT height = static_cast<ScalarT>(0);
+    ScalarT depth = static_cast<ScalarT>(0);
+    ScalarT w = static_cast<ScalarT>(0);
 
-    scalar_t width = static_cast<scalar_t>(0);
-    scalar_t height = static_cast<scalar_t>(0);
-    scalar_t depth = static_cast<scalar_t>(0);
-    scalar_t w = static_cast<scalar_t>(0);
-
-    constexpr scalar_t& operator[](int i) { return (&width)[i]; }
-    constexpr scalar_t const& operator[](int i) const { return (&width)[i]; }
+    constexpr ScalarT& operator[](int i) { return (&width)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
-    constexpr explicit size(scalar_t v) : width(v), height(v), depth(v), w(v) {}
-    constexpr size(scalar_t width, scalar_t height, scalar_t depth, scalar_t w) : width(width), height(height), depth(depth), w(w) {}
+    constexpr explicit size(ScalarT v) : width(v), height(v), depth(v), w(v) {}
+    constexpr size(ScalarT width, ScalarT height, ScalarT depth, ScalarT w) : width(width), height(height), depth(depth), w(w) {}
     template <int D, class T, class = enable_if<D >= 4>>
     constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth)), w(ScalarT(v.w))
     {
@@ -168,13 +160,13 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator!=, ||, !=);
 
 // deduction guides
 #ifdef TG_SUPPORT_CXX17
-template <class T>
-size(T const& x)->size<1, T>;
-template <class T>
-size(T const& x, T const& y)->size<2, T>;
-template <class T>
-size(T const& x, T const& y, T const& z)->size<3, T>;
-template <class T>
-size(T const& x, T const& y, T const& z, T const& w)->size<4, T>;
+template <class A>
+size(A const& x)->size<1, A>;
+template <class A, class B>
+size(A const& x, B const& y)->size<2, promoted_scalar<A, B>>;
+template <class A, class B, class C>
+size(A const& x, B const& y, C const& z)->size<3, promoted_scalar<A, promoted_scalar<B, C>>>;
+template <class A, class B, class C, class D>
+size(A const& x, B const& y, C const& z, D const& w)->size<4, promoted_scalar<promoted_scalar<A, B>, promoted_scalar<C, D>>>;
 #endif
 } // namespace tg

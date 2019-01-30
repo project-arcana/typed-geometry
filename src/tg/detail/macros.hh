@@ -73,23 +73,23 @@
     }
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)                                                                               \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_scalar<ScalarB>>> \
+    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
     constexpr TYPE<1, ScalarR> operator OP(TYPE<1, ScalarA> const& a, ScalarB const& b)                                               \
     {                                                                                                                                 \
         return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b)};                                                                    \
     }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_scalar<ScalarB>>> \
+    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
     constexpr TYPE<2, ScalarR> operator OP(TYPE<2, ScalarA> const& a, ScalarB const& b)                                               \
     {                                                                                                                                 \
         return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) OP ScalarR(b)};                  \
     }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_scalar<ScalarB>>> \
+    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
     constexpr TYPE<3, ScalarR> operator OP(TYPE<3, ScalarA> const& a, ScalarB const& b)                                               \
     {                                                                                                                                 \
         return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) OP ScalarR(b),                   \
                 ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) OP ScalarR(b)};                                                                    \
     }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_scalar<ScalarB>>> \
+    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
     constexpr TYPE<4, ScalarR> operator OP(TYPE<4, ScalarA> const& a, ScalarB const& b)                                               \
     {                                                                                                                                 \
         return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) OP ScalarR(b),                   \
@@ -97,23 +97,23 @@
     }
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP)                                                                                \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_scalar<ScalarA>>> \
+    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
     constexpr TYPE<1, ScalarR> operator OP(ScalarA const& a, TYPE<1, ScalarB> const& b)                                               \
     {                                                                                                                                 \
         return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0))};                                                                    \
     }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_scalar<ScalarA>>> \
+    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
     constexpr TYPE<2, ScalarR> operator OP(ScalarA const& a, TYPE<2, ScalarB> const& b)                                               \
     {                                                                                                                                 \
         return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 1))};                  \
     }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_scalar<ScalarA>>> \
+    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
     constexpr TYPE<3, ScalarR> operator OP(ScalarA const& a, TYPE<3, ScalarB> const& b)                                               \
     {                                                                                                                                 \
         return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 1)),                   \
                 ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 2))};                                                                    \
     }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_scalar<ScalarA>>> \
+    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
     constexpr TYPE<4, ScalarR> operator OP(ScalarA const& a, TYPE<4, ScalarB> const& b)                                               \
     {                                                                                                                                 \
         return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 1)),                   \
