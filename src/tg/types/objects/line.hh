@@ -1,9 +1,9 @@
 #pragma once
 
-#include "pos.hh"
-#include "scalar.hh"
-#include "size.hh"
-#include "vec.hh"
+#include "../pos.hh"
+#include "../scalar.hh"
+#include "../size.hh"
+#include "../vec.hh"
 
 // A line has a direction and a point lying on it
 // The direction is assumed to be normalized

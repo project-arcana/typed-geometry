@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../../types/halfspace.hh"
-#include "../../types/hyperplane.hh"
-#include "../../types/line.hh"
-#include "../../types/ray.hh"
-#include "../../types/segment.hh"
-#include "../../types/triangle.hh"
+#include "../../types/objects/halfspace.hh"
+#include "../../types/objects/hyperplane.hh"
+#include "../../types/objects/line.hh"
+#include "../../types/objects/ray.hh"
+#include "../../types/objects/segment.hh"
+#include "../../types/objects/triangle.hh"
 #include "normalize.hh"
 
 // Computes the normal of an object

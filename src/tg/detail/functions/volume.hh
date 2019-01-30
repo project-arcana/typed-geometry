@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../types/box.hh"
+#include "../../types/objects/box.hh"
 #include "../../types/size.hh"
 #include "../operators/ops_vec.hh"
 #include "../scalar_traits.hh"

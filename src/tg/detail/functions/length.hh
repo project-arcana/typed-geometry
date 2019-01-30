@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../types/segment.hh"
+#include "../../types/objects/segment.hh"
 #include "../../types/vec.hh"
 #include "../operators/ops_vec.hh"
 #include "../scalar_traits.hh"

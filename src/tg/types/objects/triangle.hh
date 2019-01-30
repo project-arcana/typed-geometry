@@ -1,10 +1,10 @@
 #pragma once
 
-#include "pos.hh"
-#include "scalar.hh"
-#include "vec.hh"
+#include "../pos.hh"
+#include "../scalar.hh"
+#include "../vec.hh"
 
-#include "../detail/utility.hh"
+#include "../../detail/utility.hh"
 
 namespace tg
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../types/size.hh"
-#include "../../types/triangle.hh"
+#include "../../types/objects/triangle.hh"
 #include "../scalar_traits.hh"
 
 namespace tg

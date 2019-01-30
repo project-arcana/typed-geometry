@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../types/box.hh"
-#include "../../types/triangle.hh"
+#include "../../types/objects/box.hh"
+#include "../../types/objects/triangle.hh"
 #include "../scalar_traits.hh"
 
 // returns the arithmetic mean of all points contained in an object

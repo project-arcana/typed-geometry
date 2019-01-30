@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-#include "../../types/box.hh"
+#include "../../types/objects/box.hh"
 #include "../../types/pos.hh"
-#include "../../types/triangle.hh"
+#include "../../types/objects/triangle.hh"
 
 // For a given primitive and a position, return whether the first contains the latter
 

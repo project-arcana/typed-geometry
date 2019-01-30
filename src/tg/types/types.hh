@@ -9,18 +9,9 @@
 
 #include "quadric.hh"
 
-#include "box.hh"
-#include "cylinder.hh"
-#include "frustum.hh"
-#include "line.hh"
-#include "mat.hh"
-#include "plane.hh"
-#include "polygon.hh"
-#include "polyline.hh"
 #include "quat.hh"
-#include "ray.hh"
-#include "segment.hh"
-#include "sphere.hh"
+
+#include "mat.hh"
 #include "transform.hh"
-#include "triangle.hh"
-#include "tube.hh"
+
+#include "objects/objects.hh"

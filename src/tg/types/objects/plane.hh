@@ -1,9 +1,6 @@
 #pragma once
 
 #include "hyperplane.hh"
-#include "pos.hh"
-#include "scalar.hh"
-#include "vec.hh"
 
 // A plane is a 2-dimensional geometric object embedded into an n-dimensional space.
 // It is defined by a distance to the origin and a normal vector

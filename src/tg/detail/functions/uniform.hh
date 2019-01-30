@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../types/box.hh"
+#include "../../types/objects/box.hh"
 #include "../../types/pos.hh"
 #include "../../types/scalar.hh"
-#include "../../types/triangle.hh"
+#include "../../types/objects/triangle.hh"
 #include "../random.hh"
 #include "../scalar_traits.hh"
 

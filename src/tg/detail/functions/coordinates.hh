@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../../types/pos.hh"
-#include "../../types/segment.hh"
-#include "../../types/triangle.hh"
+#include "../../types/objects/segment.hh"
+#include "../../types/objects/triangle.hh"
 #include "../operators/ops_vec.hh"
 #include "../utility.hh"
 #include "length.hh"

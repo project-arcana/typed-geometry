@@ -1,8 +1,8 @@
 #pragma once
 
-#include "pos.hh"
-#include "scalar.hh"
-#include "vec.hh"
+#include "../pos.hh"
+#include "../scalar.hh"
+#include "../vec.hh"
 
 // A halfspace has a distance to the origin and a normal vector
 // In dimension n, the distance is 1-dimensional and the normal vector is n-dimensional

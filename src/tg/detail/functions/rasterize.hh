@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../types/triangle.hh"
+#include "../../types/objects/triangle.hh"
 #include "aabb.hh"
 #include "coordinates.hh"
 #include "round.hh"

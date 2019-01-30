@@ -1,9 +1,9 @@
 #pragma once
 
-#include "pos.hh"
-#include "scalar.hh"
-#include "size.hh"
-#include "vec.hh"
+#include "../pos.hh"
+#include "../scalar.hh"
+#include "../size.hh"
+#include "../vec.hh"
 
 namespace tg
 {
