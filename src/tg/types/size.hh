@@ -49,6 +49,10 @@ struct size
 template <class ScalarT>
 struct size<1, ScalarT>
 {
+    static const size zero;
+    static const size ones;
+    static const size unit;
+
     ScalarT width = static_cast<ScalarT>(0);
 
     constexpr ScalarT& operator[](int i) { return (&width)[i]; }
@@ -69,15 +73,21 @@ struct size<1, ScalarT>
     {
         return size<D, T>(*this);
     }
-
-    static constexpr size<1, ScalarT> zero() { return {ScalarT(0)}; }
-    static constexpr size<1, ScalarT> ones() { return {ScalarT(1)}; }
-    static constexpr size<1, ScalarT> unit() { return {ScalarT(1)}; }
 };
+template <class ScalarT>
+constexpr size<1, ScalarT> size<1, ScalarT>::zero = {ScalarT(0)};
+template <class ScalarT>
+constexpr size<1, ScalarT> size<1, ScalarT>::ones = {ScalarT(1)};
+template <class ScalarT>
+constexpr size<1, ScalarT> size<1, ScalarT>::unit = {ScalarT(1)};
 
 template <class ScalarT>
 struct size<2, ScalarT>
 {
+    static const size zero;
+    static const size ones;
+    static const size unit;
+
     ScalarT width = static_cast<ScalarT>(0);
     ScalarT height = static_cast<ScalarT>(0);
 
@@ -100,15 +110,21 @@ struct size<2, ScalarT>
     {
         return size<D, T>(*this);
     }
-
-    static constexpr size<2, ScalarT> zero() { return {ScalarT(0), ScalarT(0)}; }
-    static constexpr size<2, ScalarT> ones() { return {ScalarT(1), ScalarT(1)}; }
-    static constexpr size<2, ScalarT> unit() { return {ScalarT(1), ScalarT(1)}; }
 };
+template <class ScalarT>
+constexpr size<2, ScalarT> size<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr size<2, ScalarT> size<2, ScalarT>::ones = {ScalarT(1), ScalarT(1)};
+template <class ScalarT>
+constexpr size<2, ScalarT> size<2, ScalarT>::unit = {ScalarT(1), ScalarT(1)};
 
 template <class ScalarT>
 struct size<3, ScalarT>
 {
+    static const size zero;
+    static const size ones;
+    static const size unit;
+
     ScalarT width = static_cast<ScalarT>(0);
     ScalarT height = static_cast<ScalarT>(0);
     ScalarT depth = static_cast<ScalarT>(0);
@@ -132,15 +148,21 @@ struct size<3, ScalarT>
     {
         return size<D, T>(*this);
     }
-
-    static constexpr size<3, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0)}; }
-    static constexpr size<3, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1)}; }
-    static constexpr size<3, ScalarT> unit() { return {ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
+template <class ScalarT>
+constexpr size<3, ScalarT> size<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr size<3, ScalarT> size<3, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1)};
+template <class ScalarT>
+constexpr size<3, ScalarT> size<3, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1)};
 
 template <class ScalarT>
 struct size<4, ScalarT>
 {
+    static const size zero;
+    static const size ones;
+    static const size unit;
+
     ScalarT width = static_cast<ScalarT>(0);
     ScalarT height = static_cast<ScalarT>(0);
     ScalarT depth = static_cast<ScalarT>(0);
@@ -165,11 +187,13 @@ struct size<4, ScalarT>
     {
         return size<D, T>(*this);
     }
-
-    static constexpr size<4, ScalarT> zero() { return {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)}; }
-    static constexpr size<4, ScalarT> ones() { return {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)}; }
-    static constexpr size<4, ScalarT> unit() { return {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)}; }
 };
+template <class ScalarT>
+constexpr size<4, ScalarT> size<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+constexpr size<4, ScalarT> size<4, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
+template <class ScalarT>
+constexpr size<4, ScalarT> size<4, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
 
 // comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator==, &&, ==);

@@ -3,7 +3,6 @@
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
-#include "../detail/scalar_traits.hh"
 #include "scalar.hh"
 
 namespace tg
