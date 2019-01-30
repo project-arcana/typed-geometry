@@ -7,7 +7,7 @@ Header-only strongly typed math library for graphics and geometry.
 
 Type definitions only, no functions:
 ```
-#include <tg/typed-geometry.hh>
+#include <tg/typed-geometry-lean.hh>
 ```
 
 All functionality:
@@ -18,6 +18,14 @@ tg::vec3 v;
 tg::pos3 p;
 
 // TODO
+```
+
+Helpers for interacting with the standard library:
+```
+#include <tg/typed-geometry-std.hh>
+
+tg::pos3 p;
+std::cout << p;
 ```
 
 Most functionality is implemented as free functions, overloaded by type and with consistent vocabulary:
@@ -47,6 +55,8 @@ Represent individual points or sets of points.
 * `intersects(a, b)`: true iff `a` and `b` intersect (i.e. if at least one point is in `a` and in `b`)
 * `intersection(a, b)`: returns the appropriate object describing the intersection of two objects
 
+See `docs/Objects.md` for more information.
+
 ### Interpolation
 
 * `mix(a, b, t)`: linearly interpolates `a` and `b` with parameter `t` from 0..1.
@@ -60,6 +70,12 @@ TODO: splines
 
 ### Random
 
+```
+tg::rng rng;
+auto v = uniform(rng, -1.0f, 1.0f);
+auto p = uniform(rng, obj);
+```
+
 * `uniform(rng, a)`: uniformly samples a point from the object `a`
 * `uniform(rng, a, b)`: same as `mix(a, b, uniform(t, 0.0f, 1.0f))`
 
@@ -72,7 +88,7 @@ TODO: splines
 
 ### C++ 17 Features
 
-* deduction guides: `auto v = tg::vec(1.0f, 2.0f, 3.0f)`
+* deduction guides: `auto v = tg::vec(1, 2.5f, 3)`
 * structured binding: `auto [x, y, z] = tg::vec3(...)`
 
 ## Dependencies
