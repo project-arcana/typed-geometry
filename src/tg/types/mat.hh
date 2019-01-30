@@ -150,24 +150,8 @@ struct mat
     static const mat ones;
     static const mat identity;
 
-    static constexpr mat<C, R, ScalarT> diag(ScalarT v)
-    {
-        mat<C, R, ScalarT> m;
-        for (auto i = 0; i < detail::min(C, R); ++i)
-            m[i][i] = v;
-        return m;
-    }
-    static constexpr mat<C, R, ScalarT> diag(vec<detail::min(C, R), ScalarT> const& v)
-    {
-        mat<C, R, ScalarT> m;
-        for (auto i = 0; i < detail::min(C, R); ++i)
-            m[i][i] = v[i];
-        return m;
-    }
+    static constexpr mat<C, R, ScalarT> diag(ScalarT v);
+    static constexpr mat<C, R, ScalarT> diag(vec<detail::min(C, R), ScalarT> const& v);
 };
-template <int C, int R, class ScalarT>
-constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::zero = {};
-// template <int C, int R, class ScalarT>
-// constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::identity = mat<C, R, ScalarT>::diag(ScalarT(1));
 
 } // namespace tg

@@ -74,12 +74,6 @@ struct size<1, ScalarT>
         return size<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr size<1, ScalarT> size<1, ScalarT>::zero = {ScalarT(0)};
-template <class ScalarT>
-constexpr size<1, ScalarT> size<1, ScalarT>::ones = {ScalarT(1)};
-template <class ScalarT>
-constexpr size<1, ScalarT> size<1, ScalarT>::unit = {ScalarT(1)};
 
 template <class ScalarT>
 struct size<2, ScalarT>
@@ -111,12 +105,6 @@ struct size<2, ScalarT>
         return size<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr size<2, ScalarT> size<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr size<2, ScalarT> size<2, ScalarT>::ones = {ScalarT(1), ScalarT(1)};
-template <class ScalarT>
-constexpr size<2, ScalarT> size<2, ScalarT>::unit = {ScalarT(1), ScalarT(1)};
 
 template <class ScalarT>
 struct size<3, ScalarT>
@@ -149,12 +137,6 @@ struct size<3, ScalarT>
         return size<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr size<3, ScalarT> size<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr size<3, ScalarT> size<3, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1)};
-template <class ScalarT>
-constexpr size<3, ScalarT> size<3, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1)};
 
 template <class ScalarT>
 struct size<4, ScalarT>
@@ -188,12 +170,6 @@ struct size<4, ScalarT>
         return size<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr size<4, ScalarT> size<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr size<4, ScalarT> size<4, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
-template <class ScalarT>
-constexpr size<4, ScalarT> size<4, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
 
 // comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator==, &&, ==);

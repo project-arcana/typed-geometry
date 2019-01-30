@@ -67,8 +67,6 @@ struct pos<1, ScalarT>
         return pos<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr pos<1, ScalarT> pos<1, ScalarT>::zero = {ScalarT(0)};
 
 template <class ScalarT>
 struct pos<2, ScalarT>
@@ -98,8 +96,6 @@ struct pos<2, ScalarT>
         return pos<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr pos<2, ScalarT> pos<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
 
 template <class ScalarT>
 struct pos<3, ScalarT>
@@ -134,8 +130,6 @@ struct pos<3, ScalarT>
         return pos<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr pos<3, ScalarT> pos<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
 
 template <class ScalarT>
 struct pos<4, ScalarT>
@@ -175,8 +169,6 @@ struct pos<4, ScalarT>
         return pos<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr pos<4, ScalarT> pos<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
 
 // comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(pos, pos, bool, operator==, &&, ==);

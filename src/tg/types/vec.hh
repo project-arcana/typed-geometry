@@ -144,12 +144,6 @@ struct vec<1, ScalarT>
         return vec<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr vec<1, ScalarT> vec<1, ScalarT>::zero = {ScalarT(0)};
-template <class ScalarT>
-constexpr vec<1, ScalarT> vec<1, ScalarT>::one = {ScalarT(1)};
-template <class ScalarT>
-constexpr vec<1, ScalarT> vec<1, ScalarT>::unit_x = {ScalarT(1)};
 
 template <class ScalarT>
 struct vec<2, ScalarT>
@@ -182,14 +176,6 @@ struct vec<2, ScalarT>
         return vec<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr vec<2, ScalarT> vec<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<2, ScalarT> vec<2, ScalarT>::one = {ScalarT(1), ScalarT(1)};
-template <class ScalarT>
-constexpr vec<2, ScalarT> vec<2, ScalarT>::unit_x = {ScalarT(1), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<2, ScalarT> vec<2, ScalarT>::unit_y = {ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
 struct vec<3, ScalarT>
@@ -228,16 +214,6 @@ struct vec<3, ScalarT>
         return vec<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::one = {ScalarT(1), ScalarT(1), ScalarT(1)};
-template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_x = {ScalarT(1), ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_y = {ScalarT(0), ScalarT(1), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
 struct vec<4, ScalarT>
@@ -282,18 +258,6 @@ struct vec<4, ScalarT>
         return vec<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::one = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
-template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_x = {ScalarT(1), ScalarT(0), ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_y = {ScalarT(0), ScalarT(1), ScalarT(0), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)};
-template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
 
 // comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator==, &&, ==);
