@@ -59,7 +59,7 @@ Some functions take optional `eps` tolerances, such as `contains` and `intersect
 * Declare `using`s for common cases (e.g. `pos3` for `pos<3, f32>`)
 * Do not include `std`-headers, only use `tg` ones.
 
-### implementation
+### Implementation
 
 Recommended minimal set:
 

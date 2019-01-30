@@ -4,13 +4,38 @@
 
 namespace tg
 {
-template <int C, int R, class T>
-constexpr mat<R, C, T> transpose(mat<C, R, T> const& m)
+template <int C, class ScalarT>
+constexpr mat<1, C, ScalarT> transpose(mat<C, 1, ScalarT> const& m)
 {
-    mat<R, C, T> r;
-    for (auto y = 0; y < R; ++y)
-        for (auto x = 0; x < C; ++x)
-            r[y][x] = m[x][y];
+    mat<1, C, ScalarT> r;
+    r[0] = m.row(0);
+    return r;
+}
+template <int C, class ScalarT>
+constexpr mat<2, C, ScalarT> transpose(mat<C, 2, ScalarT> const& m)
+{
+    mat<2, C, ScalarT> r;
+    r[0] = m.row(0);
+    r[1] = m.row(1);
+    return r;
+}
+template <int C, class ScalarT>
+constexpr mat<3, C, ScalarT> transpose(mat<C, 3, ScalarT> const& m)
+{
+    mat<3, C, ScalarT> r;
+    r[0] = m.row(0);
+    r[1] = m.row(1);
+    r[2] = m.row(2);
+    return r;
+}
+template <int C, class ScalarT>
+constexpr mat<4, C, ScalarT> transpose(mat<C, 4, ScalarT> const& m)
+{
+    mat<4, C, ScalarT> r;
+    r[0] = m.row(0);
+    r[1] = m.row(1);
+    r[2] = m.row(2);
+    r[3] = m.row(3);
     return r;
 }
 } // namespace tg

@@ -18,8 +18,11 @@ namespace tg
  *
  * mat3x4 has no translational part
  * mat4x3 has no projective part
+ *
+ * mat[i] is i-th column (assignable as vec)
+ * mat.col(i), mat.row(i) return i-th column and row, respectively
  */
-template <int R, int C, class ScalarT>
+template <int C, int R, class ScalarT>
 struct mat;
 
 // square matrices
