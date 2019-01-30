@@ -8,6 +8,7 @@
 #include "../operators/ops_pos.hh"
 #include "../operators/ops_vec.hh"
 #include "../scalars/scalar_math.hh"
+#include "../special_values.hh"
 #include "clamp.hh"
 #include "closest_points.hh"
 #include "coordinates.hh"
@@ -43,7 +44,7 @@ constexpr auto distance2(A const& a, B const& b) -> decltype(length2(closest_poi
 template <class ScalarT>
 constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, plane const& pl)
 {
-    return dot(p - pos<3, ScalarT>::zero, pl.n) - pl.d;
+    return dot(p - zero<pos<3, ScalarT>>(), pl.n) - pl.d;
 }
 
 template <class ScalarT>

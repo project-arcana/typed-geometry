@@ -21,6 +21,9 @@ namespace tg
  *
  * mat[i] is i-th column (assignable as vec)
  * mat.col(i), mat.row(i) return i-th column and row, respectively
+ *
+ * NOTE: default initialization is zero, NOT identity
+ *       use tg::identity<mat4>() to get identity matrix
  */
 template <int C, int R, class ScalarT>
 struct mat;
@@ -138,6 +141,8 @@ struct mat
     using row_t = vec<C, ScalarT>;
     using col_t = vec<R, ScalarT>;
 
+    static const mat id;
+
     col_t m[R];
 
     constexpr col_t& operator[](int i) { return m[i]; }
@@ -145,8 +150,6 @@ struct mat
 
     constexpr col_t col(int i) const { return m[i]; }
     constexpr row_t row(int i) const { return detail::mat_row(*this, i); }
-
-    mat() = default;
 };
 
 } // namespace tg

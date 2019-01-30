@@ -6,6 +6,7 @@
 #include "detail/limits.hh"
 #include "detail/random.hh"
 #include "detail/scalar_traits.hh"
+#include "detail/special_values.hh"
 #include "detail/tg_traits.hh"
 #include "detail/utility.hh"
 

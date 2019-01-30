@@ -48,8 +48,6 @@ struct pos
 template <class ScalarT>
 struct pos<1, ScalarT>
 {
-    static const pos zero;
-
     ScalarT x = static_cast<ScalarT>(0);
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
@@ -67,16 +65,12 @@ struct pos<1, ScalarT>
         return pos<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr pos<1, ScalarT> pos<1, ScalarT>::zero = {ScalarT(0)};
 
 template <class ScalarT>
 struct pos<2, ScalarT>
 {
     ScalarT x = static_cast<ScalarT>(0);
     ScalarT y = static_cast<ScalarT>(0);
-
-    static const pos zero;
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
@@ -98,8 +92,6 @@ struct pos<2, ScalarT>
         return pos<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr pos<2, ScalarT> pos<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
 
 template <class ScalarT>
 struct pos<3, ScalarT>
@@ -107,8 +99,6 @@ struct pos<3, ScalarT>
     ScalarT x = static_cast<ScalarT>(0);
     ScalarT y = static_cast<ScalarT>(0);
     ScalarT z = static_cast<ScalarT>(0);
-
-    static const pos zero;
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
@@ -134,14 +124,10 @@ struct pos<3, ScalarT>
         return pos<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr pos<3, ScalarT> pos<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
 
 template <class ScalarT>
 struct pos<4, ScalarT>
 {
-    static const pos zero;
-
     ScalarT x = static_cast<ScalarT>(0);
     ScalarT y = static_cast<ScalarT>(0);
     ScalarT z = static_cast<ScalarT>(0);
@@ -175,8 +161,6 @@ struct pos<4, ScalarT>
         return pos<D, T>(*this);
     }
 };
-template <class ScalarT>
-constexpr pos<4, ScalarT> pos<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
 
 // comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(pos, pos, bool, operator==, &&, ==);

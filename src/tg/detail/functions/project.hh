@@ -2,10 +2,11 @@
 
 #include "../../types/objects/line.hh"
 #include "../../types/objects/plane.hh"
-#include "../../types/pos.hh"
 #include "../../types/objects/segment.hh"
+#include "../../types/pos.hh"
 #include "../../types/vec.hh"
 #include "../operators/ops_vec.hh"
+#include "../special_values.hh"
 #include "coordinates.hh"
 
 namespace tg
@@ -33,6 +34,6 @@ constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, segment<D, ScalarT> 
 template <class ScalarT>
 constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, plane const& pl)
 {
-    return p - pl.n * (dot(p - pos<3, ScalarT>::zero, pl.n) - pl.d);
+    return p - pl.n * (dot(p - zero<pos<3, ScalarT>>(), pl.n) - pl.d);
 }
 } // namespace tg

@@ -3,6 +3,7 @@
 #include "../../types/objects/box.hh"
 #include "../../types/objects/triangle.hh"
 #include "../scalar_traits.hh"
+#include "../special_values.hh"
 
 // returns the arithmetic mean of all points contained in an object
 // has variadic versions
@@ -18,14 +19,14 @@ pos<D, ScalarT> centroid(pos<D, ScalarT> const& p)
 template <int D, class ScalarT>
 pos<D, fractional_result<ScalarT>> centroid(box<D, ScalarT> const& p)
 {
-    auto z = pos<D, ScalarT>::zero;
+    auto z = tg::zero<pos<D, ScalarT>>();
     return z + ((p.min - z) + (p.max - z)) / ScalarT(2);
 }
 
 template <int D, class ScalarT>
 pos<D, fractional_result<ScalarT>> centroid(triangle<D, ScalarT> const& p)
 {
-    auto z = pos<D, ScalarT>::zero;
+    auto z = tg::zero<pos<D, ScalarT>>();
     return z + ((p.v0 - z) + (p.v1 - z) + (p.v2 - z)) / ScalarT(3);
 }
 } // namespace tg
