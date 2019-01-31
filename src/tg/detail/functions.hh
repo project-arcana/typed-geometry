@@ -14,6 +14,7 @@
 #include "functions/direction.hh"
 #include "functions/distance.hh"
 #include "functions/dot.hh"
+#include "functions/interpolate.hh"
 #include "functions/length.hh"
 #include "functions/minmax.hh"
 #include "functions/mix.hh"

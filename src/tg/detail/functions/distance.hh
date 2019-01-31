@@ -16,8 +16,8 @@
 namespace tg
 {
 // Base case for distance2 of point/point
-template <int D, class ScalarT>
-constexpr squared_result<ScalarT> distance2(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+template <int D, class ScalarA, class ScalarB>
+constexpr auto distance2(pos<D, ScalarA> const& a, pos<D, ScalarB> const& b) -> decltype(length2(a - b))
 {
     return length2(a - b);
 }

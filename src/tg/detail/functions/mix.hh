@@ -1,6 +1,8 @@
 #pragma once
 
+#include "../../types/pos.hh"
 #include "../../types/scalar.hh"
+#include "../../types/vec.hh"
 #include "../scalar_traits.hh"
 
 namespace tg

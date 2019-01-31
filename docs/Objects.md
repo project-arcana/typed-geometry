@@ -88,3 +88,4 @@ Optional functions that only make sense for some objects:
 
 * `coordinates`
 * `signed_distance` same as `distance` but signed. Makes sense for hull objects with well defined inside-outside such as `plane`.
+* `interpolate` with various interpretations

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../types/pos.hh"
 #include "../../types/objects/segment.hh"
 #include "../../types/objects/triangle.hh"
+#include "../../types/pos.hh"
 #include "../operators/ops_vec.hh"
 #include "../utility.hh"
 #include "length.hh"
@@ -29,8 +29,8 @@ constexpr array<ScalarT, 3> coordinates(triangle<2, ScalarT> const& t, pos<2, Sc
     auto A1 = cross(pv2, pv0);
     auto A2 = cross(pv0, pv1);
 
-    auto A_inv = ScalarT(1.0) / A;
-    return {{A0 * A_inv, A1 * A_inv, A2 * A_inv}};
+    auto A_inv = ScalarT(1) / A;
+    return {A0 * A_inv, A1 * A_inv, A2 * A_inv};
 }
 
 template <int D, class ScalarT>

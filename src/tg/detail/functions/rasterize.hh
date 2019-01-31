@@ -37,7 +37,7 @@ void rasterize(triangle<2, ScalarT> const& t, F&& f)
             if (a >= 0 && b >= 0 && c >= 0)
             {
                 // inside triangle
-                f(ipos2(pos), a, b);
+                f(ipos2(x, y), a, b);
             }
         }
 }
