@@ -123,7 +123,13 @@ struct special_values<size<D, ScalarT>>
 template <int C, int R, class ScalarT>
 struct special_values<mat<C, R, ScalarT>>
 {
-    static constexpr mat<C, R, ScalarT> ones() { return mat<C, R, ScalarT>() + ScalarT(1); }
+    static constexpr mat<C, R, ScalarT> ones()
+    {
+        mat<C, R, ScalarT> m;
+        for (auto c = 0; c < C; ++c)
+            m[c] = vec<R, ScalarT>(ScalarT(1));
+        return m;
+    }
     static constexpr mat<C, R, ScalarT> identity()
     {
         mat<C, R, ScalarT> m;
