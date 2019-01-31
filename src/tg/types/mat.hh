@@ -154,4 +154,30 @@ struct mat
     static constexpr mat<C, R, ScalarT> diag(vec<detail::min(C, R), ScalarT> const& v);
 };
 
+template <int R, class ScalarT>
+constexpr bool operator==(mat<1, R, ScalarT> const& a, mat<1, R, ScalarT> const& b)
+{
+    return a[0] == b[0];
+}
+template <int R, class ScalarT>
+constexpr bool operator==(mat<2, R, ScalarT> const& a, mat<2, R, ScalarT> const& b)
+{
+    return a[0] == b[0] && a[1] == b[1];
+}
+template <int R, class ScalarT>
+constexpr bool operator==(mat<3, R, ScalarT> const& a, mat<3, R, ScalarT> const& b)
+{
+    return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+}
+template <int R, class ScalarT>
+constexpr bool operator==(mat<4, R, ScalarT> const& a, mat<4, R, ScalarT> const& b)
+{
+    return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
+}
+template <int C, int R, class ScalarT>
+constexpr bool operator!=(mat<C, R, ScalarT> const& a, mat<C, R, ScalarT> const& b)
+{
+    return !(a == b);
+}
+
 } // namespace tg

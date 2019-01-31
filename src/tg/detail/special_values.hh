@@ -284,6 +284,8 @@ template <int C, int R, class ScalarT>
 constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::zero = {};
 template <int C, int R, class ScalarT>
 constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::identity = tg::identity<mat<C, R, ScalarT>>();
+template <int C, int R, class ScalarT>
+constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::ones = tg::ones<mat<C, R, ScalarT>>();
 
 template <int C, int R, class ScalarT>
 constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::diag(ScalarT v)
