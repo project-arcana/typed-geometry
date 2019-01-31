@@ -5,7 +5,7 @@
 
 #include "../types/types.hh"
 
-#include "../detail/traits.hh"
+#include "../detail/tg_traits.hh"
 
 namespace tg
 {

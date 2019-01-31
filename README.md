@@ -25,7 +25,9 @@ Helpers for interacting with the standard library:
 #include <tg/typed-geometry-std.hh>
 
 tg::pos3 p;
-std::cout << p;
+std::cout << p;                    // std::operator<<(std::ostream&, ...)
+std::map<p, int> v_cnts;           // std::less
+std::unordered_map<p, int> v_cnts; // std::hash
 ```
 
 Most functionality is implemented as free functions, overloaded by type and with consistent vocabulary:
