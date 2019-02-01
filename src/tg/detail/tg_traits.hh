@@ -31,6 +31,11 @@ struct type_name_t<triangle<D, ScalarT>>
 {
     static constexpr char const* value = "triangle";
 };
+template <int C, int R, class ScalarT>
+struct type_name_t<mat<C, R, ScalarT>>
+{
+    static constexpr char const* value = "mat";
+};
 
 // type suffix
 template <int D, class ScalarT, template <int, class> class Type>

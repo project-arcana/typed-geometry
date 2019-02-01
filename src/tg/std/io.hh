@@ -9,8 +9,8 @@
 
 namespace tg
 {
-template <int D, class ScalarT, template <int, class> class Type>
-std::string to_string(Type<D, ScalarT> const& v)
+template <class T>
+std::string to_string(T const& v)
 {
     std::ostringstream ss;
     ss << v;
@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& out, vec<D, ScalarT> const& v)
     return out;
 }
 template <int D, class ScalarT>
-std::ostream& operator<<(std::ostream& out, pos<D, ScalarT> const& v)
+std::ostream& operator<<(std::ostream& out, pos<D, ScalarT> const& p)
 {
     using T = vec<D, ScalarT>;
     out << type_name_prefix<T>;
@@ -50,12 +50,12 @@ std::ostream& operator<<(std::ostream& out, pos<D, ScalarT> const& v)
     out << type_name_suffix<T>;
     out << "(";
     for (auto i = 0; i < D; ++i)
-        out << (i > 0 ? ", " : "") << v[i];
+        out << (i > 0 ? ", " : "") << p[i];
     out << ")";
     return out;
 }
 template <int D, class ScalarT>
-std::ostream& operator<<(std::ostream& out, size<D, ScalarT> const& v)
+std::ostream& operator<<(std::ostream& out, size<D, ScalarT> const& s)
 {
     using T = vec<D, ScalarT>;
     out << type_name_prefix<T>;
@@ -63,30 +63,44 @@ std::ostream& operator<<(std::ostream& out, size<D, ScalarT> const& v)
     out << type_name_suffix<T>;
     out << "(";
     for (auto i = 0; i < D; ++i)
-        out << (i > 0 ? ", " : "") << v[i];
+        out << (i > 0 ? ", " : "") << s[i];
     out << ")";
     return out;
 }
 
 template <int D, class ScalarT>
-std::ostream& operator<<(std::ostream& out, box<D, ScalarT> const& v)
+std::ostream& operator<<(std::ostream& out, box<D, ScalarT> const& b)
 {
     using T = box<D, ScalarT>;
     out << type_name_prefix<T>;
     out << type_name<T>;
     out << type_name_suffix<T>;
-    out << "(" << v.min << ", " << v.max << ")";
+    out << "(" << b.min << ", " << b.max << ")";
     return out;
 }
 
 template <int D, class ScalarT>
-std::ostream& operator<<(std::ostream& out, triangle<D, ScalarT> const& v)
+std::ostream& operator<<(std::ostream& out, triangle<D, ScalarT> const& t)
 {
     using T = triangle<D, ScalarT>;
     out << type_name_prefix<T>;
     out << type_name<T>;
     out << type_name_suffix<T>;
-    out << "(" << v.v0 << ", " << v.v1 << ", " << v.v2 << ")";
+    out << "(" << t.v0 << ", " << t.v1 << ", " << t.v2 << ")";
+    return out;
+}
+
+template <int C, int R, class ScalarT>
+std::ostream& operator<<(std::ostream& out, mat<C, R, ScalarT> const& m)
+{
+    using T = mat<C, R, ScalarT>;
+    out << type_name_prefix<T>;
+    out << type_name<T>;
+    out << type_name_suffix<T>;
+    out << "(";
+    for (auto i = 0; i < C; ++i)
+        out << (i > 0 ? ", " : "") << m[i];
+    out << ")";
     return out;
 }
 } // namespace tg
