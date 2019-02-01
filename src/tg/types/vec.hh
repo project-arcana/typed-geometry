@@ -115,11 +115,6 @@ using f64vec4 = vec<4, f64>;
 
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
-struct vec
-{
-};
-
 template <class ScalarT>
 struct vec<1, ScalarT>
 {

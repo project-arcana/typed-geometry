@@ -41,11 +41,6 @@ using usize4 = size<4, u32>;
 
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
-struct size
-{
-};
-
 template <class ScalarT>
 struct size<1, ScalarT>
 {

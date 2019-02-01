@@ -40,11 +40,6 @@ using upos4 = pos<4, u32>;
 
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
-struct pos
-{
-};
-
 template <class ScalarT>
 struct pos<1, ScalarT>
 {

@@ -6,9 +6,12 @@
 #include "../../types/objects/ray.hh"
 #include "../../types/objects/segment.hh"
 #include "../../types/objects/triangle.hh"
+#include "../../types/objects/sphere.hh"
 #include "normalize.hh"
 
-// Computes the normal of an object
+// Computes the normal at the surface of an object
+// Some objects have a fixed normal everywhere, some only at defined positions
+// Evaluating the normal at other positions might be undefined or wrong
 
 namespace tg
 {

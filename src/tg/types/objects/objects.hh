@@ -1,7 +1,9 @@
 #pragma once
 
+#include "ball.hh"
 #include "box.hh"
 #include "cylinder.hh"
+#include "disk.hh"
 #include "frustum.hh"
 #include "line.hh"
 #include "plane.hh"
