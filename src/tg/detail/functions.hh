@@ -20,6 +20,7 @@
 #include "functions/mix.hh"
 #include "functions/normal.hh"
 #include "functions/normalize.hh"
+#include "functions/outer_product.hh"
 #include "functions/project.hh"
 #include "functions/rasterize.hh"
 #include "functions/round.hh"
