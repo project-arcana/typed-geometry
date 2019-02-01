@@ -1,17 +1,42 @@
 #pragma once
-#include <tg/types/vec.hh>
-#include <tg/types/mat.hh>
+
+#include "../../types/mat.hh"
+#include "../../types/vec.hh"
 
 namespace tg
 {
-template <int D, class ScalarT>
-constexpr tg::mat<D, D, ScalarT> outer_product(tg::vec<D, ScalarT> const &lhs, tg::vec<D, ScalarT> const &rhs)
+template <class ScalarT>
+constexpr mat<1, 1, ScalarT> outer_product(vec<1, ScalarT> const &lhs, vec<1, ScalarT> const &rhs)
 {
-    tg::mat<D, D, ScalarT> res;
-    for (int i = 0; i < D; i++)
-    {
-        res[i] = lhs * rhs[i];
-    }
+    mat<1, 1, ScalarT> res;
+    res[0] = lhs * rhs[0];
+    return res;
+}
+template <class ScalarT>
+constexpr mat<2, 2, ScalarT> outer_product(vec<2, ScalarT> const &lhs, vec<2, ScalarT> const &rhs)
+{
+    mat<2, 2, ScalarT> res;
+    res[0] = lhs * rhs[0];
+    res[1] = lhs * rhs[1];
+    return res;
+}
+template <class ScalarT>
+constexpr mat<3, 3, ScalarT> outer_product(vec<3, ScalarT> const &lhs, vec<3, ScalarT> const &rhs)
+{
+    mat<3, 3, ScalarT> res;
+    res[0] = lhs * rhs[0];
+    res[1] = lhs * rhs[1];
+    res[2] = lhs * rhs[2];
+    return res;
+}
+template <class ScalarT>
+constexpr mat<4, 4, ScalarT> outer_product(vec<4, ScalarT> const &lhs, vec<4, ScalarT> const &rhs)
+{
+    mat<4, 4, ScalarT> res;
+    res[0] = lhs * rhs[0];
+    res[1] = lhs * rhs[1];
+    res[2] = lhs * rhs[2];
+    res[3] = lhs * rhs[3];
     return res;
 }
 } // namespace tg
