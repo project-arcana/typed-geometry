@@ -14,7 +14,7 @@ private:
     unsigned char data = 0;
 };
 
-static_assert(sizeof(quarter) == 1, "quarter is not 16bit");
+static_assert(sizeof(quarter) == 1, "quarter is not 8bit");
 
 // TODO
 constexpr quarter operator-(quarter const& v) { return v; }
