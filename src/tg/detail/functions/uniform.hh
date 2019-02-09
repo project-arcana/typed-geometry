@@ -8,7 +8,7 @@
 #include "../scalar_traits.hh"
 
 #include "mix.hh"
-#include "round.hh"
+#include "math.hh"
 
 /*
  * uniform(rng)       - fair coin flip

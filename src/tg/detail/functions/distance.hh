@@ -9,9 +9,7 @@
 #include "../operators/ops_vec.hh"
 #include "../scalars/scalar_math.hh"
 #include "../special_values.hh"
-#include "clamp.hh"
 #include "closest_points.hh"
-#include "coordinates.hh"
 
 namespace tg
 {

@@ -221,6 +221,34 @@
                 FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2)), FUN(a.TG_IMPL_MEMBER(TYPE, 3), b.TG_IMPL_MEMBER(TYPE, 3))}; \
     }
 
+#define TG_IMPL_DEFINE_COMPWISE_FUNC_TERNARY(TYPE, FUN)                                                                                                    \
+    template <class ScalarA, class ScalarB, class ScalarC>                                                                                                 \
+    constexpr TYPE<1, decltype(FUN(ScalarA(), ScalarB(), ScalarC()))> FUN(TYPE<1, ScalarA> const& a, TYPE<1, ScalarB> const& b, TYPE<1, ScalarC> const& c) \
+    {                                                                                                                                                      \
+        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0))};                                                     \
+    }                                                                                                                                                      \
+    template <class ScalarA, class ScalarB, class ScalarC>                                                                                                 \
+    constexpr TYPE<2, decltype(FUN(ScalarA(), ScalarB(), ScalarC()))> FUN(TYPE<2, ScalarA> const& a, TYPE<2, ScalarB> const& b, TYPE<2, ScalarC> const& c) \
+    {                                                                                                                                                      \
+        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                                                      \
+                FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1))};                                                     \
+    }                                                                                                                                                      \
+    template <class ScalarA, class ScalarB, class ScalarC>                                                                                                 \
+    constexpr TYPE<3, decltype(FUN(ScalarA(), ScalarB(), ScalarC()))> FUN(TYPE<3, ScalarA> const& a, TYPE<3, ScalarB> const& b, TYPE<3, ScalarC> const& c) \
+    {                                                                                                                                                      \
+        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                                                      \
+                FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1)),                                                      \
+                FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2), c.TG_IMPL_MEMBER(TYPE, 2))};                                                     \
+    }                                                                                                                                                      \
+    template <class ScalarA, class ScalarB, class ScalarC>                                                                                                 \
+    constexpr TYPE<4, decltype(FUN(ScalarA(), ScalarB(), ScalarC()))> FUN(TYPE<4, ScalarA> const& a, TYPE<4, ScalarB> const& b, TYPE<4, ScalarC> const& c) \
+    {                                                                                                                                                      \
+        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                                                      \
+                FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1)),                                                      \
+                FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2), c.TG_IMPL_MEMBER(TYPE, 2)),                                                      \
+                FUN(a.TG_IMPL_MEMBER(TYPE, 3), b.TG_IMPL_MEMBER(TYPE, 3), c.TG_IMPL_MEMBER(TYPE, 3))};                                                     \
+    }
+
 #define TG_IMPL_DEFINE_REDUCTION_OP_BINARY(TYPE_A, TYPE_B, RESULT_T, NAME, REDUCE, OP)                                                                 \
     template <class ScalarT>                                                                                                                           \
     constexpr RESULT_T NAME(TYPE_A<1, ScalarT> const& a, TYPE_B<1, ScalarT> const& b)                                                                  \
