@@ -43,8 +43,8 @@ using uray4 = ray<4, u32>;
 template <int D, class ScalarT>
 struct ray
 {
-    using vec_t = vec<D, ScalarT>;
-    using pos_t = pos<D, ScalarT>;
+    using vec_t = tg::vec<D, ScalarT>;
+    using pos_t = tg::pos<D, ScalarT>;
 
     pos_t pos;
     vec_t dir;
