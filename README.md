@@ -90,7 +90,7 @@ auto p = uniform(rng, obj);
 
 ### C++ 17 Features
 
-* deduction guides: `auto v = tg::vec(1, 2.5f, 3)`
+* deduction guides: `auto v = tg::vec(1, 2.5f, 3)`, `auto p = tg::pos(v);`
 * structured binding: `auto [x, y, z] = tg::vec3(...)`
 
 ## Dependencies

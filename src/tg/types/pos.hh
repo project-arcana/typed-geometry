@@ -3,6 +3,7 @@
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
+#include "fwd.hh"
 #include "scalar.hh"
 
 namespace tg
@@ -56,6 +57,8 @@ struct pos<1, ScalarT>
     constexpr explicit pos(pos<D, T> const& v, ScalarT = ScalarT(0)) : x(ScalarT(v.x))
     {
     }
+    constexpr explicit pos(size<1, ScalarT> const& p);
+    constexpr explicit pos(vec<1, ScalarT> const& p);
     template <int D, class T>
     constexpr explicit operator pos<D, T>() const
     {
@@ -85,6 +88,8 @@ struct pos<2, ScalarT>
     constexpr explicit pos(pos<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill)
     {
     }
+    constexpr explicit pos(size<2, ScalarT> const& p);
+    constexpr explicit pos(vec<2, ScalarT> const& p);
     template <int D, class T>
     constexpr explicit operator pos<D, T>() const
     {
@@ -119,6 +124,8 @@ struct pos<3, ScalarT>
     constexpr explicit pos(pos<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill)
     {
     }
+    constexpr explicit pos(size<3, ScalarT> const& p);
+    constexpr explicit pos(vec<3, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 3>>
     constexpr explicit operator pos<D, T>() const
     {
@@ -158,6 +165,8 @@ struct pos<4, ScalarT>
     constexpr explicit pos(pos<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill), w(fill)
     {
     }
+    constexpr explicit pos(size<4, ScalarT> const& p);
+    constexpr explicit pos(vec<4, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 4>>
     constexpr explicit operator pos<D, T>() const
     {
@@ -179,6 +188,11 @@ template <class A, class B, class C>
 pos(A const& x, B const& y, C const& z)->pos<3, promoted_scalar<A, promoted_scalar<B, C>>>;
 template <class A, class B, class C, class D>
 pos(A const& x, B const& y, C const& z, D const& w)->pos<4, promoted_scalar<promoted_scalar<A, B>, promoted_scalar<C, D>>>;
+
+template <int D, class T>
+pos(size<D, T> const&)->pos<D, T>;
+template <int D, class T>
+pos(vec<D, T> const&)->pos<D, T>;
 #endif
 
 } // namespace tg

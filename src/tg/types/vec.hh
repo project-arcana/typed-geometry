@@ -3,6 +3,7 @@
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
+#include "fwd.hh"
 #include "scalar.hh"
 
 /**
@@ -133,6 +134,8 @@ struct vec<1, ScalarT>
     constexpr explicit vec(vec<D, T> const& v, ScalarT = ScalarT(0)) : x(ScalarT(v.x))
     {
     }
+    constexpr explicit vec(pos<1, ScalarT> const& p);
+    constexpr explicit vec(size<1, ScalarT> const& p);
     template <int D, class T>
     constexpr explicit operator vec<D, T>() const
     {
@@ -165,6 +168,8 @@ struct vec<2, ScalarT>
     constexpr explicit vec(vec<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill)
     {
     }
+    constexpr explicit vec(pos<2, ScalarT> const& p);
+    constexpr explicit vec(size<2, ScalarT> const& p);
     template <int D, class T>
     constexpr explicit operator vec<D, T>() const
     {
@@ -203,6 +208,8 @@ struct vec<3, ScalarT>
     constexpr explicit vec(vec<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill)
     {
     }
+    constexpr explicit vec(pos<3, ScalarT> const& p);
+    constexpr explicit vec(size<3, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 3>>
     constexpr explicit operator vec<D, T>() const
     {
@@ -247,6 +254,8 @@ struct vec<4, ScalarT>
     constexpr explicit vec(vec<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill), w(fill)
     {
     }
+    constexpr explicit vec(pos<4, ScalarT> const& p);
+    constexpr explicit vec(size<4, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 4>>
     constexpr explicit operator vec<D, T>() const
     {
@@ -268,6 +277,11 @@ template <class A, class B, class C>
 vec(A const& x, B const& y, C const& z)->vec<3, promoted_scalar<A, promoted_scalar<B, C>>>;
 template <class A, class B, class C, class D>
 vec(A const& x, B const& y, C const& z, D const& w)->vec<4, promoted_scalar<promoted_scalar<A, B>, promoted_scalar<C, D>>>;
+
+template <int D, class T>
+vec(pos<D, T> const&)->vec<D, T>;
+template <int D, class T>
+vec(size<D, T> const&)->vec<D, T>;
 #endif
 
 } // namespace tg

@@ -3,6 +3,7 @@
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
+#include "fwd.hh"
 #include "scalar.hh"
 #include "vec.hh"
 
@@ -63,6 +64,8 @@ struct size<1, ScalarT>
     constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x))
     {
     }
+    constexpr explicit size(pos<1, ScalarT> const& p);
+    constexpr explicit size(vec<1, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 1>>
     constexpr explicit operator size<D, T>() const
     {
@@ -94,6 +97,8 @@ struct size<2, ScalarT>
     constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y))
     {
     }
+    constexpr explicit size(pos<2, ScalarT> const& p);
+    constexpr explicit size(vec<2, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 2>>
     constexpr explicit operator size<D, T>() const
     {
@@ -126,6 +131,8 @@ struct size<3, ScalarT>
     constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y)), depth(ScalarT(v.z))
     {
     }
+    constexpr explicit size(pos<3, ScalarT> const& p);
+    constexpr explicit size(vec<3, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 3>>
     constexpr explicit operator size<D, T>() const
     {
@@ -159,6 +166,8 @@ struct size<4, ScalarT>
     constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y)), depth(ScalarT(v.z)), w(ScalarT(v.w))
     {
     }
+    constexpr explicit size(pos<4, ScalarT> const& p);
+    constexpr explicit size(vec<4, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 4>>
     constexpr explicit operator size<D, T>() const
     {
@@ -180,5 +189,10 @@ template <class A, class B, class C>
 size(A const& x, B const& y, C const& z)->size<3, promoted_scalar<A, promoted_scalar<B, C>>>;
 template <class A, class B, class C, class D>
 size(A const& x, B const& y, C const& z, D const& w)->size<4, promoted_scalar<promoted_scalar<A, B>, promoted_scalar<C, D>>>;
+
+template <int D, class T>
+size(pos<D, T> const&)->size<D, T>;
+template <int D, class T>
+size(vec<D, T> const&)->size<D, T>;
 #endif
 } // namespace tg

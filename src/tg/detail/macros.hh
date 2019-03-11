@@ -44,6 +44,32 @@
         return {OP a.TG_IMPL_MEMBER(TYPE, 0), OP a.TG_IMPL_MEMBER(TYPE, 1), OP a.TG_IMPL_MEMBER(TYPE, 2), OP a.TG_IMPL_MEMBER(TYPE, 3)}; \
     }
 
+#define TG_IMPL_DEFINE_CONV_CTOR_IMPL(TYPE_FROM, TYPE_TO)                                                                               \
+    template <class ScalarT>                                                                                                            \
+    constexpr TYPE_TO<1, ScalarT>::TYPE_TO(TYPE_FROM<1, ScalarT> const& a) : TG_IMPL_MEMBER(TYPE_TO, 0)(a.TG_IMPL_MEMBER(TYPE_FROM, 0)) \
+    {                                                                                                                                   \
+    }                                                                                                                                   \
+    template <class ScalarT>                                                                                                            \
+    constexpr TYPE_TO<2, ScalarT>::TYPE_TO(TYPE_FROM<2, ScalarT> const& a)                                                              \
+      : TG_IMPL_MEMBER(TYPE_TO, 0)(a.TG_IMPL_MEMBER(TYPE_FROM, 0)), TG_IMPL_MEMBER(TYPE_TO, 1)(a.TG_IMPL_MEMBER(TYPE_FROM, 1))          \
+    {                                                                                                                                   \
+    }                                                                                                                                   \
+    template <class ScalarT>                                                                                                            \
+    constexpr TYPE_TO<3, ScalarT>::TYPE_TO(TYPE_FROM<3, ScalarT> const& a)                                                              \
+      : TG_IMPL_MEMBER(TYPE_TO, 0)(a.TG_IMPL_MEMBER(TYPE_FROM, 0)),                                                                     \
+        TG_IMPL_MEMBER(TYPE_TO, 1)(a.TG_IMPL_MEMBER(TYPE_FROM, 1)),                                                                     \
+        TG_IMPL_MEMBER(TYPE_TO, 2)(a.TG_IMPL_MEMBER(TYPE_FROM, 2))                                                                      \
+    {                                                                                                                                   \
+    }                                                                                                                                   \
+    template <class ScalarT>                                                                                                            \
+    constexpr TYPE_TO<4, ScalarT>::TYPE_TO(TYPE_FROM<4, ScalarT> const& a)                                                              \
+      : TG_IMPL_MEMBER(TYPE_TO, 0)(a.TG_IMPL_MEMBER(TYPE_FROM, 0)),                                                                     \
+        TG_IMPL_MEMBER(TYPE_TO, 1)(a.TG_IMPL_MEMBER(TYPE_FROM, 1)),                                                                     \
+        TG_IMPL_MEMBER(TYPE_TO, 2)(a.TG_IMPL_MEMBER(TYPE_FROM, 2)),                                                                     \
+        TG_IMPL_MEMBER(TYPE_TO, 3)(a.TG_IMPL_MEMBER(TYPE_FROM, 3))                                                                      \
+    {                                                                                                                                   \
+    }
+
 #define TG_IMPL_DEFINE_BINARY_OP(TYPE_A, TYPE_B, TYPE_R, OP)                                           \
     template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>>         \
     constexpr TYPE_R<1, ScalarR> operator OP(TYPE_A<1, ScalarA> const& a, TYPE_B<1, ScalarB> const& b) \
