@@ -14,6 +14,9 @@
 
 namespace tg
 {
+// ==================================================================
+// Basics
+
 inline i8 abs(i8 v) { return v < 0 ? -v : v; }
 inline i16 abs(i16 v) { return v < 0 ? -v : v; }
 inline i32 abs(i32 v) { return v < 0 ? -v : v; }
@@ -28,23 +31,6 @@ inline f8 abs(f8 v) { return v; }
 inline f16 abs(f16 v) { return std::abs(v); }
 inline f32 abs(f32 v) { return std::abs(v); }
 inline f64 abs(f64 v) { return std::abs(v); }
-
-inline f32 sin(f32 v) { return std::sin(v); }
-inline f64 sin(f64 v) { return std::sin(v); }
-
-inline f32 cos(f32 v) { return std::cos(v); }
-inline f64 cos(f64 v) { return std::cos(v); }
-
-inline f32 sqrt(f32 v) { return std::sqrt(v); }
-inline f64 sqrt(f64 v) { return std::sqrt(v); }
-
-inline f32 cbrt(f32 v) { return std::cbrt(v); }
-inline f64 cbrt(f64 v) { return std::cbrt(v); }
-
-inline f32 pow(f32 b, f32 e) { return std::pow(b, e); }
-inline f32 pow(f32 b, i32 e) { return f32(std::pow(b, e)); }
-inline f64 pow(f64 b, f64 e) { return std::pow(b, e); }
-inline f64 pow(f64 b, i32 e) { return std::pow(b, e); }
 
 inline f32 floor(f32 v) { return std::floor(v); }
 inline f64 floor(f64 v) { return std::floor(v); }
@@ -75,6 +61,20 @@ constexpr T max(T const& a, T const& b)
     return a < b ? b : a;
 }
 
+template <class T, class = enable_if<is_scalar<T>>>
+constexpr T clamp(T const& a, T const& min_value, T const& max_value)
+{
+    return min(max(a, min_value), max_value);
+}
+
+// ==================================================================
+// Powers
+
+inline f32 pow(f32 b, f32 e) { return std::pow(b, e); }
+inline f32 pow(f32 b, i32 e) { return f32(std::pow(b, e)); }
+inline f64 pow(f64 b, f64 e) { return std::pow(b, e); }
+inline f64 pow(f64 b, i32 e) { return std::pow(b, e); }
+
 template <class T, class = enable_if<has_multiplication<T>>>
 constexpr T pow2(T const& v)
 {
@@ -98,10 +98,62 @@ constexpr T pow5(T const& v)
     return v2 * v2 * v;
 }
 
-template <class T, class = enable_if<is_scalar<T>>>
-constexpr T clamp(T const& a, T const& min_value, T const& max_value)
-{
-    return min(max(a, min_value), max_value);
-}
+inline f32 sqrt(f32 v) { return std::sqrt(v); }
+inline f64 sqrt(f64 v) { return std::sqrt(v); }
+
+inline f32 cbrt(f32 v) { return std::cbrt(v); }
+inline f64 cbrt(f64 v) { return std::cbrt(v); }
+
+// ==================================================================
+// Exponentials
+
+inline f32 exp(f32 v) { return std::exp(v); }
+inline f64 exp(f64 v) { return std::exp(v); }
+
+inline f32 exp2(f32 v) { return std::exp2(v); }
+inline f64 exp2(f64 v) { return std::exp2(v); }
+
+inline f32 log(f32 v) { return std::log(v); }
+inline f64 log(f64 v) { return std::log(v); }
+
+inline f32 log2(f32 v) { return std::log2(v); }
+inline f64 log2(f64 v) { return std::log2(v); }
+
+inline f32 log10(f32 v) { return std::log10(v); }
+inline f64 log10(f64 v) { return std::log10(v); }
+
+// ==================================================================
+// Trigonometry
+
+inline f32 sin(f32 v) { return std::sin(v); }
+inline f64 sin(f64 v) { return std::sin(v); }
+inline f32 cos(f32 v) { return std::cos(v); }
+inline f64 cos(f64 v) { return std::cos(v); }
+inline f32 tan(f32 v) { return std::tan(v); }
+inline f64 tan(f64 v) { return std::tan(v); }
+
+inline f32 asin(f32 v) { return std::asin(v); }
+inline f64 asin(f64 v) { return std::asin(v); }
+inline f32 acos(f32 v) { return std::acos(v); }
+inline f64 acos(f64 v) { return std::acos(v); }
+inline f32 atan(f32 v) { return std::atan(v); }
+inline f64 atan(f64 v) { return std::atan(v); }
+
+inline f32 sinh(f32 v) { return std::sinh(v); }
+inline f64 sinh(f64 v) { return std::sinh(v); }
+inline f32 cosh(f32 v) { return std::cosh(v); }
+inline f64 cosh(f64 v) { return std::cosh(v); }
+inline f32 tanh(f32 v) { return std::tanh(v); }
+inline f64 tanh(f64 v) { return std::tanh(v); }
+
+inline f32 asinh(f32 v) { return std::asinh(v); }
+inline f64 asinh(f64 v) { return std::asinh(v); }
+inline f32 acosh(f32 v) { return std::acosh(v); }
+inline f64 acosh(f64 v) { return std::acosh(v); }
+inline f32 atanh(f32 v) { return std::atanh(v); }
+inline f64 atanh(f64 v) { return std::atanh(v); }
+
+inline f32 atan2(f32 y, f32 x) { return std::atan2(y, x); }
+inline f64 atan2(f64 y, f64 x) { return std::atan2(y, x); }
 
 } // namespace tg

@@ -5,6 +5,9 @@ namespace tg
 template <class T>
 constexpr T pi = static_cast<T>(3.14159265358979323846);
 
+template <class T>
+constexpr T nan = static_cast<T>(0.0 / 0.0);
+
 // TODO: proper min vs. lowest
 // template <class T>
 // constexpr T min = std::numeric_limits<T>::min();
