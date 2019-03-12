@@ -4,6 +4,7 @@
 
 #include "../../detail/scalar_traits.hh"
 #include "../../types/scalar.hh"
+#include "../constants.hh"
 #include "../utility.hh"
 
 // TODO:
@@ -155,5 +156,10 @@ inline f64 atanh(f64 v) { return std::atanh(v); }
 
 inline f32 atan2(f32 y, f32 x) { return std::atan2(y, x); }
 inline f64 atan2(f64 y, f64 x) { return std::atan2(y, x); }
+
+inline f32 to_degree(f32 rad) { return rad * (180 / tg::pi<f32>); }
+inline f64 to_degree(f64 rad) { return rad * (180 / tg::pi<f64>); }
+inline f32 to_radians(f32 deg) { return deg * (tg::pi<f32> / 180); }
+inline f64 to_radians(f64 deg) { return deg * (tg::pi<f64> / 180); }
 
 } // namespace tg
