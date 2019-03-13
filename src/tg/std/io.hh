@@ -50,7 +50,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 template <int D, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, pos<D, ScalarT> const& p)
 {
-    using T = vec<D, ScalarT>;
+    using T = pos<D, ScalarT>;
 
     std::basic_ostringstream<CharT, Traits> ss;
     ss.flags(out.flags());
@@ -69,7 +69,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 template <int D, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, size<D, ScalarT> const& s)
 {
-    using T = vec<D, ScalarT>;
+    using T = size<D, ScalarT>;
 
     std::basic_ostringstream<CharT, Traits> ss;
     ss.flags(out.flags());
