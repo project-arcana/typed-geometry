@@ -3,8 +3,8 @@
 #include <cmath>
 
 #include "../../types/objects/box.hh"
-#include "../../types/pos.hh"
 #include "../../types/objects/triangle.hh"
+#include "../../types/pos.hh"
 
 // For a given primitive and a position, return whether the first contains the latter
 
@@ -23,6 +23,11 @@ constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, Scal
     return b == o;
 }
 
+template <class ScalarT>
+constexpr bool contains(box<1, ScalarT> const& b, ScalarT const& o, ScalarT eps = ScalarT(0))
+{
+    return b.min.x - eps <= o && o <= b.max.x + eps;
+}
 template <class ScalarT>
 constexpr bool contains(box<1, ScalarT> const& b, pos<1, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
