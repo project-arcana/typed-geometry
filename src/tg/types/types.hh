@@ -1,5 +1,6 @@
 #pragma once
 
+#include "angle.hh"
 #include "scalar.hh"
 
 #include "color.hh"

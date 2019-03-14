@@ -70,11 +70,13 @@ TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, i8, int);
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, i16, int);
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, i32, int);
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, i64, int);
+TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, long, int);
 
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, u8, unsigned);
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, u16, unsigned);
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, u32, unsigned);
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, u64, unsigned);
+TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, unsigned long, unsigned);
 
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, f8, float);
 TG_IMPL_ADD_TYPE_TRAIT(scalar_base_type, f16, float);

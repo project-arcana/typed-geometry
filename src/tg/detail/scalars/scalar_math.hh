@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "../../detail/scalar_traits.hh"
+#include "../../types/angle.hh"
 #include "../../types/scalar.hh"
 #include "../constants.hh"
 #include "../utility.hh"
@@ -32,6 +33,12 @@ inline f8 abs(f8 v) { return v; }
 inline f16 abs(f16 v) { return std::abs(v); }
 inline f32 abs(f32 v) { return std::abs(v); }
 inline f64 abs(f64 v) { return std::abs(v); }
+
+template <class T>
+angle<T> abs(angle<T> a)
+{
+    return radians(abs(a.radians()));
+}
 
 inline f32 floor(f32 v) { return std::floor(v); }
 inline f64 floor(f64 v) { return std::floor(v); }
@@ -126,19 +133,22 @@ inline f64 log10(f64 v) { return std::log10(v); }
 // ==================================================================
 // Trigonometry
 
-inline f32 sin(f32 v) { return std::sin(v); }
-inline f64 sin(f64 v) { return std::sin(v); }
-inline f32 cos(f32 v) { return std::cos(v); }
-inline f64 cos(f64 v) { return std::cos(v); }
-inline f32 tan(f32 v) { return std::tan(v); }
-inline f64 tan(f64 v) { return std::tan(v); }
+inline f32 sin(angle<f32> v) { return std::sin(v.radians()); }
+inline f64 sin(angle<f64> v) { return std::sin(v.radians()); }
+inline f32 cos(angle<f32> v) { return std::cos(v.radians()); }
+inline f64 cos(angle<f64> v) { return std::cos(v.radians()); }
+inline f32 tan(angle<f32> v) { return std::tan(v.radians()); }
+inline f64 tan(angle<f64> v) { return std::tan(v.radians()); }
 
-inline f32 asin(f32 v) { return std::asin(v); }
-inline f64 asin(f64 v) { return std::asin(v); }
-inline f32 acos(f32 v) { return std::acos(v); }
-inline f64 acos(f64 v) { return std::acos(v); }
-inline f32 atan(f32 v) { return std::atan(v); }
-inline f64 atan(f64 v) { return std::atan(v); }
+inline angle<f32> asin(f32 v) { return radians(std::asin(v)); }
+inline angle<f64> asin(f64 v) { return radians(std::asin(v)); }
+inline angle<f32> acos(f32 v) { return radians(std::acos(v)); }
+inline angle<f64> acos(f64 v) { return radians(std::acos(v)); }
+inline angle<f32> atan(f32 v) { return radians(std::atan(v)); }
+inline angle<f64> atan(f64 v) { return radians(std::atan(v)); }
+
+inline angle<f32> atan2(f32 y, f32 x) { return radians(std::atan2(y, x)); }
+inline angle<f64> atan2(f64 y, f64 x) { return radians(std::atan2(y, x)); }
 
 inline f32 sinh(f32 v) { return std::sinh(v); }
 inline f64 sinh(f64 v) { return std::sinh(v); }
@@ -153,13 +163,5 @@ inline f32 acosh(f32 v) { return std::acosh(v); }
 inline f64 acosh(f64 v) { return std::acosh(v); }
 inline f32 atanh(f32 v) { return std::atanh(v); }
 inline f64 atanh(f64 v) { return std::atanh(v); }
-
-inline f32 atan2(f32 y, f32 x) { return std::atan2(y, x); }
-inline f64 atan2(f64 y, f64 x) { return std::atan2(y, x); }
-
-inline f32 to_degree(f32 rad) { return rad * (180 / tg::pi<f32>); }
-inline f64 to_degree(f64 rad) { return rad * (180 / tg::pi<f64>); }
-inline f32 to_radians(f32 deg) { return deg * (tg::pi<f32> / 180); }
-inline f64 to_radians(f64 deg) { return deg * (tg::pi<f64> / 180); }
 
 } // namespace tg

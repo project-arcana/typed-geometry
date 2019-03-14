@@ -2,6 +2,7 @@
 
 #include "operators/common.hh"
 
+#include "operators/ops_angle.hh"
 #include "operators/ops_mat.hh"
 #include "operators/ops_pos.hh"
 #include "operators/ops_size.hh"

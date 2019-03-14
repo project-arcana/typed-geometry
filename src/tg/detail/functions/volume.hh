@@ -8,13 +8,13 @@
 namespace tg
 {
 template <class ScalarT>
-constexpr squared_result<ScalarT> area(size<3, ScalarT> const& s)
+constexpr squared_result<ScalarT> volume(size<3, ScalarT> const& s)
 {
     return s.width * s.height * s.depth;
 }
 
 template <class ScalarT>
-constexpr squared_result<ScalarT> area(box<3, ScalarT> const& b)
+constexpr squared_result<ScalarT> volume(box<3, ScalarT> const& b)
 {
     return area(size<3, ScalarT>(b.max - b.min));
 }

@@ -28,6 +28,18 @@ std::string to_string(T const& v)
 //         static constexpr char const* value = "box";
 //     };
 
+template <class T, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, angle<T> const& a)
+{
+    std::basic_ostringstream<CharT, Traits> ss;
+    ss.flags(out.flags());
+    ss.imbue(out.getloc());
+    ss.precision(out.precision());
+
+    ss << a.degree() << "°";
+    return out << ss.str();
+}
+
 template <int D, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, vec<D, ScalarT> const& v)
 {

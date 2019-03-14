@@ -37,6 +37,15 @@ size_t hash(T const& a, T const& b, T const& c, T const& d)
 
 namespace std
 {
+// -- scalars
+template <class T>
+struct hash<tg::angle<T>>
+{
+    typedef tg::angle<T> argument_type;
+    typedef std::size_t result_type;
+    result_type operator()(argument_type const& v) const noexcept { return tg::detail::hash(v.radians()); }
+};
+
 // -- vec
 template <class ScalarT>
 struct hash<tg::vec<1, ScalarT>>

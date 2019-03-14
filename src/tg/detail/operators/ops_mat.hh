@@ -69,11 +69,11 @@ constexpr vec<4, ScalarT> operator*(mat<C, 4, ScalarT> const& m, vec<C - 1, Scal
 
 // mat * pos (with mat dimension + 1, e.g. treats pos3 as vec4(..., 1))
 template <int D, class ScalarT>
-constexpr pos<D - 1, ScalarT> operator*(mat<D, 2, ScalarT> const& m, pos<D - 1, ScalarT> const& p)
+constexpr pos<D - 1, ScalarT> operator*(mat<D, D, ScalarT> const& m, pos<D - 1, ScalarT> const& p)
 {
-    auto v = m * vec<D, ScalarT>(p - zero<pos<D - 1, ScalarT>>(), ScalarT(1));
-    auto r = pos<D - 1, ScalarT>(v + zero<pos<D - 1, ScalarT>>());
-    return v[D] == ScalarT(1) ? r : r / v[D];
+    auto v = m * vec<D, ScalarT>(p - pos<D - 1, ScalarT>::zero, ScalarT(1));
+    auto r = pos<D - 1, ScalarT>(pos<D - 1, ScalarT>::zero + vec<D - 1, ScalarT>(v));
+    return v[D - 1] == ScalarT(1) ? r : r / v[D - 1];
 }
 
 // mat * mat
