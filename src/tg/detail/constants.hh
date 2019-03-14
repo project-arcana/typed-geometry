@@ -1,12 +1,14 @@
 #pragma once
 
+#include "../types/angle.hh"
+
 namespace tg
 {
 template <class T>
-constexpr T tau = static_cast<T>(6.28318530717958647693);
+constexpr angle<T> tau = angle<T>::from_radians(static_cast<T>(6.28318530717958647693));
 
 template <class T>
-constexpr T pi = static_cast<T>(3.14159265358979323846);
+constexpr angle<T> pi = angle<T>::from_radians(static_cast<T>(3.14159265358979323846));
 
 template <class T>
 constexpr T nan = static_cast<T>(0.0 / 0.0);

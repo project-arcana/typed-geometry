@@ -32,4 +32,10 @@ constexpr angle<R> operator*(A a, angle<B> b)
 {
     return radians(a * b.radians());
 }
+
+template <class A, class B, class R = promoted_scalar<A, B>>
+constexpr R operator/(angle<A> a, angle<B> b)
+{
+    return a.radians() / b.radians();
+}
 } // namespace tg
