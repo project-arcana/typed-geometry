@@ -4,6 +4,7 @@
 
 #include "detail/constants.hh"
 #include "detail/limits.hh"
+#include "detail/literals.hh"
 #include "detail/random.hh"
 #include "detail/scalar_traits.hh"
 #include "detail/special_values.hh"
