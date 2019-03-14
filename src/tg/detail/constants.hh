@@ -3,6 +3,9 @@
 namespace tg
 {
 template <class T>
+constexpr T tau = static_cast<T>(6.28318530717958647693);
+
+template <class T>
 constexpr T pi = static_cast<T>(3.14159265358979323846);
 
 template <class T>
