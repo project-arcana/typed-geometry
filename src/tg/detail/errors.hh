@@ -2,7 +2,7 @@
 
 namespace tg
 {
-namespace error
+namespace type_error
 {
 template <class T>
 struct unknown_scalar_type;
