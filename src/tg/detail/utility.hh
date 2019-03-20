@@ -4,10 +4,16 @@ namespace tg
 {
 namespace detail
 {
-using unused = int;
+struct unused;
 
-inline constexpr int min(int a, int b) { return a < b ? a : b; }
-inline constexpr int max(int a, int b) { return a < b ? b : a; }
+inline constexpr int min(int a, int b)
+{
+    return a < b ? a : b;
+}
+inline constexpr int max(int a, int b)
+{
+    return a < b ? b : a;
+}
 } // namespace detail
 
 template <class A, class B>

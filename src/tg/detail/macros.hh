@@ -335,13 +335,13 @@
     template <class T>                                 \
     using trait = typename trait##_t<T>::type // enforce ;
 
-#define TG_IMPL_DEFINE_BINARY_TYPE_TRAIT(trait, default_type) \
-    template <class A, class B>                               \
-    struct trait##_t                                          \
-    {                                                         \
-        using type = default_type;                            \
-    };                                                        \
-    template <class A, class B>                               \
+#define TG_IMPL_DEFINE_BINARY_TYPE_TRAIT(trait, ...) \
+    template <class A, class B>                      \
+    struct trait##_t                                 \
+    {                                                \
+        using type = __VA_ARGS__;                    \
+    };                                               \
+    template <class A, class B>                      \
     using trait = typename trait##_t<A, B>::type // enforce ;
 
 #define TG_IMPL_ADD_TRAIT(trait, result_type, type, val) \
@@ -373,6 +373,13 @@
     struct scalar_t<basetype, bits>                    \
     {                                                  \
         using type = rtype;                            \
+    } // enforce ;
+
+#define TG_IMPL_ADD_OBJECT_TYPE(ttype)      \
+    template <int D, class ScalarT>         \
+    struct is_object_t<ttype<D, ScalarT>>   \
+    {                                       \
+        static constexpr bool value = true; \
     } // enforce ;
 
 #define TG_IMPL_INHERIT_TRAITS_D(ttype)                             \

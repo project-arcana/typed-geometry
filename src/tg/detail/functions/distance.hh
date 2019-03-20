@@ -9,6 +9,7 @@
 #include "../operators/ops_vec.hh"
 #include "../scalars/scalar_math.hh"
 #include "../special_values.hh"
+#include "../tg_traits.hh"
 #include "closest_points.hh"
 
 namespace tg
@@ -35,6 +36,17 @@ constexpr auto distance2(A const& a, B const& b) -> decltype(length2(closest_poi
     return length2(cp.first - cp.second);
 }
 
+// Convience for distance to (0,0,0)
+template <class Obj>
+constexpr auto distance_to_origin(Obj const& o) -> decltype(distance(o, pos_type_for<Obj>::zero))
+{
+    return distance(o, pos_type_for<Obj>::zero);
+}
+template <class Obj>
+constexpr auto distance2_to_origin(Obj const& o) -> decltype(distance(o, pos_type_for<Obj>::zero))
+{
+    return distance2(o, pos_type_for<Obj>::zero);
+}
 
 // =========== Object Implementations ===========
 

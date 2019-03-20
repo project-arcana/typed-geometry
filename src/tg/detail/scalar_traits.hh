@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../types/scalar.hh"
+#include "errors.hh"
 #include "macros.hh"
 #include "utility.hh"
 
@@ -10,17 +11,17 @@ namespace tg
 template <class Base, int Bits>
 struct scalar_t
 {
-    using type = void;
+    using type = error::unsupported_scalar_type<Base, Bits>;
 };
 template <class Base, int Bits>
 using scalar = typename scalar_t<Base, Bits>::type;
-TG_IMPL_DEFINE_TRAIT(scalar_bit_width, int, 0);
-TG_IMPL_DEFINE_TYPE_TRAIT(scalar_base_type, void);
+TG_IMPL_DEFINE_TRAIT(scalar_bit_width, int, error::unknown_scalar_type<T>::value);
+TG_IMPL_DEFINE_TYPE_TRAIT(scalar_base_type, error::unknown_scalar_type<T>);
 
 // name traits
-TG_IMPL_DEFINE_TRAIT(type_name_prefix, char const*, "");
-TG_IMPL_DEFINE_TRAIT(type_name, char const*, "");
-TG_IMPL_DEFINE_TRAIT(type_name_suffix, char const*, "");
+TG_IMPL_DEFINE_TRAIT(type_name_prefix, char const*, error::unknown_type<T>::value);
+TG_IMPL_DEFINE_TRAIT(type_name, char const*, error::unknown_type<T>::value);
+TG_IMPL_DEFINE_TRAIT(type_name_suffix, char const*, error::unknown_type<T>::value);
 
 // field traits
 TG_IMPL_DEFINE_TRAIT(is_integer, bool, false);
@@ -32,6 +33,7 @@ TG_IMPL_DEFINE_TRAIT(has_multiplication, bool, true);
 // shape traits
 TG_IMPL_DEFINE_TRAIT(is_scalar, bool, false);
 TG_IMPL_DEFINE_TRAIT(is_vector, bool, false);
+TG_IMPL_DEFINE_TRAIT(is_object, bool, false);
 TG_IMPL_DEFINE_TRAIT(is_matrix, bool, false);
 TG_IMPL_DEFINE_TRAIT(is_quaternion, bool, false);
 
@@ -156,7 +158,7 @@ TG_IMPL_ADD_TYPE_TRAIT(integer_result, u16, u16);
 TG_IMPL_ADD_TYPE_TRAIT(integer_result, u32, u32);
 TG_IMPL_ADD_TYPE_TRAIT(integer_result, u64, u64);
 
-TG_IMPL_DEFINE_TYPE_TRAIT(squared_result, void);
+TG_IMPL_DEFINE_TYPE_TRAIT(squared_result, error::unknown_scalar_type<T>);
 
 TG_IMPL_ADD_TYPE_TRAIT(squared_result, i8, i16);
 TG_IMPL_ADD_TYPE_TRAIT(squared_result, i16, i32);
@@ -174,7 +176,7 @@ TG_IMPL_ADD_TYPE_TRAIT(squared_result, f32, f32);
 TG_IMPL_ADD_TYPE_TRAIT(squared_result, f64, f64);
 
 // promotions
-TG_IMPL_DEFINE_BINARY_TYPE_TRAIT(promoted_scalar_base, void);
+TG_IMPL_DEFINE_BINARY_TYPE_TRAIT(promoted_scalar_base, error::cannot_promote_types<A, B>);
 TG_IMPL_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, int, int, int);
 TG_IMPL_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, int, unsigned, int);
 TG_IMPL_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, int, float, float);
@@ -198,7 +200,7 @@ using promoted_scalar = typename promoted_scalar_t<A, B>::type;
 template <int D>
 struct type_name_number_t
 {
-    static constexpr char const* value = "";
+    static constexpr char const* value = error::only_support_four_dimensions<D>::value;
 };
 template <>
 struct type_name_number_t<1>
