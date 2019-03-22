@@ -57,11 +57,13 @@ TG_IMPL_ADD_TRAIT(scalar_bit_width, int, i8, 8);
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, i16, 16);
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, i32, 32);
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, i64, 64);
+TG_IMPL_ADD_TRAIT(scalar_bit_width, int, long, 64);
 
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, u8, 8);
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, u16, 16);
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, u32, 32);
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, u64, 64);
+TG_IMPL_ADD_TRAIT(scalar_bit_width, int, unsigned long, 64);
 
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, f8, 8);
 TG_IMPL_ADD_TRAIT(scalar_bit_width, int, f16, 16);
@@ -117,25 +119,32 @@ TG_IMPL_ADD_TRAIT(is_scalar, bool, f16, true);
 TG_IMPL_ADD_TRAIT(is_scalar, bool, f32, true);
 TG_IMPL_ADD_TRAIT(is_scalar, bool, f64, true);
 
+TG_IMPL_ADD_TRAIT(is_scalar, bool, long, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, unsigned long, true);
+
 TG_IMPL_ADD_TRAIT(is_integer, bool, i8, true);
 TG_IMPL_ADD_TRAIT(is_integer, bool, i16, true);
 TG_IMPL_ADD_TRAIT(is_integer, bool, i32, true);
 TG_IMPL_ADD_TRAIT(is_integer, bool, i64, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, long, true);
 
 TG_IMPL_ADD_TRAIT(is_signed_integer, bool, i8, true);
 TG_IMPL_ADD_TRAIT(is_signed_integer, bool, i16, true);
 TG_IMPL_ADD_TRAIT(is_signed_integer, bool, i32, true);
 TG_IMPL_ADD_TRAIT(is_signed_integer, bool, i64, true);
+TG_IMPL_ADD_TRAIT(is_signed_integer, bool, long, true);
 
 TG_IMPL_ADD_TRAIT(is_integer, bool, u8, true);
 TG_IMPL_ADD_TRAIT(is_integer, bool, u16, true);
 TG_IMPL_ADD_TRAIT(is_integer, bool, u32, true);
 TG_IMPL_ADD_TRAIT(is_integer, bool, u64, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, unsigned long, true);
 
 TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, u8, true);
 TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, u16, true);
 TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, u32, true);
 TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, u64, true);
+TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, unsigned long, true);
 
 TG_IMPL_ADD_TRAIT(is_floating_point, bool, f8, true);
 TG_IMPL_ADD_TRAIT(is_floating_point, bool, f16, true);
