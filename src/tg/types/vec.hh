@@ -269,7 +269,7 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator!=, ||, !=);
 
 // deduction guides
 #ifdef TG_SUPPORT_CXX17
-template <class A>
+template <class A, class = enable_if<is_scalar<A>>>
 vec(A const& x)->vec<1, A>;
 template <class A, class B>
 vec(A const& x, B const& y)->vec<2, promoted_scalar<A, B>>;
