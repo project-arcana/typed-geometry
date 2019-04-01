@@ -180,7 +180,7 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(pos, pos, bool, operator!=, ||, !=);
 
 // deduction guides
 #ifdef TG_SUPPORT_CXX17
-template <class A>
+template <class A, class = enable_if<is_scalar<A>>>
 pos(A const& x)->pos<1, A>;
 template <class A, class B>
 pos(A const& x, B const& y)->pos<2, promoted_scalar<A, B>>;
