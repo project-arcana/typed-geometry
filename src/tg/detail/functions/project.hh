@@ -36,4 +36,10 @@ constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, plane const& pl)
 {
     return p - pl.n * (dot(p - zero<pos<3, ScalarT>>(), pl.n) - pl.d);
 }
+
+template <class ScalarT>
+constexpr vec<3, ScalarT> project(vec<3, ScalarT> const& v, plane const& pl)
+{
+    return v - pl.n * dot(v, pl.n);
+}
 } // namespace tg

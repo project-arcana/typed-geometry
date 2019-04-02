@@ -8,7 +8,7 @@ namespace tg
 template <int D, class T>
 constexpr mat<D + 1, D + 1, T> translation(vec<D, T> const& v)
 {
-    auto m = mat<D + 1, D + 1, T>::identity;
+    auto m = mat<D + 1, D + 1, T>::diag(T(1));
     m[D] = vec<D + 1, T>(v, T(1));
     return m;
 }
