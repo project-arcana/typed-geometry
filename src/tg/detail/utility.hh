@@ -85,4 +85,20 @@ To bit_cast(From f)
     u.from = f;
     return u.to;
 }
+
+template <bool B, class T, class F>
+struct conditional_type_t
+{
+    using type = T;
+};
+
+template <class T, class F>
+struct conditional_type_t<false, T, F>
+{
+    using type = F;
+};
+
+template <bool B, class T, class F>
+using conditional_type = typename conditional_type_t<B, T, F>::type;
+
 } // namespace tg

@@ -196,20 +196,22 @@ TG_IMPL_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, float, int, float);
 TG_IMPL_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, float, unsigned, float);
 TG_IMPL_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, float, float, float);
 
-template <class A, class B>
+template <bool, class A, class B>
 struct promoted_scalar_t
 {
-    static constexpr int bitmax(int a, int b) { return a > b ? a : b; }
-
-    template <class X, class Y, class = enable_if<is_scalar<X> && is_scalar<Y>>>
-    static auto test(X const&, Y const&)
-        -> scalar<promoted_scalar_base<scalar_base_type<X>, scalar_base_type<Y>>, bitmax(scalar_bit_width<X>, scalar_bit_width<Y>)>;
-    static auto test(...) -> type_error::cannot_promote_types<A, B>;
-
-    using type = decltype(test(A(), B()));
+    using type = type_error::cannot_promote_types<A, B>;
 };
 template <class A, class B>
-using promoted_scalar = typename promoted_scalar_t<A, B>::type;
+struct promoted_scalar_t<true, A, B>
+{
+    static_assert(is_scalar<A> && is_scalar<B>, "only valid for scalars");
+
+    static constexpr int bitmax(int a, int b) { return a > b ? a : b; }
+
+    using type = scalar<promoted_scalar_base<scalar_base_type<A>, scalar_base_type<B>>, bitmax(scalar_bit_width<A>, scalar_bit_width<B>)>;
+};
+template <class A, class B>
+using promoted_scalar = typename promoted_scalar_t<is_scalar<A> && is_scalar<B>, A, B>::type;
 
 // numbers
 template <int D>
