@@ -31,3 +31,4 @@
 #include "functions/translation.hh"
 #include "functions/uniform.hh"
 #include "functions/volume.hh"
+#include "functions/intersection.hh"
