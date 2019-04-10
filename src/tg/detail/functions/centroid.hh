@@ -36,4 +36,10 @@ pos<D, fractional_result<ScalarT>> centroid(segment<D, ScalarT> const& p)
 {
     return mix(p.a, p.b, fractional_result<ScalarT>(0.5));
 }
+
+template <int D, class ScalarT>
+pos<D, ScalarT> centroid(sphere<D, ScalarT> const& p)
+{
+    return p.center;
+}
 } // namespace tg
