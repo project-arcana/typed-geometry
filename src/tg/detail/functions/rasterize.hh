@@ -19,21 +19,21 @@ namespace tg
 template <class ScalarT, class F>
 void rasterize(triangle<2, ScalarT> const& t, F&& f)
 {
-    auto b = aabb(t);
+    auto const b = aabb(t);
 
     // margin so that we can safely round/clamp to integer coords
-    auto minPix = ifloor(b.min);
-    auto maxPix = iceil(b.max);
+    auto const minPix = ifloor(b.min);
+    auto const maxPix = iceil(b.max);
 
     // TODO: Bresenham on two of the triangle edges, then scanline
     for (auto y = minPix.y; y <= maxPix.y; ++y)
         for (auto x = minPix.x; x <= maxPix.x; ++x)
         {
-            auto pos = pos2(x, y);
-            auto bary = coordinates(t, pos);
-            auto a = bary[0];
-            auto b = bary[1];
-            auto c = bary[2];
+            auto const pos = tg::pos<2, ScalarT>(ScalarT(x), ScalarT(y));
+            auto const bary = coordinates(t, pos);
+            auto const a = bary[0];
+            auto const b = bary[1];
+            auto const c = bary[2];
             if (a >= 0 && b >= 0 && c >= 0)
             {
                 // inside triangle

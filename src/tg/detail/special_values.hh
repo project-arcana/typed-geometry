@@ -207,91 +207,91 @@ struct special_values<mat<C, R, ScalarT>>
 
 // set special values
 template <class ScalarT>
-constexpr vec<1, ScalarT> vec<1, ScalarT>::zero = {ScalarT(0)};
+const vec<1, ScalarT> vec<1, ScalarT>::zero = {ScalarT(0)};
 template <class ScalarT>
-constexpr vec<1, ScalarT> vec<1, ScalarT>::one = {ScalarT(1)};
+const vec<1, ScalarT> vec<1, ScalarT>::one = {ScalarT(1)};
 template <class ScalarT>
-constexpr vec<1, ScalarT> vec<1, ScalarT>::unit_x = {ScalarT(1)};
+const vec<1, ScalarT> vec<1, ScalarT>::unit_x = {ScalarT(1)};
 
 template <class ScalarT>
-constexpr vec<2, ScalarT> vec<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
+const vec<2, ScalarT> vec<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<2, ScalarT> vec<2, ScalarT>::one = {ScalarT(1), ScalarT(1)};
+const vec<2, ScalarT> vec<2, ScalarT>::one = {ScalarT(1), ScalarT(1)};
 template <class ScalarT>
-constexpr vec<2, ScalarT> vec<2, ScalarT>::unit_x = {ScalarT(1), ScalarT(0)};
+const vec<2, ScalarT> vec<2, ScalarT>::unit_x = {ScalarT(1), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<2, ScalarT> vec<2, ScalarT>::unit_y = {ScalarT(0), ScalarT(1)};
+const vec<2, ScalarT> vec<2, ScalarT>::unit_y = {ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
+const vec<3, ScalarT> vec<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::one = {ScalarT(1), ScalarT(1), ScalarT(1)};
+const vec<3, ScalarT> vec<3, ScalarT>::one = {ScalarT(1), ScalarT(1), ScalarT(1)};
 template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_x = {ScalarT(1), ScalarT(0), ScalarT(0)};
+const vec<3, ScalarT> vec<3, ScalarT>::unit_x = {ScalarT(1), ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_y = {ScalarT(0), ScalarT(1), ScalarT(0)};
+const vec<3, ScalarT> vec<3, ScalarT>::unit_y = {ScalarT(0), ScalarT(1), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<3, ScalarT> vec<3, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1)};
+const vec<3, ScalarT> vec<3, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
+const vec<4, ScalarT> vec<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::one = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
+const vec<4, ScalarT> vec<4, ScalarT>::one = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
 template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_x = {ScalarT(1), ScalarT(0), ScalarT(0), ScalarT(0)};
+const vec<4, ScalarT> vec<4, ScalarT>::unit_x = {ScalarT(1), ScalarT(0), ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_y = {ScalarT(0), ScalarT(1), ScalarT(0), ScalarT(0)};
+const vec<4, ScalarT> vec<4, ScalarT>::unit_y = {ScalarT(0), ScalarT(1), ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)};
+const vec<4, ScalarT> vec<4, ScalarT>::unit_z = {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)};
 template <class ScalarT>
-constexpr vec<4, ScalarT> vec<4, ScalarT>::unit_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
+const vec<4, ScalarT> vec<4, ScalarT>::unit_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
-constexpr pos<1, ScalarT> pos<1, ScalarT>::zero = {ScalarT(0)};
+const pos<1, ScalarT> pos<1, ScalarT>::zero = {ScalarT(0)};
 
 template <class ScalarT>
-constexpr pos<2, ScalarT> pos<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
+const pos<2, ScalarT> pos<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
 
 template <class ScalarT>
-constexpr pos<3, ScalarT> pos<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
+const pos<3, ScalarT> pos<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
 
 template <class ScalarT>
-constexpr pos<4, ScalarT> pos<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
+const pos<4, ScalarT> pos<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
 
 template <class ScalarT>
-constexpr size<1, ScalarT> size<1, ScalarT>::zero = {ScalarT(0)};
+const size<1, ScalarT> size<1, ScalarT>::zero = {ScalarT(0)};
 template <class ScalarT>
-constexpr size<1, ScalarT> size<1, ScalarT>::ones = {ScalarT(1)};
+const size<1, ScalarT> size<1, ScalarT>::ones = {ScalarT(1)};
 template <class ScalarT>
-constexpr size<1, ScalarT> size<1, ScalarT>::unit = {ScalarT(1)};
+const size<1, ScalarT> size<1, ScalarT>::unit = {ScalarT(1)};
 
 template <class ScalarT>
-constexpr size<2, ScalarT> size<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
+const size<2, ScalarT> size<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr size<2, ScalarT> size<2, ScalarT>::ones = {ScalarT(1), ScalarT(1)};
+const size<2, ScalarT> size<2, ScalarT>::ones = {ScalarT(1), ScalarT(1)};
 template <class ScalarT>
-constexpr size<2, ScalarT> size<2, ScalarT>::unit = {ScalarT(1), ScalarT(1)};
+const size<2, ScalarT> size<2, ScalarT>::unit = {ScalarT(1), ScalarT(1)};
 
 template <class ScalarT>
-constexpr size<3, ScalarT> size<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
+const size<3, ScalarT> size<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr size<3, ScalarT> size<3, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1)};
+const size<3, ScalarT> size<3, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1)};
 template <class ScalarT>
-constexpr size<3, ScalarT> size<3, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1)};
+const size<3, ScalarT> size<3, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1)};
 
 template <class ScalarT>
-constexpr size<4, ScalarT> size<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
+const size<4, ScalarT> size<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
 template <class ScalarT>
-constexpr size<4, ScalarT> size<4, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
+const size<4, ScalarT> size<4, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
 template <class ScalarT>
-constexpr size<4, ScalarT> size<4, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
+const size<4, ScalarT> size<4, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
 
 template <int C, int R, class ScalarT>
-constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::zero = {};
+const mat<C, R, ScalarT> mat<C, R, ScalarT>::zero = {};
 template <int C, int R, class ScalarT>
-constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::identity = tg::identity<mat<C, R, ScalarT>>();
+const mat<C, R, ScalarT> mat<C, R, ScalarT>::identity = tg::identity<mat<C, R, ScalarT>>();
 template <int C, int R, class ScalarT>
-constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::ones = tg::ones<mat<C, R, ScalarT>>();
+const mat<C, R, ScalarT> mat<C, R, ScalarT>::ones = tg::ones<mat<C, R, ScalarT>>();
 
 template <int C, int R, class ScalarT>
 constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::diag(ScalarT v)

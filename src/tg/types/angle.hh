@@ -40,15 +40,15 @@ public:
     constexpr bool operator>=(angle<T> const& b) const { return angle_in_radians >= b.angle_in_radians; }
 };
 
-inline angle<f32> radians(i32 a) { return angle<f32>::from_radians(a); }
-inline angle<f32> radians(i64 a) { return angle<f32>::from_radians(a); }
-inline angle<f32> radians(f32 a) { return angle<f32>::from_radians(a); }
-inline angle<f64> radians(f64 a) { return angle<f64>::from_radians(a); }
+inline angle<f32> radians(i32 a) { return angle<f32>::from_radians(f32(a)); }
+inline angle<f32> radians(i64 a) { return angle<f32>::from_radians(f32(a)); }
+inline angle<f32> radians(f32 a) { return angle<f32>::from_radians(f32(a)); }
+inline angle<f64> radians(f64 a) { return angle<f64>::from_radians(f64(a)); }
 
-inline angle<f32> degree(i32 a) { return angle<f32>::from_degree(a); }
-inline angle<f32> degree(i64 a) { return angle<f32>::from_degree(a); }
-inline angle<f32> degree(f32 a) { return angle<f32>::from_degree(a); }
-inline angle<f64> degree(f64 a) { return angle<f64>::from_degree(a); }
+inline angle<f32> degree(i32 a) { return angle<f32>::from_degree(f32(a)); }
+inline angle<f32> degree(i64 a) { return angle<f32>::from_degree(f32(a)); }
+inline angle<f32> degree(f32 a) { return angle<f32>::from_degree(f32(a)); }
+inline angle<f64> degree(f64 a) { return angle<f64>::from_degree(f64(a)); }
 
 template <class T>
 T to_radians(angle<T> a)
