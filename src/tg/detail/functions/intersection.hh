@@ -40,10 +40,11 @@ constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D, ScalarT> con
     -> intersection_result<ray<3, ScalarT>, hyperplane<D, ScalarT>>
 {
     // if plane normal and raydirection are parallel there is no intersection
-    if (dot(p.n, r.dir) == 0)
+    auto dotND = dot(p.n, r.dir);
+    if (dotND == 0)
         return {true, {}};
 
-    auto t = -(dot(p.n, vec3(r.pos)) + p.d) / dot(p.n, r.dir);
+    auto t = -(dot(p.n, vec3(r.pos)) + p.d) / dotND;
 
     // check whether plane lies behind ray
     if (t < 0)
@@ -52,7 +53,7 @@ constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D, ScalarT> con
     auto result = r.pos + r.dir * t;
 
     // non-empty intersection
-    return {false, {result.x, result.y, result.z}};
+    return {false, result};
 }
 
 // returns intersection point of ray and triangle
@@ -60,11 +61,7 @@ template <class ScalarT>
 constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
     -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
 {
-    tg::vec3 tNormal = normal(t);
-    // distance of plane to origin is defined by normal and one vertex
-    auto d = dot(tNormal, vec3(t.v0));
-
-    auto p = hyperplane<3, ScalarT>(tNormal, d);
+    auto p = hyperplane<3, ScalarT>(normal(t), t.v0);
 
     auto result = intersection(r, p);
 
@@ -73,6 +70,6 @@ constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const
         return {true, {}};
 
     // non-empty intersection
-    return {false, {result.pos.x, result.pos.y, result.pos.z}};
+    return result;
 }
 } // namespace tg
