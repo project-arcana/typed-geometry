@@ -57,7 +57,7 @@ constexpr mat<3, 3, ScalarT> rotation_around(pos<2, ScalarT> p, angle<ScalarT> a
     auto ca = cos(a);
     auto sa = sin(a);
 
-    auto r = mat<3, 3, ScalarT>::diag(ScalarT(1));
+    auto r = mat<3, 3, ScalarT>::identity;
     r[2][2] = 1.0f;
 
     r[0][0] = ca;
