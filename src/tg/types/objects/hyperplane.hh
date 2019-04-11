@@ -50,6 +50,7 @@ template <int D, class ScalarT>
 struct hyperplane
 {
     using vec_t = vec<D, ScalarT>;
+    using pos_t = pos<D, ScalarT>;
     using dis_t = ScalarT;
 
     vec_t n;
@@ -57,5 +58,6 @@ struct hyperplane
 
     constexpr hyperplane() = default;
     constexpr hyperplane(vec_t n, dis_t d) : n(n), d(d) {}
+    constexpr hyperplane(vec_t n, pos_t p);
 };
 } // namespace tg

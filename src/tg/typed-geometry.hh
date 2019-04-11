@@ -3,6 +3,7 @@
 #include "typed-geometry-lean.hh"
 
 #include "detail/constants.hh"
+#include "detail/constructors.hh"
 #include "detail/limits.hh"
 #include "detail/literals.hh"
 #include "detail/random.hh"
