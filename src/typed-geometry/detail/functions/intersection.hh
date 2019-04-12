@@ -17,14 +17,14 @@ template <int D, class ScalarT>
 struct intersection_result<ray<3, ScalarT>, hyperplane<D, ScalarT>>
 {
     bool empty;
-    pos<D, ScalarT> pos;
+    tg::pos<D, ScalarT> pos;
 };
 
 template <class ScalarT>
 struct intersection_result<ray<3, ScalarT>, triangle<3, ScalarT>>
 {
     bool empty;
-    pos<3, ScalarT> pos;
+    tg::pos<3, ScalarT> pos;
 };
 
 // returns whether two objects intersect
