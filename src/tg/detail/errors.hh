@@ -12,6 +12,8 @@ template <class T>
 struct unknown_type;
 template <class A, class B>
 struct cannot_promote_types;
+template <class T>
+struct unsupported_type;
 template <int D>
 struct only_support_four_dimensions;
 }
