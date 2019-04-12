@@ -5,6 +5,12 @@
 
 namespace tg
 {
+template <class A>                                                                                                             \
+constexpr angle<A> operator -(angle<A> const& a)                                                                    \
+{                                                                                                                                    \
+    return radians(-a.radians());                                                                                        \
+}
+
 template <class A, class B, class R = promoted_scalar<A, B>>
 constexpr angle<R> operator+(angle<A> a, angle<B> b)
 {
