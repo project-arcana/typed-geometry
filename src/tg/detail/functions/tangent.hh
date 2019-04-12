@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../types/objects/triangle.hh"
 #include "../../types/mat.hh"
-#include "normal.hh"
+#include "../../types/objects/triangle.hh"
 #include "cross.hh"
+#include "normal.hh"
 
 namespace tg
 {
@@ -26,20 +26,32 @@ constexpr vec<3, ScalarT> tangent(triangle<3, ScalarT> const& pos, triangle<2, S
     auto dir = u20 * v10 - u10 * v20;
     auto tangent = dir * (p20 * v10 - p10 * v20);
 
-    // TODO: eps reasonable?
-    constexpr ScalarT eps = ScalarT(1e-6);
-    return normalize_safe(tangent, eps);
+    return normalize_safe(tangent);
 }
 
-// Returns the TBN matrix, i.e. the tangent frame for the given triangle position and uv coords
+// Returns the TBN matrix, i.e. the tangent frame for the given triangle position and uv coords (not necessarily orthogonal)
 template <class ScalarT>
-constexpr mat<3,3, ScalarT> tangent_space(triangle<3, ScalarT> const& pos, triangle<2, ScalarT> const& uv)
+constexpr mat<3, 3, ScalarT> tbn_matrix(triangle<3, ScalarT> const& pos, triangle<2, ScalarT> const& uv)
 {
-    // TODO: optimized version instead?
-    auto t = tangent(pos, uv);
-    auto n = normal(pos);
-    auto b = cross(n, t);
+    auto p10 = pos.v1 - pos.v0;
+    auto p20 = pos.v2 - pos.v0;
 
-    return {t, b, n};
+    auto uv10 = uv.v1 - uv.v0;
+    auto uv20 = uv.v2 - uv.v0;
+
+    auto u10 = uv10.x;
+    auto u20 = uv20.x;
+    auto v10 = uv10.y;
+    auto v20 = uv20.y;
+
+    auto dir = u20 * v10 - u10 * v20;
+    auto t = dir * (p20 * v10 - p10 * v20);
+    auto b = dir * (p10 * u20 - p20 * u10);
+
+    t = normalize_safe(t);
+    b = normalize_safe(b);
+    auto n = normalize_safe(cross(t, b));
+
+    return {{t, b, n}};
 }
 }
