@@ -10,6 +10,11 @@
 #define TG_IMPL_MEMBER_vec_2 z
 #define TG_IMPL_MEMBER_vec_3 w
 
+#define TG_IMPL_MEMBER_color_0 r
+#define TG_IMPL_MEMBER_color_1 g
+#define TG_IMPL_MEMBER_color_2 b
+#define TG_IMPL_MEMBER_color_3 a
+
 #define TG_IMPL_MEMBER_size_0 width
 #define TG_IMPL_MEMBER_size_1 height
 #define TG_IMPL_MEMBER_size_2 depth
