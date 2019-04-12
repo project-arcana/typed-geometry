@@ -28,6 +28,7 @@
 #include "functions/scaling.hh"
 #include "functions/submatrix.hh"
 #include "functions/subvector.hh"
+#include "functions/tangent.hh"
 #include "functions/translation.hh"
 #include "functions/uniform.hh"
 #include "functions/volume.hh"
