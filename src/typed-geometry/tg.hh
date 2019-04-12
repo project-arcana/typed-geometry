@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typed-geometry-lean.hh"
+#include "tg-lean.hh"
 
 #include "detail/constants.hh"
 #include "detail/constructors.hh"

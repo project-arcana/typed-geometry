@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "../typed-geometry-lean.hh"
+#include <typed-geometry/tg-lean.hh>
 
 namespace tg
 {

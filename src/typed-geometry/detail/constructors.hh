@@ -1,8 +1,8 @@
 #pragma once
 
-#include <tg/types/objects/hyperplane.hh>
+#include <typed-geometry/types/objects/hyperplane.hh>
 
-#include <tg/detail/functions/dot.hh>
+#include <typed-geometry/detail/functions/dot.hh>
 
 // Header for all constructors that depend on functions
 

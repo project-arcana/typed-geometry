@@ -3,7 +3,7 @@
 #include <functional>
 #include <tuple>
 
-#include "../typed-geometry-lean.hh"
+#include <typed-geometry/tg-lean.hh>
 
 
 namespace std

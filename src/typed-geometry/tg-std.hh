@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typed-geometry.hh"
+#include "tg.hh"
 
 #include "std/hash.hh"
 #include "std/io.hh"
