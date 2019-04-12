@@ -31,14 +31,14 @@ constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, segment<D, ScalarT> 
     return mix(s.a, s.b, t);
 }
 
-template <class ScalarT>
-constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, plane const& pl)
+template <int D, class ScalarT>
+constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
 {
-    return p - pl.n * (dot(p - zero<pos<3, ScalarT>>(), pl.n) - pl.d);
+    return p - pl.n * (dot(p - zero<pos<D, ScalarT>>(), pl.n) - pl.d);
 }
 
-template <class ScalarT>
-constexpr vec<3, ScalarT> project(vec<3, ScalarT> const& v, plane const& pl)
+template <int D, class ScalarT>
+constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
 {
     return v - pl.n * dot(v, pl.n);
 }
