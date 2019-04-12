@@ -3,6 +3,7 @@
 #include "../../types/angle.hh"
 #include "../../types/mat.hh"
 #include "../../types/vec.hh"
+#include "translation.hh"
 
 // TODO: rotation(axis, angle) or angle/axis?
 
@@ -46,5 +47,24 @@ constexpr mat<4, 4, T> rotation_z(angle<T> a)
     m[0][1] = sa;
     m[1][1] = ca;
     return m;
+}
+
+template <class ScalarT>
+constexpr mat<3, 3, ScalarT> rotation_around(pos<2, ScalarT> p, angle<ScalarT> a)
+{
+    auto origin_to_p = p - pos<2, ScalarT>::zero;
+
+    auto ca = cos(a);
+    auto sa = sin(a);
+
+    auto r = mat<3, 3, ScalarT>::identity;
+    r[2][2] = 1.0f;
+
+    r[0][0] = ca;
+    r[1][0] = -sa;
+    r[0][1] = sa;
+    r[1][1] = ca;
+
+    return translation(origin_to_p) * r * translation(-origin_to_p);
 }
 } // namespace tg
