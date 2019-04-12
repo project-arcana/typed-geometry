@@ -79,4 +79,33 @@ constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p,
     return ((A0 >= -eps) == (A1 >= -eps)) && ((A1 >= -eps) == (A2 >= -eps));
 }
 
+template <class ScalarT>
+constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
+{
+    // TODO
+    // use eps?
+    // does this also work for triangles where vertices are not ordered cc? should it?
+
+    auto n = normal(t);
+
+    // checking whether point lies on right side of any edge
+    auto e = t.v1 - t.v0;
+    auto C = cross(e, p - t.v0);
+    if (dot(n, C) < 0)
+        return false;
+
+    e = t.v2 - t.v1;
+    C = cross(e, p - t.v1);
+    if (dot(n, C) < 0)
+        return false;
+
+    e = t.v0 - t.v2;
+    C = cross(e, p - t.v2);
+    if (dot(n, C) < 0)
+        return false;
+
+    // point always on left side
+    return true;
+}
+
 } // namespace tg
