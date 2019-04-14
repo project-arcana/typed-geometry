@@ -1,12 +1,20 @@
 #pragma once
 
+#include "../../types/objects/hyperplane.hh"
 #include "../../types/objects/ray.hh"
 #include "../../types/objects/triangle.hh"
-#include "../../types/objects/hyperplane.hh"
 
 #include "contains.hh"
 #include "dot.hh"
 #include "normal.hh"
+
+// family of intersection functions:
+
+// intersects(a, b) -> bool    iff any point lies in a and in b
+// intersection(a, b) -> ???   returns an object describing the intersection
+
+// related function:
+//   closest_hit(ray, b) -> optional<pos>
 
 namespace tg
 {
@@ -36,8 +44,7 @@ constexpr auto intersects(A const& a, B const& b) -> decltype(!intersection(a, b
 
 // returns intersection point of ray and hyperplane
 template <int D, class ScalarT>
-constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
-    -> intersection_result<ray<3, ScalarT>, hyperplane<D, ScalarT>>
+constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D, ScalarT> const& p) -> intersection_result<ray<3, ScalarT>, hyperplane<D, ScalarT>>
 {
     // if plane normal and raydirection are parallel there is no intersection
     auto dotND = dot(p.n, r.dir);
@@ -58,8 +65,7 @@ constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D, ScalarT> con
 
 // returns intersection point of ray and triangle
 template <class ScalarT>
-constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
-    -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
+constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t) -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
 {
     auto p = hyperplane<3, ScalarT>(normal(t), t.v0);
 
