@@ -22,13 +22,13 @@ namespace tg
 {
 // default implementation if distance(a, pos) is available
 template <class A, int D, class ScalarT>
-constexpr auto contains(A const& a, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0)) -> decltype(distance(a, p), false)
+TG_NODISCARD constexpr auto contains(A const& a, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0)) -> decltype(distance(a, p), false)
 {
     return distance(a, p) <= eps;
 }
 
 template <int D, class ScalarT>
-constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     if (eps > 0)
         return distance2(b, o) < eps * eps;
@@ -36,30 +36,30 @@ constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, Scal
 }
 
 template <class ScalarT>
-constexpr bool contains(box<1, ScalarT> const& b, ScalarT const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(box<1, ScalarT> const& b, ScalarT const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o && o <= b.max.x + eps;
 }
 template <class ScalarT>
-constexpr bool contains(box<1, ScalarT> const& b, pos<1, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(box<1, ScalarT> const& b, pos<1, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps;
 }
 template <class ScalarT>
-constexpr bool contains(box<2, ScalarT> const& b, pos<2, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(box<2, ScalarT> const& b, pos<2, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps;
 }
 template <class ScalarT>
-constexpr bool contains(box<3, ScalarT> const& b, pos<3, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(box<3, ScalarT> const& b, pos<3, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps && //
            b.min.z - eps <= o.z && o.z <= b.max.z + eps;
 }
 template <class ScalarT>
-constexpr bool contains(box<4, ScalarT> const& b, pos<4, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(box<4, ScalarT> const& b, pos<4, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps && //
@@ -68,14 +68,14 @@ constexpr bool contains(box<4, ScalarT> const& b, pos<4, ScalarT> const& o, Scal
 }
 
 template <int D, class ScalarT>
-constexpr bool contains(box<D, ScalarT> const& b, box<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(box<D, ScalarT> const& b, box<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return contains(b, o.min, eps) && contains(b, o.max, eps);
 }
 
 // Note that eps is used to compare 2D areas, not 1D lengths
 template <class ScalarT>
-constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
 {
     auto pv0 = t.v0 - p;
     auto pv1 = t.v1 - p;
@@ -92,7 +92,7 @@ constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p,
 }
 
 template <class ScalarT>
-constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
+TG_NODISCARD constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
 {
     // TODO
     // use eps?

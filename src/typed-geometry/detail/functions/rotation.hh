@@ -10,7 +10,7 @@
 namespace tg
 {
 template <class T>
-constexpr mat<4, 4, T> rotation_x(angle<T> a)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_x(angle<T> a)
 {
     auto ca = cos(a);
     auto sa = sin(a);
@@ -23,7 +23,7 @@ constexpr mat<4, 4, T> rotation_x(angle<T> a)
     return m;
 }
 template <class T>
-constexpr mat<4, 4, T> rotation_y(angle<T> a)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_y(angle<T> a)
 {
     auto ca = cos(a);
     auto sa = sin(a);
@@ -36,7 +36,7 @@ constexpr mat<4, 4, T> rotation_y(angle<T> a)
     return m;
 }
 template <class T>
-constexpr mat<4, 4, T> rotation_z(angle<T> a)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_z(angle<T> a)
 {
     auto ca = cos(a);
     auto sa = sin(a);
@@ -50,7 +50,7 @@ constexpr mat<4, 4, T> rotation_z(angle<T> a)
 }
 
 template <class ScalarT>
-constexpr mat<3, 3, ScalarT> rotation_around(pos<2, ScalarT> p, angle<ScalarT> a)
+TG_NODISCARD constexpr mat<3, 3, ScalarT> rotation_around(pos<2, ScalarT> p, angle<ScalarT> a)
 {
     auto origin_to_p = p - pos<2, ScalarT>::zero;
 

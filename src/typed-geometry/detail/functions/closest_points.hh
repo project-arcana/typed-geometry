@@ -15,19 +15,19 @@ namespace tg
 {
 // Base case for point/point:
 template <int D, class ScalarT>
-constexpr pair<pos<D, ScalarT>, pos<D, ScalarT>> closest_points(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+TG_NODISCARD constexpr pair<pos<D, ScalarT>, pos<D, ScalarT>> closest_points(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     return {a, b};
 }
 
 // Default implementation for point/object and object/point:
 template <int D, class ScalarT, class ObjectT>
-constexpr auto closest_points(ObjectT const& o, pos<D, ScalarT> const& p) -> pair<decltype(project(p, o)), pos<D, ScalarT>>
+TG_NODISCARD constexpr auto closest_points(ObjectT const& o, pos<D, ScalarT> const& p) -> pair<decltype(project(p, o)), pos<D, ScalarT>>
 {
     return {project(p, o), p};
 }
 template <int D, class ScalarT, class ObjectT>
-constexpr auto closest_points(pos<D, ScalarT> const& p, ObjectT const& o) -> pair<pos<D, ScalarT>, decltype(project(p, o))>
+TG_NODISCARD constexpr auto closest_points(pos<D, ScalarT> const& p, ObjectT const& o) -> pair<pos<D, ScalarT>, decltype(project(p, o))>
 {
     return {p, project(p, o)};
 }

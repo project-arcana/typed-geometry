@@ -17,6 +17,7 @@
 #error "Unknown compiler"
 #endif
 
+
 // =========
 // compiler specific builtins
 
@@ -47,6 +48,16 @@
 #error "Unknown compiler"
 #endif
 
+
+// =========
+// common helper
+
+#define TG_DETAIL_MACRO_JOIN(arg1, arg2) arg1##arg2
+#define TG_MACRO_JOIN(arg1, arg2) TG_DETAIL_MACRO_JOIN(arg1, arg2)
+
+#define TG_UNUSED(expr) void(sizeof(bool((expr)))) // force ;
+
+
 // =========
 // versioning
 
@@ -55,6 +66,7 @@
 #else
 #define TG_NODISCARD
 #endif
+
 
 // =========
 // operations and classes

@@ -17,7 +17,7 @@ namespace tg
 {
 // F: (tg::ipos2 p, float a, float b) -> void
 template <class ScalarT, class F>
-void rasterize(triangle<2, ScalarT> const& t, F&& f)
+constexpr void rasterize(triangle<2, ScalarT> const& t, F&& f)
 {
     auto const b = aabb(t);
 

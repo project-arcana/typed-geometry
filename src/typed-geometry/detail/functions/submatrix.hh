@@ -6,7 +6,7 @@
 namespace tg
 {
 template <int SX, int SY, int SC, int SR, int C, int R, class ScalarT>
-constexpr mat<SC, SR, ScalarT> submatrix(mat<C, R, ScalarT> const& a)
+TG_NODISCARD constexpr mat<SC, SR, ScalarT> submatrix(mat<C, R, ScalarT> const& a)
 {
     static_assert(SC <= C && SR <= R, "submatrix can only make matrices smaller");
     static_assert(SX >= 0 && SY >= 0, "submatrix must start at least at zero");
