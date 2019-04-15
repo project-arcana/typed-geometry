@@ -2,6 +2,7 @@
 
 #include "../types/angle.hh"
 #include "errors.hh"
+#include "macros.hh"
 
 namespace tg
 {
@@ -12,7 +13,16 @@ template <class T>
 constexpr angle<T> pi = angle<T>::from_radians(static_cast<T>(3.14159265358979323846));
 
 template <class T>
-constexpr T nan = static_cast<T>(0.0 / 0.0);
+TG_NODISCARD constexpr T nan()
+{
+    return static_cast<T>(0.0 / 0.0);
+}
+
+template <class T>
+TG_NODISCARD constexpr T inf()
+{
+    return static_cast<T>(1.0 / 0.0);
+}
 
 template <class T>
 constexpr T epsilon = type_error::unsupported_type<T>::value;
