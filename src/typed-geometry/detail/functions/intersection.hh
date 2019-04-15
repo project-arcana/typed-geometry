@@ -1,7 +1,9 @@
 #pragma once
 
+#include "../../types/objects/circle.hh"
 #include "../../types/objects/hyperplane.hh"
 #include "../../types/objects/ray.hh"
+#include "../../types/objects/sphere.hh"
 #include "../../types/objects/triangle.hh"
 
 #include "contains.hh"
@@ -35,6 +37,13 @@ struct intersection_result<ray<3, ScalarT>, triangle<3, ScalarT>>
     tg::pos<3, ScalarT> pos;
 };
 
+template <class ScalarT>
+struct intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
+{
+    bool empty;
+    tg::circle<3, ScalarT> circle;
+};
+
 // returns whether two objects intersect
 template <class A, class B>
 TG_NODISCARD constexpr auto intersects(A const& a, B const& b) -> decltype(!intersection(a, b).empty)
@@ -44,7 +53,8 @@ TG_NODISCARD constexpr auto intersects(A const& a, B const& b) -> decltype(!inte
 
 // returns intersection point of ray and hyperplane
 template <int D, class ScalarT>
-TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D, ScalarT> const& p) -> intersection_result<ray<3, ScalarT>, hyperplane<D, ScalarT>>
+TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
+    -> intersection_result<ray<3, ScalarT>, hyperplane<D, ScalarT>>
 {
     // if plane normal and raydirection are parallel there is no intersection
     auto dotND = dot(p.n, r.dir);
@@ -65,7 +75,8 @@ TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D,
 
 // returns intersection point of ray and triangle
 template <class ScalarT>
-TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t) -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
+TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
+    -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
 {
     auto p = hyperplane<3, ScalarT>(normal(t), t.v0);
 
@@ -78,4 +89,73 @@ TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, S
     // non-empty intersection
     return result;
 }
+
+
+// returns intersection circle of sphere and sphere (normal points from a to b)
+template <class ScalarT>
+TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+    -> intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
+{
+    auto d2 = distance2(a.center, b.center);
+
+    auto d = sqrt(d2);
+
+    // no intersection
+    if (d > a.radius + b.radius)
+        return {true, {}};
+
+    /*
+// Intersection is single point
+if (d2 == a.radius + b.radius)
+{
+auto ipos = d == 0 ? a.center : a.center + (b.center - a.center) * a.radius / d;
+auto inor = d == 0 ? vec3::zero : (a.center - b.center) / d;
+return {false, {ipos, ScalarT(0), inor}};
+}
+        */
+
+
+    // radius and centers of larger sphere (ls) and smaller sphere (ss)
+    auto lsr = a.radius;
+    auto ssr = b.radius;
+    auto lsc = a.center;
+    auto ssc = b.center;
+    if (b.radius > a.radius)
+    {
+        // TODO: tg::swap?
+        lsr = b.radius;
+        ssr = a.radius;
+        lsc = b.center;
+        ssc = a.center;
+    }
+
+    if (d + ssr < lsr)
+    {
+        // Smaller sphere inside larger one and not touching it
+        return {true, {}};
+    }
+
+    /*
+if (d + ssr == lsr)
+{
+// Smaller sphere inside larger one and touches it on one side
+return {false, {lsc + (ssc - lsc) * ssr / d, ScalarT(0), (a.center - b.center) / d}};
+}
+        */
+
+
+    // squared radii of a and b
+    auto ar2 = a.radius * a.radius;
+    auto br2 = b.radius * b.radius;
+
+    auto t = ScalarT(0.5) + (ar2 - br2) / (ScalarT(2) * d2);
+
+    // position and radius of intersection circle
+    auto ipos = a.center + t * (b.center - a.center);
+    auto irad = sqrt(ar2 - t * t * d2);
+
+    // non-empty intersection (circle)
+    return {false, {ipos, irad, (b.center - a.center) / d}};
+}
+
 } // namespace tg
