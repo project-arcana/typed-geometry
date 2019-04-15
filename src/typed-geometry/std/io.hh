@@ -144,7 +144,10 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 
     ss << type_name_prefix<T>;
     ss << type_name<T>;
-    ss << type_name_suffix<T>;
+    if (C == R)
+        ss << '0' + C;
+    else
+        ss << char('0' + C) << 'x' << char('0' + R);
     ss << "(";
     for (auto i = 0; i < C; ++i)
         ss << (i > 0 ? ", " : "") << m[i];

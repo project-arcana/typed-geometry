@@ -43,16 +43,6 @@ struct type_name_suffix_t<Type<D, ScalarT>>
 {
     static constexpr char const* value = type_name_number<D>;
 };
-template <int D, class ScalarT>
-struct type_name_suffix_t<mat<D, D, ScalarT>>
-{
-    static constexpr char const* value = type_name_number<D>;
-};
-template <int C, int R, class ScalarT>
-struct type_name_suffix_t<mat<C, R, ScalarT>>
-{
-    static constexpr char const value[] = {'0' + C, 'x', '0' + R, '\0'};
-};
 
 // pos/vec types
 TG_IMPL_DEFINE_TYPE_TRAIT(pos_type_for, type_error::unknown_type<T>);

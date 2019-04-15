@@ -21,7 +21,9 @@
     (TG_LIKELY((condition)) ? void(0) : ::tg::detail::assertion_failed({#condition, TG_PRETTY_FUNC, __FILE__, __LINE__})) // force ;
 #endif
 
-namespace tg::detail
+namespace tg
+{
+namespace detail
 {
 struct assertion_info
 {
@@ -32,7 +34,8 @@ struct assertion_info
 };
 
 TG_COLD_FUNC TG_DONT_INLINE void assertion_failed(assertion_info const& info);
-} // namespace tg::detail
+}
+} // namespace tg
 
 namespace tg
 {
