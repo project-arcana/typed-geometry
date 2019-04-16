@@ -53,15 +53,15 @@ TG_NODISCARD constexpr auto intersects(A const& a, B const& b) -> decltype(!inte
 
 // returns intersection point of ray and hyperplane
 template <int D, class ScalarT>
-TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
-    -> intersection_result<ray<3, ScalarT>, hyperplane<D, ScalarT>>
+TG_NODISCARD constexpr auto intersection(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
+    -> intersection_result<ray<D, ScalarT>, hyperplane<D, ScalarT>>
 {
     // if plane normal and raydirection are parallel there is no intersection
     auto dotND = dot(p.n, r.dir);
     if (dotND == 0)
         return {true, {}};
 
-    auto t = -(dot(p.n, vec3(r.pos)) + p.d) / dotND;
+    auto t = -(dot(p.n, vec<D, ScalarT>(r.pos)) + p.d) / dotND;
 
     // check whether plane lies behind ray
     if (t < 0)
@@ -98,21 +98,11 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
 {
     auto d2 = distance2(a.center, b.center);
 
-    auto d = sqrt(d2);
+    auto d = tg::sqrt(d2);
 
     // no intersection
     if (d > a.radius + b.radius)
         return {true, {}};
-
-    /*
-// Intersection is single point
-if (d2 == a.radius + b.radius)
-{
-auto ipos = d == 0 ? a.center : a.center + (b.center - a.center) * a.radius / d;
-auto inor = d == 0 ? vec3::zero : (a.center - b.center) / d;
-return {false, {ipos, ScalarT(0), inor}};
-}
-        */
 
 
     // radius and centers of larger sphere (ls) and smaller sphere (ss)
@@ -134,15 +124,6 @@ return {false, {ipos, ScalarT(0), inor}};
         // Smaller sphere inside larger one and not touching it
         return {true, {}};
     }
-
-    /*
-if (d + ssr == lsr)
-{
-// Smaller sphere inside larger one and touches it on one side
-return {false, {lsc + (ssc - lsc) * ssr / d, ScalarT(0), (a.center - b.center) / d}};
-}
-        */
-
 
     // squared radii of a and b
     auto ar2 = a.radius * a.radius;
