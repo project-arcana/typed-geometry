@@ -7,12 +7,12 @@ namespace tg
 namespace detail
 {
 template <class ScalarT>
-constexpr ScalarT& csubscript(vec<1, ScalarT>& v, int i)
+constexpr ScalarT& csubscript(vec<1, ScalarT>& v, int)
 {
     return v.x;
 }
 template <class ScalarT>
-constexpr ScalarT const& csubscript(vec<1, ScalarT> const& v, int i)
+constexpr ScalarT const& csubscript(vec<1, ScalarT> const& v, int)
 {
     return v.x;
 }

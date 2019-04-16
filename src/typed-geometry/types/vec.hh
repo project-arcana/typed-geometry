@@ -131,7 +131,7 @@ struct vec<1, ScalarT>
     constexpr vec() = default;
     constexpr vec(ScalarT v) : x(v) {}
     template <int D, class T, class = enable_if<D >= 1>>
-    constexpr explicit vec(vec<D, T> const& v, ScalarT = ScalarT(0)) : x(ScalarT(v.x))
+    constexpr explicit vec(vec<D, T> const& v) : x(ScalarT(v.x))
     {
     }
     constexpr explicit vec(pos<1, ScalarT> const& p);
@@ -161,7 +161,7 @@ struct vec<2, ScalarT>
     constexpr explicit vec(ScalarT v) : x(v), y(v) {}
     constexpr vec(ScalarT x, ScalarT y) : x(x), y(y) {}
     template <int D, class T, class = enable_if<D >= 2>>
-    constexpr explicit vec(vec<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y))
+    constexpr explicit vec(vec<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y))
     {
     }
     template <class T>
@@ -197,7 +197,7 @@ struct vec<3, ScalarT>
     constexpr explicit vec(ScalarT v) : x(v), y(v), z(v) {}
     constexpr vec(ScalarT x, ScalarT y, ScalarT z) : x(x), y(y), z(z) {}
     template <int D, class T, class = enable_if<D >= 3>>
-    constexpr explicit vec(vec<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
+    constexpr explicit vec(vec<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
     {
     }
     template <class T>
@@ -239,7 +239,7 @@ struct vec<4, ScalarT>
     constexpr explicit vec(ScalarT v) : x(v), y(v), z(v), w(v) {}
     constexpr vec(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : x(x), y(y), z(z), w(w) {}
     template <int D, class T, class = enable_if<D >= 4>>
-    constexpr explicit vec(vec<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
+    constexpr explicit vec(vec<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
     {
     }
     template <class T>

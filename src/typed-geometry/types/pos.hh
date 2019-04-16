@@ -54,7 +54,7 @@ struct pos<1, ScalarT>
     constexpr pos() = default;
     constexpr pos(ScalarT v) : x(v) {}
     template <int D, class T, class = enable_if<D >= 1>>
-    constexpr explicit pos(pos<D, T> const& v, ScalarT = ScalarT(0)) : x(ScalarT(v.x))
+    constexpr explicit pos(pos<D, T> const& v) : x(ScalarT(v.x))
     {
     }
     constexpr explicit pos(size<1, ScalarT> const& p);
@@ -81,7 +81,7 @@ struct pos<2, ScalarT>
     constexpr explicit pos(ScalarT v) : x(v), y(v) {}
     constexpr pos(ScalarT x, ScalarT y) : x(x), y(y) {}
     template <int D, class T, class = enable_if<D >= 2>>
-    constexpr explicit pos(pos<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y))
+    constexpr explicit pos(pos<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y))
     {
     }
     template <class T>
@@ -113,7 +113,7 @@ struct pos<3, ScalarT>
     constexpr explicit pos(ScalarT v) : x(v), y(v), z(v) {}
     constexpr pos(ScalarT x, ScalarT y, ScalarT z) : x(x), y(y), z(z) {}
     template <int D, class T, class = enable_if<D >= 3>>
-    constexpr explicit pos(pos<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
+    constexpr explicit pos(pos<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
     {
     }
     template <class T>
@@ -150,7 +150,7 @@ struct pos<4, ScalarT>
     constexpr explicit pos(ScalarT v) : x(v), y(v), z(v), w(v) {}
     constexpr pos(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : x(x), y(y), z(z), w(w) {}
     template <int D, class T, class = enable_if<D >= 4>>
-    constexpr explicit pos(pos<D, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
+    constexpr explicit pos(pos<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
     {
     }
     template <class T>

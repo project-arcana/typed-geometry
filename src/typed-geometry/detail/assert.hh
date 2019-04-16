@@ -15,7 +15,7 @@
 // TG_ENABLE_ASSERTIONS enables assertions
 
 #if !defined(TG_ENABLE_ASSERTIONS)
-#define TG_ASSERT(condition) TG_UNUSED(condition)
+#define TG_ASSERT(condition) TG_UNUSED(bool((condition)))
 #else
 #define TG_ASSERT(condition) \
     (TG_LIKELY((condition)) ? void(0) : ::tg::detail::assertion_failed({#condition, TG_PRETTY_FUNC, __FILE__, __LINE__})) // force ;

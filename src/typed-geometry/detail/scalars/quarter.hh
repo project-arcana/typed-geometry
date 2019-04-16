@@ -18,5 +18,5 @@ static_assert(sizeof(quarter) == 1, "quarter is not 8bit");
 
 // TODO
 constexpr quarter operator-(quarter const& v) { return v; }
-constexpr bool operator<(quarter const& a, float b) { return true; }
+constexpr bool operator<(quarter const&, float) { return true; }
 } // namespace tg

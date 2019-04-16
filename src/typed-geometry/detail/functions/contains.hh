@@ -85,8 +85,8 @@ TG_NODISCARD constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, Scala
     auto A2 = cross(pv0, pv1);
 
     if (eps > 0)
-        return (A0 >= -std::copysign(eps, A0) == (A1 >= -std::copysign(eps, A0))) && //
-               (A1 >= -std::copysign(eps, A0) == (A2 >= -std::copysign(eps, A0)));
+        return ((A0 >= -std::copysign(eps, A0)) == (A1 >= -std::copysign(eps, A0))) && //
+               ((A1 >= -std::copysign(eps, A0)) == (A2 >= -std::copysign(eps, A0)));
 
     return ((A0 >= -eps) == (A1 >= -eps)) && ((A1 >= -eps) == (A2 >= -eps));
 }
