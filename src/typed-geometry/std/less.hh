@@ -134,6 +134,6 @@ template <int D, class ScalarT>
 struct less<tg::box<D, ScalarT>>
 {
     typedef tg::box<D, ScalarT> arg_t;
-    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.min, a.max) < std::tie(a.min, a.max); }
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.min, a.max) < std::tie(b.min, b.max); }
 };
 } // namespace std

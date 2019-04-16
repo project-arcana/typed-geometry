@@ -140,7 +140,7 @@ public:
         u64 oldstate = m_state;
         m_state = oldstate * 6364136223846793005ULL + m_inc;
         u32 xorshifted = u32(((oldstate >> 18u) ^ oldstate) >> 27u);
-        int rot = oldstate >> 59u;
+        auto rot = int(oldstate >> 59u);
         return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
     }
 

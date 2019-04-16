@@ -6,7 +6,7 @@ namespace tg
 struct half
 {
     constexpr half() = default;
-    constexpr half(float f)
+    constexpr half(float)
     {
         // TODO
         data = 0;
@@ -27,6 +27,6 @@ static_assert(sizeof(half) == 2, "half is not 16bit");
 
 // TODO
 constexpr half operator-(half const& v) { return v; }
-constexpr bool operator<(half const& a, float b) { return true; }
-constexpr bool operator<(half const& a, int b) { return true; }
+constexpr bool operator<(half const&, float) { return true; }
+constexpr bool operator<(half const&, int) { return true; }
 } // namespace tg

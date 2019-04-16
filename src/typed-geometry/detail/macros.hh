@@ -55,7 +55,7 @@
 #define TG_DETAIL_MACRO_JOIN(arg1, arg2) arg1##arg2
 #define TG_MACRO_JOIN(arg1, arg2) TG_DETAIL_MACRO_JOIN(arg1, arg2)
 
-#define TG_UNUSED(expr) void(sizeof(bool((expr)))) // force ;
+#define TG_UNUSED(expr) void(sizeof((expr))) // force ;
 
 
 // =========
@@ -118,7 +118,8 @@
     TG_NODISCARD constexpr TYPE<4, ScalarT> operator OP(TYPE<4, ScalarT> const& a)                                                       \
     {                                                                                                                                    \
         return {OP a.TG_IMPL_MEMBER(TYPE, 0), OP a.TG_IMPL_MEMBER(TYPE, 1), OP a.TG_IMPL_MEMBER(TYPE, 2), OP a.TG_IMPL_MEMBER(TYPE, 3)}; \
-    }
+    }                                                                                                                                    \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_CONV_CTOR_IMPL(TYPE_FROM, TYPE_TO)                                                                               \
     template <class ScalarT>                                                                                                            \
@@ -144,7 +145,8 @@
         TG_IMPL_MEMBER(TYPE_TO, 2)(a.TG_IMPL_MEMBER(TYPE_FROM, 2)),                                                                     \
         TG_IMPL_MEMBER(TYPE_TO, 3)(a.TG_IMPL_MEMBER(TYPE_FROM, 3))                                                                      \
     {                                                                                                                                   \
-    }
+    }                                                                                                                                   \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_BINARY_OP(TYPE_A, TYPE_B, TYPE_R, OP)                                                        \
     template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>>                      \
@@ -172,7 +174,8 @@
                 ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 1)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 1)),                       \
                 ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 2)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 2)),                       \
                 ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 3)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 3))};                      \
-    }
+    }                                                                                                               \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)                                                                               \
     template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
@@ -196,7 +199,8 @@
     {                                                                                                                                 \
         return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) OP ScalarR(b),                   \
                 ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 3)) OP ScalarR(b)};                  \
-    }
+    }                                                                                                                                 \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP)                                                                                \
     template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
@@ -220,11 +224,12 @@
     {                                                                                                                                 \
         return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 1)),                   \
                 ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 2)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 3))};                  \
-    }
+    }                                                                                                                                 \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(TYPE)                                                                                                                                            \
     /* scalar / type */                                                                                                                                                                      \
-    TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, /)                                                                                                                                            \
+    TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, /);                                                                                                                                           \
     /* type / scalar, optimized if result is floating point */                                                                                                                               \
     template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_floating_point<ScalarR> && is_scalar<ScalarB>>>                          \
     TG_NODISCARD constexpr TYPE<1, ScalarR> operator/(TYPE<1, ScalarA> const& a, ScalarB const& b)                                                                                           \
@@ -273,9 +278,12 @@
     {                                                                                                                                                                                        \
         return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) / ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) / ScalarR(b),                                                                            \
                 ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) / ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 3)) / ScalarR(b)};                                                                           \
-    }
+    }                                                                                                                                                                                        \
+    struct _force_semicolon
 
-#define TG_IMPL_DEFINE_BINARY_OP_SCALAR(TYPE, OP) TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP) TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)
+#define TG_IMPL_DEFINE_BINARY_OP_SCALAR(TYPE, OP)   \
+    TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP); \
+    TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_UNARY(TYPE, FUN)                                                                                            \
     template <class ScalarT>                                                                                                                     \
@@ -297,7 +305,8 @@
     TG_NODISCARD constexpr TYPE<4, decltype(FUN(ScalarT(0)))> FUN(TYPE<4, ScalarT> const& a)                                                     \
     {                                                                                                                                            \
         return {FUN(a.TG_IMPL_MEMBER(TYPE, 0)), FUN(a.TG_IMPL_MEMBER(TYPE, 1)), FUN(a.TG_IMPL_MEMBER(TYPE, 2)), FUN(a.TG_IMPL_MEMBER(TYPE, 3))}; \
-    }
+    }                                                                                                                                            \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_BINARY(TYPE, FUN)                                                                                 \
     template <class ScalarA, class ScalarB>                                                                                            \
@@ -321,7 +330,8 @@
     {                                                                                                                                  \
         return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0)), FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1)),  \
                 FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2)), FUN(a.TG_IMPL_MEMBER(TYPE, 3), b.TG_IMPL_MEMBER(TYPE, 3))}; \
-    }
+    }                                                                                                                                  \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_TERNARY(TYPE, FUN)                                                                                      \
     template <class ScalarA, class ScalarB, class ScalarC>                                                                                   \
@@ -353,7 +363,8 @@
                 FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1)),                                        \
                 FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2), c.TG_IMPL_MEMBER(TYPE, 2)),                                        \
                 FUN(a.TG_IMPL_MEMBER(TYPE, 3), b.TG_IMPL_MEMBER(TYPE, 3), c.TG_IMPL_MEMBER(TYPE, 3))};                                       \
-    }
+    }                                                                                                                                        \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_REDUCTION_OP_BINARY(TYPE_A, TYPE_B, RESULT_T, NAME, REDUCE, OP)                                                                 \
     template <class ScalarT>                                                                                                                           \
@@ -377,7 +388,8 @@
     {                                                                                                                                                  \
         return ((a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1)))REDUCE( \
             (a.TG_IMPL_MEMBER(TYPE_A, 2) OP b.TG_IMPL_MEMBER(TYPE_B, 2))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 3) OP b.TG_IMPL_MEMBER(TYPE_B, 3)));           \
-    }
+    }                                                                                                                                                  \
+    struct _force_semicolon
 
 #define TG_IMPL_DEFINE_ASSIGNMENT_OP(TYPE_THIS, OP)                                                                           \
     template <int D, class ScalarA, class T>                                                                                  \
@@ -385,7 +397,8 @@
     {                                                                                                                         \
         lhs = TYPE_THIS<D, ScalarA>(lhs OP rhs);                                                                              \
         return lhs;                                                                                                           \
-    }
+    }                                                                                                                         \
+    struct _force_semicolon
 
 
 #define TG_IMPL_DEFINE_TRAIT(trait, result_type, default_val) \
@@ -496,4 +509,4 @@
     struct has_multiplication_t<ttype<D, ScalarT>>                 \
     {                                                              \
         static constexpr bool value = has_multiplication<ScalarT>; \
-    }; // enforce ;
+    } // enforce ;
