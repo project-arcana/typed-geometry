@@ -46,25 +46,25 @@ TG_NODISCARD constexpr vec<4, ScalarT> operator*(mat<C, 4, ScalarT> const& m, ve
 
 // mat * vec (with mat dimension + 1, e.g. treats vec3 as vec4(..., 0))
 template <int C, class ScalarT>
-TG_NODISCARD constexpr vec<1, ScalarT> operator*(mat<C, 1, ScalarT> const& m, vec<C - 1, ScalarT> const& v)
+TG_NODISCARD constexpr vec<1, ScalarT> operator*(mat<C, 2, ScalarT> const& m, vec<C - 1, ScalarT> const& v)
 {
-    return {dot(vec<C - 1, ScalarT>(m.row(0)), v)};
+    auto w = dot(vec<C - 1, ScalarT>(m.row(1)), v);
+    auto r = vec<C - 1, ScalarT>(dot(vec<C - 1, ScalarT>(m.row(0)), v));
+    return w == ScalarT(0) || w == ScalarT(1) ? r : r / w;
 }
 template <int C, class ScalarT>
-TG_NODISCARD constexpr vec<2, ScalarT> operator*(mat<C, 2, ScalarT> const& m, vec<C - 1, ScalarT> const& v)
+TG_NODISCARD constexpr vec<2, ScalarT> operator*(mat<C, 3, ScalarT> const& m, vec<C - 1, ScalarT> const& v)
 {
-    return {dot(vec<C - 1, ScalarT>(m.row(0)), v), dot(vec<C - 1, ScalarT>(m.row(1)), v)};
+    auto w = dot(vec<C - 1, ScalarT>(m.row(2)), v);
+    auto r = vec<C - 1, ScalarT>(dot(vec<C - 1, ScalarT>(m.row(0)), v), dot(vec<C - 1, ScalarT>(m.row(1)), v));
+    return w == ScalarT(0) || w == ScalarT(1) ? r : r / w;
 }
 template <int C, class ScalarT>
-TG_NODISCARD constexpr vec<3, ScalarT> operator*(mat<C, 3, ScalarT> const& m, vec<C - 1, ScalarT> const& v)
+TG_NODISCARD constexpr vec<3, ScalarT> operator*(mat<C, 4, ScalarT> const& m, vec<C - 1, ScalarT> const& v)
 {
-    return {dot(vec<C - 1, ScalarT>(m.row(0)), v), dot(vec<C - 1, ScalarT>(m.row(1)), v), dot(vec<C - 1, ScalarT>(m.row(2)), v)};
-}
-template <int C, class ScalarT>
-TG_NODISCARD constexpr vec<4, ScalarT> operator*(mat<C, 4, ScalarT> const& m, vec<C - 1, ScalarT> const& v)
-{
-    return {dot(vec<C - 1, ScalarT>(m.row(0)), v), dot(vec<C - 1, ScalarT>(m.row(1)), v), dot(vec<C - 1, ScalarT>(m.row(2)), v),
-            dot(vec<C - 1, ScalarT>(m.row(3)), v)};
+    auto w = dot(vec<C - 1, ScalarT>(m.row(3)), v);
+    auto r = vec<C - 1, ScalarT>(dot(vec<C - 1, ScalarT>(m.row(0)), v), dot(vec<C - 1, ScalarT>(m.row(1)), v), dot(vec<C - 1, ScalarT>(m.row(2)), v));
+    return w == ScalarT(0) || w == ScalarT(1) ? r : r / w;
 }
 
 // mat * pos (with mat dimension + 1, e.g. treats pos3 as vec4(..., 1))

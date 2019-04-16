@@ -151,10 +151,10 @@ struct special_values<mat<C, R, ScalarT>>
     static constexpr mat<C, R, ScalarT> diag(vec<detail::min(C, R), ScalarT> const& v)
     {
         mat<C, R, ScalarT> m;
-        mat_set_00(m, ScalarT(v));
-        mat_set_11(m, ScalarT(v));
-        mat_set_22(m, ScalarT(v));
-        mat_set_33(m, ScalarT(v));
+        mat_set_00(m, v);
+        mat_set_11(m, v);
+        mat_set_22(m, v);
+        mat_set_33(m, v);
         return m;
     }
 
