@@ -19,56 +19,56 @@ namespace tg
 // ==================================================================
 // Classification
 
-TG_NODISCARD constexpr bool is_nan(f32 x)
+TG_NODISCARD inline bool is_nan(f32 x)
 {
     return std::isnan(x);
 }
-TG_NODISCARD constexpr bool is_nan(f64 x)
+TG_NODISCARD inline bool is_nan(f64 x)
 {
     return std::isnan(x);
 }
 
-TG_NODISCARD constexpr bool is_zero(f32 x)
+TG_NODISCARD inline bool is_zero(f32 x)
 {
     return x == 0;
 }
-TG_NODISCARD constexpr bool is_zero(f64 x)
+TG_NODISCARD inline bool is_zero(f64 x)
 {
     return x == 0;
 }
 
-TG_NODISCARD constexpr bool is_inf(f32 x)
+TG_NODISCARD inline bool is_inf(f32 x)
 {
     return std::isinf(x);
 }
-TG_NODISCARD constexpr bool is_inf(f64 x)
+TG_NODISCARD inline bool is_inf(f64 x)
 {
     return std::isinf(x);
 }
 
-TG_NODISCARD constexpr bool is_finite(f32 x)
+TG_NODISCARD inline bool is_finite(f32 x)
 {
     return std::isfinite(x);
 }
-TG_NODISCARD constexpr bool is_finite(f64 x)
+TG_NODISCARD inline bool is_finite(f64 x)
 {
     return std::isfinite(x);
 }
 
-TG_NODISCARD constexpr bool is_normal(f32 x)
+TG_NODISCARD inline bool is_normal(f32 x)
 {
     return std::isnormal(x);
 }
-TG_NODISCARD constexpr bool is_normal(f64 x)
+TG_NODISCARD inline bool is_normal(f64 x)
 {
     return std::isnormal(x);
 }
 
-TG_NODISCARD constexpr bool is_subnormal(f32 x)
+TG_NODISCARD inline bool is_subnormal(f32 x)
 {
     return is_finite(x) && !is_normal(x);
 }
-TG_NODISCARD constexpr bool is_subnormal(f64 x)
+TG_NODISCARD inline bool is_subnormal(f64 x)
 {
     return is_finite(x) && !is_normal(x);
 }
@@ -82,7 +82,7 @@ enum class fp_class
     zero
 };
 
-TG_NODISCARD constexpr fp_class fp_classify(f32 x)
+TG_NODISCARD inline fp_class fp_classify(f32 x)
 {
     if (is_nan(x))
         return fp_class::nan;
@@ -95,7 +95,7 @@ TG_NODISCARD constexpr fp_class fp_classify(f32 x)
     else
         return fp_class::subnormal;
 }
-TG_NODISCARD constexpr fp_class fp_classify(f64 x)
+TG_NODISCARD inline fp_class fp_classify(f64 x)
 {
     if (is_nan(x))
         return fp_class::nan;
