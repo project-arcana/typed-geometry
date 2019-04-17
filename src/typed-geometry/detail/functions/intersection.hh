@@ -6,10 +6,12 @@
 #include "../../types/objects/sphere.hh"
 #include "../../types/objects/triangle.hh"
 
+#include <iostream>
+#include <typed-geometry/detail/assert.hh>
+#include <typed-geometry/tg-std.hh>
 #include "contains.hh"
 #include "dot.hh"
 #include "normal.hh"
-
 // family of intersection functions:
 
 // intersects(a, b) -> bool    iff any point lies in a and in b
@@ -42,6 +44,16 @@ struct intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
 {
     bool empty;
     tg::circle<3, ScalarT> circle;
+};
+
+template <class ScalarT>
+struct intersection_result<circle<2, ScalarT>, circle<2, ScalarT>>
+{
+    // in general there are 0 (where empty == true) or 2 intersections
+    // in the rare case of the circles touching at one position, both posA and posB are identical
+    bool empty;
+    tg::pos<2, ScalarT> posA;
+    tg::pos<2, ScalarT> posB;
 };
 
 // returns whether two objects intersect
@@ -92,11 +104,16 @@ TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, S
 
 
 // returns intersection circle of sphere and sphere (normal points from a to b)
+// for now does not work if spheres are identical (result would be a sphere3 again)
 template <class ScalarT>
 TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
     -> intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
 {
     auto d2 = distance2(a.center, b.center);
+
+    // TODO: intersection sphere
+    if (a.center == b.center && a.radius == b.radius)
+        return {true, {}};
 
     auto d = tg::sqrt(d2);
 
@@ -125,6 +142,8 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
         return {true, {}};
     }
 
+    TG_ASSERT(d > ScalarT(0));
+
     // squared radii of a and b
     auto ar2 = a.radius * a.radius;
     auto br2 = b.radius * b.radius;
@@ -137,6 +156,47 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
 
     // non-empty intersection (circle)
     return {false, {ipos, irad, (b.center - a.center) / d}};
+}
+
+// returns intersection points of two circles in 2D
+// for now does not work if circles are identical (result would be a circle2 again)
+template <class ScalarT>
+TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, ScalarT> const& b)
+    -> intersection_result<circle<2, ScalarT>, circle<2, ScalarT>>
+{
+    // TODO: intersection circle
+    if (a.center == b.center && a.radius == b.radius)
+        return {true, {}, {}};
+
+    auto d2 = distance2(a.center, b.center);
+    auto d = tg::sqrt(d2);
+    auto ar = a.radius;
+    auto br = b.radius;
+    if (ar + br < d) // no intersection
+        return {true, {}, {}};
+
+    if (d < tg::abs(ar - br)) // no intersection (one inside the other)
+        return {true, {}, {}};
+
+    TG_ASSERT(d > ScalarT(0));
+
+    auto t = (ar * ar - br * br + d2) / (2 * d);
+    auto h2 = ar * ar - t * t;
+    TG_ASSERT(h2 >= ScalarT(0));
+
+    auto h = tg::sqrt(h2);
+    auto h_by_d = h / d;
+
+    auto p_between = a.center + t / d * (b.center - a.center);
+
+    auto a_to_b = b.center - a.center;
+    auto a_to_b_swap = tg::vec2(a_to_b.y, a_to_b.x);
+
+    // imagining cirlce a on the left side of circle b...
+    auto p_above = p_between + h_by_d * a_to_b_swap;
+    auto p_below = p_between - h_by_d * a_to_b_swap;
+
+    return {false, p_above, p_below};
 }
 
 } // namespace tg
