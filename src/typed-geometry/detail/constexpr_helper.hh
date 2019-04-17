@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types/vec.hh"
+#include <typed-geometry/types/vec.hh>
 
 namespace tg
 {

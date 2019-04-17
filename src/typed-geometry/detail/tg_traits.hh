@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types/types.hh"
+#include <typed-geometry/types/types.hh>
 #include "scalar_traits.hh"
 
 namespace tg

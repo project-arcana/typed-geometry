@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../types/mat.hh"
-#include "../types/pos.hh"
-#include "../types/size.hh"
-#include "../types/vec.hh"
+#include <typed-geometry/types/mat.hh>
+#include <typed-geometry/types/pos.hh>
+#include <typed-geometry/types/size.hh>
+#include <typed-geometry/types/vec.hh>
 
-#include "../types/objects/ball.hh"
-#include "../types/objects/box.hh"
-#include "../types/objects/sphere.hh"
+#include <typed-geometry/types/objects/ball.hh>
+#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/sphere.hh>
 
 /*
  * Special values of certain types:

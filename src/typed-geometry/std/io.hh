@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-#include "../types/types.hh"
+#include <typed-geometry/types/types.hh>
 
 #include "../detail/tg_traits.hh"
 

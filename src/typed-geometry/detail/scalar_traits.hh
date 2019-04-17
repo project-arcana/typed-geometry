@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types/scalar.hh"
+#include <typed-geometry/types/scalar.hh>
 #include "errors.hh"
 #include "macros.hh"
 #include "utility.hh"

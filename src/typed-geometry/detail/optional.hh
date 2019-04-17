@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/detail/assert.hh>
+#include <typed-geometry/common/assert.hh>
 #include <typed-geometry/detail/utility.hh>
 
 namespace tg

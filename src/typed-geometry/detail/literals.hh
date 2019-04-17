@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types/angle.hh"
+#include <typed-geometry/types/angle.hh>
 
 namespace tg
 {

@@ -3,10 +3,10 @@
 #include <cmath>
 
 #include "../../detail/scalar_traits.hh"
-#include "../../types/angle.hh"
-#include "../../types/scalar.hh"
-#include "../constants.hh"
-#include "../utility.hh"
+#include <typed-geometry/types/angle.hh>
+#include <typed-geometry/types/scalar.hh>
+#include <typed-geometry/common/constants.hh>
+#include <typed-geometry/detail/utility.hh>
 
 // TODO:
 // - proper f8, f16

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../types/mat.hh"
-#include "../../types/pos.hh"
-#include "../special_values.hh"
+#include <typed-geometry/types/mat.hh>
+#include <typed-geometry/types/pos.hh>
+#include <typed-geometry/detail/special_values.hh>
 
 /*
  * Supported operations:

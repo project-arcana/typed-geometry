@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../types/angle.hh"
-#include "../scalar_traits.hh"
+#include <typed-geometry/types/angle.hh>
+#include <typed-geometry/detail/scalar_traits.hh>
 
 namespace tg
 {

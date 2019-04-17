@@ -1,0 +1,52 @@
+#pragma once
+
+#include <typed-geometry/detail/scalar_traits.hh>
+#include <typed-geometry/detail/special_values.hh>
+#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/segment.hh>
+#include <typed-geometry/types/objects/sphere.hh>
+#include <typed-geometry/types/objects/triangle.hh>
+
+// returns the arithmetic mean of all points contained in an object
+// has variadic versions
+
+namespace tg
+{
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> centroid(pos<D, ScalarT> const& p)
+{
+    return p;
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, fractional_result<ScalarT>> centroid(box<D, ScalarT> const& p)
+{
+    auto z = tg::zero<pos<D, ScalarT>>();
+    return z + ((p.min - z) + (p.max - z)) / ScalarT(2);
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, fractional_result<ScalarT>> centroid(triangle<D, ScalarT> const& p)
+{
+    auto z = tg::zero<pos<D, ScalarT>>();
+    return z + ((p.v0 - z) + (p.v1 - z) + (p.v2 - z)) / ScalarT(3);
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, fractional_result<ScalarT>> centroid(segment<D, ScalarT> const& p)
+{
+    return mix(p.a, p.b, fractional_result<ScalarT>(0.5));
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> centroid(sphere<D, ScalarT> const& p)
+{
+    return p.center;
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> centroid(ball<D, ScalarT> const& p)
+{
+    return p.center;
+}
+} // namespace tg
