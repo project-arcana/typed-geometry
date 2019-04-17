@@ -19,9 +19,8 @@ TG_IMPL_DEFINE_TRAIT(scalar_bit_width, int, type_error::unknown_scalar_type<T>::
 TG_IMPL_DEFINE_TYPE_TRAIT(scalar_base_type, type_error::unknown_scalar_type<T>);
 
 // name traits
-TG_IMPL_DEFINE_TRAIT(type_name_prefix, char const*, type_error::unknown_type<T>::value);
 TG_IMPL_DEFINE_TRAIT(type_name, char const*, type_error::unknown_type<T>::value);
-TG_IMPL_DEFINE_TRAIT(type_name_suffix, char const*, type_error::unknown_type<T>::value);
+TG_IMPL_DEFINE_TRAIT(type_name_prefix, char const*, type_name<T>);
 
 // field traits
 TG_IMPL_DEFINE_TRAIT(is_integer, bool, false);
@@ -213,64 +212,25 @@ struct promoted_scalar_t<true, A, B>
 template <class A, class B>
 using promoted_scalar = typename promoted_scalar_t<is_scalar<A> && is_scalar<B>, A, B>::type;
 
-// numbers
-template <int D>
-struct type_name_number_t
-{
-    static constexpr char const* value = type_error::only_support_four_dimensions<D>::value;
-};
-template <>
-struct type_name_number_t<1>
-{
-    static constexpr char const* value = "1";
-};
-template <>
-struct type_name_number_t<2>
-{
-    static constexpr char const* value = "2";
-};
-template <>
-struct type_name_number_t<3>
-{
-    static constexpr char const* value = "3";
-};
-template <>
-struct type_name_number_t<4>
-{
-    static constexpr char const* value = "4";
-};
-template <int D>
-constexpr char const* type_name_number = type_name_number_t<D>::value;
-
 // type names
-template <int D, class ScalarT, template <int, class> class Type>
-struct type_name_prefix_t<Type<D, ScalarT>>
-{
-    static constexpr char const* value = type_name<ScalarT>;
-};
-template <int C, int R, class ScalarT, template <int, int, class> class Type>
-struct type_name_prefix_t<Type<C, R, ScalarT>>
-{
-    static constexpr char const* value = type_name<ScalarT>;
-};
-template <int D, template <int, class> class Type>
-struct type_name_prefix_t<Type<D, f32>>
+template <>
+struct type_name_prefix_t<f32>
 {
     static constexpr char const* value = "";
 };
-template <int D, template <int, class> class Type>
-struct type_name_prefix_t<Type<D, f64>>
-{
-    static constexpr char const* value = "d";
-};
-template <int D, template <int, class> class Type>
-struct type_name_prefix_t<Type<D, i32>>
+template <>
+struct type_name_prefix_t<i32>
 {
     static constexpr char const* value = "i";
 };
-template <int D, template <int, class> class Type>
-struct type_name_prefix_t<Type<D, u32>>
+template <>
+struct type_name_prefix_t<u32>
 {
     static constexpr char const* value = "u";
+};
+template <>
+struct type_name_prefix_t<f64>
+{
+    static constexpr char const* value = "d";
 };
 } // namespace tg

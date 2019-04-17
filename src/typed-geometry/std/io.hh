@@ -17,6 +17,19 @@ std::string to_string(T const& v)
     return ss.str();
 }
 
+namespace detail
+{
+template <class CharT, class Traits>
+std::basic_ostringstream<CharT, Traits> temp_sstream(std::basic_ostream<CharT, Traits> const& out)
+{
+    std::basic_ostringstream<CharT, Traits> ss;
+    ss.flags(out.flags());
+    ss.imbue(out.getloc());
+    ss.precision(out.precision());
+    return ss;
+}
+}
+
 // guideline:
 // - the output should be valid C++ (and reconstruct the type)
 
@@ -29,128 +42,95 @@ std::string to_string(T const& v)
 //     };
 
 template <class T, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, angle<T> const& a)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, angle<T> const& val)
 {
-    std::basic_ostringstream<CharT, Traits> ss;
-    ss.flags(out.flags());
-    ss.imbue(out.getloc());
-    ss.precision(out.precision());
-
-    ss << a.degree() << "°";
+    auto ss = detail::temp_sstream(out);
+    ss << val.degree() << "°";
     return out << ss.str();
 }
 
 template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, vec<D, ScalarT> const& v)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, vec<D, ScalarT> const& val)
 {
-    using T = vec<D, ScalarT>;
-
-    std::basic_ostringstream<CharT, Traits> ss;
-    ss.flags(out.flags());
-    ss.imbue(out.getloc());
-    ss.precision(out.precision());
-
-    ss << type_name_prefix<T>;
-    ss << type_name<T>;
-    ss << type_name_suffix<T>;
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "vec" << char('0' + D);
     ss << "(";
     for (auto i = 0; i < D; ++i)
-        ss << (i > 0 ? ", " : "") << v[i];
+        ss << (i > 0 ? ", " : "") << val[i];
     ss << ")";
     return out << ss.str();
 }
 template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, pos<D, ScalarT> const& p)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, pos<D, ScalarT> const& val)
 {
-    using T = pos<D, ScalarT>;
-
-    std::basic_ostringstream<CharT, Traits> ss;
-    ss.flags(out.flags());
-    ss.imbue(out.getloc());
-    ss.precision(out.precision());
-
-    ss << type_name_prefix<T>;
-    ss << type_name<T>;
-    ss << type_name_suffix<T>;
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "pos" << char('0' + D);
     ss << "(";
     for (auto i = 0; i < D; ++i)
-        ss << (i > 0 ? ", " : "") << p[i];
+        ss << (i > 0 ? ", " : "") << val[i];
     ss << ")";
     return out << ss.str();
 }
 template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, size<D, ScalarT> const& s)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, size<D, ScalarT> const& val)
 {
-    using T = size<D, ScalarT>;
-
-    std::basic_ostringstream<CharT, Traits> ss;
-    ss.flags(out.flags());
-    ss.imbue(out.getloc());
-    ss.precision(out.precision());
-
-    ss << type_name_prefix<T>;
-    ss << type_name<T>;
-    ss << type_name_suffix<T>;
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "size" << char('0' + D);
     ss << "(";
     for (auto i = 0; i < D; ++i)
-        ss << (i > 0 ? ", " : "") << s[i];
+        ss << (i > 0 ? ", " : "") << val[i];
     ss << ")";
     return out << ss.str();
 }
 
 template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, box<D, ScalarT> const& b)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, box<D, ScalarT> const& val)
 {
-    using T = box<D, ScalarT>;
-
-    std::basic_ostringstream<CharT, Traits> ss;
-    ss.flags(out.flags());
-    ss.imbue(out.getloc());
-    ss.precision(out.precision());
-
-    ss << type_name_prefix<T>;
-    ss << type_name<T>;
-    ss << type_name_suffix<T>;
-    ss << "(" << b.min << ", " << b.max << ")";
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "box" << char('0' + D);
+    ss << "(" << val.min << ", " << val.max << ")";
     return out << ss.str();
 }
 
 template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, triangle<D, ScalarT> const& t)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, triangle<D, ScalarT> const& val)
 {
-    using T = triangle<D, ScalarT>;
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "triangle" << char('0' + D);
+    ss << "(" << val.v0 << ", " << val.v1 << ", " << val.v2 << ")";
+    return out << ss.str();
+}
 
-    std::basic_ostringstream<CharT, Traits> ss;
-    ss.flags(out.flags());
-    ss.imbue(out.getloc());
-    ss.precision(out.precision());
+template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, sphere<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "sphere" << char('0' + D);
+    ss << "(" << val.center << ", " << val.radius << ")";
+    return out << ss.str();
+}
 
-    ss << type_name_prefix<T>;
-    ss << type_name<T>;
-    ss << type_name_suffix<T>;
-    ss << "(" << t.v0 << ", " << t.v1 << ", " << t.v2 << ")";
+template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, ball<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "ball" << char('0' + D);
+    ss << "(" << val.center << ", " << val.radius << ")";
     return out << ss.str();
 }
 
 template <int C, int R, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, mat<C, R, ScalarT> const& m)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, mat<C, R, ScalarT> const& val)
 {
-    using T = mat<C, R, ScalarT>;
-
-    std::basic_ostringstream<CharT, Traits> ss;
-    ss.flags(out.flags());
-    ss.imbue(out.getloc());
-    ss.precision(out.precision());
-
-    ss << type_name_prefix<T>;
-    ss << type_name<T>;
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "mat";
     if (C == R)
         ss << char('0' + C);
     else
         ss << char('0' + C) << 'x' << char('0' + R);
     ss << "(";
     for (auto i = 0; i < C; ++i)
-        ss << (i > 0 ? ", " : "") << m[i];
+        ss << (i > 0 ? ", " : "") << val[i];
     ss << ")";
     return out << ss.str();
 }

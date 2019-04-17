@@ -43,4 +43,10 @@ TG_NODISCARD constexpr pos<D, ScalarT> centroid(sphere<D, ScalarT> const& p)
 {
     return p.center;
 }
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> centroid(ball<D, ScalarT> const& p)
+{
+    return p.center;
+}
 } // namespace tg

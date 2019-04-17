@@ -5,6 +5,10 @@
 #include "../types/size.hh"
 #include "../types/vec.hh"
 
+#include "../types/objects/ball.hh"
+#include "../types/objects/box.hh"
+#include "../types/objects/sphere.hh"
+
 /*
  * Special values of certain types:
  *
@@ -303,5 +307,21 @@ constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::diag(vec<detail::min(C, R), Sca
 {
     return tg::diag<mat<C, R, ScalarT>>(v);
 }
+
+// Objects
+
+
+template <int D, class ScalarT>
+const box<D, ScalarT> box<D, ScalarT>::minus_one_to_one = {tg::pos<D, ScalarT>(ScalarT(-1)), tg::pos<D, ScalarT>(ScalarT(1))};
+template <int D, class ScalarT>
+const box<D, ScalarT> box<D, ScalarT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0)), tg::pos<D, ScalarT>(ScalarT(1))};
+template <int D, class ScalarT>
+const box<D, ScalarT> box<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>(ScalarT(-0.5)), tg::pos<D, ScalarT>(ScalarT(0.5))};
+
+template <int D, class ScalarT>
+const sphere<D, ScalarT> sphere<D, ScalarT>::unit = {pos<D, ScalarT>::zero, ScalarT(1)};
+
+template <int D, class ScalarT>
+const ball<D, ScalarT> ball<D, ScalarT>::unit = {pos<D, ScalarT>::zero, ScalarT(1)};
 
 } // namespace tg

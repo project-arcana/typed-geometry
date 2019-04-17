@@ -1,11 +1,15 @@
 #pragma once
 
-#include "../../types/objects/box.hh"
-#include "../../types/objects/triangle.hh"
-#include "../../types/pos.hh"
-#include "../../types/scalar.hh"
 #include "../random.hh"
 #include "../scalar_traits.hh"
+
+#include "../../types/pos.hh"
+#include "../../types/scalar.hh"
+
+#include "../../types/objects/ball.hh"
+#include "../../types/objects/box.hh"
+#include "../../types/objects/sphere.hh"
+#include "../../types/objects/triangle.hh"
 
 #include "math.hh"
 #include "mix.hh"
@@ -14,6 +18,8 @@
  * uniform(rng)       - fair coin flip
  * uniform(rng, a, b) - mix(a, b, uniform{0..1})
  * uniform(rng, obj)  - uniform sample from obj
+ *
+ * uniform_vec(rng, ...) same as uniform but returns uniform(rng, ...) as a vector
  */
 
 // TODO: uniform int/uint distribution might need some improvement but is currently faster than the stdlib versions
@@ -112,6 +118,32 @@ TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, box<4, ScalarT> const& 
             uniform(rng, b.min.w, b.max.w)};
 }
 
+template <int D, class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& s)
+{
+    auto ub = tg::box<D, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length2(p);
+        if (l > ScalarT(0) && l < ScalarT(1))
+            return s.center + p * (s.radius / tg::sqrt(l));
+    }
+}
+
+template <int D, class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const& b)
+{
+    auto ub = tg::box<D, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length2(p);
+        if (l > ScalarT(0) && l < ScalarT(1))
+            return b.center + p * b.radius;
+    }
+}
+
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
 TG_NODISCARD constexpr vec<D, ScalarT> uniform(Rng& rng, vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
@@ -137,4 +169,11 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> co
     }
     return t.v0 + u0 * e0 + u1 * e1;
 }
+
+template <class Rng, class... Args>
+TG_NODISCARD constexpr auto uniform_vec(Rng& rng, Args const&... args) -> decltype(uniform(rng, args...) - decltype(uniform(rng, args...))::zero)
+{
+    return uniform(rng, args...) - decltype(uniform(rng, args...))::zero;
+}
+
 } // namespace tg

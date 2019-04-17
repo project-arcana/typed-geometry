@@ -5,45 +5,6 @@
 
 namespace tg
 {
-// type names
-template <int D, class ScalarT>
-struct type_name_t<vec<D, ScalarT>>
-{
-    static constexpr char const* value = "vec";
-};
-template <int D, class ScalarT>
-struct type_name_t<pos<D, ScalarT>>
-{
-    static constexpr char const* value = "pos";
-};
-template <int D, class ScalarT>
-struct type_name_t<size<D, ScalarT>>
-{
-    static constexpr char const* value = "size";
-};
-template <int D, class ScalarT>
-struct type_name_t<box<D, ScalarT>>
-{
-    static constexpr char const* value = "box";
-};
-template <int D, class ScalarT>
-struct type_name_t<triangle<D, ScalarT>>
-{
-    static constexpr char const* value = "triangle";
-};
-template <int C, int R, class ScalarT>
-struct type_name_t<mat<C, R, ScalarT>>
-{
-    static constexpr char const* value = "mat";
-};
-
-// type suffix
-template <int D, class ScalarT, template <int, class> class Type>
-struct type_name_suffix_t<Type<D, ScalarT>>
-{
-    static constexpr char const* value = type_name_number<D>;
-};
-
 // pos/vec types
 TG_IMPL_DEFINE_TYPE_TRAIT(pos_type_for, type_error::unknown_type<T>);
 TG_IMPL_DEFINE_TYPE_TRAIT(vec_type_for, type_error::unknown_type<T>);
@@ -73,6 +34,7 @@ TG_IMPL_ADD_OBJECT_TYPE(line);
 TG_IMPL_ADD_OBJECT_TYPE(segment);
 TG_IMPL_ADD_OBJECT_TYPE(ray);
 TG_IMPL_ADD_OBJECT_TYPE(sphere);
+TG_IMPL_ADD_OBJECT_TYPE(ball);
 // TODO: more
 
 } // namespace tg

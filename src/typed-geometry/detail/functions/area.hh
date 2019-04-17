@@ -1,6 +1,8 @@
 #pragma once
 
+#include "../../types/objects/ball.hh"
 #include "../../types/objects/box.hh"
+#include "../../types/objects/sphere.hh"
 #include "../../types/objects/triangle.hh"
 #include "../../types/pos.hh"
 #include "../../types/size.hh"
@@ -39,5 +41,23 @@ template <class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> area(triangle<3, ScalarT> const& b)
 {
     return length(cross(b.v1 - b.v0, b.v2 - b.v0)) * fractional_result<ScalarT>(0.5);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(ball<2, ScalarT> const& b)
+{
+    return tg::pi<ScalarT>.radians() * tg::pow2(b.radius);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(ball<3, ScalarT> const& b)
+{
+    return (tg::pi<ScalarT>.radians() * ScalarT(4)) * tg::pow2(b.radius);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(sphere<3, ScalarT> const& b)
+{
+    return (tg::pi<ScalarT>.radians() * ScalarT(4)) * tg::pow2(b.radius);
 }
 } // namespace tg

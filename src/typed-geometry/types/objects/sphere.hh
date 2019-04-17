@@ -46,6 +46,8 @@ struct sphere
 {
     using pos_t = pos<D, ScalarT>;
 
+    static const sphere unit; ///< unit sphere, center zero, radius 1
+
     pos_t center;
     ScalarT radius;
 

@@ -47,6 +47,10 @@ struct box
     using pos_t = pos<D, ScalarT>;
     using size_t = size<D, ScalarT>;
 
+    static const box minus_one_to_one;
+    static const box unit_from_zero;
+    static const box unit_centered;
+
     pos_t min;
     pos_t max;
 

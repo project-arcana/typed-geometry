@@ -2,9 +2,12 @@
 
 #include <cmath>
 
+#include "../../types/objects/ball.hh"
 #include "../../types/objects/box.hh"
+#include "../../types/objects/sphere.hh"
 #include "../../types/objects/triangle.hh"
-#include "../../types/pos.hh"
+
+#include "distance.hh"
 
 // For a given primitive and a position, return whether the first contains the latter
 // contains(a, b) is true iff a contains b
@@ -12,6 +15,8 @@
 // NOTE:
 // contains takes an epsilon parameter that roughly means:
 //   contains(a, b) if distance(a, p) <= eps
+//   NOTE: some functions interpret eps differently for performance reasons
+//         if you really want an epsilon environment, use distance(a, p) <= eps
 
 // Contained functions:
 // - contains
@@ -71,6 +76,19 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr bool contains(box<D, ScalarT> const& b, box<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return contains(b, o.min, eps) && contains(b, o.max, eps);
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr bool contains(ball<D, ScalarT> const& s, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0))
+{
+    auto r = s.radius + eps;
+    return distance2(s.center, p) <= r * r;
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0))
+{
+    return tg::abs(distance2(s.center, p) - s.radius * s.radius) <= eps;
 }
 
 // Note that eps is used to compare 2D areas, not 1D lengths
