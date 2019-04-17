@@ -18,7 +18,7 @@ TG_NODISCARD constexpr squared_result<ScalarT> length2(vec<D, ScalarT> const& v)
 template <int D, class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> length(vec<D, ScalarT> const& v)
 {
-    return sqrt(length2(vec<D, fractional_result<ScalarT>>(v)));
+    return tg::sqrt(length2(vec<D, fractional_result<ScalarT>>(v)));
 }
 
 template <int D, class ScalarT>
@@ -30,6 +30,6 @@ TG_NODISCARD constexpr fractional_result<ScalarT> length2(segment<D, ScalarT> co
 template <int D, class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> length(segment<D, ScalarT> const& s)
 {
-    return sqrt(length2(segment<D, fractional_result<ScalarT>>(s)));
+    return tg::sqrt(length2(segment<D, fractional_result<ScalarT>>(s)));
 }
 } // namespace tg

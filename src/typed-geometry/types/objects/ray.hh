@@ -47,7 +47,7 @@ struct ray
     using pos_t = tg::pos<D, ScalarT>;
 
     pos_t pos;
-    vec_t dir;
+    vec_t dir; ///< must be normalized!
 
     constexpr ray() = default;
     constexpr ray(pos_t pos, vec_t dir) : pos(pos), dir(dir) {}
