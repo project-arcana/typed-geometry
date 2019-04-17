@@ -2,7 +2,7 @@
 
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
-#include <typed-geometry/detail/scalars/scalar_math.hh>
+#include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/vec.hh>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/detail/scalars/scalar_math.hh>
+#include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/detail/utility.hh>
 #include <typed-geometry/types/mat.hh>
 

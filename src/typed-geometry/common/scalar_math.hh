@@ -2,11 +2,11 @@
 
 #include <cmath>
 
-#include "../../detail/scalar_traits.hh"
+#include <typed-geometry/common/constants.hh>
+#include <typed-geometry/detail/scalar_traits.hh>
+#include <typed-geometry/detail/utility.hh>
 #include <typed-geometry/types/angle.hh>
 #include <typed-geometry/types/scalar.hh>
-#include <typed-geometry/common/constants.hh>
-#include <typed-geometry/detail/utility.hh>
 
 // TODO:
 // - proper f8, f16

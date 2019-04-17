@@ -2,7 +2,7 @@
 
 #include <typed-geometry/common/limits.hh>
 
-#include <typed-geometry/detail/scalars/scalar_math.hh>
+#include <typed-geometry/common/scalar_math.hh>
 
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>

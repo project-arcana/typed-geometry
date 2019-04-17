@@ -2,7 +2,7 @@
 
 #include <typed-geometry/detail/operators/ops_pos.hh>
 #include <typed-geometry/detail/operators/ops_vec.hh>
-#include <typed-geometry/detail/scalars/scalar_math.hh>
+#include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/detail/tg_traits.hh>
 #include <typed-geometry/types/objects/line.hh>

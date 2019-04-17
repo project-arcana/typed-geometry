@@ -15,7 +15,8 @@
 
 #include <typed-geometry/detail/scalars/half.hh>
 #include <typed-geometry/detail/scalars/quarter.hh>
-#include <typed-geometry/detail/scalars/scalar_math.hh>
+#include <typed-geometry/common/scalar_math.hh>
 
 #include <typed-geometry/detail/functions.hh>
 #include <typed-geometry/detail/operators.hh>
+#include <typed-geometry/detail/tests.hh>
