@@ -1,17 +1,17 @@
 #pragma once
 
+#include <typed-geometry/detail/assert.hh>
+
 #include "../../types/objects/circle.hh"
 #include "../../types/objects/hyperplane.hh"
 #include "../../types/objects/ray.hh"
 #include "../../types/objects/sphere.hh"
 #include "../../types/objects/triangle.hh"
 
-#include <iostream>
-#include <typed-geometry/detail/assert.hh>
-#include <typed-geometry/tg-std.hh>
 #include "contains.hh"
 #include "dot.hh"
 #include "normal.hh"
+
 // family of intersection functions:
 
 // intersects(a, b) -> bool    iff any point lies in a and in b
