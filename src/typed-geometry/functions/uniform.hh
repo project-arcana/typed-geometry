@@ -126,7 +126,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> cons
     {
         auto p = uniform_vec(rng, ub);
         auto l = length2(p);
-        if (l > ScalarT(0) && l < ScalarT(1))
+        if (l > ScalarT(0) && l <= ScalarT(1))
             return s.center + p * (s.radius / tg::sqrt(l));
     }
 }
@@ -139,7 +139,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const&
     {
         auto p = uniform_vec(rng, ub);
         auto l = length2(p);
-        if (l > ScalarT(0) && l < ScalarT(1))
+        if (l <= ScalarT(1))
             return b.center + p * b.radius;
     }
 }
