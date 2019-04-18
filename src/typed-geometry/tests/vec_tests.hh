@@ -25,7 +25,7 @@ TG_NODISCARD constexpr bool is_zero(vec<D, ScalarT> const& v, ScalarT eps = 2 * 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr bool are_orthogonal(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
 {
-    return dot(a, b) < eps;
+    return tg::abs(dot(a, b)) < eps;
 }
 
 template <int D, class ScalarT>
