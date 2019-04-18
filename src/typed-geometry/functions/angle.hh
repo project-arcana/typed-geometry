@@ -37,7 +37,8 @@ TG_NODISCARD constexpr angle<fractional_result<ScalarT>> angle_towards(vec<3, Sc
 
     auto a_unit = normalize_safe(a);
     auto b_unit = normalize_safe(b);
-    auto angle = tg::atan2(dot(cross(a_unit, b_unit), orthogonal_axis), dot(a_unit, b_unit));
+    auto axis_unit = normalize_safe(orthogonal_axis);
+    auto angle = tg::atan2(dot(cross(a_unit, b_unit), axis_unit), dot(a_unit, b_unit));
     return angle;
 }
 }
