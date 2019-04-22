@@ -1,5 +1,6 @@
 #pragma once
 
+#include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
@@ -251,14 +252,55 @@ template <class ScalarT>
 const vec<4, ScalarT> vec<4, ScalarT>::unit_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
-const pos<1, ScalarT> pos<1, ScalarT>::zero = {ScalarT(0)};
+const dir<1, ScalarT> dir<1, ScalarT>::pos_x = {ScalarT(1)};
+template <class ScalarT>
+const dir<1, ScalarT> dir<1, ScalarT>::neg_x = {ScalarT(-1)};
 
+template <class ScalarT>
+const dir<2, ScalarT> dir<2, ScalarT>::pos_x = {ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+const dir<2, ScalarT> dir<2, ScalarT>::pos_y = {ScalarT(0), ScalarT(1)};
+template <class ScalarT>
+const dir<2, ScalarT> dir<2, ScalarT>::neg_x = {ScalarT(-1), ScalarT(0)};
+template <class ScalarT>
+const dir<2, ScalarT> dir<2, ScalarT>::neg_y = {ScalarT(0), ScalarT(-1)};
+
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::pos_x = {ScalarT(1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::pos_y = {ScalarT(0), ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::pos_z = {ScalarT(0), ScalarT(0), ScalarT(1)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::neg_x = {ScalarT(-1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::neg_y = {ScalarT(0), ScalarT(-1), ScalarT(0)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::neg_z = {ScalarT(0), ScalarT(0), ScalarT(-1)};
+
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::pos_x = {ScalarT(1), ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::pos_y = {ScalarT(0), ScalarT(1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::pos_z = {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::pos_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::neg_x = {ScalarT(-1), ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::neg_y = {ScalarT(0), ScalarT(-1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::neg_z = {ScalarT(0), ScalarT(0), ScalarT(-1), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::neg_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(-1)};
+
+template <class ScalarT>
+const pos<1, ScalarT> pos<1, ScalarT>::zero = {ScalarT(0)};
 template <class ScalarT>
 const pos<2, ScalarT> pos<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
-
 template <class ScalarT>
 const pos<3, ScalarT> pos<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
-
 template <class ScalarT>
 const pos<4, ScalarT> pos<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
 

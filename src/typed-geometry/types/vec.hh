@@ -8,8 +8,6 @@
 
 /**
  * TODO:
- * maybe move ScalarT and shape into traits
- * maybe move zero/one/etc into constants
  * maybe no bvec?
  */
 
@@ -119,11 +117,11 @@ using f64vec4 = vec<4, f64>;
 template <class ScalarT>
 struct vec<1, ScalarT>
 {
+    ScalarT x = static_cast<ScalarT>(0);
+
     static const vec zero;
     static const vec one;
     static const vec unit_x;
-
-    ScalarT x = static_cast<ScalarT>(0);
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
@@ -136,6 +134,7 @@ struct vec<1, ScalarT>
     }
     constexpr explicit vec(pos<1, ScalarT> const& p);
     constexpr explicit vec(size<1, ScalarT> const& p);
+    constexpr explicit vec(dir<1, ScalarT> const& p);
     template <int D, class T>
     constexpr explicit operator vec<D, T>() const
     {
@@ -170,6 +169,7 @@ struct vec<2, ScalarT>
     }
     constexpr explicit vec(pos<2, ScalarT> const& p);
     constexpr explicit vec(size<2, ScalarT> const& p);
+    constexpr explicit vec(dir<2, ScalarT> const& p);
     template <int D, class T>
     constexpr explicit operator vec<D, T>() const
     {
@@ -210,6 +210,7 @@ struct vec<3, ScalarT>
     }
     constexpr explicit vec(pos<3, ScalarT> const& p);
     constexpr explicit vec(size<3, ScalarT> const& p);
+    constexpr explicit vec(dir<3, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 3>>
     constexpr explicit operator vec<D, T>() const
     {
@@ -220,17 +221,17 @@ struct vec<3, ScalarT>
 template <class ScalarT>
 struct vec<4, ScalarT>
 {
+    ScalarT x = static_cast<ScalarT>(0);
+    ScalarT y = static_cast<ScalarT>(0);
+    ScalarT z = static_cast<ScalarT>(0);
+    ScalarT w = static_cast<ScalarT>(0);
+
     static const vec zero;
     static const vec one;
     static const vec unit_x;
     static const vec unit_y;
     static const vec unit_z;
     static const vec unit_w;
-
-    ScalarT x = static_cast<ScalarT>(0);
-    ScalarT y = static_cast<ScalarT>(0);
-    ScalarT z = static_cast<ScalarT>(0);
-    ScalarT w = static_cast<ScalarT>(0);
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
@@ -256,6 +257,7 @@ struct vec<4, ScalarT>
     }
     constexpr explicit vec(pos<4, ScalarT> const& p);
     constexpr explicit vec(size<4, ScalarT> const& p);
+    constexpr explicit vec(dir<4, ScalarT> const& p);
     template <int D, class T, class = enable_if<D <= 4>>
     constexpr explicit operator vec<D, T>() const
     {
@@ -282,6 +284,8 @@ template <int D, class T>
 vec(pos<D, T> const&)->vec<D, T>;
 template <int D, class T>
 vec(size<D, T> const&)->vec<D, T>;
+template <int D, class T>
+vec(dir<D, T> const&)->vec<D, T>;
 #endif
 
 } // namespace tg
