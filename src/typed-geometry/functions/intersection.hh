@@ -142,7 +142,7 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
         return {true, {}};
     }
 
-    TG_ASSERT(d > ScalarT(0));
+    TG_INTERNAL_ASSERT(d > ScalarT(0));
 
     // squared radii of a and b
     auto ar2 = a.radius * a.radius;
@@ -178,11 +178,11 @@ TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, 
     if (d < tg::abs(ar - br)) // no intersection (one inside the other)
         return {true, {}, {}};
 
-    TG_ASSERT(d > ScalarT(0));
+    TG_INTERNAL_ASSERT(d > ScalarT(0));
 
     auto t = (ar * ar - br * br + d2) / (2 * d);
     auto h2 = ar * ar - t * t;
-    TG_ASSERT(h2 >= ScalarT(0));
+    TG_INTERNAL_ASSERT(h2 >= ScalarT(0));
 
     auto h = tg::sqrt(h2);
     auto h_by_d = h / d;

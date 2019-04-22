@@ -14,7 +14,7 @@ namespace tg
 template <class T>
 TG_NODISCARD constexpr mat<4, 4, T> rotation(vec<3, T> const& axis, angle<T> angle)
 {
-    TG_ASSERT(is_normalized(axis));
+    TG_CONTRACT(is_normalized(axis));
 
     auto ca = cos(angle);
     auto sa = sin(angle);
