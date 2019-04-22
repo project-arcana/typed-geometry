@@ -34,6 +34,32 @@ struct less<tg::vec<4, ScalarT>>
     constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.x, a.y, a.z, a.w) < std::tie(b.x, b.y, b.z, b.w); }
 };
 
+// -- dir
+template <class ScalarT>
+struct less<tg::dir<1, ScalarT>>
+{
+    typedef tg::dir<1, ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return a.x < b.x; }
+};
+template <class ScalarT>
+struct less<tg::dir<2, ScalarT>>
+{
+    typedef tg::dir<2, ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.x, a.y) < std::tie(b.x, b.y); }
+};
+template <class ScalarT>
+struct less<tg::dir<3, ScalarT>>
+{
+    typedef tg::dir<3, ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.x, a.y, a.z) < std::tie(b.x, b.y, b.z); }
+};
+template <class ScalarT>
+struct less<tg::dir<4, ScalarT>>
+{
+    typedef tg::dir<4, ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.x, a.y, a.z, a.w) < std::tie(b.x, b.y, b.z, b.w); }
+};
+
 // -- pos
 template <class ScalarT>
 struct less<tg::pos<1, ScalarT>>

@@ -76,6 +76,36 @@ struct hash<tg::vec<4, ScalarT>>
     result_type operator()(argument_type const& v) const noexcept { return tg::detail::hash(v.x, v.y, v.z, v.w); }
 };
 
+// -- dir
+template <class ScalarT>
+struct hash<tg::dir<1, ScalarT>>
+{
+    typedef tg::dir<1, ScalarT> argument_type;
+    typedef std::size_t result_type;
+    result_type operator()(argument_type const& v) const noexcept { return tg::detail::hash(v.x); }
+};
+template <class ScalarT>
+struct hash<tg::dir<2, ScalarT>>
+{
+    typedef tg::dir<2, ScalarT> argument_type;
+    typedef std::size_t result_type;
+    result_type operator()(argument_type const& v) const noexcept { return tg::detail::hash(v.x, v.y); }
+};
+template <class ScalarT>
+struct hash<tg::dir<3, ScalarT>>
+{
+    typedef tg::dir<3, ScalarT> argument_type;
+    typedef std::size_t result_type;
+    result_type operator()(argument_type const& v) const noexcept { return tg::detail::hash(v.x, v.y, v.z); }
+};
+template <class ScalarT>
+struct hash<tg::dir<4, ScalarT>>
+{
+    typedef tg::dir<4, ScalarT> argument_type;
+    typedef std::size_t result_type;
+    result_type operator()(argument_type const& v) const noexcept { return tg::detail::hash(v.x, v.y, v.z, v.w); }
+};
+
 // -- pos
 template <class ScalarT>
 struct hash<tg::pos<1, ScalarT>>

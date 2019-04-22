@@ -58,7 +58,7 @@ constexpr dir<4, ScalarT>::dir(vec<4, ScalarT> const& v) : x(v.x), y(v.y), z(v.z
 }
 
 template <int D, class ScalarT>
-constexpr hyperplane<D, ScalarT>::hyperplane(vec_t n, pos_t p) : n(n), d(dot(p, n))
+constexpr hyperplane<D, ScalarT>::hyperplane(dir_t n, pos_t p) : n(n), d(dot(p, n))
 {
 }
 }

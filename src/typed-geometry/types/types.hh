@@ -7,6 +7,7 @@
 #include "pos.hh"
 #include "size.hh"
 #include "vec.hh"
+#include "dir.hh"
 
 #include "quadric.hh"
 

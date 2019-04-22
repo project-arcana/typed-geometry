@@ -2,11 +2,10 @@
 
 #include "../pos.hh"
 #include "../scalar.hh"
-#include "../vec.hh"
+#include "../dir.hh"
 
-// An unoriented hyperplane has a distance to the origin and a normal vector
-// In dimension n, the distance is 1-dimensional and the normal vector is n-dimensional
-// The normal vector is assumed to be normalized
+// An unoriented hyperplane has a distance to the origin and a normal direction
+// In dimension n, the distance is 1-dimensional and the normal direction is n-dimensional
 
 // Note that there is a semantic difference between hyperplane and halfspace in nD:
 //  - the hyperplane describes all points lying on an (n-1)-dimensional plane
@@ -49,15 +48,15 @@ using uhyperplane4 = hyperplane<4, u32>;
 template <int D, class ScalarT>
 struct hyperplane
 {
-    using vec_t = vec<D, ScalarT>;
+    using dir_t = dir<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
     using dis_t = ScalarT;
 
-    vec_t n;
+    dir_t n;
     dis_t d;
 
     constexpr hyperplane() = default;
-    constexpr hyperplane(vec_t n, dis_t d) : n(n), d(d) {}
-    constexpr hyperplane(vec_t n, pos_t p);
+    constexpr hyperplane(dir_t n, dis_t d) : n(n), d(d) {}
+    constexpr hyperplane(dir_t n, pos_t p);
 };
 } // namespace tg

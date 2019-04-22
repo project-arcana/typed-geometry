@@ -2,11 +2,10 @@
 
 #include "../pos.hh"
 #include "../scalar.hh"
-#include "../vec.hh"
+#include "../dir.hh"
 
-// A halfspace has a distance to the origin and a normal vector
-// In dimension n, the distance is 1-dimensional and the normal vector is n-dimensional
-// The normal vector is assumed to be normalized
+// A halfspace has a distance to the origin and a normal direction
+// In dimension n, the distance is 1-dimensional and the normal direction is n-dimensional
 
 // Note that there is a semantic difference between hyperplane and halfspace in nD:
 //  - the hyperplane describes all points lying on an (n-1)-dimensional plane
@@ -50,12 +49,12 @@ template <int D, class ScalarT>
 struct halfspace
 {
     using dis_t = ScalarT;
-    using vec_t = vec<D, ScalarT>;
+    using dir_t = dir<D, ScalarT>;
 
     dis_t d;
-    vec_t n;
+    dir_t n;
 
     constexpr halfspace() = default;
-    constexpr halfspace(dis_t d, vec_t n) : d(d), n(n) {}
+    constexpr halfspace(dis_t d, dir_t n) : d(d), n(n) {}
 };
 } // namespace tg

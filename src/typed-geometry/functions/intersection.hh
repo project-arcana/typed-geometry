@@ -155,7 +155,7 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
     auto irad = sqrt(ar2 - t * t * d2);
 
     // non-empty intersection (circle)
-    return {false, {ipos, irad, (b.center - a.center) / d}};
+    return {false, {ipos, irad, dir<3, ScalarT>((b.center - a.center) / d)}};
 }
 
 // returns intersection points of two circles in 2D

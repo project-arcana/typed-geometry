@@ -3,7 +3,7 @@
 #include "../pos.hh"
 #include "../scalar.hh"
 #include "../size.hh"
-#include "../vec.hh"
+#include "../dir.hh"
 
 // A line has a direction and a point lying on it
 // The direction is assumed to be normalized
@@ -45,14 +45,14 @@ using uline4 = line<4, u32>;
 template <int D, class ScalarT>
 struct line
 {
-    using vec_t = vec<D, ScalarT>;
+    using dir_t = dir<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 
     pos_t p;
-    vec_t dir;
+    dir_t dir;
 
     constexpr line() = default;
-    constexpr line(pos_t p, vec_t dir) : p(p), dir(dir) {}
+    constexpr line(pos_t p, dir_t dir) : p(p), dir(dir) {}
 
     // create a line from two points
     static constexpr line from_points(pos_t a, pos_t b)

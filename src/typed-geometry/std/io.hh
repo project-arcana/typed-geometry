@@ -61,6 +61,17 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     return out << ss.str();
 }
 template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, dir<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "dir" << char('0' + D);
+    ss << "(";
+    for (auto i = 0; i < D; ++i)
+        ss << (i > 0 ? ", " : "") << val[i];
+    ss << ")";
+    return out << ss.str();
+}
+template <int D, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, pos<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);

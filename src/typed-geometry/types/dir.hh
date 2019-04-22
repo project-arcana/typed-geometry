@@ -9,6 +9,10 @@
 namespace tg
 {
 /// A direction, i.e. a normalized vector
+///
+/// CAUTION: a default constructed direction is zero
+///          most functions have undefined behavior in that case
+///          can be checked with is_zero
 template <int D, class ScalarT>
 struct dir;
 
@@ -40,14 +44,15 @@ using idir4 = dir<4, i32>;
 template <class ScalarT>
 struct dir<1, ScalarT>
 {
+    ScalarT x = ScalarT(0);
+
     static const dir pos_x;
     static const dir neg_x;
-
-    ScalarT x;
 
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
+    constexpr dir() = default;
     constexpr dir(ScalarT x);
     constexpr explicit dir(vec<1, ScalarT> const& v); // CAUTION: this does not normalize!
     template <class T>
@@ -64,8 +69,8 @@ struct dir<1, ScalarT>
 template <class ScalarT>
 struct dir<2, ScalarT>
 {
-    ScalarT x;
-    ScalarT y;
+    ScalarT x = ScalarT(0);
+    ScalarT y = ScalarT(0);
 
     static const dir pos_x;
     static const dir pos_y;
@@ -75,6 +80,7 @@ struct dir<2, ScalarT>
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
+    constexpr dir() = default;
     constexpr dir(ScalarT x, ScalarT y);
     constexpr explicit dir(vec<2, ScalarT> const& v); // CAUTION: this does not normalize!
     template <class T>
@@ -91,9 +97,9 @@ struct dir<2, ScalarT>
 template <class ScalarT>
 struct dir<3, ScalarT>
 {
-    ScalarT x;
-    ScalarT y;
-    ScalarT z;
+    ScalarT x = ScalarT(0);
+    ScalarT y = ScalarT(0);
+    ScalarT z = ScalarT(0);
 
     static const dir pos_x;
     static const dir pos_y;
@@ -105,6 +111,7 @@ struct dir<3, ScalarT>
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
+    constexpr dir() = default;
     constexpr dir(ScalarT x, ScalarT y, ScalarT z);
     constexpr explicit dir(vec<3, ScalarT> const& v); // CAUTION: this does not normalize!
     template <class T>
@@ -138,6 +145,7 @@ struct dir<4, ScalarT>
     constexpr ScalarT& operator[](int i) { return (&x)[i]; }
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
+    constexpr dir() = default;
     constexpr dir(ScalarT x, ScalarT y, ScalarT z, ScalarT w);
     constexpr explicit dir(vec<4, ScalarT> const& v); // CAUTION: this does not normalize!
     template <class T>

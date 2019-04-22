@@ -1,6 +1,8 @@
 #pragma once
 
+#include <typed-geometry/detail/optional.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
+#include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/vec.hh>
 
 #include "length.hh"
@@ -8,9 +10,9 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, fractional_result<ScalarT>> normalize(vec<D, ScalarT> const& v)
+TG_NODISCARD constexpr dir<D, fractional_result<ScalarT>> normalize(vec<D, ScalarT> const& v)
 {
-    return v / length(v);
+    return dir<D, fractional_result<ScalarT>>(v / length(v));
 }
 
 template <int D, class ScalarT>
