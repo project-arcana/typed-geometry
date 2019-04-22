@@ -111,15 +111,17 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
 {
     auto d2 = distance2(a.center, b.center);
 
+    auto const empty_circle = circle<3, ScalarT>(tg::pos<3, ScalarT>::zero, ScalarT(0), tg::dir<3, ScalarT>::pos_x);
+
     // TODO: intersection sphere
     if (a.center == b.center && a.radius == b.radius)
-        return {true, {}};
+        return {true, empty_circle};
 
     auto d = tg::sqrt(d2);
 
     // no intersection
     if (d > a.radius + b.radius)
-        return {true, {}};
+        return {true, empty_circle};
 
 
     // radius and centers of larger sphere (ls) and smaller sphere (ss)
@@ -139,7 +141,7 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
     if (d + ssr < lsr)
     {
         // Smaller sphere inside larger one and not touching it
-        return {true, {}};
+        return {true, empty_circle};
     }
 
     TG_INTERNAL_ASSERT(d > ScalarT(0));
