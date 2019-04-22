@@ -45,8 +45,8 @@ using uline4 = line<4, u32>;
 template <int D, class ScalarT>
 struct line
 {
-    using dir_t = dir<D, ScalarT>;
-    using pos_t = pos<D, ScalarT>;
+    using dir_t = tg::dir<D, ScalarT>;
+    using pos_t = tg::pos<D, ScalarT>;
 
     pos_t p;
     dir_t dir;
