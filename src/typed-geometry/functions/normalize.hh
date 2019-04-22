@@ -15,6 +15,7 @@ TG_NODISCARD constexpr dir<D, fractional_result<ScalarT>> normalize(vec<D, Scala
     return dir<D, fractional_result<ScalarT>>(v / length(v));
 }
 
+/// returns vec::zero if too small
 template <int D, class ScalarT>
 TG_NODISCARD constexpr vec<D, fractional_result<ScalarT>> normalize_safe(vec<D, ScalarT> const& v, ScalarT eps = ScalarT(0))
 {
