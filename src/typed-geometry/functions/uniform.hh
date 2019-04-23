@@ -26,10 +26,19 @@
 
 namespace tg
 {
-template <class Rng>
-TG_NODISCARD constexpr bool uniform(Rng& rng)
+namespace detail
 {
-    return rng() & 1;
+template <class T>
+struct sampler
+{
+    static_assert(sizeof(T) >= 0, "sampling of this type not supported without parameters");
+};
+}
+
+template <class T, class Rng>
+TG_NODISCARD constexpr T uniform(Rng& rng)
+{
+    return detail::sampler<T>::uniform(rng);
 }
 
 template <class Rng>
@@ -126,7 +135,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> cons
     {
         auto p = uniform_vec(rng, ub);
         auto l = length2(p);
-        if (l > ScalarT(0) && l < ScalarT(1))
+        if (l > ScalarT(0) && l <= ScalarT(1))
             return s.center + p * (s.radius / tg::sqrt(l));
     }
 }
@@ -139,7 +148,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const&
     {
         auto p = uniform_vec(rng, ub);
         auto l = length2(p);
-        if (l > ScalarT(0) && l < ScalarT(1))
+        if (l <= ScalarT(1))
             return b.center + p * b.radius;
     }
 }
@@ -174,6 +183,36 @@ template <class Rng, class... Args>
 TG_NODISCARD constexpr auto uniform_vec(Rng& rng, Args const&... args) -> decltype(uniform(rng, args...) - decltype(uniform(rng, args...))::zero)
 {
     return uniform(rng, args...) - decltype(uniform(rng, args...))::zero;
+}
+
+
+namespace detail
+{
+template <>
+struct sampler<bool>
+{
+    template <class Rng>
+    constexpr static bool uniform(Rng& rng)
+    {
+        return rng() & 1;
+    }
+};
+template <int D, class ScalarT>
+struct sampler<dir<D, ScalarT>>
+{
+    template <class Rng>
+    constexpr static dir<D, ScalarT> uniform(Rng& rng)
+    {
+        auto ub = tg::box<D, ScalarT>::minus_one_to_one;
+        while (true)
+        {
+            auto p = uniform_vec(rng, ub);
+            auto l = length2(p);
+            if (l > ScalarT(0) && l <= ScalarT(1))
+                return tg::dir<D, ScalarT>(p / tg::sqrt(l));
+        }
+    }
+};
 }
 
 } // namespace tg
