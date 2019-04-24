@@ -70,4 +70,9 @@ TG_NODISCARD constexpr ScalarT dot(vec<D, ScalarT> const& a, dir<D, ScalarT> con
 {
     return dot(a, vec<D, ScalarT>(b));
 }
+template <int D, class ScalarT>
+TG_NODISCARD constexpr ScalarT dot(pos<D, ScalarT> const& a, dir<D, ScalarT> const& b) // TODO is this meaningful?
+{
+    return dot(vec<D, ScalarT>(a), vec<D, ScalarT>(b));
+}
 } // namespace tg
