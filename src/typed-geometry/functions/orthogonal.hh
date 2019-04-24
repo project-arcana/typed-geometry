@@ -4,22 +4,22 @@
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/vec.hh>
 
-//#include <typed-geometry/detail/operators/ops_vec.hh>
+#include <typed-geometry/detail/operators/ops_vec.hh>
 
 #include <typed-geometry/common/scalar_math.hh>
+
+#include "normalize.hh"
 
 // Computes orthogonal direction
 namespace tg
 {
 template <class ScalarT>
-TG_NODISCARD constexpr dir<2, ScalarT> orthogonal(vec<2, ScalarT> const& v)
+TG_NODISCARD constexpr dir<2, ScalarT> orthogonal(vec<2, ScalarT> const& v, bool cc = true)
 {
-    // TODO check if input is 0 and reject/warn?
-    // TODO alternative: x' = -y, y' = x ?
-    if(abs(v.x) > abs(v.y))
-        return normalize(cross(v, vec2(0.0f, 1.0f)));
+    if(cc)
+        return normalize(vec2(-v.y, v.x));
     else
-        return normalize(cross(v, vec2(1.0f, 0.0f)));
+        return normalize(vec2(v.y, -v.x));
 }
 
 template <class ScalarT>
@@ -37,12 +37,12 @@ TG_NODISCARD constexpr dir<3, ScalarT> orthogonal(vec<3, ScalarT> const& v)
 template <class ScalarT>
 TG_NODISCARD constexpr dir<2, ScalarT> orthogonal(dir<2, ScalarT> const& d)
 {
-    return normalize(orthogonal(vec<2, ScalarT>(d)));
+    return orthogonal(vec<2, ScalarT>(d));
 }
 
 template <class ScalarT>
 TG_NODISCARD constexpr dir<3, ScalarT> orthogonal(dir<3, ScalarT> const& d)
 {
-    return normalize(orthogonal(vec<3, ScalarT>(d)));
+    return orthogonal(vec<3, ScalarT>(d));
 }
 } // namespace tg
