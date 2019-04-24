@@ -20,7 +20,7 @@ TG_NODISCARD constexpr box<D, ScalarT> aabb(box<D, ScalarT> const& b)
 template <int D, class ScalarT>
 TG_NODISCARD constexpr box<D, ScalarT> aabb(triangle<D, ScalarT> const& t)
 {
-    return aabb(t.v0, t.v1, t.v2);
+    return aabb(t.pos0, t.pos1, t.pos2);
 }
 
 template <class PrimA, class PrimB, class... PrimsT>

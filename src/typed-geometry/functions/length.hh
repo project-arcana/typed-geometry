@@ -24,7 +24,7 @@ TG_NODISCARD constexpr fractional_result<ScalarT> length(vec<D, ScalarT> const& 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> length2(segment<D, ScalarT> const& s)
 {
-    return length2(s.a - s.b);
+    return length2(s.pos0 - s.pos1);
 }
 
 template <int D, class ScalarT>

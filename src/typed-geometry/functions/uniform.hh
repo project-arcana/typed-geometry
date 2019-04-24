@@ -167,8 +167,8 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, pos<D, ScalarT> const& 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> const& t)
 {
-    auto e0 = t.v1 - t.v0;
-    auto e1 = t.v2 - t.v0;
+    auto e0 = t.pos1 - t.pos0;
+    auto e1 = t.pos2 - t.pos0;
     auto u0 = uniform(rng, ScalarT(0), ScalarT(1));
     auto u1 = uniform(rng, ScalarT(0), ScalarT(1));
     if (u0 + u1 > ScalarT(1))
@@ -176,7 +176,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> co
         u0 = ScalarT(1) - u0;
         u1 = ScalarT(1) - u1;
     }
-    return t.v0 + u0 * e0 + u1 * e1;
+    return t.pos0 + u0 * e0 + u1 * e1;
 }
 
 template <class Rng, class... Args>

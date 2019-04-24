@@ -69,17 +69,17 @@ TG_NODISCARD constexpr auto intersection(ray<D, ScalarT> const& r, hyperplane<D,
     -> intersection_result<ray<D, ScalarT>, hyperplane<D, ScalarT>>
 {
     // if plane normal and raydirection are parallel there is no intersection
-    auto dotND = dot(p.n, r.dir);
+    auto dotND = dot(p.normal, r.dir);
     if (dotND == 0)
         return {true, {}};
 
-    auto t = -(dot(p.n, vec<D, ScalarT>(r.pos)) + p.d) / dotND;
+    auto t = -(dot(p.normal, vec<D, ScalarT>(r.origin)) + p.dis) / dotND;
 
     // check whether plane lies behind ray
     if (t < 0)
         return {true, {}};
 
-    auto result = r.pos + r.dir * t;
+    auto result = r.origin + r.dir * t;
 
     // non-empty intersection
     return {false, result};
@@ -90,7 +90,7 @@ template <class ScalarT>
 TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
     -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
 {
-    auto p = hyperplane<3, ScalarT>(normal(t), t.v0);
+    auto p = hyperplane<3, ScalarT>(normal(t), t.pos0);
 
     auto result = intersection(r, p);
 

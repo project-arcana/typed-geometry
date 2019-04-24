@@ -108,7 +108,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "triangle" << char('0' + D);
-    ss << "(" << val.v0 << ", " << val.v1 << ", " << val.v2 << ")";
+    ss << "(" << val.pos0 << ", " << val.pos1 << ", " << val.pos2 << ")";
     return out << ss.str();
 }
 

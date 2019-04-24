@@ -154,7 +154,7 @@ template <int D, class ScalarT>
 struct less<tg::triangle<D, ScalarT>>
 {
     typedef tg::triangle<D, ScalarT> arg_t;
-    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.v0, a.v1, a.v2) < std::tie(b.v0, b.v1, b.v2); }
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.pos0, a.pos1, a.pos2) < std::tie(b.pos0, b.pos1, b.pos2); }
 };
 template <int D, class ScalarT>
 struct less<tg::box<D, ScalarT>>

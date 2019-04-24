@@ -29,7 +29,7 @@ TG_NODISCARD constexpr squared_result<ScalarT> area(box<2, ScalarT> const& b)
 template <class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> signed_area(triangle<2, ScalarT> const& b)
 {
-    return cross(b.v1 - b.v0, b.v2 - b.v0) * fractional_result<ScalarT>(0.5);
+    return cross(b.pos1 - b.pos0, b.pos2 - b.pos0) * fractional_result<ScalarT>(0.5);
 }
 
 template <class ScalarT>
@@ -41,7 +41,7 @@ TG_NODISCARD constexpr fractional_result<ScalarT> area(triangle<2, ScalarT> cons
 template <class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> area(triangle<3, ScalarT> const& b)
 {
-    return length(cross(b.v1 - b.v0, b.v2 - b.v0)) * fractional_result<ScalarT>(0.5);
+    return length(cross(b.pos1 - b.pos0, b.pos2 - b.pos0)) * fractional_result<ScalarT>(0.5);
 }
 
 template <class ScalarT>
