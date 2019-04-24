@@ -7,7 +7,7 @@
 #include <typed-geometry/types/scalar.hh>
 
 #include <typed-geometry/types/objects/ball.hh>
-#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -101,25 +101,25 @@ TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b)
 }
 
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<1, ScalarT> uniform(Rng& rng, box<1, ScalarT> const& b)
+TG_NODISCARD constexpr pos<1, ScalarT> uniform(Rng& rng, aabb<1, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x)};
 }
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, box<2, ScalarT> const& b)
+TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, aabb<2, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y)};
 }
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, box<3, ScalarT> const& b)
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, aabb<3, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y), //
             uniform(rng, b.min.z, b.max.z)};
 }
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, box<4, ScalarT> const& b)
+TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, aabb<4, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y), //
@@ -130,7 +130,7 @@ TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, box<4, ScalarT> const& 
 template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& s)
 {
-    auto ub = tg::box<D, ScalarT>::minus_one_to_one;
+    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
     while (true)
     {
         auto p = uniform_vec(rng, ub);
@@ -143,7 +143,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> cons
 template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const& b)
 {
-    auto ub = tg::box<D, ScalarT>::minus_one_to_one;
+    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
     while (true)
     {
         auto p = uniform_vec(rng, ub);
@@ -203,7 +203,7 @@ struct sampler<dir<D, ScalarT>>
     template <class Rng>
     constexpr static dir<D, ScalarT> uniform(Rng& rng)
     {
-        auto ub = tg::box<D, ScalarT>::minus_one_to_one;
+        auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
         while (true)
         {
             auto p = uniform_vec(rng, ub);

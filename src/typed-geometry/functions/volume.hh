@@ -5,7 +5,7 @@
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/types/objects/ball.hh>
-#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/size.hh>
 
 namespace tg
@@ -17,7 +17,7 @@ TG_NODISCARD constexpr squared_result<ScalarT> volume(size<3, ScalarT> const& s)
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr squared_result<ScalarT> volume(box<3, ScalarT> const& b)
+TG_NODISCARD constexpr squared_result<ScalarT> volume(aabb<3, ScalarT> const& b)
 {
     return volume(size<3, ScalarT>(b.max - b.min));
 }

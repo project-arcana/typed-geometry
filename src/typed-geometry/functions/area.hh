@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typed-geometry/types/objects/ball.hh>
-#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
@@ -21,7 +21,7 @@ TG_NODISCARD constexpr squared_result<ScalarT> area(size<2, ScalarT> const& s)
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr squared_result<ScalarT> area(box<2, ScalarT> const& b)
+TG_NODISCARD constexpr squared_result<ScalarT> area(aabb<2, ScalarT> const& b)
 {
     return area(size<2, ScalarT>(b.max - b.min));
 }
