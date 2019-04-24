@@ -7,6 +7,7 @@
 #include <typed-geometry/types/size.hh>
 #include <typed-geometry/types/vec.hh>
 
+#include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/hyperplane.hh>
 
 #include <typed-geometry/functions/dot.hh>
@@ -59,6 +60,10 @@ constexpr dir<4, ScalarT>::dir(vec<4, ScalarT> const& v) : x(v.x), y(v.y), z(v.z
 
 template <int D, class ScalarT>
 constexpr hyperplane<D, ScalarT>::hyperplane(dir_t n, pos_t p) : normal(n), dis(dot(vec<D, ScalarT>(p), n))
+{
+}
+template <int D, class ScalarT>
+constexpr halfspace<D, ScalarT>::halfspace(dir_t n, pos_t p) : normal(n), dis(dot(vec<D, ScalarT>(p), n))
 {
 }
 }

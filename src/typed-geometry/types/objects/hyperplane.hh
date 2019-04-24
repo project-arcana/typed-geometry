@@ -48,9 +48,9 @@ using uhyperplane4 = hyperplane<4, u32>;
 template <int D, class ScalarT>
 struct hyperplane
 {
+    using dis_t = ScalarT;
     using dir_t = dir<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
-    using dis_t = ScalarT;
 
     dir_t normal;
     dis_t dis;

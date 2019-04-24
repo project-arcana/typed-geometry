@@ -50,11 +50,13 @@ struct halfspace
 {
     using dis_t = ScalarT;
     using dir_t = dir<D, ScalarT>;
+    using pos_t = pos<D, ScalarT>;
 
     dir_t normal;
     dis_t dis;
 
     constexpr halfspace() = default;
-    constexpr halfspace(dis_t d, dir_t n) : dis(d), normal(n) {}
+    constexpr halfspace(dir_t n, dis_t d) : dis(d), normal(n) {}
+    constexpr halfspace(dir_t n, pos_t p);
 };
 } // namespace tg
