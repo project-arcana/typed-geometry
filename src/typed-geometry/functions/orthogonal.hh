@@ -1,13 +1,7 @@
 #pragma once
 
-//#include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/vec.hh>
-
-#include <typed-geometry/detail/operators/ops_vec.hh>
-
-#include <typed-geometry/common/scalar_math.hh>
-
 #include "normalize.hh"
 
 // Computes orthogonal direction
