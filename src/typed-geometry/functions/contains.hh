@@ -95,9 +95,9 @@ TG_NODISCARD constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT
 template <class ScalarT>
 TG_NODISCARD constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
 {
-    auto pv0 = t.v0 - p;
-    auto pv1 = t.v1 - p;
-    auto pv2 = t.v2 - p;
+    auto pv0 = t.pos0 - p;
+    auto pv1 = t.pos1 - p;
+    auto pv2 = t.pos2 - p;
     auto A0 = cross(pv1, pv2);
     auto A1 = cross(pv2, pv0);
     auto A2 = cross(pv0, pv1);
@@ -119,18 +119,18 @@ TG_NODISCARD constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, Scala
     auto n = normal(t);
 
     // checking whether point lies on right side of any edge
-    auto e = t.v1 - t.v0;
-    auto C = cross(e, p - t.v0);
+    auto e = t.pos1 - t.pos0;
+    auto C = cross(e, p - t.pos0);
     if (dot(n, C) < 0)
         return false;
 
-    e = t.v2 - t.v1;
-    C = cross(e, p - t.v1);
+    e = t.pos2 - t.pos1;
+    C = cross(e, p - t.pos1);
     if (dot(n, C) < 0)
         return false;
 
-    e = t.v0 - t.v2;
-    C = cross(e, p - t.v2);
+    e = t.pos0 - t.pos2;
+    C = cross(e, p - t.pos2);
     if (dot(n, C) < 0)
         return false;
 

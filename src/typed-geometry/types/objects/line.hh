@@ -48,11 +48,11 @@ struct line
     using dir_t = tg::dir<D, ScalarT>;
     using pos_t = tg::pos<D, ScalarT>;
 
-    pos_t p;
+    pos_t pos;
     dir_t dir;
 
     constexpr line() = default;
-    constexpr line(pos_t p, dir_t dir) : p(p), dir(dir) {}
+    constexpr line(pos_t p, dir_t dir) : pos(p), dir(dir) {}
 
     // create a line from two points
     static constexpr line from_points(pos_t a, pos_t b)

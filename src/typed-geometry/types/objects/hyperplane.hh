@@ -52,11 +52,11 @@ struct hyperplane
     using pos_t = pos<D, ScalarT>;
     using dis_t = ScalarT;
 
-    dir_t n;
-    dis_t d;
+    dir_t normal;
+    dis_t dis;
 
     constexpr hyperplane() = default;
-    constexpr hyperplane(dir_t n, dis_t d) : n(n), d(d) {}
+    constexpr hyperplane(dir_t n, dis_t d) : normal(n), dis(d) {}
     constexpr hyperplane(dir_t n, pos_t p);
 };
 } // namespace tg

@@ -29,13 +29,13 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, fractional_result<ScalarT>> centroid(triangle<D, ScalarT> const& p)
 {
     auto z = tg::zero<pos<D, ScalarT>>();
-    return z + ((p.v0 - z) + (p.v1 - z) + (p.v2 - z)) / ScalarT(3);
+    return z + ((p.pos0 - z) + (p.pos1 - z) + (p.pos2 - z)) / ScalarT(3);
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, fractional_result<ScalarT>> centroid(segment<D, ScalarT> const& p)
 {
-    return mix(p.a, p.b, fractional_result<ScalarT>(0.5));
+    return mix(p.pos0, p.pos1, fractional_result<ScalarT>(0.5));
 }
 
 template <int D, class ScalarT>

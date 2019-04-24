@@ -28,7 +28,7 @@ TG_NODISCARD constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& a, dir<D, 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, line<D, ScalarT> const& l)
 {
-    return l.p + project(p - l.p, l.dir);
+    return l.pos + project(p - l.pos, l.dir);
 }
 
 template <int D, class ScalarT>
@@ -36,24 +36,24 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, segment
 {
     auto t = coordinates(s, p);
     t = clamp(t, ScalarT(0), ScalarT(1));
-    return mix(s.a, s.b, t);
+    return mix(s.pos0, s.pos1, t);
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
 {
-    return p - pl.n * (dot(p - zero<pos<D, ScalarT>>(), pl.n) - pl.d);
+    return p - pl.normal * (dot(p - zero<pos<D, ScalarT>>(), pl.normal) - pl.dis);
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
 {
-    return v - pl.n * dot(v, pl.n);
+    return v - pl.normal * dot(v, pl.normal);
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr vec<D, ScalarT> project(dir<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
 {
-    return v - pl.n * dot(v, pl.n);
+    return v - pl.normal * dot(v, pl.normal);
 }
 } // namespace tg

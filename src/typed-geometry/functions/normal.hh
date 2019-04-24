@@ -19,13 +19,13 @@ namespace tg
 template <int D, class ScalarT>
 TG_NODISCARD constexpr dir<D, ScalarT> normal(hyperplane<D, ScalarT> const& p)
 {
-    return p.n;
+    return p.normal;
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr dir<D, ScalarT> normal(halfspace<D, ScalarT> const& h)
 {
-    return h.n;
+    return h.normal;
 }
 
 template <class ScalarT>
@@ -61,12 +61,12 @@ TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(ray<2, ScalarT>
 template <class ScalarT>
 TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(segment<2, ScalarT> const& s)
 {
-    return normal(s.b - s.a);
+    return normal(s.pos1 - s.pos0);
 }
 
 template <class ScalarT>
 TG_NODISCARD constexpr dir<3, fractional_result<ScalarT>> normal(triangle<3, ScalarT> const& t)
 {
-    return normalize(cross(t.v1 - t.v0, t.v2 - t.v0));
+    return normalize(cross(t.pos1 - t.pos0, t.pos2 - t.pos0));
 }
 } // namespace tg

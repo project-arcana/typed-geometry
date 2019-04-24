@@ -204,7 +204,7 @@ struct hash<tg::triangle<D, ScalarT>>
 {
     typedef tg::triangle<D, ScalarT> argument_type;
     typedef std::size_t result_type;
-    result_type operator()(argument_type const& v) const noexcept { return tg::detail::hash(v.v0, v.v1, v.v2); }
+    result_type operator()(argument_type const& v) const noexcept { return tg::detail::hash(v.pos0, v.pos1, v.pos2); }
 };
 template <int D, class ScalarT>
 struct hash<tg::box<D, ScalarT>>
