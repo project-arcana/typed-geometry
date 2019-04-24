@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>

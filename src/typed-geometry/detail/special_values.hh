@@ -7,7 +7,7 @@
 #include <typed-geometry/types/vec.hh>
 
 #include <typed-geometry/types/objects/ball.hh>
-#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 
 /*
@@ -354,11 +354,11 @@ constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::diag(vec<detail::min(C, R), Sca
 
 
 template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::minus_one_to_one = {tg::pos<D, ScalarT>(ScalarT(-1)), tg::pos<D, ScalarT>(ScalarT(1))};
+const aabb<D, ScalarT> aabb<D, ScalarT>::minus_one_to_one = {tg::pos<D, ScalarT>(ScalarT(-1)), tg::pos<D, ScalarT>(ScalarT(1))};
 template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0)), tg::pos<D, ScalarT>(ScalarT(1))};
+const aabb<D, ScalarT> aabb<D, ScalarT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0)), tg::pos<D, ScalarT>(ScalarT(1))};
 template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>(ScalarT(-0.5)), tg::pos<D, ScalarT>(ScalarT(0.5))};
+const aabb<D, ScalarT> aabb<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>(ScalarT(-0.5)), tg::pos<D, ScalarT>(ScalarT(0.5))};
 
 template <int D, class ScalarT>
 const sphere<D, ScalarT> sphere<D, ScalarT>::unit = {pos<D, ScalarT>::zero, ScalarT(1)};

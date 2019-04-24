@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include <typed-geometry/types/objects/ball.hh>
-#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -20,7 +20,7 @@
 
 // Contained functions:
 // - contains
-//      - bbox
+//      - baabb
 //      - triangle
 
 namespace tg
@@ -41,30 +41,30 @@ TG_NODISCARD constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> c
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr bool contains(box<1, ScalarT> const& b, ScalarT const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(aabb<1, ScalarT> const& b, ScalarT const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o && o <= b.max.x + eps;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr bool contains(box<1, ScalarT> const& b, pos<1, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(aabb<1, ScalarT> const& b, pos<1, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr bool contains(box<2, ScalarT> const& b, pos<2, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(aabb<2, ScalarT> const& b, pos<2, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr bool contains(box<3, ScalarT> const& b, pos<3, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(aabb<3, ScalarT> const& b, pos<3, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps && //
            b.min.z - eps <= o.z && o.z <= b.max.z + eps;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr bool contains(box<4, ScalarT> const& b, pos<4, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(aabb<4, ScalarT> const& b, pos<4, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps && //
@@ -73,7 +73,7 @@ TG_NODISCARD constexpr bool contains(box<4, ScalarT> const& b, pos<4, ScalarT> c
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool contains(box<D, ScalarT> const& b, box<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
+TG_NODISCARD constexpr bool contains(aabb<D, ScalarT> const& b, aabb<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     return contains(b, o.min, eps) && contains(b, o.max, eps);
 }
