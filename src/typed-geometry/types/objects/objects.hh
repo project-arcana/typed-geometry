@@ -1,7 +1,8 @@
 #pragma once
 
-#include "ball.hh"
 #include "aabb.hh"
+#include "ball.hh"
+#include "box.hh"
 #include "cylinder.hh"
 #include "disk.hh"
 #include "frustum.hh"

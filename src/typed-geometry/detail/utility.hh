@@ -31,22 +31,6 @@ struct triple
     C third;
 };
 
-template <class T, int SIZE>
-struct array
-{
-    T values[SIZE];
-
-    constexpr T& operator[](int i) { return values[i]; }
-    constexpr T const& operator[](int i) const { return values[i]; }
-
-    constexpr T* begin() { return &values[0]; }
-    constexpr T* end() { return begin() + SIZE; }
-    constexpr T const* begin() const { return &values[0]; }
-    constexpr T const* end() const { return begin() + SIZE; }
-
-    constexpr int size() const { return SIZE; }
-};
-
 template <bool, class T = void>
 struct enable_if_t
 {

@@ -1,8 +1,9 @@
 #pragma once
 
+#include <typed-geometry/common/assert.hh>
+
 #include "../pos.hh"
 #include "../scalar.hh"
-#include "../size.hh"
 #include "../vec.hh"
 
 namespace tg
@@ -45,7 +46,6 @@ struct aabb
 {
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
-    using size_t = size<D, ScalarT>;
 
     static const aabb minus_one_to_one;
     static const aabb unit_from_zero;
@@ -55,6 +55,10 @@ struct aabb
     pos_t max;
 
     constexpr aabb() = default;
-    constexpr aabb(pos_t min, pos_t max) : min(min), max(max) {}
+    constexpr aabb(pos_t min, pos_t max) : min(min), max(max)
+    {
+        for (auto i = 0; i < D; ++i)
+            TG_CONTRACT(min[i] <= max[i]);
+    }
 };
 } // namespace tg
