@@ -1,5 +1,7 @@
 #pragma once
 
+#include <typed-geometry/common/assert.hh>
+
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -33,5 +35,24 @@ TG_NODISCARD constexpr auto aabb_of(PrimA const& pa, PrimB const& pb, PrimsT con
     return aabb_of(b, prims...);
 }
 
+template <class ContainerT>
+TG_NODISCARD constexpr auto aabb_of(ContainerT const& c) -> decltype(aabb_of(*c.begin()), aabb_of(*c.end()))
+{
+    auto it = c.begin();
+    auto end = c.end();
+    TG_ASSERT(it != end && "cannot build AABB of empty container");
+
+    auto bb = aabb_of(*it);
+    it++;
+    while (it != end)
+    {
+        auto rhs = aabb_of(*it);
+        bb = decltype(bb)(min(bb.min, rhs.min), max(bb.max, rhs.max));
+
+        it++;
+    }
+
+    return bb;
+}
 
 } // namespace tg
