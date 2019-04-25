@@ -69,17 +69,17 @@ TG_NODISCARD constexpr auto intersection(ray<D, ScalarT> const& r, hyperplane<D,
     -> intersection_result<ray<D, ScalarT>, hyperplane<D, ScalarT>>
 {
     // if plane normal and raydirection are parallel there is no intersection
-    auto dotND = dot(p.n, r.dir);
+    auto dotND = dot(p.normal, r.dir);
     if (dotND == 0)
         return {true, {}};
 
-    auto t = -(dot(p.n, vec<D, ScalarT>(r.pos)) + p.d) / dotND;
+    auto t = -(dot(p.normal, vec<D, ScalarT>(r.origin)) + p.dis) / dotND;
 
     // check whether plane lies behind ray
     if (t < 0)
         return {true, {}};
 
-    auto result = r.pos + r.dir * t;
+    auto result = r.origin + r.dir * t;
 
     // non-empty intersection
     return {false, result};
@@ -90,7 +90,7 @@ template <class ScalarT>
 TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
     -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
 {
-    auto p = hyperplane<3, ScalarT>(normal(t), t.v0);
+    auto p = hyperplane<3, ScalarT>(normal(t), t.pos0);
 
     auto result = intersection(r, p);
 
@@ -111,15 +111,17 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
 {
     auto d2 = distance2(a.center, b.center);
 
+    auto const empty_circle = circle<3, ScalarT>(tg::pos<3, ScalarT>::zero, ScalarT(0), tg::dir<3, ScalarT>::pos_x);
+
     // TODO: intersection sphere
     if (a.center == b.center && a.radius == b.radius)
-        return {true, {}};
+        return {true, empty_circle};
 
     auto d = tg::sqrt(d2);
 
     // no intersection
     if (d > a.radius + b.radius)
-        return {true, {}};
+        return {true, empty_circle};
 
 
     // radius and centers of larger sphere (ls) and smaller sphere (ss)
@@ -139,10 +141,10 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
     if (d + ssr < lsr)
     {
         // Smaller sphere inside larger one and not touching it
-        return {true, {}};
+        return {true, empty_circle};
     }
 
-    TG_ASSERT(d > ScalarT(0));
+    TG_INTERNAL_ASSERT(d > ScalarT(0));
 
     // squared radii of a and b
     auto ar2 = a.radius * a.radius;
@@ -155,7 +157,7 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
     auto irad = sqrt(ar2 - t * t * d2);
 
     // non-empty intersection (circle)
-    return {false, {ipos, irad, (b.center - a.center) / d}};
+    return {false, {ipos, irad, dir<3, ScalarT>((b.center - a.center) / d)}};
 }
 
 // returns intersection points of two circles in 2D
@@ -178,11 +180,11 @@ TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, 
     if (d < tg::abs(ar - br)) // no intersection (one inside the other)
         return {true, {}, {}};
 
-    TG_ASSERT(d > ScalarT(0));
+    TG_INTERNAL_ASSERT(d > ScalarT(0));
 
     auto t = (ar * ar - br * br + d2) / (2 * d);
     auto h2 = ar * ar - t * t;
-    TG_ASSERT(h2 >= ScalarT(0));
+    TG_INTERNAL_ASSERT(h2 >= ScalarT(0));
 
     auto h = tg::sqrt(h2);
     auto h_by_d = h / d;

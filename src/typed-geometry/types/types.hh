@@ -7,6 +7,7 @@
 #include "pos.hh"
 #include "size.hh"
 #include "vec.hh"
+#include "dir.hh"
 
 #include "quadric.hh"
 
@@ -18,4 +19,4 @@
 #include "objects/objects.hh"
 
 // implementations of some ctors
-#include "../detail/type-ctor-impl.hh"
+#include "../detail/constructors-lean.hh"

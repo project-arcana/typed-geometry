@@ -20,7 +20,7 @@ namespace tg
 template <class ScalarT, class F>
 constexpr void rasterize(triangle<2, ScalarT> const& t, F&& f)
 {
-    auto const b = aabb(t);
+    auto const b = aabb_of(t);
 
     // margin so that we can safely round/clamp to integer coords
     auto const minPix = ifloor(b.min);

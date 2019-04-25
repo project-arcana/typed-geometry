@@ -55,7 +55,7 @@ TG_NODISCARD constexpr auto distance2_to_origin(Obj const& o) -> decltype(distan
 template <class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, plane const& pl)
 {
-    return dot(p - zero<pos<3, ScalarT>>(), pl.n) - pl.d;
+    return dot(p - zero<pos<3, ScalarT>>(), pl.normal) - pl.dis;
 }
 
 template <class ScalarT>

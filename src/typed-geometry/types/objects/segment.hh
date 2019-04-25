@@ -45,10 +45,10 @@ struct segment
 {
     using pos_t = pos<D, ScalarT>;
 
-    pos_t a;
-    pos_t b;
+    pos_t pos0;
+    pos_t pos1;
 
     constexpr segment() = default;
-    constexpr segment(pos_t a, pos_t b) : a(a), b(b) {}
+    constexpr segment(pos_t p0, pos_t p1) : pos0(p0), pos1(p1) {}
 };
 } // namespace tg

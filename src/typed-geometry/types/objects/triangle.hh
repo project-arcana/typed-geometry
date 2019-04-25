@@ -1,10 +1,9 @@
 #pragma once
 
+#include "../array.hh"
 #include "../pos.hh"
 #include "../scalar.hh"
 #include "../vec.hh"
-
-#include "../../detail/utility.hh"
 
 namespace tg
 {
@@ -42,12 +41,12 @@ struct triangle
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 
-    pos_t v0;
-    pos_t v1;
-    pos_t v2;
+    pos_t pos0;
+    pos_t pos1;
+    pos_t pos2;
 
     constexpr triangle() = default;
-    constexpr triangle(pos_t v0, pos_t v1, pos_t v2) : v0(v0), v1(v1), v2(v2) {}
-    constexpr triangle(array<pos_t, 3> const& v) : v0(v[0]), v1(v[1]), v2(v[2]) {}
+    constexpr triangle(pos_t p0, pos_t p1, pos_t p2) : pos0(p0), pos1(p1), pos2(p2) {}
+    constexpr triangle(array<pos_t, 3> const& v) : pos0(v[0]), pos1(v[1]), pos2(v[2]) {}
 };
 } // namespace tg

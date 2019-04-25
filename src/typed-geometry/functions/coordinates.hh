@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typed-geometry/detail/operators/ops_vec.hh>
-#include <typed-geometry/detail/utility.hh>
+#include <typed-geometry/types/array.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
@@ -22,10 +22,10 @@ namespace tg
 template <class ScalarT>
 TG_NODISCARD constexpr array<ScalarT, 3> coordinates(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
 {
-    auto pv0 = t.v0 - p;
-    auto pv1 = t.v1 - p;
-    auto pv2 = t.v2 - p;
-    auto A = cross(t.v1 - t.v0, t.v2 - t.v0);
+    auto pv0 = t.pos0 - p;
+    auto pv1 = t.pos1 - p;
+    auto pv2 = t.pos2 - p;
+    auto A = cross(t.pos1 - t.pos0, t.pos2 - t.pos0);
     auto A0 = cross(pv1, pv2);
     auto A1 = cross(pv2, pv0);
     auto A2 = cross(pv0, pv1);
@@ -37,10 +37,10 @@ TG_NODISCARD constexpr array<ScalarT, 3> coordinates(triangle<2, ScalarT> const&
 template <class ScalarT>
 TG_NODISCARD constexpr array<ScalarT, 3> coordinates(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
 {
-    auto pv0 = t.v0 - p;
-    auto pv1 = t.v1 - p;
-    auto pv2 = t.v2 - p;
-    auto n = cross(t.v1 - t.v0, t.v2 - t.v0);
+    auto pv0 = t.pos0 - p;
+    auto pv1 = t.pos1 - p;
+    auto pv2 = t.pos2 - p;
+    auto n = cross(t.pos1 - t.pos0, t.pos2 - t.pos0);
     auto A = length(n);
     n /= A;
     auto A0 = dot(cross(pv1, pv2), n);
@@ -54,8 +54,8 @@ TG_NODISCARD constexpr array<ScalarT, 3> coordinates(triangle<3, ScalarT> const&
 template <int D, class ScalarT>
 TG_NODISCARD constexpr ScalarT coordinates(segment<D, ScalarT> const& s, pos<D, ScalarT> const& p)
 {
-    auto d = s.b - s.a;
-    auto t = dot(p - s.a, d) / dot(d, d);
+    auto d = s.pos1 - s.pos0;
+    auto t = dot(p - s.pos0, d) / dot(d, d);
     return t;
 }
 

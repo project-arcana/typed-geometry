@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
@@ -44,12 +44,12 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> interpolate(triangle<D, ScalarT> const& t, ScalarT wa, ScalarT wb)
 {
     auto z = pos<D, ScalarT>::zero;
-    return z + (t.v0 - z) * wa + (t.v1 - z) * wb + (t.v2 - z) * (ScalarT(1) - wb - wa);
+    return z + (t.pos0 - z) * wa + (t.pos1 - z) * wb + (t.pos2 - z) * (ScalarT(1) - wb - wa);
 }
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> interpolate(triangle<D, ScalarT> const& t, ScalarT wa, ScalarT wb, ScalarT wc)
 {
     auto z = pos<D, ScalarT>::zero;
-    return z + (t.v0 - z) * wa + (t.v1 - z) * wb + (t.v2 - z) * wc;
+    return z + (t.pos0 - z) * wa + (t.pos1 - z) * wb + (t.pos2 - z) * wc;
 }
 } // namespace tg

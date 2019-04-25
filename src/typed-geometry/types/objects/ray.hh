@@ -3,7 +3,7 @@
 #include "../pos.hh"
 #include "../scalar.hh"
 #include "../size.hh"
-#include "../vec.hh"
+#include "../dir.hh"
 
 namespace tg
 {
@@ -43,13 +43,13 @@ using uray4 = ray<4, u32>;
 template <int D, class ScalarT>
 struct ray
 {
-    using vec_t = tg::vec<D, ScalarT>;
+    using dir_t = tg::dir<D, ScalarT>;
     using pos_t = tg::pos<D, ScalarT>;
 
-    pos_t pos;
-    vec_t dir; ///< must be normalized!
+    pos_t origin;
+    dir_t dir;
 
     constexpr ray() = default;
-    constexpr ray(pos_t pos, vec_t dir) : pos(pos), dir(dir) {}
+    constexpr ray(pos_t pos, dir_t dir) : origin(pos), dir(dir) {}
 };
 } // namespace tg

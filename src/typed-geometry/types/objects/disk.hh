@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../pos.hh"
-#include "../vec.hh"
+#include "../dir.hh"
 
 namespace tg
 {
@@ -37,7 +37,6 @@ template <class ScalarT>
 struct disk<2, ScalarT>
 {
     using pos_t = pos<2, ScalarT>;
-    using vec_t = vec<2, ScalarT>;
 
     pos_t center;
     ScalarT radius;
@@ -50,13 +49,13 @@ template <class ScalarT>
 struct disk<3, ScalarT>
 {
     using pos_t = pos<3, ScalarT>;
-    using vec_t = vec<3, ScalarT>;
+    using dir_t = dir<3, ScalarT>;
 
     pos_t center;
     ScalarT radius;
-    vec_t normal;
+    dir_t normal;
 
     constexpr disk() = default;
-    constexpr disk(pos_t c, ScalarT r, vec_t n) : center(c), radius(r), normal(n) {}
+    constexpr disk(pos_t c, ScalarT r, dir_t n) : center(c), radius(r), normal(n) {}
 };
 } // namespace tg

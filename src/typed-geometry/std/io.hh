@@ -36,9 +36,9 @@ std::basic_ostringstream<CharT, Traits> temp_sstream(std::basic_ostream<CharT, T
 // how to add a new type:
 // - extend traits.hh:
 //     template <int D, class ScalarT>
-//     struct type_name_t<box<D, ScalarT>>
+//     struct type_name_t<aabb<D, ScalarT>>
 //     {
-//         static constexpr char const* value = "box";
+//         static constexpr char const* value = "aabb";
 //     };
 
 template <class T, class CharT, class Traits>
@@ -54,6 +54,17 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "vec" << char('0' + D);
+    ss << "(";
+    for (auto i = 0; i < D; ++i)
+        ss << (i > 0 ? ", " : "") << val[i];
+    ss << ")";
+    return out << ss.str();
+}
+template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, dir<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "dir" << char('0' + D);
     ss << "(";
     for (auto i = 0; i < D; ++i)
         ss << (i > 0 ? ", " : "") << val[i];
@@ -84,11 +95,20 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 }
 
 template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, aabb<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "aabb" << char('0' + D);
+    ss << "(" << val.min << ", " << val.max << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, box<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "box" << char('0' + D);
-    ss << "(" << val.min << ", " << val.max << ")";
+    ss << "(" << val.center << ", " << val.half_extents << ")";
     return out << ss.str();
 }
 
@@ -97,7 +117,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "triangle" << char('0' + D);
-    ss << "(" << val.v0 << ", " << val.v1 << ", " << val.v2 << ")";
+    ss << "(" << val.pos0 << ", " << val.pos1 << ", " << val.pos2 << ")";
     return out << ss.str();
 }
 

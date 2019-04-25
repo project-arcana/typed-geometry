@@ -14,11 +14,23 @@
 // compile flags
 // TG_ENABLE_ASSERTIONS enables assertions
 
-#if !defined(TG_ENABLE_ASSERTIONS)
+#ifndef TG_ENABLE_ASSERTIONS
 #define TG_ASSERT(condition) TG_UNUSED(bool((condition)))
 #else
 #define TG_ASSERT(condition) \
     (TG_LIKELY((condition)) ? void(0) : ::tg::detail::assertion_failed({#condition, TG_PRETTY_FUNC, __FILE__, __LINE__})) // force ;
+#endif
+
+#ifndef TG_ENABLE_CONTRACTS
+#define TG_CONTRACT(condition) TG_UNUSED(bool((condition)))
+#else
+#define TG_CONTRACT(condition) TG_ASSERT(condition && "contract violation")
+#endif
+
+#ifndef TG_ENABLE_INTERNAL_ASSERTIONS
+#define TG_INTERNAL_ASSERT(condition) TG_UNUSED(bool((condition)))
+#else
+#define TG_INTERNAL_ASSERT(condition) TG_ASSERT(condition)
 #endif
 
 namespace tg

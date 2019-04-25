@@ -3,6 +3,7 @@
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
 #include <typed-geometry/types/vec.hh>
+#include <typed-geometry/types/dir.hh>
 #include <typed-geometry/detail/macros.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
 
@@ -11,6 +12,11 @@ namespace tg
 // pos +- vec = pos
 TG_IMPL_DEFINE_BINARY_OP(pos, vec, pos, +);
 TG_IMPL_DEFINE_BINARY_OP(pos, vec, pos, -);
+
+// pos +- dir = pos
+// TODO: is this required?
+// TG_IMPL_DEFINE_BINARY_OP(pos, dir, pos, +);
+// TG_IMPL_DEFINE_BINARY_OP(pos, dir, pos, -);
 
 // pos */ size = pos
 TG_IMPL_DEFINE_BINARY_OP(pos, size, pos, *);

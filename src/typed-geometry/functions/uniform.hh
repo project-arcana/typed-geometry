@@ -6,6 +6,7 @@
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/scalar.hh>
 
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -26,10 +27,19 @@
 
 namespace tg
 {
-template <class Rng>
-TG_NODISCARD constexpr bool uniform(Rng& rng)
+namespace detail
 {
-    return rng() & 1;
+template <class T>
+struct sampler
+{
+    static_assert(sizeof(T) >= 0, "sampling of this type not supported without parameters");
+};
+}
+
+template <class T, class Rng>
+TG_NODISCARD constexpr T uniform(Rng& rng)
+{
+    return detail::sampler<T>::uniform(rng);
 }
 
 template <class Rng>
@@ -92,25 +102,25 @@ TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b)
 }
 
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<1, ScalarT> uniform(Rng& rng, box<1, ScalarT> const& b)
+TG_NODISCARD constexpr pos<1, ScalarT> uniform(Rng& rng, aabb<1, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x)};
 }
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, box<2, ScalarT> const& b)
+TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, aabb<2, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y)};
 }
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, box<3, ScalarT> const& b)
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, aabb<3, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y), //
             uniform(rng, b.min.z, b.max.z)};
 }
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, box<4, ScalarT> const& b)
+TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, aabb<4, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y), //
@@ -119,9 +129,15 @@ TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, box<4, ScalarT> const& 
 }
 
 template <int D, class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
+{
+    return b.center + b.half_extents * uniform_vec(rng, aabb<D, ScalarT>::minus_one_to_one);
+}
+
+template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& s)
 {
-    auto ub = tg::box<D, ScalarT>::minus_one_to_one;
+    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
     while (true)
     {
         auto p = uniform_vec(rng, ub);
@@ -134,7 +150,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> cons
 template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const& b)
 {
-    auto ub = tg::box<D, ScalarT>::minus_one_to_one;
+    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
     while (true)
     {
         auto p = uniform_vec(rng, ub);
@@ -158,8 +174,8 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, pos<D, ScalarT> const& 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> const& t)
 {
-    auto e0 = t.v1 - t.v0;
-    auto e1 = t.v2 - t.v0;
+    auto e0 = t.pos1 - t.pos0;
+    auto e1 = t.pos2 - t.pos0;
     auto u0 = uniform(rng, ScalarT(0), ScalarT(1));
     auto u1 = uniform(rng, ScalarT(0), ScalarT(1));
     if (u0 + u1 > ScalarT(1))
@@ -167,13 +183,43 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> co
         u0 = ScalarT(1) - u0;
         u1 = ScalarT(1) - u1;
     }
-    return t.v0 + u0 * e0 + u1 * e1;
+    return t.pos0 + u0 * e0 + u1 * e1;
 }
 
 template <class Rng, class... Args>
 TG_NODISCARD constexpr auto uniform_vec(Rng& rng, Args const&... args) -> decltype(uniform(rng, args...) - decltype(uniform(rng, args...))::zero)
 {
     return uniform(rng, args...) - decltype(uniform(rng, args...))::zero;
+}
+
+
+namespace detail
+{
+template <>
+struct sampler<bool>
+{
+    template <class Rng>
+    constexpr static bool uniform(Rng& rng)
+    {
+        return rng() & 1;
+    }
+};
+template <int D, class ScalarT>
+struct sampler<dir<D, ScalarT>>
+{
+    template <class Rng>
+    constexpr static dir<D, ScalarT> uniform(Rng& rng)
+    {
+        auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
+        while (true)
+        {
+            auto p = uniform_vec(rng, ub);
+            auto l = length2(p);
+            if (l > ScalarT(0) && l <= ScalarT(1))
+                return tg::dir<D, ScalarT>(p / tg::sqrt(l));
+        }
+    }
+};
 }
 
 } // namespace tg

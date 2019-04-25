@@ -1,10 +1,12 @@
 #pragma once
 
+#include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
 #include <typed-geometry/types/vec.hh>
 
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -251,14 +253,55 @@ template <class ScalarT>
 const vec<4, ScalarT> vec<4, ScalarT>::unit_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
 
 template <class ScalarT>
-const pos<1, ScalarT> pos<1, ScalarT>::zero = {ScalarT(0)};
+const dir<1, ScalarT> dir<1, ScalarT>::pos_x = {ScalarT(1)};
+template <class ScalarT>
+const dir<1, ScalarT> dir<1, ScalarT>::neg_x = {ScalarT(-1)};
 
+template <class ScalarT>
+const dir<2, ScalarT> dir<2, ScalarT>::pos_x = {ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+const dir<2, ScalarT> dir<2, ScalarT>::pos_y = {ScalarT(0), ScalarT(1)};
+template <class ScalarT>
+const dir<2, ScalarT> dir<2, ScalarT>::neg_x = {ScalarT(-1), ScalarT(0)};
+template <class ScalarT>
+const dir<2, ScalarT> dir<2, ScalarT>::neg_y = {ScalarT(0), ScalarT(-1)};
+
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::pos_x = {ScalarT(1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::pos_y = {ScalarT(0), ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::pos_z = {ScalarT(0), ScalarT(0), ScalarT(1)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::neg_x = {ScalarT(-1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::neg_y = {ScalarT(0), ScalarT(-1), ScalarT(0)};
+template <class ScalarT>
+const dir<3, ScalarT> dir<3, ScalarT>::neg_z = {ScalarT(0), ScalarT(0), ScalarT(-1)};
+
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::pos_x = {ScalarT(1), ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::pos_y = {ScalarT(0), ScalarT(1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::pos_z = {ScalarT(0), ScalarT(0), ScalarT(1), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::pos_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(1)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::neg_x = {ScalarT(-1), ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::neg_y = {ScalarT(0), ScalarT(-1), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::neg_z = {ScalarT(0), ScalarT(0), ScalarT(-1), ScalarT(0)};
+template <class ScalarT>
+const dir<4, ScalarT> dir<4, ScalarT>::neg_w = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(-1)};
+
+template <class ScalarT>
+const pos<1, ScalarT> pos<1, ScalarT>::zero = {ScalarT(0)};
 template <class ScalarT>
 const pos<2, ScalarT> pos<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
-
 template <class ScalarT>
 const pos<3, ScalarT> pos<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
-
 template <class ScalarT>
 const pos<4, ScalarT> pos<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
 
@@ -312,11 +355,18 @@ constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::diag(vec<detail::min(C, R), Sca
 
 
 template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::minus_one_to_one = {tg::pos<D, ScalarT>(ScalarT(-1)), tg::pos<D, ScalarT>(ScalarT(1))};
+const aabb<D, ScalarT> aabb<D, ScalarT>::minus_one_to_one = {tg::pos<D, ScalarT>(ScalarT(-1)), tg::pos<D, ScalarT>(ScalarT(1))};
 template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0)), tg::pos<D, ScalarT>(ScalarT(1))};
+const aabb<D, ScalarT> aabb<D, ScalarT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0)), tg::pos<D, ScalarT>(ScalarT(1))};
 template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>(ScalarT(-0.5)), tg::pos<D, ScalarT>(ScalarT(0.5))};
+const aabb<D, ScalarT> aabb<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>(ScalarT(-0.5)), tg::pos<D, ScalarT>(ScalarT(0.5))};
+
+template <int D, class ScalarT>
+const box<D, ScalarT> box<D, ScalarT>::minus_one_to_one = {tg::pos<D, ScalarT>::zero, tg::mat<D, D, ScalarT>::identity};
+template <int D, class ScalarT>
+const box<D, ScalarT> box<D, ScalarT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0.5)), tg::mat<D, D, ScalarT>::diag(ScalarT(0.5))};
+template <int D, class ScalarT>
+const box<D, ScalarT> box<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>::zero, tg::mat<D, D, ScalarT>::diag(ScalarT(0.5))};
 
 template <int D, class ScalarT>
 const sphere<D, ScalarT> sphere<D, ScalarT>::unit = {pos<D, ScalarT>::zero, ScalarT(1)};

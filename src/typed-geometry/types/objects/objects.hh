@@ -1,5 +1,6 @@
 #pragma once
 
+#include "aabb.hh"
 #include "ball.hh"
 #include "box.hh"
 #include "cylinder.hh"

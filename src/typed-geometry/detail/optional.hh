@@ -23,7 +23,7 @@ public:
 
     TG_NODISCARD constexpr T value() const
     {
-        TG_ASSERT(has_value());
+        TG_CONTRACT(has_value());
         return _value;
     }
 

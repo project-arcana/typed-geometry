@@ -17,15 +17,15 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, ScalarT> normal(hyperplane<D, ScalarT> const& p)
+TG_NODISCARD constexpr dir<D, ScalarT> normal(hyperplane<D, ScalarT> const& p)
 {
-    return p.n;
+    return p.normal;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, ScalarT> normal(halfspace<D, ScalarT> const& h)
+TG_NODISCARD constexpr dir<D, ScalarT> normal(halfspace<D, ScalarT> const& h)
 {
-    return h.n;
+    return h.normal;
 }
 
 template <class ScalarT>
@@ -35,32 +35,38 @@ TG_NODISCARD constexpr vec<2, ScalarT> normal_unnorm(vec<2, ScalarT> const& v)
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr vec<2, fractional_result<ScalarT>> normal(vec<2, ScalarT> const& v)
+TG_NODISCARD constexpr dir<2, ScalarT> normal(dir<2, ScalarT> const& v)
 {
-    return normalize_safe(normal_unnorm(v));
+    return dir<2, ScalarT>(-v.y, v.x);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr vec<2, fractional_result<ScalarT>> normal(line<2, ScalarT> const& l)
+TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(vec<2, ScalarT> const& v)
+{
+    return normalize(normal_unnorm(v));
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(line<2, ScalarT> const& l)
 {
     return normal_unnorm(l.dir);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr vec<2, fractional_result<ScalarT>> normal(ray<2, ScalarT> const& r)
+TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(ray<2, ScalarT> const& r)
 {
     return normal_unnorm(r.dir);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr vec<2, fractional_result<ScalarT>> normal(segment<2, ScalarT> const& s)
+TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(segment<2, ScalarT> const& s)
 {
-    return normal(s.b - s.a);
+    return normal(s.pos1 - s.pos0);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr vec<3, fractional_result<ScalarT>> normal(triangle<3, ScalarT> const& t)
+TG_NODISCARD constexpr dir<3, fractional_result<ScalarT>> normal(triangle<3, ScalarT> const& t)
 {
-    return normalize_safe(cross(t.v1 - t.v0, t.v2 - t.v0));
+    return normalize(cross(t.pos1 - t.pos0, t.pos2 - t.pos0));
 }
 } // namespace tg

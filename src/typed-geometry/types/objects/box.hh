@@ -1,9 +1,16 @@
 #pragma once
 
+#include "../mat.hh"
 #include "../pos.hh"
 #include "../scalar.hh"
-#include "../size.hh"
 #include "../vec.hh"
+
+#include "aabb.hh"
+
+// An oriented box
+// stored as:
+//   center position
+//   orthogonal matrix that maps the -1..1 cube to the oriented box (half-extents)
 
 namespace tg
 {
@@ -45,16 +52,17 @@ struct box
 {
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
-    using size_t = size<D, ScalarT>;
+    using mat_t = mat<D, D, ScalarT>;
 
     static const box minus_one_to_one;
     static const box unit_from_zero;
     static const box unit_centered;
 
-    pos_t min;
-    pos_t max;
+    pos_t center;
+    mat_t half_extents;
 
     constexpr box() = default;
-    constexpr box(pos_t min, pos_t max) : min(min), max(max) {}
+    constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
+    constexpr box(aabb<D, ScalarT> const& b); // requires tg.hh
 };
 } // namespace tg
