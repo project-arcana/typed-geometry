@@ -23,7 +23,6 @@
 #include <typed-geometry/functions/norm.hh>
 #include <typed-geometry/functions/normal.hh>
 #include <typed-geometry/functions/normalize.hh>
-#include <typed-geometry/functions/orthogonal.hh>
 #include <typed-geometry/functions/outer_product.hh>
 #include <typed-geometry/functions/project.hh>
 #include <typed-geometry/functions/rasterize.hh>
