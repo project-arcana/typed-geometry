@@ -1,10 +1,9 @@
 #pragma once
 
+#include "../array.hh"
 #include "../pos.hh"
 #include "../scalar.hh"
 #include "../vec.hh"
-
-#include "../../detail/utility.hh"
 
 namespace tg
 {

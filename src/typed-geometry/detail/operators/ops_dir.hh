@@ -13,6 +13,10 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(dir, vec, bool, operator!=, ||, !=);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, dir, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, dir, bool, operator!=, ||, !=);
 
+// dir +- dir = vec
+TG_IMPL_DEFINE_BINARY_OP(dir, dir, vec, +);
+TG_IMPL_DEFINE_BINARY_OP(dir, dir, vec, -);
+
 // +dir, -dir
 TG_IMPL_DEFINE_UNARY_OP(dir, +);
 TG_IMPL_DEFINE_UNARY_OP(dir, -);

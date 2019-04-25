@@ -1,16 +1,19 @@
 #pragma once
 
-#include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/ball.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
 #include <typed-geometry/types/vec.hh>
 
+#include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
-#include <typed-geometry/common/scalar_math.hh>
+
+#include "length.hh"
 
 namespace tg
 {
@@ -24,6 +27,12 @@ template <class ScalarT>
 TG_NODISCARD constexpr squared_result<ScalarT> area(aabb<2, ScalarT> const& b)
 {
     return area(size<2, ScalarT>(b.max - b.min));
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(box<2, ScalarT> const& b)
+{
+    return 4 * tg::sqrt(length2(b.half_extents[0]) * length2(b.half_extents[1]));
 }
 
 template <class ScalarT>

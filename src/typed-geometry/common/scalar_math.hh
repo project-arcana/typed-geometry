@@ -133,6 +133,12 @@ TG_NODISCARD constexpr T clamp(T const& a, T const& min_value, T const& max_valu
     return min(max(a, min_value), max_value);
 }
 
+template <class T, class = enable_if<is_scalar<T>>>
+TG_NODISCARD constexpr T saturate(T const& a)
+{
+    return clamp(a, T(0), T(1));
+}
+
 // ==================================================================
 // Powers
 
