@@ -40,6 +40,18 @@ struct intersection_result<ray<3, ScalarT>, triangle<3, ScalarT>>
 };
 
 template <class ScalarT>
+struct intersection_result<ray<3, ScalarT>, sphere<3, ScalarT>>
+{
+    // empty: 0 intersections
+    // !empty && emptyB: 1 intersection (posA)
+    // !empty && !emptyB: 2 intersections (posA, posB)
+    bool empty;
+    bool emptyB;
+    tg::pos<3, ScalarT> posA;
+    tg::pos<3, ScalarT> posB;
+};
+
+template <class ScalarT>
 struct intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
 {
     bool empty;
@@ -100,6 +112,61 @@ TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, S
 
     // non-empty intersection
     return result;
+}
+
+// returns intersection point(s) of ray and sphere
+template <class ScalarT>
+TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, sphere<3, ScalarT> const& s)
+    -> intersection_result<tg::ray<3, ScalarT>, tg::sphere<3, ScalarT>>
+{
+    auto tA = 0.0f;
+    auto tB = 0.0f;
+    auto empty = true;
+    auto emptyB = true;
+    // analytic solution
+    auto l = r.origin - s.center;
+
+    auto a = dot(r.dir, r.dir); // as dir is always normalized
+    auto b = 2 * dot(r.dir, l);
+    auto c = dot(l, l) - s.radius * s.radius;
+
+    auto discr = b * b - 4 * a * c;
+    if (discr < 0) // no intersection
+        return {true, true, {}, {}};
+    else if (discr == 0)
+    { // one intersection
+        tA = tB = -0.5f * b / a;
+        empty = false;
+    }
+    else
+    { // two intersections
+        auto q = (b > 0) ? -0.5f * (b + sqrt(discr)) : -0.5f * (b - sqrt(discr));
+        tA = q / a;
+        tB = c / q;
+        empty = emptyB = false;
+    }
+
+    // tA is closer
+    if (tA > tB)
+    {
+        auto t = tA;
+        tA = tB;
+        tB = t;
+    }
+    // tA must not be negative
+    if (tA < 0.0f)
+    {
+        // try other t
+        tA = tB;
+        // also negative
+        if (tA < 0)
+            return {true, true, {}, {}};
+        // clear
+        tB = 0.0f;
+        emptyB = true;
+    }
+
+    return {empty, emptyB, r.origin + r.dir * tA, r.origin + r.dir * tB};
 }
 
 
