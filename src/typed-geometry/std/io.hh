@@ -104,6 +104,15 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 }
 
 template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, box<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "box" << char('0' + D);
+    ss << "(" << val.center << ", " << val.half_extents << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, triangle<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);

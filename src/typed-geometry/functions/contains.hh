@@ -80,7 +80,7 @@ TG_NODISCARD constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> c
     auto ndc = transpose(b.half_extents) * (o - b.center);
     // TODO: unroll
     for (auto i = 0; i < D; ++i)
-        if (tg::abs(ndc[0]) > length2(b.half_extents[i]) + eps)
+        if (tg::abs(ndc[i]) > length2(b.half_extents[i]) + eps)
             return false;
     return true;
 }
