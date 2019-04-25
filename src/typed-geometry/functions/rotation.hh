@@ -12,7 +12,7 @@
 namespace tg
 {
 template <class T>
-TG_NODISCARD constexpr mat<4, 4, T> rotation(vec<3, T> const& axis, angle<T> angle)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_around(vec<3, T> const& axis, angle<T> angle)
 {
     TG_ASSERT(is_normalized(axis));
 
@@ -41,9 +41,9 @@ TG_NODISCARD constexpr mat<4, 4, T> rotation(vec<3, T> const& axis, angle<T> ang
     return m;
 }
 template <class T>
-TG_NODISCARD constexpr mat<4, 4, T> rotation(angle<T> angle, vec<3, T> const& axis)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_around(angle<T> angle, vec<3, T> const& axis)
 {
-    return rotation(axis, angle);
+    return rotation_around(axis, angle);
 }
 
 template <class T>
