@@ -70,7 +70,7 @@ constexpr box<D, ScalarT>::box(aabb<D, ScalarT> const& b)
     {
         auto v = vec_t();
         v[i] = ScalarT(1);
-        half_extents[u64(i)] = v * half_e[i];
+        half_extents[i] = v * half_e[i];
     }
 }
 

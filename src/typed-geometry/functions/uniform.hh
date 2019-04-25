@@ -6,8 +6,9 @@
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/scalar.hh>
 
-#include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/ball.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -125,6 +126,12 @@ TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, aabb<4, ScalarT> const&
             uniform(rng, b.min.y, b.max.y), //
             uniform(rng, b.min.z, b.max.z), //
             uniform(rng, b.min.w, b.max.w)};
+}
+
+template <int D, class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
+{
+    return b.center + b.half_extents * uniform_vec(rng, aabb<D, ScalarT>::minus_one_to_one);
 }
 
 template <int D, class ScalarT, class Rng>

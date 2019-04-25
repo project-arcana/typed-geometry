@@ -2,12 +2,14 @@
 
 #include <cmath>
 
-#include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/ball.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
 #include "distance.hh"
+#include "transpose.hh"
 
 // For a given primitive and a position, return whether the first contains the latter
 // contains(a, b) is true iff a contains b
@@ -70,6 +72,17 @@ TG_NODISCARD constexpr bool contains(aabb<4, ScalarT> const& b, pos<4, ScalarT> 
            b.min.y - eps <= o.y && o.y <= b.max.y + eps && //
            b.min.z - eps <= o.z && o.z <= b.max.z + eps && //
            b.min.w - eps <= o.w && o.w <= b.max.w + eps;
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
+{
+    auto ndc = transpose(b.half_extents) * (o - b.center);
+    // TODO: unroll
+    for (auto i = 0; i < D; ++i)
+        if (tg::abs(ndc[0]) > length2(b.half_extents[i]) + eps)
+            return false;
+    return true;
 }
 
 template <int D, class ScalarT>
