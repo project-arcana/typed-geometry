@@ -101,6 +101,12 @@ TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b)
     return r;
 }
 
+template <class T, class Rng>
+TG_NODISCARD constexpr angle<T> uniform(Rng& rng, angle<T> a, angle<T> b)
+{
+    return mix(a, b, detail::uniform01<T>(rng));
+}
+
 template <class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<1, ScalarT> uniform(Rng& rng, aabb<1, ScalarT> const& b)
 {
@@ -202,6 +208,15 @@ struct sampler<bool>
     constexpr static bool uniform(Rng& rng)
     {
         return rng() & 1;
+    }
+};
+template <class T>
+struct sampler<angle<T>>
+{
+    template <class Rng>
+    constexpr static angle<T> uniform(Rng& rng)
+    {
+        return tg::uniform(rng, tg::radians(T(0)), 2 * tg::pi<T>);
     }
 };
 template <int D, class ScalarT>
