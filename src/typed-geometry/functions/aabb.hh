@@ -36,7 +36,7 @@ TG_NODISCARD constexpr auto aabb_of(PrimA const& pa, PrimB const& pb, PrimsT con
 }
 
 template <class ContainerT>
-TG_NODISCARD constexpr auto aabb_of(ContainerT const& c) -> decltype(aabb_of(*c.begin()), aabb_of(*c.end()))
+TG_NODISCARD constexpr auto aabb_of(ContainerT const& c) -> decltype((void)aabb_of(*c.begin()), aabb_of(*c.end()))
 {
     auto it = c.begin();
     auto end = c.end();
