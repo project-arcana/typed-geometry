@@ -32,8 +32,8 @@ TG_NODISCARD constexpr auto angle_between(A const& a, B const& b) -> decltype(ac
 template <class ScalarT>
 TG_NODISCARD constexpr angle<fractional_result<ScalarT>> angle_towards(vec<3, ScalarT> const& a, vec<3, ScalarT> const& b, vec<3, ScalarT> const& orthogonal_axis)
 {
-    TG_ASSERT(are_orthogonal(a, orthogonal_axis));
-    TG_ASSERT(are_orthogonal(b, orthogonal_axis));
+    TG_CONTRACT(are_orthogonal(a, orthogonal_axis));
+    TG_CONTRACT(are_orthogonal(b, orthogonal_axis));
 
     auto a_unit = normalize_safe(a);
     auto b_unit = normalize_safe(b);
