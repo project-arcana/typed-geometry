@@ -69,4 +69,21 @@ TG_NODISCARD constexpr dir<3, fractional_result<ScalarT>> normal(triangle<3, Sca
 {
     return normalize(cross(t.pos1 - t.pos0, t.pos2 - t.pos0));
 }
+
+template <class ScalarT>
+TG_NODISCARD constexpr dir<3, ScalarT> any_normal(vec<3, ScalarT> const& v)
+{
+    auto b = vec3::zero;
+    if (abs(v.x) > abs(v.y))
+        b[1] = 1.0f;
+    else
+        b[0] = 1.0f;
+    return normalize(cross(v, b));
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr dir<3, ScalarT> any_normal(dir<3, ScalarT> const& d)
+{
+    return any_normal(vec<3, ScalarT>(d));
+}
 } // namespace tg
