@@ -30,9 +30,24 @@ TG_NODISCARD constexpr squared_result<ScalarT> area(aabb<2, ScalarT> const& b)
 }
 
 template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(aabb<3, ScalarT> const& b)
+{
+    auto s = size<3, ScalarT>(b.max - b.min);
+    return 2 * (s.width * s.height + s.width * s.depth + s.height * s.depth);
+}
+
+template <class ScalarT>
 TG_NODISCARD constexpr squared_result<ScalarT> area(box<2, ScalarT> const& b)
 {
     return 4 * tg::sqrt(length2(b.half_extents[0]) * length2(b.half_extents[1]));
+}
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(box<3, ScalarT> const& b)
+{
+    auto w = length(b.half_extents[0]);
+    auto h = length(b.half_extents[1]);
+    auto d = length(b.half_extents[2]);
+    return 8 * (w * h + w * d + h * d);
 }
 
 template <class ScalarT>

@@ -77,10 +77,10 @@ TG_NODISCARD constexpr bool contains(aabb<4, ScalarT> const& b, pos<4, ScalarT> 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
-    auto ndc = transpose(b.half_extents) * (o - b.center);
+    auto r = o - b.center;
     // TODO: unroll
     for (auto i = 0; i < D; ++i)
-        if (tg::abs(ndc[i]) > length2(b.half_extents[i]) + eps)
+        if (tg::abs(dot(b.half_extents[i], r)) > length2(b.half_extents[i]) + eps)
             return false;
     return true;
 }
