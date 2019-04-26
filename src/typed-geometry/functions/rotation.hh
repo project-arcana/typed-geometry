@@ -39,7 +39,7 @@ TG_NODISCARD constexpr mat<4, 4, T> rotation_around(dir<3, T> const& axis, angle
     return m;
 }
 template <class T>
-TG_NODISCARD constexpr mat<4, 4, T> rotation(angle<T> angle, dir<3, T> const& axis)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_around(angle<T> angle, dir<3, T> const& axis)
 {
     return rotation_around(axis, angle);
 }

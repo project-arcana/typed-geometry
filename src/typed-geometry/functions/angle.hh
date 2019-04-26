@@ -17,14 +17,14 @@ TG_NODISCARD constexpr angle<fractional_result<ScalarT>> angle_between(vec<D, Sc
 {
     auto a_unit = normalize_safe(a);
     auto b_unit = normalize_safe(b);
-    return acos(clamp(dot(a_unit, b_unit), fractional_result<ScalarT>(0), fractional_result<ScalarT>(1)));
+    return acos(saturate(dot(a_unit, b_unit)));
 }
 
 // returns the angle between any two objects with unambiguous normals. The result is in 0..pi (0°..180°)
 template <class A, class B>
 TG_NODISCARD constexpr auto angle_between(A const& a, B const& b) -> decltype(acos(dot(normal(a), normal(b))))
 {
-    return acos(clamp(dot(normal(a), normal(b)), decltype(dot(normal(a), normal(b)))(0), decltype(dot(normal(a), normal(b)))(1)));
+    return acos(saturate(dot(normal(a), normal(b))));
 }
 
 // Returns the angle of a rotation of a towards b about the orthogonal_axis
