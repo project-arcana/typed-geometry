@@ -26,6 +26,8 @@
 #include <typed-geometry/functions/outer_product.hh>
 #include <typed-geometry/functions/project.hh>
 #include <typed-geometry/functions/rasterize.hh>
+#include <typed-geometry/functions/reflect.hh>
+#include <typed-geometry/functions/refract.hh>
 #include <typed-geometry/functions/rotation.hh>
 #include <typed-geometry/functions/scaling.hh>
 #include <typed-geometry/functions/size.hh>

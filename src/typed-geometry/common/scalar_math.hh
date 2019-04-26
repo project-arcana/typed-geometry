@@ -139,6 +139,18 @@ TG_NODISCARD constexpr T saturate(T const& a)
     return clamp(a, T(0), T(1));
 }
 
+template <class T, class = enable_if<is_scalar<T>>>
+TG_NODISCARD constexpr T sign(T const& v)
+{
+    // TODO: optimize?
+    // if constexpr (!is_unsigned_integer<T>)
+    if (v < T(0))
+        return T(-1);
+    if (v > T(0))
+        return T(1);
+    return T(0);
+}
+
 // ==================================================================
 // Powers
 
