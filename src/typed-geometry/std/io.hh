@@ -93,6 +93,20 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     ss << ")";
     return out << ss.str();
 }
+template <class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, color3 const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << "color3(" << val.r << ", " << val.g << ", " << val.b << ")";
+    return out << ss.str();
+}
+template <class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, color4 const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << "color4(" << val.r << ", " << val.g << ", " << val.b << ", " << val.a << ")";
+    return out << ss.str();
+}
 
 template <int D, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, aabb<D, ScalarT> const& val)

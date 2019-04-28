@@ -16,6 +16,17 @@ TG_NODISCARD constexpr ScalarT* data_ptr(pos<D, ScalarT>& v)
 }
 
 template <int D, class ScalarT>
+TG_NODISCARD constexpr ScalarT const* data_ptr(dir<D, ScalarT> const& v)
+{
+    return &v.x;
+}
+template <int D, class ScalarT>
+TG_NODISCARD constexpr ScalarT* data_ptr(dir<D, ScalarT>& v)
+{
+    return &v.x;
+}
+
+template <int D, class ScalarT>
 TG_NODISCARD constexpr ScalarT const* data_ptr(vec<D, ScalarT> const& v)
 {
     return &v.x;
