@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/common/scalar_math.hh>
+#include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/vec.hh>
 
@@ -38,7 +38,7 @@ TG_NODISCARD constexpr T frobenius_norm(mat<C, R, T> const& v)
     static_assert(is_floating_point<T>, "frobenius_norm only works on f32/f64");
     auto s = T(0);
     for (auto x = 0; x < C; ++x)
-        for (auto y = 0; y < C; ++y)
+        for (auto y = 0; y < R; ++y)
             s += tg::pow2(v[x][y]);
     return tg::sqrt(s);
 }

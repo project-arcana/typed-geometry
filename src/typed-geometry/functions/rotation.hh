@@ -3,8 +3,8 @@
 #include <typed-geometry/common/assert.hh>
 
 #include <typed-geometry/types/angle.hh>
-#include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/dir.hh>
+#include <typed-geometry/types/mat.hh>
 
 #include "normalize.hh"
 #include "translation.hh"
@@ -12,7 +12,7 @@
 namespace tg
 {
 template <class T>
-TG_NODISCARD constexpr mat<4, 4, T> rotation(dir<3, T> const& axis, angle<T> angle)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_around(dir<3, T> const& axis, angle<T> angle)
 {
     auto ca = cos(angle);
     auto sa = sin(angle);
@@ -39,9 +39,9 @@ TG_NODISCARD constexpr mat<4, 4, T> rotation(dir<3, T> const& axis, angle<T> ang
     return m;
 }
 template <class T>
-TG_NODISCARD constexpr mat<4, 4, T> rotation(angle<T> angle, dir<3, T> const& axis)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_around(angle<T> angle, dir<3, T> const& axis)
 {
-    return rotation(axis, angle);
+    return rotation_around(axis, angle);
 }
 
 template <class T>
