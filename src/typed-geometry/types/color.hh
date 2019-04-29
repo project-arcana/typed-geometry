@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../detail/comp_traits.hh"
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
@@ -36,6 +37,9 @@ struct color<3, ScalarT>
     static const color cyan;
     static const color magenta;
     static const color yellow;
+
+    constexpr ScalarT& operator[](int i) { return (&r)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&r)[i]; }
 
     constexpr color() = default;
     constexpr explicit color(ScalarT v) : r(v), g(v), b(v) {}
@@ -76,6 +80,9 @@ struct color<4, ScalarT>
     ScalarT g = static_cast<ScalarT>(0);
     ScalarT b = static_cast<ScalarT>(0);
     ScalarT a = static_cast<ScalarT>(1);
+
+    constexpr ScalarT& operator[](int i) { return (&r)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&r)[i]; }
 
     constexpr color() = default;
     constexpr explicit color(ScalarT v) : r(v), g(v), b(v), a(v) {}

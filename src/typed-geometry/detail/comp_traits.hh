@@ -11,37 +11,37 @@ namespace detail
 template <class Obj>
 struct comp_size
 {
-    static inline constexpr int value = -1;
+    static constexpr int value = -1;
 };
 template <int N, class T>
-struct comp_size<T const (&)[N]>
+struct comp_size<T[N]>
 {
-    static inline constexpr int value = N;
+    static constexpr int value = N;
 };
 template <int D, class T>
 struct comp_size<vec<D, T>>
 {
-    static inline constexpr int value = D;
+    static constexpr int value = D;
 };
 template <int D, class T>
 struct comp_size<dir<D, T>>
 {
-    static inline constexpr int value = D;
+    static constexpr int value = D;
 };
 template <int D, class T>
 struct comp_size<pos<D, T>>
 {
-    static inline constexpr int value = D;
+    static constexpr int value = D;
 };
 template <int D, class T>
 struct comp_size<size<D, T>>
 {
-    static inline constexpr int value = D;
+    static constexpr int value = D;
 };
 template <int D, class T>
 struct comp_size<comp<D, T>>
 {
-    static inline constexpr int value = D;
+    static constexpr int value = D;
 };
 
 template <class Obj, class ScalarT>
@@ -50,20 +50,31 @@ template <class Obj, class ScalarT>
 auto test_comp_convertible(...) -> false_type;
 
 template <class Obj, class = enable_if<comp_size<Obj>::value != -1>>
-constexpr int impl_get_dynamic_comp_size(Obj const&, priority_tag<1>)
+constexpr int impl_get_dynamic_comp_size(Obj const&, priority_tag<2>)
 {
     return comp_size<Obj>::value;
 }
 template <class Obj>
-constexpr auto impl_get_dynamic_comp_size(Obj const& v, priority_tag<0>) -> decltype(int(v.size()))
+constexpr auto impl_get_dynamic_comp_size(Obj const& v, priority_tag<1>) -> decltype(int(v.size()))
 {
     return int(v.size());
+}
+template <class Obj>
+constexpr auto impl_get_dynamic_comp_size(Obj const& v, priority_tag<0>) -> decltype(int(v.length()))
+{
+    return int(v.length());
 }
 
 template <class Obj>
 constexpr int get_dynamic_comp_size(Obj const& v)
 {
-    return impl_get_dynamic_comp_size(v, priority_tag<1>{});
+    return impl_get_dynamic_comp_size(v, priority_tag<2>{});
+}
+
+template <class Obj, class ScalarT>
+constexpr ScalarT comp_get(Obj const& v, unsigned char idx, int size, ScalarT fill)
+{
+    return idx < size ? ScalarT(v[idx]) : fill;
 }
 }
 

@@ -44,6 +44,28 @@ struct hash<tg::angle<T>>
     std::size_t operator()(tg::angle<T> const& v) const noexcept { return tg::detail::hash(v.radians()); }
 };
 
+// -- comp
+template <class ScalarT>
+struct hash<tg::comp<1, ScalarT>>
+{
+    std::size_t operator()(tg::comp<1, ScalarT> const& v) const noexcept { return tg::detail::hash(v.x); }
+};
+template <class ScalarT>
+struct hash<tg::comp<2, ScalarT>>
+{
+    std::size_t operator()(tg::comp<2, ScalarT> const& v) const noexcept { return tg::detail::hash(v.x, v.y); }
+};
+template <class ScalarT>
+struct hash<tg::comp<3, ScalarT>>
+{
+    std::size_t operator()(tg::comp<3, ScalarT> const& v) const noexcept { return tg::detail::hash(v.x, v.y, v.z); }
+};
+template <class ScalarT>
+struct hash<tg::comp<4, ScalarT>>
+{
+    std::size_t operator()(tg::comp<4, ScalarT> const& v) const noexcept { return tg::detail::hash(v.x, v.y, v.z, v.w); }
+};
+
 // -- vec
 template <class ScalarT>
 struct hash<tg::vec<1, ScalarT>>

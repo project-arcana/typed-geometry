@@ -8,6 +8,32 @@
 
 namespace std
 {
+// -- comp
+template <class ScalarT>
+struct less<tg::comp<1, ScalarT>>
+{
+    typedef tg::comp<1, ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return a.x < b.x; }
+};
+template <class ScalarT>
+struct less<tg::comp<2, ScalarT>>
+{
+    typedef tg::comp<2, ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.x, a.y) < std::tie(b.x, b.y); }
+};
+template <class ScalarT>
+struct less<tg::comp<3, ScalarT>>
+{
+    typedef tg::comp<3, ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.x, a.y, a.z) < std::tie(b.x, b.y, b.z); }
+};
+template <class ScalarT>
+struct less<tg::comp<4, ScalarT>>
+{
+    typedef tg::comp<4, ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.x, a.y, a.z, a.w) < std::tie(b.x, b.y, b.z, b.w); }
+};
+
 // -- vec
 template <class ScalarT>
 struct less<tg::vec<1, ScalarT>>
@@ -154,7 +180,10 @@ template <int D, class ScalarT>
 struct less<tg::triangle<D, ScalarT>>
 {
     typedef tg::triangle<D, ScalarT> arg_t;
-    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.pos0, a.pos1, a.pos2) < std::tie(b.pos0, b.pos1, b.pos2); }
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept
+    {
+        return std::tie(a.pos0, a.pos1, a.pos2) < std::tie(b.pos0, b.pos1, b.pos2);
+    }
 };
 template <int D, class ScalarT>
 struct less<tg::aabb<D, ScalarT>>

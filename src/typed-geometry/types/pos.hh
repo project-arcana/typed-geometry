@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../detail/comp_traits.hh"
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
@@ -53,16 +54,12 @@ struct pos<1, ScalarT>
 
     constexpr pos() = default;
     constexpr pos(ScalarT v) : x(v) {}
-    template <int D, class T, class = enable_if<D >= 1>>
-    constexpr explicit pos(pos<D, T> const& v) : x(ScalarT(v.x))
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr pos(Obj const& v, ScalarT fill = ScalarT(0))
     {
-    }
-    constexpr explicit pos(size<1, ScalarT> const& p);
-    constexpr explicit pos(vec<1, ScalarT> const& p);
-    template <int D, class T>
-    constexpr explicit operator pos<D, T>() const
-    {
-        return pos<D, T>(*this);
+        auto s = detail::get_dynamic_comp_size(v);
+        x = detail::comp_get(v, 0, s, fill);
     }
 };
 
@@ -80,20 +77,13 @@ struct pos<2, ScalarT>
     constexpr pos() = default;
     constexpr explicit pos(ScalarT v) : x(v), y(v) {}
     constexpr pos(ScalarT x, ScalarT y) : x(x), y(y) {}
-    template <int D, class T, class = enable_if<D >= 2>>
-    constexpr explicit pos(pos<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y))
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr pos(Obj const& v, ScalarT fill = ScalarT(0))
     {
-    }
-    template <class T>
-    constexpr explicit pos(pos<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill)
-    {
-    }
-    constexpr explicit pos(size<2, ScalarT> const& p);
-    constexpr explicit pos(vec<2, ScalarT> const& p);
-    template <int D, class T>
-    constexpr explicit operator pos<D, T>() const
-    {
-        return pos<D, T>(*this);
+        auto s = detail::get_dynamic_comp_size(v);
+        x = detail::comp_get(v, 0, s, fill);
+        y = detail::comp_get(v, 1, s, fill);
     }
 };
 
@@ -112,24 +102,14 @@ struct pos<3, ScalarT>
     constexpr pos() = default;
     constexpr explicit pos(ScalarT v) : x(v), y(v), z(v) {}
     constexpr pos(ScalarT x, ScalarT y, ScalarT z) : x(x), y(y), z(z) {}
-    template <int D, class T, class = enable_if<D >= 3>>
-    constexpr explicit pos(pos<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr pos(Obj const& v, ScalarT fill = ScalarT(0))
     {
-    }
-    template <class T>
-    constexpr explicit pos(pos<2, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(fill)
-    {
-    }
-    template <class T>
-    constexpr explicit pos(pos<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill)
-    {
-    }
-    constexpr explicit pos(size<3, ScalarT> const& p);
-    constexpr explicit pos(vec<3, ScalarT> const& p);
-    template <int D, class T, class = enable_if<D <= 3>>
-    constexpr explicit operator pos<D, T>() const
-    {
-        return pos<D, T>(*this);
+        auto s = detail::get_dynamic_comp_size(v);
+        x = detail::comp_get(v, 0, s, fill);
+        y = detail::comp_get(v, 1, s, fill);
+        z = detail::comp_get(v, 2, s, fill);
     }
 };
 
@@ -149,28 +129,15 @@ struct pos<4, ScalarT>
     constexpr pos() = default;
     constexpr explicit pos(ScalarT v) : x(v), y(v), z(v), w(v) {}
     constexpr pos(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : x(x), y(y), z(z), w(w) {}
-    template <int D, class T, class = enable_if<D >= 4>>
-    constexpr explicit pos(pos<D, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr pos(Obj const& v, ScalarT fill = ScalarT(0))
     {
-    }
-    template <class T>
-    constexpr explicit pos(pos<3, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(fill)
-    {
-    }
-    template <class T>
-    constexpr explicit pos(pos<2, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(fill), w(fill)
-    {
-    }
-    template <class T>
-    constexpr explicit pos(pos<1, T> const& v, ScalarT fill = ScalarT(0)) : x(ScalarT(v.x)), y(fill), z(fill), w(fill)
-    {
-    }
-    constexpr explicit pos(size<4, ScalarT> const& p);
-    constexpr explicit pos(vec<4, ScalarT> const& p);
-    template <int D, class T, class = enable_if<D <= 4>>
-    constexpr explicit operator pos<D, T>() const
-    {
-        return pos<D, T>(*this);
+        auto s = detail::get_dynamic_comp_size(v);
+        x = detail::comp_get(v, 0, s, fill);
+        y = detail::comp_get(v, 1, s, fill);
+        z = detail::comp_get(v, 2, s, fill);
+        w = detail::comp_get(v, 3, s, fill);
     }
 };
 

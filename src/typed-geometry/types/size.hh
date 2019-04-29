@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../detail/comp_traits.hh"
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
@@ -56,20 +57,12 @@ struct size<1, ScalarT>
 
     constexpr size() = default;
     constexpr size(ScalarT v) : width(v) {}
-    template <int D, class T, class = enable_if<D >= 1>>
-    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width))
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr size(Obj const& v, ScalarT fill = ScalarT(0))
     {
-    }
-    template <int D, class T, class = enable_if<D >= 1>>
-    constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x))
-    {
-    }
-    constexpr explicit size(pos<1, ScalarT> const& p);
-    constexpr explicit size(vec<1, ScalarT> const& p);
-    template <int D, class T, class = enable_if<D <= 1>>
-    constexpr explicit operator size<D, T>() const
-    {
-        return size<D, T>(*this);
+        auto s = detail::get_dynamic_comp_size(v);
+        width = detail::comp_get(v, 0, s, fill);
     }
 };
 
@@ -89,20 +82,13 @@ struct size<2, ScalarT>
     constexpr size() = default;
     constexpr explicit size(ScalarT v) : width(v), height(v) {}
     constexpr size(ScalarT width, ScalarT height) : width(width), height(height) {}
-    template <int D, class T, class = enable_if<D >= 2>>
-    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height))
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr size(Obj const& v, ScalarT fill = ScalarT(0))
     {
-    }
-    template <int D, class T, class = enable_if<D >= 2>>
-    constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y))
-    {
-    }
-    constexpr explicit size(pos<2, ScalarT> const& p);
-    constexpr explicit size(vec<2, ScalarT> const& p);
-    template <int D, class T, class = enable_if<D <= 2>>
-    constexpr explicit operator size<D, T>() const
-    {
-        return size<D, T>(*this);
+        auto s = detail::get_dynamic_comp_size(v);
+        width = detail::comp_get(v, 0, s, fill);
+        height = detail::comp_get(v, 1, s, fill);
     }
 };
 
@@ -123,20 +109,14 @@ struct size<3, ScalarT>
     constexpr size() = default;
     constexpr explicit size(ScalarT v) : width(v), height(v), depth(v) {}
     constexpr size(ScalarT width, ScalarT height, ScalarT depth) : width(width), height(height), depth(depth) {}
-    template <int D, class T, class = enable_if<D >= 3>>
-    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth))
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr size(Obj const& v, ScalarT fill = ScalarT(0))
     {
-    }
-    template <int D, class T, class = enable_if<D >= 3>>
-    constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y)), depth(ScalarT(v.z))
-    {
-    }
-    constexpr explicit size(pos<3, ScalarT> const& p);
-    constexpr explicit size(vec<3, ScalarT> const& p);
-    template <int D, class T, class = enable_if<D <= 3>>
-    constexpr explicit operator size<D, T>() const
-    {
-        return size<D, T>(*this);
+        auto s = detail::get_dynamic_comp_size(v);
+        width = detail::comp_get(v, 0, s, fill);
+        height = detail::comp_get(v, 1, s, fill);
+        depth = detail::comp_get(v, 2, s, fill);
     }
 };
 
@@ -158,20 +138,15 @@ struct size<4, ScalarT>
     constexpr size() = default;
     constexpr explicit size(ScalarT v) : width(v), height(v), depth(v), w(v) {}
     constexpr size(ScalarT width, ScalarT height, ScalarT depth, ScalarT w) : width(width), height(height), depth(depth), w(w) {}
-    template <int D, class T, class = enable_if<D >= 4>>
-    constexpr explicit size(size<D, T> const& v) : width(ScalarT(v.width)), height(ScalarT(v.height)), depth(ScalarT(v.depth)), w(ScalarT(v.w))
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr size(Obj const& v, ScalarT fill = ScalarT(0))
     {
-    }
-    template <int D, class T, class = enable_if<D >= 4>>
-    constexpr explicit size(vec<D, T> const& v) : width(ScalarT(v.x)), height(ScalarT(v.y)), depth(ScalarT(v.z)), w(ScalarT(v.w))
-    {
-    }
-    constexpr explicit size(pos<4, ScalarT> const& p);
-    constexpr explicit size(vec<4, ScalarT> const& p);
-    template <int D, class T, class = enable_if<D <= 4>>
-    constexpr explicit operator size<D, T>() const
-    {
-        return size<D, T>(*this);
+        auto s = detail::get_dynamic_comp_size(v);
+        width = detail::comp_get(v, 0, s, fill);
+        height = detail::comp_get(v, 1, s, fill);
+        depth = detail::comp_get(v, 2, s, fill);
+        w = detail::comp_get(v, 3, s, fill);
     }
 };
 

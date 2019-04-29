@@ -8,11 +8,11 @@ struct unused;
 
 struct true_type
 {
-    static inline constexpr bool value = true;
+    static constexpr bool value = true;
 };
 struct false_type
 {
-    static inline constexpr bool value = false;
+    static constexpr bool value = false;
 };
 
 template <class T>
