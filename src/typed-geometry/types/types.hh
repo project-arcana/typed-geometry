@@ -4,10 +4,11 @@
 #include "scalar.hh"
 
 #include "color.hh"
+#include "comp.hh"
+#include "dir.hh"
 #include "pos.hh"
 #include "size.hh"
 #include "vec.hh"
-#include "dir.hh"
 
 #include "quadric.hh"
 

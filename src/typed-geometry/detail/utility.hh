@@ -6,14 +6,36 @@ namespace detail
 {
 struct unused;
 
-inline constexpr int min(int a, int b)
+struct true_type
 {
-    return a < b ? a : b;
-}
-inline constexpr int max(int a, int b)
+    static inline constexpr bool value = true;
+};
+struct false_type
 {
-    return a < b ? b : a;
-}
+    static inline constexpr bool value = false;
+};
+
+template <class T>
+auto try_add_lvalue_reference(int) -> T&;
+template <class T>
+auto try_add_lvalue_reference(...) -> T;
+
+template <class T>
+auto try_add_rvalue_reference(int) -> T&&;
+template <class T>
+auto try_add_rvalue_reference(...) -> T;
+
+inline constexpr int min(int a, int b) { return a < b ? a : b; }
+inline constexpr int max(int a, int b) { return a < b ? b : a; }
+
+template <int D>
+struct priority_tag : priority_tag<D - 1>
+{
+};
+template <>
+struct priority_tag<0>
+{
+};
 } // namespace detail
 
 template <class A, class B>
@@ -69,6 +91,16 @@ To bit_cast(From f)
     u.from = f;
     return u.to;
 }
+
+template <class T>
+using add_lvalue_reference = decltype(detail::try_add_lvalue_reference<T>(0));
+
+template <class T>
+using add_rvalue_reference = decltype(detail::try_add_rvalue_reference<T>(0));
+
+// must be a function because it's an lvalue otherwise
+template <class T>
+static constexpr add_rvalue_reference<T> declval() noexcept;
 
 template <bool B, class T, class F>
 struct conditional_type_t

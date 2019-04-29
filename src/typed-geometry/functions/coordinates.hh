@@ -20,7 +20,7 @@
 namespace tg
 {
 template <class ScalarT>
-TG_NODISCARD constexpr array<ScalarT, 3> coordinates(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
+TG_NODISCARD constexpr comp<3, ScalarT> coordinates(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
 {
     auto pv0 = t.pos0 - p;
     auto pv1 = t.pos1 - p;
@@ -31,11 +31,11 @@ TG_NODISCARD constexpr array<ScalarT, 3> coordinates(triangle<2, ScalarT> const&
     auto A2 = cross(pv0, pv1);
 
     auto A_inv = ScalarT(1) / A;
-    return {{A0 * A_inv, A1 * A_inv, A2 * A_inv}};
+    return {A0 * A_inv, A1 * A_inv, A2 * A_inv};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr array<ScalarT, 3> coordinates(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
+TG_NODISCARD constexpr comp<3, ScalarT> coordinates(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
 {
     auto pv0 = t.pos0 - p;
     auto pv1 = t.pos1 - p;
@@ -48,7 +48,7 @@ TG_NODISCARD constexpr array<ScalarT, 3> coordinates(triangle<3, ScalarT> const&
     auto A2 = dot(cross(pv0, pv1), n);
 
     auto A_inv = ScalarT(1) / A;
-    return {{A0 * A_inv, A1 * A_inv, A2 * A_inv}};
+    return {A0 * A_inv, A1 * A_inv, A2 * A_inv};
 }
 
 template <int D, class ScalarT>

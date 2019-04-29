@@ -20,6 +20,8 @@ using f16 = half;
 using f32 = float;
 using f64 = double;
 
+using size_t = decltype(sizeof(0));
+
 static_assert(sizeof(i8) == 1, "i8 is not 8bit");
 static_assert(sizeof(u8) == 1, "u8 is not 8bit");
 static_assert(sizeof(f8) == 1, "f8 is not 8bit");

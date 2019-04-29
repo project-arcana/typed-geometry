@@ -13,4 +13,7 @@ struct size;
 
 template <int D, class ScalarT>
 struct dir;
+
+template <int D, class ScalarT>
+struct comp;
 } // namespace tg
