@@ -100,7 +100,10 @@ using add_rvalue_reference = decltype(detail::try_add_rvalue_reference<T>(0));
 
 // must be a function because it's an lvalue otherwise
 template <class T>
-constexpr add_rvalue_reference<T> declval() noexcept;
+static constexpr add_rvalue_reference<T> declval() noexcept
+{
+    return *static_cast<T*>(nullptr);
+}
 
 template <bool B, class T, class F>
 struct conditional_type_t
