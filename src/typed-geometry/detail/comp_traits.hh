@@ -45,7 +45,7 @@ struct comp_size<comp<D, T>>
 };
 
 template <class Obj, class ScalarT>
-auto test_comp_convertible(int) -> decltype(ScalarT(declval<Obj>()[0]), true_type{});
+auto test_comp_convertible(Obj* obj) -> decltype(ScalarT((*obj)[0]), true_type{});
 template <class Obj, class ScalarT>
 auto test_comp_convertible(...) -> false_type;
 
@@ -79,7 +79,7 @@ constexpr ScalarT comp_get(Obj const& v, unsigned char idx, int size, ScalarT fi
 }
 
 template <class Obj, class ScalarT>
-constexpr bool is_comp_convertible = decltype(detail::test_comp_convertible<Obj, ScalarT>(0))::value;
+constexpr bool is_comp_convertible = decltype(detail::test_comp_convertible<Obj, ScalarT>(nullptr))::value;
 
 template <class Obj>
 constexpr bool is_comp_dynamic_size = detail::comp_size<Obj>::value < 0;

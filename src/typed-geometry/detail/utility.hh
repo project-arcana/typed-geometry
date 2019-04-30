@@ -15,16 +15,6 @@ struct false_type
     static constexpr bool value = false;
 };
 
-template <class T>
-auto try_add_lvalue_reference(int) -> T&;
-template <class T>
-auto try_add_lvalue_reference(...) -> T;
-
-template <class T>
-auto try_add_rvalue_reference(int) -> T&&;
-template <class T>
-auto try_add_rvalue_reference(...) -> T;
-
 inline constexpr int min(int a, int b) { return a < b ? a : b; }
 inline constexpr int max(int a, int b) { return a < b ? b : a; }
 
@@ -90,19 +80,6 @@ To bit_cast(From f)
     } u;
     u.from = f;
     return u.to;
-}
-
-template <class T>
-using add_lvalue_reference = decltype(detail::try_add_lvalue_reference<T>(0));
-
-template <class T>
-using add_rvalue_reference = decltype(detail::try_add_rvalue_reference<T>(0));
-
-// must be a function because it's an lvalue otherwise
-template <class T>
-static constexpr add_rvalue_reference<T> declval() noexcept
-{
-    return *static_cast<T*>(nullptr);
 }
 
 template <bool B, class T, class F>
