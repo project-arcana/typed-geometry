@@ -3,8 +3,10 @@
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/disk.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
+
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
 #include <typed-geometry/types/vec.hh>
@@ -84,5 +86,17 @@ template <class ScalarT>
 TG_NODISCARD constexpr squared_result<ScalarT> area(sphere<3, ScalarT> const& b)
 {
     return (tg::pi<ScalarT>.radians() * ScalarT(4)) * tg::pow2(b.radius);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(disk<2, ScalarT> const& b)
+{
+    return tg::pi<ScalarT>.radians() * tg::pow2(b.radius);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(disk<3, ScalarT> const& b)
+{
+    return tg::pi<ScalarT>.radians() * tg::pow2(b.radius);
 }
 } // namespace tg
