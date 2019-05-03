@@ -6,7 +6,7 @@
 namespace tg
 {
 /**
- * Volume bounded by of a sphere
+ * Volume bounded by a sphere
  */
 template <int D, class ScalarT>
 struct ball;
