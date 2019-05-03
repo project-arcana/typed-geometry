@@ -82,13 +82,13 @@ TG_NODISCARD constexpr auto intersection(ray<D, ScalarT> const& r, hyperplane<D,
 {
     // if plane normal and raydirection are parallel there is no intersection
     auto dotND = dot(p.normal, r.dir);
-    if (dotND == 0)
+    if (dotND == 0.0f)
         return {true, {}};
 
     auto t = -(dot(p.normal, vec<D, ScalarT>(r.origin)) + p.dis) / dotND;
 
     // check whether plane lies behind ray
-    if (t < 0)
+    if (t < 0.0f)
         return {true, {}};
 
     auto result = r.origin + r.dir * t;
@@ -127,20 +127,20 @@ TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, sphere<3, Sca
     auto l = r.origin - s.center;
 
     auto a = dot(r.dir, r.dir); // as dir is always normalized
-    auto b = 2 * dot(r.dir, l);
+    auto b = 2.0f * dot(r.dir, l);
     auto c = dot(l, l) - s.radius * s.radius;
 
-    auto discr = b * b - 4 * a * c;
-    if (discr < 0) // no intersection
+    auto discr = b * b - 4.0f * a * c;
+    if (discr < 0.0f) // no intersection
         return {true, true, {}, {}};
-    else if (discr == 0)
+    else if (discr == 0.0f)
     { // one intersection
         tA = tB = -0.5f * b / a;
         empty = false;
     }
     else
     { // two intersections
-        auto q = (b > 0) ? -0.5f * (b + sqrt(discr)) : -0.5f * (b - sqrt(discr));
+        auto q = (b > 0.0f) ? -0.5f * (b + sqrt(discr)) : -0.5f * (b - sqrt(discr));
         tA = q / a;
         tB = c / q;
         empty = emptyB = false;
@@ -159,7 +159,7 @@ TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, sphere<3, Sca
         // try other t
         tA = tB;
         // also negative
-        if (tA < 0)
+        if (tA < 0.0f)
             return {true, true, {}, {}};
         // clear
         tB = 0.0f;
