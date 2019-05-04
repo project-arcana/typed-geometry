@@ -8,6 +8,7 @@
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/size.hh>
 
 #include "length.hh"
@@ -42,6 +43,12 @@ template <class ScalarT>
 TG_NODISCARD constexpr squared_result<ScalarT> volume(cylinder<3, ScalarT> const& b)
 {
     return area(b.base) * b.height;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> volume(pyramid<3, ScalarT> const& b)
+{
+    return area(b.base) * b.height * ScalarT(1) / ScalarT(3);
 }
 
 } // namespace tg
