@@ -4,7 +4,6 @@
 #include "../dir.hh"
 #include "../pos.hh"
 
-#include "../../functions/normal.hh"
 #include "disk.hh"
 #include "segment.hh"
 
@@ -46,31 +45,15 @@ struct cylinder<2, ScalarT>
     using segment_t = segment<2, ScalarT>;
 
     pos_t center;
-    ScalarT radius; // TODO store in disks?
     ScalarT height;
-
-    dir_t normal; // oriented in 2d space
-
     segment_t base;
-    segment_t top; // TODO only store base?
-
-    /*
-     * // TODO allow for oblique cylinder?
-    // lean is 0 for right cylinder
-    angle<ScalarT> tilt;
-    ScalarT offset; // disk centers' offset in x direction
-angle<ScalarT> a, ScalarT o...
-    tilt(a), offset(tan(a) * h)..
-             base(c + pos_t(-offset / 2, -height / 2), r), top(c + pos_t(+offset / 2, +height / 2)
-*/
 
     constexpr cylinder() = default;
-    constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y) : center(c), radius(r), height(h), normal(n)
+    constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y) : center(c), height(h)
     {
-        auto t = tg::normal(n);
+        auto t = dir_t(-n.y, n.x);
 
         base(segment_t(c - n * h / 2 - t * r, c - n * h / 2 + t * r));
-        top(segment_t(c + n * h / 2 - t * r, c + n * h / 2 + t * r));
     }
 };
 
@@ -82,18 +65,10 @@ struct cylinder<3, ScalarT>
     using disk_t = disk<3, ScalarT>;
 
     pos_t center;
-    ScalarT radius;
     ScalarT height;
-
-    dir_t normal; // oriented in 3d space
-
     disk_t base;
-    disk_t top; // TODO only store base?
 
     constexpr cylinder() = default;
-    constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y)
-      : center(c), radius(r), height(h), normal(n), base(disk_t(c - h / 2 * n, r, n)), top(disk_t(c + h / 2 * n, r, n))
-    {
-    }
+    constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y) : center(c), height(h), base(disk_t(c - h / 2 * n, r, n)) {}
 };
 } // namespace tg
