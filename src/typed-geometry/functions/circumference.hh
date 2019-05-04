@@ -1,6 +1,7 @@
 #pragma once
 
 #include <typed-geometry/types/objects/ball.hh>
+#include <typed-geometry/types/objects/circle.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/disk.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -48,5 +49,29 @@ template <class ScalarT>
 TG_NODISCARD constexpr squared_result<ScalarT> circumference(disk<3, ScalarT> const& b)
 {
     return 2 * tg::pi<ScalarT>.radians() * b.radius;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> circumference(circle<2, ScalarT> const& b)
+{
+    return 2 * tg::pi<ScalarT>.radians() * b.radius;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> circumference(circle<3, ScalarT> const& b)
+{
+    return 2 * tg::pi<ScalarT>.radians() * b.radius;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> circumference(cylinder<2, ScalarT> const& b)
+{
+    return 4 * b.radius + 2 * b.height;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> circumference(cylinder<3, ScalarT> const& b)
+{
+    return circumference(b.base);
 }
 } // namespace tg

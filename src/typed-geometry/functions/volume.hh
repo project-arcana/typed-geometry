@@ -7,6 +7,7 @@
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/size.hh>
 
 #include "length.hh"
@@ -36,4 +37,11 @@ TG_NODISCARD constexpr squared_result<ScalarT> volume(ball<3, ScalarT> const& b)
 {
     return (tg::pi<ScalarT>.radians() * ScalarT(4) / ScalarT(3)) * tg::pow3(b.radius);
 }
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> volume(cylinder<3, ScalarT> const& b)
+{
+    return area(b.base) * b.height;
+}
+
 } // namespace tg
