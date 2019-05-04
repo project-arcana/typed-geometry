@@ -4,6 +4,7 @@
 #include <typed-geometry/functions/angle.hh>
 #include <typed-geometry/functions/area.hh>
 #include <typed-geometry/functions/centroid.hh>
+#include <typed-geometry/functions/circumference.hh>
 #include <typed-geometry/functions/closest_points.hh>
 #include <typed-geometry/functions/contains.hh>
 #include <typed-geometry/functions/coordinates.hh>

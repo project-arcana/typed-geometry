@@ -110,6 +110,6 @@ TG_NODISCARD constexpr squared_result<ScalarT> area(cylinder<2, ScalarT> const& 
 template <class ScalarT>
 TG_NODISCARD constexpr squared_result<ScalarT> area(cylinder<3, ScalarT> const& b)
 {
-    // return area(b.base) * 2 + circumference(b.base) * b.height;
+    return area(b.base) * 2 + circumference(b.base) * b.height;
 }
 } // namespace tg
