@@ -79,13 +79,13 @@ struct cylinder<3, ScalarT>
     ScalarT radius;
     ScalarT height;
 
-    dir_t normal = dir_t::pos_y; // oriented in 3d space
+    dir_t normal; // oriented in 3d space
 
     disk_t base;
     disk_t top; // TODO only store base?
 
     constexpr cylinder() = default;
-    constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n)
+    constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y)
       : center(c), radius(r), height(h), normal(n), base(disk_t(c - h / 2 * n, r, n)), top(disk_t(c + h / 2 * n, r, n))
     {
     }
