@@ -4,6 +4,7 @@
 #include "../dir.hh"
 #include "../pos.hh"
 
+#include "../../functions/normal.hh"
 #include "disk.hh"
 #include "segment.hh"
 
@@ -41,11 +42,14 @@ template <class ScalarT>
 struct cylinder<2, ScalarT>
 {
     using pos_t = pos<2, ScalarT>;
+    using dir_t = dir<2, ScalarT>;
     using segment_t = segment<2, ScalarT>;
 
     pos_t center;
     ScalarT radius; // TODO store in disks?
     ScalarT height;
+
+    dir_t normal; // oriented in 2d space
 
     segment_t base;
     segment_t top; // TODO only store base?
@@ -61,10 +65,12 @@ angle<ScalarT> a, ScalarT o...
 */
 
     constexpr cylinder() = default;
-    constexpr cylinder(pos_t c, ScalarT r, ScalarT h) : center(c), radius(r), height(h)
+    constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y) : center(c), radius(r), height(h), normal(n)
     {
-        base(segment_t(c + pos_t(-r / 2, -h / 2), c + pos_t(r / 2, -h / 2)));
-        top(segment_t(c + pos_t(-r / 2, +h / 2), c + pos_t(r / 2, +h / 2)));
+        auto t = tg::normal(n);
+
+        base(segment_t(c - n * h / 2 - t * r, c - n * h / 2 + t * r));
+        top(segment_t(c + n * h / 2 - t * r, c + n * h / 2 + t * r));
     }
 };
 
