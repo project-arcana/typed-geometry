@@ -2,6 +2,7 @@
 
 #include "../pos.hh"
 #include "../scalar.hh"
+#include "sphere.hh"
 
 namespace tg
 {
@@ -45,6 +46,7 @@ template <int D, class ScalarT>
 struct ball
 {
     using pos_t = pos<D, ScalarT>;
+    using sphere_t = sphere<D, ScalarT>;
 
     static const ball unit; ///< unit sphere, center zero, radius 1
 
@@ -53,5 +55,6 @@ struct ball
 
     constexpr ball() = default;
     constexpr ball(pos_t c, ScalarT r) : center(c), radius(r) {}
+    constexpr ball(sphere_t s) : center(s.center), radius(s.radius) {}
 };
 } // namespace tg
