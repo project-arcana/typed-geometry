@@ -1,12 +1,9 @@
 #pragma once
 
-#include "../angle.hh"
 #include "../dir.hh"
 #include "../pos.hh"
 
 #include "disk.hh"
-#include "segment.hh"
-
 namespace tg
 {
 /**
