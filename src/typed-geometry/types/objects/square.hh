@@ -48,8 +48,9 @@ struct square<3, ScalarT>
     using pos_t = pos<3, ScalarT>;
 
     pos_t center;
-    dir_t normal;
     ScalarT length;
+    dir_t normal;
+
     angle<ScalarT> rotation; // about axis defined by normal
 
     constexpr square() = default;

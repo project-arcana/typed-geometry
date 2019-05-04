@@ -3,6 +3,7 @@
 #include "../dir.hh"
 #include "../pos.hh"
 
+#include "../angle.hh"
 #include "square.hh"
 namespace tg
 {
@@ -32,11 +33,14 @@ struct pyramid<3, ScalarT>
     using dir_t = dir<3, ScalarT>;
     using square_t = square<3, ScalarT>;
 
-    ScalarT height;
     square_t base;
+    ScalarT height;
 
     constexpr pyramid() = default;
     // constexpr pyramid(pos_t c, pos_t apex, ScalarT l) : ..
-    constexpr pyramid(pos_t c, ScalarT l, ScalarT h, dir_t n = dir_t::pos_y, angle<ScalarT> r = 0) : base(square_t(c, l, n, r)), height(h) {}
+    constexpr pyramid(pos_t c, ScalarT l, ScalarT h, dir_t n = dir_t::pos_y, angle<ScalarT> r = angle<ScalarT>::from_radians(0))
+      : base(square_t(c, l, n, r)), height(h)
+    {
+    }
 };
 } // namespace tg
