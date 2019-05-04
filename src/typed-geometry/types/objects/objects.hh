@@ -3,6 +3,7 @@
 #include "aabb.hh"
 #include "ball.hh"
 #include "box.hh"
+#include "cone.hh"
 #include "cylinder.hh"
 #include "disk.hh"
 #include "frustum.hh"
