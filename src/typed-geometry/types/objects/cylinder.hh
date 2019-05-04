@@ -10,6 +10,7 @@ namespace tg
  * capped circular right cylinder
  * pos is center of cylinder
  * height is distance between bases
+ * constructable from center points of both caps
  */
 template <int D, class ScalarT>
 struct cylinder;
@@ -34,6 +35,10 @@ struct cylinder<3, ScalarT>
     disk_t base;
 
     constexpr cylinder() = default;
+    constexpr cylinder(pos_t bc, pos_t tc, ScalarT r)
+      : height(length(tc - bc)), base(disk_t(bc, r, normalize(tc - bc))), center(bc + height * base.normal)
+    {
+    }
     constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y) : center(c), height(h), base(disk_t(c - h / 2 * n, r, n)) {}
 };
 } // namespace tg
