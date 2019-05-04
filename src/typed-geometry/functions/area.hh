@@ -5,7 +5,9 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/disk.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/sphere.hh>
+#include <typed-geometry/types/objects/square.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
 #include <typed-geometry/types/pos.hh>
@@ -16,6 +18,7 @@
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
 
+#include "circumference.hh"
 #include "length.hh"
 
 namespace tg
@@ -111,5 +114,23 @@ template <class ScalarT>
 TG_NODISCARD constexpr squared_result<ScalarT> area(cylinder<3, ScalarT> const& b)
 {
     return area(b.base) * 2 + circumference(b.base) * b.height;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(square<2, ScalarT> const& b)
+{
+    return pow2(b.length);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(square<3, ScalarT> const& b)
+{
+    return pow2(b.length);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> area(pyramid<3, ScalarT> const& b)
+{
+    return area(b.base) + circumference(b.base) * sqrt(pow2(b.height) + pow2(b.base.length / ScalarT(2))) / ScalarT(2);
 }
 } // namespace tg

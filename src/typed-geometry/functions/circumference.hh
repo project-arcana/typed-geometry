@@ -5,6 +5,7 @@
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/disk.hh>
 #include <typed-geometry/types/objects/sphere.hh>
+#include <typed-geometry/types/objects/square.hh>
 
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
@@ -74,4 +75,18 @@ TG_NODISCARD constexpr squared_result<ScalarT> circumference(cylinder<3, ScalarT
 {
     return circumference(b.base);
 }
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> circumference(square<2, ScalarT> const& b) // TODO guess the correct term would be "perimeter"?
+{
+    return 4 * b.length;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr squared_result<ScalarT> circumference(square<3, ScalarT> const& b)
+{
+    return 4 * b.length;
+}
+
+
 } // namespace tg
