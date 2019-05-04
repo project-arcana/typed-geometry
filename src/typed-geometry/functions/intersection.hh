@@ -119,8 +119,8 @@ template <class ScalarT>
 TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, sphere<3, ScalarT> const& s)
     -> intersection_result<tg::ray<3, ScalarT>, tg::sphere<3, ScalarT>>
 {
-    auto tA = 0;
-    auto tB = 0;
+    auto tA = 0.0f;
+    auto tB = 0.0f;
     auto empty = true;
     auto emptyB = true;
     // analytic solution
