@@ -127,10 +127,10 @@ TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, sphere<3, Sca
     auto l = r.origin - s.center;
 
     auto a = dot(r.dir, r.dir); // as dir is always normalized
-    auto b = 2.0f * dot(r.dir, l);
+    auto b = 2 * dot(r.dir, l);
     auto c = dot(l, l) - s.radius * s.radius;
 
-    auto discr = b * b - 4.0f * a * c;
+    auto discr = b * b - 4 * a * c;
     if (discr < 0) // no intersection
         return {true, true, {}, {}};
     else if (discr == 0)
