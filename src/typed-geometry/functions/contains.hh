@@ -5,6 +5,7 @@
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -150,5 +151,29 @@ TG_NODISCARD constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, Scala
     // point always on left side
     return true;
 }
+
+template <class ScalarT>
+TG_NODISCARD constexpr bool contains(cylinder<3, ScalarT> const& c, pos<3, ScalarT> const& p)
+{
+    // https://www.flipcode.com/archives/Fast_Point-In-Cylinder_Test.shtml
+
+    // check whether p is between disks
+    auto pd = p - c.base.center;
+    auto ad = c.base.normal * c.height;
+    auto d0 = dot(pd, ad);
+
+    auto hsqd = pow2(c.height);
+    auto rsqd = pow2(c.base.radius);
+
+    if (d0 < 0 || d0 > hsqd) // behind a cap
+        return false;
+
+    // check whether distance from p to axis is less or equal to radius
+    auto dsqd = dot(pd, pd) - pow2(d0) / hsqd;
+    if (dsqd > rsqd)
+        return false;
+
+    return true;
+} // namespace tg
 
 } // namespace tg

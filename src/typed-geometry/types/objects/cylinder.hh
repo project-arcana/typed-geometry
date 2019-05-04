@@ -7,7 +7,7 @@
 namespace tg
 {
 /**
- * circular right cylinder with disks as bases
+ * capped circular right cylinder
  * pos is center of cylinder
  * height is distance between bases
  */
