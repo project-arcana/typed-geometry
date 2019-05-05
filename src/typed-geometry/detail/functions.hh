@@ -4,7 +4,6 @@
 #include <typed-geometry/functions/angle.hh>
 #include <typed-geometry/functions/area.hh>
 #include <typed-geometry/functions/centroid.hh>
-#include <typed-geometry/functions/circumference.hh>
 #include <typed-geometry/functions/closest_points.hh>
 #include <typed-geometry/functions/contains.hh>
 #include <typed-geometry/functions/coordinates.hh>
@@ -26,6 +25,7 @@
 #include <typed-geometry/functions/normal.hh>
 #include <typed-geometry/functions/normalize.hh>
 #include <typed-geometry/functions/outer_product.hh>
+#include <typed-geometry/functions/perimeter.hh>
 #include <typed-geometry/functions/project.hh>
 #include <typed-geometry/functions/rasterize.hh>
 #include <typed-geometry/functions/reflect.hh>

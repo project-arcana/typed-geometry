@@ -25,14 +25,15 @@ using ucone3 = cone<3, u32>;
 template <class ScalarT>
 struct cone<3, ScalarT>
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<3, ScalarT>;
     using dir_t = dir<3, ScalarT>;
     using disk_t = disk<3, ScalarT>;
 
     disk_t base;
-    ScalarT height;
+    scalar_t height;
 
     constexpr cone() = default;
-    constexpr cone(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y) : base(disk_t(c, r, n)), height(h) {}
+    constexpr cone(disk_t const& base, scalar_t height) = default;
 };
 } // namespace tg

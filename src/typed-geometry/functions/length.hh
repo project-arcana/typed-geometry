@@ -9,9 +9,9 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr squared_result<ScalarT> length2(vec<D, ScalarT> const& v)
+TG_NODISCARD constexpr ScalarT length2(vec<D, ScalarT> const& v)
 {
-    auto a = vec<D, squared_result<ScalarT>>(v);
+    auto a = vec<D, ScalarT>(v);
     return dot(a, a);
 }
 

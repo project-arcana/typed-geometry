@@ -16,6 +16,12 @@ template <class T>
 constexpr angle<T> pi = angle<T>::from_radians(static_cast<T>(3.14159265358979323846));
 
 template <class T>
+constexpr T tau_scalar = static_cast<T>(6.28318530717958647693);
+
+template <class T>
+constexpr T pi_scalar = static_cast<T>(3.14159265358979323846);
+
+template <class T>
 constexpr T nan = NAN;
 
 template <class T>

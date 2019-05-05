@@ -3,17 +3,14 @@
 #include "../dir.hh"
 #include "../pos.hh"
 
-#include "../angle.hh"
-#include "square.hh"
+#include "rect.hh"
+
 namespace tg
 {
 /**
- * 3D square based right pyramids
+ * 3D rect based right pyramids
  *
- * pyramid is constructed from center of square (base), length of square sides and height
- * optional: normal of base and rotation around normal
- *
- * TODO (not yet) allow construction of pyramid from given apex and center of base? (would require extra functions)
+ * pyramid is constructed from a rect (base) and height
  */
 template <int D, class ScalarT>
 struct pyramid;
@@ -29,18 +26,15 @@ using upyramid3 = pyramid<3, u32>;
 template <class ScalarT>
 struct pyramid<3, ScalarT>
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<3, ScalarT>;
     using dir_t = dir<3, ScalarT>;
-    using square_t = square<3, ScalarT>;
+    using rect_t = rect<3, ScalarT>;
 
-    square_t base;
-    ScalarT height;
+    rect_t base;
+    scalar_t height = 0;
 
     constexpr pyramid() = default;
-    // constexpr pyramid(pos_t c, pos_t apex, ScalarT l) : ..
-    constexpr pyramid(pos_t c, ScalarT l, ScalarT h, dir_t n = dir_t::pos_y, angle<ScalarT> r = angle<ScalarT>::from_radians(0))
-      : base(square_t(c, l, n, r)), height(h)
-    {
-    }
+    constexpr pyramid(rect_t const& base, scalar_t height) : base(base), height(height) {}
 };
 } // namespace tg

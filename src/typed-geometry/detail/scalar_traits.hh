@@ -166,23 +166,6 @@ TG_IMPL_ADD_TYPE_TRAIT(integer_result, u16, u16);
 TG_IMPL_ADD_TYPE_TRAIT(integer_result, u32, u32);
 TG_IMPL_ADD_TYPE_TRAIT(integer_result, u64, u64);
 
-TG_IMPL_DEFINE_TYPE_TRAIT(squared_result, type_error::unknown_scalar_type<T>);
-
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, i8, i16);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, i16, i32);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, i32, i64);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, i64, i64);
-
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, u8, u16);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, u16, u32);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, u32, u64);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, u64, u64);
-
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, f8, f32);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, f16, f32);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, f32, f32);
-TG_IMPL_ADD_TYPE_TRAIT(squared_result, f64, f64);
-
 // promotions
 TG_IMPL_DEFINE_BINARY_TYPE_TRAIT(promoted_scalar_base, type_error::cannot_promote_types<A, B>);
 TG_IMPL_ADD_BINARY_TYPE_TRAIT(promoted_scalar_base, int, int, int);

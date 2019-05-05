@@ -48,15 +48,15 @@ using uhalfspace4 = halfspace<4, u32>;
 template <int D, class ScalarT>
 struct halfspace
 {
-    using dis_t = ScalarT;
+    using scalar_t = ScalarT;
     using dir_t = dir<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 
     dir_t normal;
-    dis_t dis;
+    scalar_t dis;
 
     constexpr halfspace() = default;
-    constexpr halfspace(dir_t n, dis_t d) : dis(d), normal(n) {}
+    constexpr halfspace(dir_t n, scalar_t d) : dis(d), normal(n) {}
     constexpr halfspace(dir_t n, pos_t p);
 };
 } // namespace tg

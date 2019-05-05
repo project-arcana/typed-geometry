@@ -36,10 +36,11 @@ using ucircle3 = circle<3, u32>;
 template <class ScalarT>
 struct circle<2, ScalarT>
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<2, ScalarT>;
 
     pos_t center;
-    ScalarT radius;
+    scalar_t radius;
 
     constexpr circle() = default;
     constexpr circle(pos_t c, ScalarT r) : center(c), radius(r) {}
@@ -48,11 +49,12 @@ struct circle<2, ScalarT>
 template <class ScalarT>
 struct circle<3, ScalarT>
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<3, ScalarT>;
     using dir_t = dir<3, ScalarT>;
 
     pos_t center;
-    ScalarT radius;
+    scalar_t radius;
     dir_t normal;
 
     constexpr circle() = default;

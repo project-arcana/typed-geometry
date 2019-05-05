@@ -44,12 +44,13 @@ using usphere4 = sphere<4, u32>;
 template <int D, class ScalarT>
 struct sphere
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<D, ScalarT>;
 
     static const sphere unit; ///< unit sphere, center zero, radius 1
 
     pos_t center;
-    ScalarT radius;
+    scalar_t radius;
 
     constexpr sphere() = default;
     constexpr sphere(pos_t c, ScalarT r) : center(c), radius(r) {}

@@ -3,14 +3,14 @@
 #include "../dir.hh"
 #include "../pos.hh"
 
-#include "disk.hh"
+#include "segment.hh"
+
 namespace tg
 {
 /**
  * capped circular right cylinder
- * pos is center of cylinder
- * height is distance between bases
- * constructable from center points of both caps
+ *
+ * A cylinder is defined by a segment and a radius
  */
 template <int D, class ScalarT>
 struct cylinder;
@@ -26,20 +26,16 @@ using ucylinder3 = cylinder<3, u32>;
 template <class ScalarT>
 struct cylinder<3, ScalarT>
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<3, ScalarT>;
     using dir_t = dir<3, ScalarT>;
-    using disk_t = disk<3, ScalarT>;
+    using seg_t = segment<3, ScalarT>;
 
-    pos_t center;
-    ScalarT height;
-    disk_t base;
+    seg_t axis;
+    scalar_t radius = 0;
 
     constexpr cylinder() = default;
-    /* //TODO this would require length and normalize, do we want that?
-      constexpr cylinder(pos_t bc, pos_t tc, ScalarT r)
-      : height(length(tc - bc)), base(disk_t(bc, r, normalize(tc - bc))), center(bc + height * base.normal)
-    {
-    }*/
-    constexpr cylinder(pos_t c, ScalarT r, ScalarT h, dir_t n = dir_t::pos_y) : center(c), height(h), base(disk_t(c - h / 2 * n, r, n)) {}
+    constexpr cylinder(seg_t const& axis, scalar_t radius) : axis(axis), radius(radius) {}
+    constexpr cylinder(pos_t const& p0, pos_t const& p1, scalar_t radius) : axis(p0, p1), radius(radius) {}
 };
 } // namespace tg

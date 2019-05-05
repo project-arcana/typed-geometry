@@ -2,6 +2,7 @@
 
 namespace tg
 {
+// component-like types:
 template <int D, class ScalarT>
 struct vec;
 
