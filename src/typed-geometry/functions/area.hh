@@ -86,7 +86,7 @@ TG_NODISCARD constexpr fractional_result<ScalarT> area(ball<2, ScalarT> const& b
 template <class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> area(ball<3, ScalarT> const& b)
 {
-    return (4 * tg::pi_scalar<fractional_result<ScalarT>>) * tg::pow2(b.radius);
+    return (4 * tg::pi_scalar<fractional_result<ScalarT>>)*tg::pow2(b.radius);
 }
 
 template <class ScalarT>
@@ -98,7 +98,7 @@ TG_NODISCARD constexpr fractional_result<ScalarT> area(sphere<2, ScalarT> const&
 template <class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> area(sphere<3, ScalarT> const& b)
 {
-    return (4 * tg::pi_scalar<fractional_result<ScalarT>>) * tg::pow2(b.radius);
+    return (4 * tg::pi_scalar<fractional_result<ScalarT>>)*tg::pow2(b.radius);
 }
 
 template <class ScalarT>
@@ -116,8 +116,8 @@ TG_NODISCARD constexpr fractional_result<ScalarT> area(disk<3, ScalarT> const& b
 template <class ScalarT>
 TG_NODISCARD constexpr fractional_result<ScalarT> area(cylinder<3, ScalarT> const& b)
 {
-    return tg::pi_scalar<fractional_result<ScalarT>> * tg::pow2(b.radius) * 2       // caps
-           + tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis); // mantle
+    return tg::pi_scalar<fractional_result<ScalarT>> * tg::pow2(b.radius) * 2           // caps
+           + 2 * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis); // mantle
 }
 
 template <class ScalarT>
@@ -138,7 +138,7 @@ template <class ScalarT>
 TG_NODISCARD constexpr ScalarT area(pyramid<3, ScalarT> const& b)
 {
     // TODO: FIXME
-    return area(b.base) + circumference(b.base) * sqrt(pow2(b.height) + pow2(b.base.length / ScalarT(2))) / ScalarT(2);
+    return area(b.base) + perimeter(b.base) * sqrt(pow2(b.height) + pow2(b.base.length / ScalarT(2))) / ScalarT(2);
 }
 
 template <class ScalarT>
