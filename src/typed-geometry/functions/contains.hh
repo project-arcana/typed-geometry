@@ -158,12 +158,12 @@ TG_NODISCARD constexpr bool contains(cylinder<3, ScalarT> const& c, pos<3, Scala
     // https://www.flipcode.com/archives/Fast_Point-In-Cylinder_Test.shtml
 
     // check whether p is between disks
-    auto pd = p - c.base.center;
-    auto ad = c.base.normal * c.height;
+    auto pd = p - c.axis.pos0;
+    auto ad = c.axis.pos1 - c.axis.pos0;
     auto d0 = dot(pd, ad);
 
-    auto hsqd = pow2(c.height);
-    auto rsqd = pow2(c.base.radius);
+    auto hsqd = pow2(length(ad));
+    auto rsqd = pow2(c.radius);
 
     if (d0 < 0 || d0 > hsqd) // behind a cap
         return false;

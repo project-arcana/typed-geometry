@@ -54,6 +54,9 @@ struct rect<3, ScalarT>
     angle<ScalarT> rotation; // about axis defined by normal
 
     constexpr rect() = default;
-    constexpr rect(pos_t c, ScalarT l, dir_t n = dir_t::pos_y, angle<ScalarT> r = 0) : center(c), length(l), normal(n), rotation(r) {}
+    constexpr rect(pos_t c, ScalarT l, dir_t n = dir_t::pos_y, angle<ScalarT> r = angle<ScalarT>::from_radians(0))
+      : center(c), length(l), normal(n), rotation(r)
+    {
+    }
 };
 } // namespace tg
