@@ -32,6 +32,6 @@ struct cone<3, ScalarT>
     scalar_t height;
 
     constexpr cone() = default;
-    constexpr cone(disk_t const& base, scalar_t height) : base(base), height(height){};
+    constexpr cone(disk_t const& base, scalar_t height) : base(base), height(height) {}
 };
 } // namespace tg

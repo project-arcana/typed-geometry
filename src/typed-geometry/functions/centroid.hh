@@ -3,6 +3,8 @@
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/capsule.hh>
+#include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
@@ -16,6 +18,12 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> centroid(pos<D, ScalarT> const& p)
 {
     return p;
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> centroid(box<D, ScalarT> const& b)
+{
+    return b.center;
 }
 
 template <int D, class ScalarT>
@@ -48,5 +56,17 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> centroid(ball<D, ScalarT> const& p)
 {
     return p.center;
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, fractional_result<ScalarT>> centroid(cylinder<D, ScalarT> const& c)
+{
+    return centroid(c.axis);
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, fractional_result<ScalarT>> centroid(capsule<D, ScalarT> const& c)
+{
+    return centroid(c.axis);
 }
 } // namespace tg
