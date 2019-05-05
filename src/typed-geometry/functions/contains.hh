@@ -162,7 +162,7 @@ TG_NODISCARD constexpr bool contains(cylinder<3, ScalarT> const& c, pos<3, Scala
     auto ad = c.axis.pos1 - c.axis.pos0;
     auto d0 = dot(pd, ad);
 
-    auto hsqd = pow2(length(ad));
+    auto hsqd = length2(ad);
     auto rsqd = pow2(c.radius);
 
     if (d0 < 0 || d0 > hsqd) // behind a cap
