@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../dir.hh"
-#include "../pos.hh"
 
 #include "disk.hh"
 namespace tg
@@ -26,7 +25,6 @@ template <class ScalarT>
 struct cone<3, ScalarT>
 {
     using scalar_t = ScalarT;
-    using pos_t = pos<3, ScalarT>;
     using dir_t = dir<3, ScalarT>;
     using disk_t = disk<3, ScalarT>;
 
@@ -34,6 +32,6 @@ struct cone<3, ScalarT>
     scalar_t height;
 
     constexpr cone() = default;
-    constexpr cone(disk_t const& base, scalar_t height) = default;
+    constexpr cone(disk_t const& base, scalar_t height) : base(base), height(height){};
 };
 } // namespace tg
