@@ -43,7 +43,7 @@ TG_NODISCARD constexpr ScalarT volume(ball<3, ScalarT> const& b)
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT volume(cylinder<3, ScalarT> const& b)
 {
-    return area(b.base) * b.height;
+    return (tg::pi_scalar<ScalarT> * pow2(b.radius)) * length(b.axis);
 }
 
 template <class ScalarT>
