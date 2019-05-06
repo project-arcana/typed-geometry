@@ -34,7 +34,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> interpolate(pos<D, ScalarT> const& a, pos
     auto z = pos<D, ScalarT>::zero;
     return z + (a - z) * wa + (b - z) * wb;
 }
-template <class ScalarT, enable_if<is_scalar<ScalarT>>>
+template <class ScalarT, class = enable_if<is_scalar<ScalarT>>>
 TG_NODISCARD constexpr ScalarT interpolate(ScalarT a, ScalarT b, ScalarT t)
 {
     return mix(a, b, t);
