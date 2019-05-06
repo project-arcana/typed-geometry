@@ -47,6 +47,12 @@ TG_NODISCARD constexpr ScalarT interpolate(ScalarT a, ScalarT b, ScalarT t)
     return mix(a, b, t);
 }
 
+template <class ScalarT, class = enable_if<is_scalar<ScalarT>>>
+TG_NODISCARD constexpr ScalarT interpolate(ScalarT a, ScalarT b, ScalarT wa, ScalarT wb)
+{
+    return a * wa + b * wb;
+}
+
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> interpolate(triangle<D, ScalarT> const& t, ScalarT wa, ScalarT wb)
 {
