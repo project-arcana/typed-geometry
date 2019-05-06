@@ -26,8 +26,7 @@ TG_NODISCARD constexpr vec<D, ScalarT> interpolate(vec<D, ScalarT> const& a, vec
 template <int D, class ScalarT>
 TG_NODISCARD constexpr vec<D, ScalarT> interpolate(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT wa, ScalarT wb)
 {
-    auto z = vec<D, ScalarT>::zero;
-    return z + (a - z) * wa + (b - z) * wb;
+    return a * wa + b * wb;
 }
 
 template <int D, class ScalarT>
