@@ -63,6 +63,8 @@ struct dir<1, ScalarT>
     {
         return dir<1, T>(*this);
     }
+
+    constexpr operator vec<1, ScalarT>() const { return vec<1, ScalarT>(*this); }
 };
 
 template <class ScalarT>
@@ -90,6 +92,8 @@ struct dir<2, ScalarT>
     {
         return dir<2, T>(*this);
     }
+
+    constexpr operator vec<2, ScalarT>() const { return vec<2, ScalarT>(*this); }
 };
 
 template <class ScalarT>
@@ -120,6 +124,8 @@ struct dir<3, ScalarT>
     {
         return dir<3, T>(*this);
     }
+
+    constexpr operator vec<3, ScalarT>() const { return vec<3, ScalarT>(*this); }
 };
 
 template <class ScalarT>
@@ -153,6 +159,8 @@ struct dir<4, ScalarT>
     {
         return dir<4, T>(*this);
     }
+
+    constexpr operator vec<4, ScalarT>() const { return vec<4, ScalarT>(*this); }
 };
 
 // comparison operators
