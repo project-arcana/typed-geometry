@@ -1,10 +1,12 @@
 #pragma once
 
 #include <typed-geometry/common/assert.hh>
+#include <typed-geometry/detail/optional.hh>
 
 #include <typed-geometry/types/objects/circle.hh>
 #include <typed-geometry/types/objects/hyperplane.hh>
 #include <typed-geometry/types/objects/ray.hh>
+#include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -16,6 +18,9 @@
 
 // intersects(a, b) -> bool    iff any point lies in a and in b
 // intersection(a, b) -> ???   returns an object describing the intersection
+
+// intersection_coordinate(a, b) -> coords?   such that a[coords] == intersection(a, b)
+// intersection_coordinates(a, b) -> pair<coords, coords>?   such that a[coords.first] == intersection(a, b) == b[coords.second]
 
 // related function:
 //   closest_hit(ray, b) -> optional<pos>
@@ -266,6 +271,19 @@ TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, 
     auto p_below = p_between - h_by_d * a_to_b_swap;
 
     return {false, p_above, p_below};
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
+{
+    auto denom = dot(p.normal, a.pos1 - a.pos0);
+    if (denom == 0)
+        return {};
+
+    auto t = (p.dis - dot(p.normal, a.pos0)) / denom;
+    if (t < 0 || t > 1)
+        return {};
+    return t;
 }
 
 } // namespace tg

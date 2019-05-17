@@ -50,5 +50,7 @@ struct segment
 
     constexpr segment() = default;
     constexpr segment(pos_t p0, pos_t p1) : pos0(p0), pos1(p1) {}
+
+    TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
 };
 } // namespace tg

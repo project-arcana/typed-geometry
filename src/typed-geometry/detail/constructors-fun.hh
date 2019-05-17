@@ -10,6 +10,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/hyperplane.hh>
+#include <typed-geometry/types/objects/line.hh>
 
 #include <typed-geometry/detail/operators/ops_pos.hh>
 #include <typed-geometry/functions/dot.hh>
@@ -81,5 +82,11 @@ constexpr hyperplane<D, ScalarT>::hyperplane(dir_t n, pos_t p) : normal(n), dis(
 template <int D, class ScalarT>
 constexpr halfspace<D, ScalarT>::halfspace(dir_t n, pos_t p) : normal(n), dis(dot(vec<D, ScalarT>(p), n))
 {
+}
+
+template <int D, class ScalarT>
+constexpr line<D, ScalarT> line<D, ScalarT>::from_points(pos_t a, pos_t b)
+{
+    return line(a, normalize(b - a));
 }
 }

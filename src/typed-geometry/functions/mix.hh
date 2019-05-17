@@ -15,7 +15,7 @@ TG_NODISCARD constexpr ScalarT mix(ScalarT v0, ScalarT v1, ScalarT t)
     return v0 + t * (v1 - v0);
 }
 template <class ScalarT, class = enable_if<is_floating_point<ScalarT>>>
-TG_NODISCARD constexpr angle<ScalarT> mix(angle<ScalarT> v0, angle<ScalarT> v1, ScalarT t)
+TG_NODISCARD constexpr angle_t<ScalarT> mix(angle_t<ScalarT> v0, angle_t<ScalarT> v1, ScalarT t)
 {
     return tg::radians(tg::mix(v0.radians(), v1.radians(), t));
 }

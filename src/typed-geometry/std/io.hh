@@ -42,7 +42,7 @@ std::basic_ostringstream<CharT, Traits> temp_sstream(std::basic_ostream<CharT, T
 //     };
 
 template <class T, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, angle<T> const& val)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, angle_t<T> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << val.degree() << "°";

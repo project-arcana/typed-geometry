@@ -102,7 +102,7 @@ TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b)
 }
 
 template <class T, class Rng>
-TG_NODISCARD constexpr angle<T> uniform(Rng& rng, angle<T> a, angle<T> b)
+TG_NODISCARD constexpr angle_t<T> uniform(Rng& rng, angle_t<T> a, angle_t<T> b)
 {
     return mix(a, b, detail::uniform01<T>(rng));
 }
@@ -211,10 +211,10 @@ struct sampler<bool>
     }
 };
 template <class T>
-struct sampler<angle<T>>
+struct sampler<angle_t<T>>
 {
     template <class Rng>
-    constexpr static angle<T> uniform(Rng& rng)
+    constexpr static angle_t<T> uniform(Rng& rng)
     {
         return tg::uniform(rng, tg::radians(T(0)), 2 * tg::pi<T>);
     }
