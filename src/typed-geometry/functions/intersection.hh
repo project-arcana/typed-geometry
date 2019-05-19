@@ -280,7 +280,7 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(segment<D, Scal
     if (denom == 0)
         return {};
 
-    auto t = (p.dis - dot(p.normal, a.pos0)) / denom;
+    auto t = (p.dis - dot(p.normal, a.pos0 - tg::pos<D, ScalarT>::zero)) / denom;
     if (t < 0 || t > 1)
         return {};
     return t;
