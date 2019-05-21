@@ -42,7 +42,7 @@ struct color<3, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&r)[i]; }
 
     constexpr color() = default;
-    constexpr explicit color(ScalarT v) : r(v), g(v), b(v) {}
+    constexpr explicit color(ScalarT grey) : r(grey), g(grey), b(grey) {}
     constexpr color(ScalarT r, ScalarT g, ScalarT b) : r(r), g(g), b(b) {}
 };
 
@@ -85,7 +85,7 @@ struct color<4, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&r)[i]; }
 
     constexpr color() = default;
-    constexpr explicit color(ScalarT v) : r(v), g(v), b(v), a(v) {}
+    constexpr explicit color(ScalarT grey) : r(grey), g(grey), b(grey), a(ScalarT(1)) {}
     constexpr color(ScalarT r, ScalarT g, ScalarT b, ScalarT a = ScalarT(1)) : r(r), g(g), b(b), a(a) {}
 };
 

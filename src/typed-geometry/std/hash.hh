@@ -39,9 +39,9 @@ namespace std
 {
 // -- scalars
 template <class T>
-struct hash<tg::angle<T>>
+struct hash<tg::angle_t<T>>
 {
-    std::size_t operator()(tg::angle<T> const& v) const noexcept { return tg::detail::hash(v.radians()); }
+    std::size_t operator()(tg::angle_t<T> const& v) const noexcept { return tg::detail::hash(v.radians()); }
 };
 
 // -- comp

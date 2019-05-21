@@ -70,4 +70,14 @@ TG_NODISCARD constexpr ScalarT dot(vec<D, ScalarT> const& a, dir<D, ScalarT> con
 {
     return dot(a, vec<D, ScalarT>(b));
 }
+template <int D, class ScalarT>
+TG_NODISCARD constexpr ScalarT dot(dir<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+{
+    return dot(vec<D, ScalarT>(a), vec<D, ScalarT>(b));
+}
+template <int D, class ScalarT>
+TG_NODISCARD constexpr ScalarT dot(vec<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+{
+    return dot(a, vec<D, ScalarT>(b));
+}
 } // namespace tg

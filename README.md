@@ -30,7 +30,17 @@ std::map<p, int> v_cnts;           // std::less
 std::unordered_map<p, int> v_cnts; // std::hash
 ```
 
-Most functionality is implemented as free functions, overloaded by type and with consistent vocabulary:
+Most functionality is implemented as free functions, overloaded by type and with consistent vocabulary.
+
+### Object Types
+
+Basically all `tg` provided types are _regular_, i.e. have value semantics like `int` or `vector`.
+The following categories exist:
+
+* _POD_ types like `vec` and most fixed-size objects
+* dynamically sized non-_POD_ values like `polygon` (similar to `vector`)
+* _transparent_ types like `vec` where `.x` is part of the interface
+* _opaque_ types like `angle` and `quadric` where the representation is implementation detail
 
 ### Vectors
 

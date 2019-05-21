@@ -163,7 +163,7 @@ TG_NODISCARD constexpr ScalarT max_element(vec<4, ScalarT> const& p)
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT max_element(size<1, ScalarT> const& p)
 {
-    return p.x;
+    return p.width;
 }
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT max_element(size<2, ScalarT> const& p)

@@ -93,7 +93,7 @@ TG_NODISCARD inline f32 abs(f32 v) { return std::abs(v); }
 TG_NODISCARD inline f64 abs(f64 v) { return std::abs(v); }
 
 template <class T>
-TG_NODISCARD angle<T> abs(angle<T> a)
+TG_NODISCARD angle_t<T> abs(angle_t<T> a)
 {
     return radians(abs(a.radians()));
 }
@@ -209,22 +209,22 @@ TG_NODISCARD inline f64 log10(f64 v) { return std::log10(v); }
 // ==================================================================
 // Trigonometry
 
-TG_NODISCARD inline f32 sin(angle<f32> v) { return std::sin(v.radians()); }
-TG_NODISCARD inline f64 sin(angle<f64> v) { return std::sin(v.radians()); }
-TG_NODISCARD inline f32 cos(angle<f32> v) { return std::cos(v.radians()); }
-TG_NODISCARD inline f64 cos(angle<f64> v) { return std::cos(v.radians()); }
-TG_NODISCARD inline f32 tan(angle<f32> v) { return std::tan(v.radians()); }
-TG_NODISCARD inline f64 tan(angle<f64> v) { return std::tan(v.radians()); }
+TG_NODISCARD inline f32 sin(angle_t<f32> v) { return std::sin(v.radians()); }
+TG_NODISCARD inline f64 sin(angle_t<f64> v) { return std::sin(v.radians()); }
+TG_NODISCARD inline f32 cos(angle_t<f32> v) { return std::cos(v.radians()); }
+TG_NODISCARD inline f64 cos(angle_t<f64> v) { return std::cos(v.radians()); }
+TG_NODISCARD inline f32 tan(angle_t<f32> v) { return std::tan(v.radians()); }
+TG_NODISCARD inline f64 tan(angle_t<f64> v) { return std::tan(v.radians()); }
 
-TG_NODISCARD inline angle<f32> asin(f32 v) { return radians(std::asin(v)); }
-TG_NODISCARD inline angle<f64> asin(f64 v) { return radians(std::asin(v)); }
-TG_NODISCARD inline angle<f32> acos(f32 v) { return radians(std::acos(v)); }
-TG_NODISCARD inline angle<f64> acos(f64 v) { return radians(std::acos(v)); }
-TG_NODISCARD inline angle<f32> atan(f32 v) { return radians(std::atan(v)); }
-TG_NODISCARD inline angle<f64> atan(f64 v) { return radians(std::atan(v)); }
+TG_NODISCARD inline angle_t<f32> asin(f32 v) { return radians(std::asin(v)); }
+TG_NODISCARD inline angle_t<f64> asin(f64 v) { return radians(std::asin(v)); }
+TG_NODISCARD inline angle_t<f32> acos(f32 v) { return radians(std::acos(v)); }
+TG_NODISCARD inline angle_t<f64> acos(f64 v) { return radians(std::acos(v)); }
+TG_NODISCARD inline angle_t<f32> atan(f32 v) { return radians(std::atan(v)); }
+TG_NODISCARD inline angle_t<f64> atan(f64 v) { return radians(std::atan(v)); }
 
-TG_NODISCARD inline angle<f32> atan2(f32 y, f32 x) { return radians(std::atan2(y, x)); }
-TG_NODISCARD inline angle<f64> atan2(f64 y, f64 x) { return radians(std::atan2(y, x)); }
+TG_NODISCARD inline angle_t<f32> atan2(f32 y, f32 x) { return radians(std::atan2(y, x)); }
+TG_NODISCARD inline angle_t<f64> atan2(f64 y, f64 x) { return radians(std::atan2(y, x)); }
 
 TG_NODISCARD inline f32 sinh(f32 v) { return std::sinh(v); }
 TG_NODISCARD inline f64 sinh(f64 v) { return std::sinh(v); }
