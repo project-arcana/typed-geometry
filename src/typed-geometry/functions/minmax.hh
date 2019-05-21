@@ -121,7 +121,7 @@ TG_NODISCARD constexpr ScalarT min_element(size<4, ScalarT> const& p)
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT max_element(pos<1, ScalarT> const& p)
 {
-    return p.width;
+    return p.x;
 }
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT max_element(pos<2, ScalarT> const& p)
