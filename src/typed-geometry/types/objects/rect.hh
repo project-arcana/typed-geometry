@@ -31,7 +31,7 @@ using urect3 = rect<3, u32>;
 template <class ScalarT>
 struct rect<2, ScalarT>
 {
-    using pos_t = pos<3, ScalarT>;
+    using pos_t = pos<2, ScalarT>;
 
     pos_t center;
     ScalarT length;
