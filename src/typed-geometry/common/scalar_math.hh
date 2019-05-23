@@ -128,6 +128,17 @@ TG_NODISCARD constexpr T max(T const& a, T const& b)
 }
 
 template <class T, class = enable_if<is_scalar<T>>>
+TG_NODISCARD constexpr angle<T> min(angle<T> const& a, angle<T> const& b)
+{
+    return a < b ? a : b;
+}
+template <class T, class = enable_if<is_scalar<T>>>
+TG_NODISCARD constexpr angle<T> max(angle<T> const& a, angle<T> const& b)
+{
+    return a < b ? b : a;
+}
+
+template <class T, class = enable_if<is_scalar<T>>>
 TG_NODISCARD constexpr T clamp(T const& a, T const& min_value, T const& max_value)
 {
     return min(max(a, min_value), max_value);

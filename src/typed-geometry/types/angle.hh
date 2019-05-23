@@ -13,7 +13,7 @@ using angle64 = angle_t<f64>;
 
 /// An opaque type representing an angle
 ///
-/// radians(3.14..) represents a 90° angle
+/// radians(3.14..) represents a 180° angle
 /// degree(45)      represents a 45° angle
 template <class T>
 struct angle_t
