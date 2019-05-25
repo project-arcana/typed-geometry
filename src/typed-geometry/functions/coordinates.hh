@@ -2,6 +2,8 @@
 
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/types/array.hh>
+#include <typed-geometry/types/objects/line.hh>
+#include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
@@ -14,6 +16,9 @@
 // - coords
 //      - triangle (barycoords)
 //      - segment (t-parameter)
+
+// The following identity is useful:
+//   p == obj[coordinates(obj, p)]   (for all p in obj)
 
 // Note: Passing a position that does not lie inside the given primitive,
 // the behavior is (yet) undefined
@@ -58,6 +63,5 @@ TG_NODISCARD constexpr ScalarT coordinates(segment<D, ScalarT> const& s, pos<D, 
     auto t = dot(p - s.pos0, d) / dot(d, d);
     return t;
 }
-
 
 } // namespace tg

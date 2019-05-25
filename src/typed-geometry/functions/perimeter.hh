@@ -5,6 +5,7 @@
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/disk.hh>
 #include <typed-geometry/types/objects/sphere.hh>
+#include <typed-geometry/types/objects/rect.hh>
 
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>

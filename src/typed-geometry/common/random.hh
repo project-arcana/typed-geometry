@@ -39,7 +39,7 @@ public:
     }
 
     template <class Rng>
-    constexpr void seed(Rng& rd)
+    constexpr auto seed(Rng& rd) -> decltype(u64(rd()), void())
     {
         m_seed = u64(rd()) << 31 | u64(rd());
     }
@@ -81,7 +81,7 @@ public:
     }
 
     template <class Rng>
-    constexpr void seed(Rng& rd)
+    constexpr auto seed(Rng& rd) -> decltype(u64(rd()), void())
     {
         m_seed = u64(rd()) << 31 | u64(rd());
     }
@@ -124,7 +124,7 @@ public:
     }
 
     template <class Rng>
-    constexpr void seed(Rng& rd)
+    constexpr auto seed(Rng& rd) -> decltype(u64(rd()), void())
     {
         u64 s0 = u64(rd()) << 31 | u64(rd());
         u64 s1 = u64(rd()) << 31 | u64(rd());

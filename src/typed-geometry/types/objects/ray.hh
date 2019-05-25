@@ -51,5 +51,7 @@ struct ray
 
     constexpr ray() = default;
     constexpr ray(pos_t pos, dir_t dir) : origin(pos), dir(dir) {}
+
+    TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
 };
 } // namespace tg

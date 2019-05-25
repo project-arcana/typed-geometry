@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../dir.hh"
 #include "../pos.hh"
 #include "../scalar.hh"
 #include "../size.hh"
-#include "../dir.hh"
 
 // A line has a direction and a point lying on it
 // The direction is assumed to be normalized
@@ -54,10 +54,8 @@ struct line
     constexpr line() = default;
     constexpr line(pos_t p, dir_t dir) : pos(p), dir(dir) {}
 
-    // create a line from two points
-    static constexpr line from_points(pos_t a, pos_t b)
-    {
-        return line(a, normalize(b - a));
-    }
+    static constexpr line from_points(pos_t a, pos_t b);
+
+    TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
 };
 } // namespace tg
