@@ -87,6 +87,7 @@ struct color<4, ScalarT>
     constexpr color() = default;
     constexpr explicit color(ScalarT v) : r(v), g(v), b(v), a(v) {}
     constexpr color(ScalarT r, ScalarT g, ScalarT b, ScalarT a = ScalarT(1)) : r(r), g(g), b(b), a(a) {}
+    constexpr color(color<3, ScalarT> c, ScalarT a = ScalarT(1)) : r(c.r), g(c.g), b(c.b), a(a) {}
 };
 
 template <class T>
