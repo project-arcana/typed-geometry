@@ -47,19 +47,19 @@ struct comp<1, ScalarT>
 {
     static const comp zero;
 
-    ScalarT values[1] = {ScalarT(0)};
+    ScalarT comp0 = ScalarT(0);
 
-    constexpr ScalarT& operator[](int i) { return values[i]; }
-    constexpr ScalarT const& operator[](int i) const { return values[i]; }
+    constexpr ScalarT& operator[](int i) { return comp0; }
+    constexpr ScalarT const& operator[](int i) const { return comp0; }
 
     constexpr comp() = default;
-    constexpr comp(ScalarT v) : values{v} {}
+    constexpr comp(ScalarT v) : comp0(v) {}
 
     template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
     explicit constexpr comp(Obj const& v, ScalarT fill = ScalarT(0))
     {
         auto s = detail::get_dynamic_comp_size(v);
-        values[0] = detail::comp_get(v, 0, s, fill);
+        comp0 = detail::comp_get(v, 0, s, fill);
     }
 };
 
@@ -68,21 +68,22 @@ struct comp<2, ScalarT>
 {
     static const comp zero;
 
-    ScalarT values[2] = {ScalarT(0), ScalarT(0)};
+    ScalarT comp0 = ScalarT(0);
+    ScalarT comp1 = ScalarT(0);
 
-    constexpr ScalarT& operator[](int i) { return values[i]; }
-    constexpr ScalarT const& operator[](int i) const { return values[i]; }
+    constexpr ScalarT& operator[](int i) { return (&comp0)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&comp0)[i]; }
 
     constexpr comp() = default;
-    constexpr explicit comp(ScalarT v) : values{v, v} {}
-    constexpr comp(ScalarT x, ScalarT y) : values{x, y} {}
+    constexpr explicit comp(ScalarT v) : comp0(v), comp1(v) {}
+    constexpr comp(ScalarT x, ScalarT y) : comp0(x), comp1(y) {}
 
     template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
     explicit constexpr comp(Obj const& v, ScalarT fill = ScalarT(0))
     {
         auto s = detail::get_dynamic_comp_size(v);
-        values[0] = detail::comp_get(v, 0, s, fill);
-        values[1] = detail::comp_get(v, 1, s, fill);
+        comp0 = detail::comp_get(v, 0, s, fill);
+        comp1 = detail::comp_get(v, 1, s, fill);
     }
 };
 
@@ -91,22 +92,24 @@ struct comp<3, ScalarT>
 {
     static const comp zero;
 
-    ScalarT values[3] = {ScalarT(0), ScalarT(0), ScalarT(0)};
+    ScalarT comp0 = ScalarT(0);
+    ScalarT comp1 = ScalarT(0);
+    ScalarT comp2 = ScalarT(0);
 
-    constexpr ScalarT& operator[](int i) { return values[i]; }
-    constexpr ScalarT const& operator[](int i) const { return values[i]; }
+    constexpr ScalarT& operator[](int i) { return (&comp0)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&comp0)[i]; }
 
     constexpr comp() = default;
-    constexpr explicit comp(ScalarT v) : values{v, v, v} {}
-    constexpr comp(ScalarT x, ScalarT y, ScalarT z) : values{x, y, z} {}
+    constexpr explicit comp(ScalarT v) : comp0(v), comp1(v), comp2(v) {}
+    constexpr comp(ScalarT x, ScalarT y, ScalarT z) : comp0(x), comp1(y), comp2(z) {}
 
     template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
     explicit constexpr comp(Obj const& v, ScalarT fill = ScalarT(0))
     {
         auto s = detail::get_dynamic_comp_size(v);
-        values[0] = detail::comp_get(v, 0, s, fill);
-        values[1] = detail::comp_get(v, 1, s, fill);
-        values[2] = detail::comp_get(v, 2, s, fill);
+        comp0 = detail::comp_get(v, 0, s, fill);
+        comp1 = detail::comp_get(v, 1, s, fill);
+        comp2 = detail::comp_get(v, 2, s, fill);
     }
 };
 
@@ -115,23 +118,26 @@ struct comp<4, ScalarT>
 {
     static const comp zero;
 
-    ScalarT values[4] = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
+    ScalarT comp0 = ScalarT(0);
+    ScalarT comp1 = ScalarT(0);
+    ScalarT comp2 = ScalarT(0);
+    ScalarT comp3 = ScalarT(0);
 
-    constexpr ScalarT& operator[](int i) { return values[i]; }
-    constexpr ScalarT const& operator[](int i) const { return values[i]; }
+    constexpr ScalarT& operator[](int i) { return (&comp0)[i]; }
+    constexpr ScalarT const& operator[](int i) const { return (&comp0)[i]; }
 
     constexpr comp() = default;
-    constexpr explicit comp(ScalarT v) : values{v, v, v, v} {}
-    constexpr comp(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : values{x, y, z, w} {}
+    constexpr explicit comp(ScalarT v) : comp0(v), comp1(v), comp2(v), comp3(v) {}
+    constexpr comp(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : comp0(x), comp1(y), comp2(z), comp3(w) {}
 
     template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
     explicit constexpr comp(Obj const& v, ScalarT fill = ScalarT(0))
     {
         auto s = detail::get_dynamic_comp_size(v);
-        values[0] = detail::comp_get(v, 0, s, fill);
-        values[1] = detail::comp_get(v, 1, s, fill);
-        values[2] = detail::comp_get(v, 2, s, fill);
-        values[3] = detail::comp_get(v, 3, s, fill);
+        comp0 = detail::comp_get(v, 0, s, fill);
+        comp1 = detail::comp_get(v, 1, s, fill);
+        comp2 = detail::comp_get(v, 2, s, fill);
+        comp3 = detail::comp_get(v, 3, s, fill);
     }
 };
 

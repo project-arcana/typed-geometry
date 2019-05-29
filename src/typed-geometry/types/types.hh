@@ -3,6 +3,8 @@
 #include "angle.hh"
 #include "scalar.hh"
 
+#include "range.hh"
+
 #include "color.hh"
 #include "comp.hh"
 #include "dir.hh"

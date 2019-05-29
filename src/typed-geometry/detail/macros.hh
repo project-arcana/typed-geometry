@@ -102,10 +102,10 @@
 #define TG_IMPL_MEMBER_mat_2 m[2]
 #define TG_IMPL_MEMBER_mat_3 m[3]
 
-#define TG_IMPL_MEMBER_comp_0 values[0]
-#define TG_IMPL_MEMBER_comp_1 values[1]
-#define TG_IMPL_MEMBER_comp_2 values[2]
-#define TG_IMPL_MEMBER_comp_3 values[3]
+#define TG_IMPL_MEMBER_comp_0 comp0
+#define TG_IMPL_MEMBER_comp_1 comp1
+#define TG_IMPL_MEMBER_comp_2 comp2
+#define TG_IMPL_MEMBER_comp_3 comp3
 
 #define TG_IMPL_MEMBER(TYPE, COMP) TG_IMPL_MEMBER_##TYPE##_##COMP
 

@@ -20,3 +20,4 @@
 #include <typed-geometry/detail/functions.hh>
 #include <typed-geometry/detail/operators.hh>
 #include <typed-geometry/detail/tests.hh>
+#include <typed-geometry/detail/iterators.hh>
