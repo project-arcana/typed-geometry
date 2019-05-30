@@ -10,7 +10,8 @@ namespace tg
 {
 /// aspect ratio is width / height
 template <class ScalarT>
-[[nodiscard]] mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane) {
+TG_NODISCARD mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane)
+{
     TG_CONTRACT(near_plane > 0);
     TG_CONTRACT(aspect_ratio > 0);
     TG_CONTRACT(horizontal_fov > 0_deg);
@@ -19,11 +20,11 @@ template <class ScalarT>
     // adapted from glm for reverse Z and infinite far
     // see https://nlguillemot.wordpress.com/2016/12/07/reversed-z-in-opengl/
 
-    auto const tanHalfFovy = tan(horizontal_fov / ScalarT(2));
+    auto const tan_half_hfov = tan(horizontal_fov / ScalarT(2));
 
     auto m = mat<4, 4, ScalarT>::zero;
-    m[0][0] = 1.0 / (aspect_ratio * tanHalfFovy);
-    m[1][1] = 1.0 / tanHalfFovy;
+    m[0][0] = 1.0 / (aspect_ratio * tan_half_hfov);
+    m[1][1] = 1.0 / tan_half_hfov;
     m[2][3] = -1.0;
     m[3][2] = near_plane;
 
@@ -31,7 +32,8 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] ScalarT reverse_z_to_linear_depth(ScalarT d, ScalarT near_plane) {
+TG_NODISCARD ScalarT reverse_z_to_linear_depth(ScalarT d, ScalarT near_plane)
+{
     TG_CONTRACT(0 <= d && d <= 1);
     return near_plane / d;
 }

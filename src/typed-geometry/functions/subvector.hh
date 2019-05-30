@@ -6,7 +6,7 @@
 namespace tg
 {
 template <int SX, int SD, int D, class ScalarT>
-[[nodiscard]] constexpr vec<SD, ScalarT> subvector(vec<D, ScalarT> const& v)
+TG_NODISCARD constexpr vec<SD, ScalarT> subvector(vec<D, ScalarT> const& v)
 {
     static_assert(SD <= D, "subvector cannot be larger");
     static_assert(SX >= 0, "subvector must start at least at 0");

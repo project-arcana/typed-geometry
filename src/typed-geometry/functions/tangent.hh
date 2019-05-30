@@ -11,7 +11,7 @@ namespace tg
 // For a given triangle with 3D positions pos and 2D tex coords uv,
 // return the world space tangent of the triangle
 template <class ScalarT>
-[[nodiscard]] constexpr dir<3, ScalarT> tangent(triangle<3, ScalarT> const& pos, triangle<2, ScalarT> const& uv)
+TG_NODISCARD constexpr dir<3, ScalarT> tangent(triangle<3, ScalarT> const& pos, triangle<2, ScalarT> const& uv)
 {
     auto p10 = pos.pos1 - pos.pos0;
     auto p20 = pos.pos2 - pos.pos0;
@@ -32,7 +32,7 @@ template <class ScalarT>
 
 // Returns the TBN matrix, i.e. the tangent frame for the given triangle position and uv coords (not necessarily orthogonal)
 template <class ScalarT>
-[[nodiscard]] constexpr mat<3, 3, ScalarT> tbn_matrix(triangle<3, ScalarT> const& pos, triangle<2, ScalarT> const& uv)
+TG_NODISCARD constexpr mat<3, 3, ScalarT> tbn_matrix(triangle<3, ScalarT> const& pos, triangle<2, ScalarT> const& uv)
 {
     auto p10 = pos.pos1 - pos.pos0;
     auto p20 = pos.pos2 - pos.pos0;

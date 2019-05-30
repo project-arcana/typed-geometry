@@ -12,7 +12,7 @@
 namespace tg
 {
 template <class T>
-[[nodiscard]] constexpr mat<4, 4, T> rotation_around(dir<3, T> const& axis, angle_t<T> angle)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_around(dir<3, T> const& axis, angle_t<T> angle)
 {
     auto ca = cos(angle);
     auto sa = sin(angle);
@@ -39,13 +39,13 @@ template <class T>
     return m;
 }
 template <class T>
-[[nodiscard]] constexpr mat<4, 4, T> rotation_around(angle_t<T> angle, dir<3, T> const& axis)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_around(angle_t<T> angle, dir<3, T> const& axis)
 {
     return rotation_around(axis, angle);
 }
 
 template <class T>
-[[nodiscard]] constexpr mat<4, 4, T> rotation_x(angle_t<T> a)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_x(angle_t<T> a)
 {
     auto ca = cos(a);
     auto sa = sin(a);
@@ -58,7 +58,7 @@ template <class T>
     return m;
 }
 template <class T>
-[[nodiscard]] constexpr mat<4, 4, T> rotation_y(angle_t<T> a)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_y(angle_t<T> a)
 {
     auto ca = cos(a);
     auto sa = sin(a);
@@ -71,7 +71,7 @@ template <class T>
     return m;
 }
 template <class T>
-[[nodiscard]] constexpr mat<4, 4, T> rotation_z(angle_t<T> a)
+TG_NODISCARD constexpr mat<4, 4, T> rotation_z(angle_t<T> a)
 {
     auto ca = cos(a);
     auto sa = sin(a);
@@ -85,7 +85,7 @@ template <class T>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr mat<3, 3, ScalarT> rotation_around(pos<2, ScalarT> p, angle_t<ScalarT> a)
+TG_NODISCARD constexpr mat<3, 3, ScalarT> rotation_around(pos<2, ScalarT> p, angle_t<ScalarT> a)
 {
     auto origin_to_p = p - pos<2, ScalarT>::zero;
 

@@ -8,12 +8,12 @@
 namespace tg
 {
 template <class ScalarT>
-[[nodiscard]] constexpr mat<1, 1, fractional_result<ScalarT>> inverse(mat<1, 1, ScalarT> const& m)
+TG_NODISCARD constexpr mat<1, 1, fractional_result<ScalarT>> inverse(mat<1, 1, ScalarT> const& m)
 {
     return {{ScalarT(1.0) / m[0].x}};
 }
 template <class ScalarT>
-[[nodiscard]] constexpr mat<2, 2, fractional_result<ScalarT>> inverse(mat<2, 2, ScalarT> const& m)
+TG_NODISCARD constexpr mat<2, 2, fractional_result<ScalarT>> inverse(mat<2, 2, ScalarT> const& m)
 {
     auto invdet = ScalarT(1.0) / determinant(m);
 
@@ -25,7 +25,7 @@ template <class ScalarT>
     return res;
 }
 template <class ScalarT>
-[[nodiscard]] constexpr mat<3, 3, fractional_result<ScalarT>> inverse(mat<3, 3, ScalarT> const& m)
+TG_NODISCARD constexpr mat<3, 3, fractional_result<ScalarT>> inverse(mat<3, 3, ScalarT> const& m)
 {
     auto invdet = ScalarT(1.0) / determinant(m);
 

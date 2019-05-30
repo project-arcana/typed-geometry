@@ -10,7 +10,7 @@
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] constexpr size<D, ScalarT> size_of(aabb<D, ScalarT> const& b)
+TG_NODISCARD constexpr size<D, ScalarT> size_of(aabb<D, ScalarT> const& b)
 {
     return size<D, ScalarT>(b.max - b.min);
 }

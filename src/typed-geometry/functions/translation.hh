@@ -6,7 +6,7 @@
 namespace tg
 {
 template <int D, class T>
-[[nodiscard]] constexpr mat<D + 1, D + 1, T> translation(vec<D, T> const& v)
+TG_NODISCARD constexpr mat<D + 1, D + 1, T> translation(vec<D, T> const& v)
 {
     auto m = mat<D + 1, D + 1, T>::identity;
     m[D] = vec<D + 1, T>(v, T(1));

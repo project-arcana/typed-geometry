@@ -75,14 +75,14 @@ struct intersection_result<circle<2, ScalarT>, circle<2, ScalarT>>
 
 // returns whether two objects intersect
 template <class A, class B>
-[[nodiscard]] constexpr auto intersects(A const& a, B const& b) -> decltype(!intersection(a, b).empty)
+TG_NODISCARD constexpr auto intersects(A const& a, B const& b) -> decltype(!intersection(a, b).empty)
 {
     return !intersection(a, b).empty;
 }
 
 // returns intersection point of ray and hyperplane
 template <int D, class ScalarT>
-[[nodiscard]] constexpr auto intersection(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
+TG_NODISCARD constexpr auto intersection(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
     -> intersection_result<ray<D, ScalarT>, hyperplane<D, ScalarT>>
 {
     // if plane normal and raydirection are parallel there is no intersection
@@ -104,7 +104,7 @@ template <int D, class ScalarT>
 
 // returns intersection point of ray and triangle
 template <class ScalarT>
-[[nodiscard]] constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
+TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
     -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
 {
     auto p = hyperplane<3, ScalarT>(normal(t), t.pos0);
@@ -121,7 +121,7 @@ template <class ScalarT>
 
 // returns intersection point(s) of ray and sphere
 template <class ScalarT>
-[[nodiscard]] constexpr auto intersection(ray<3, ScalarT> const& r, sphere<3, ScalarT> const& s)
+TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, sphere<3, ScalarT> const& s)
     -> intersection_result<tg::ray<3, ScalarT>, tg::sphere<3, ScalarT>>
 {
     auto tA = ScalarT(0);
@@ -178,7 +178,7 @@ template <class ScalarT>
 // returns intersection circle of sphere and sphere (normal points from a to b)
 // for now does not work if spheres are identical (result would be a sphere3 again)
 template <class ScalarT>
-[[nodiscard]] constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
     -> intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
 {
     auto d2 = distance2(a.center, b.center);
@@ -235,7 +235,7 @@ template <class ScalarT>
 // returns intersection points of two circles in 2D
 // for now does not work if circles are identical (result would be a circle2 again)
 template <class ScalarT>
-[[nodiscard]] constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, ScalarT> const& b)
+TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, ScalarT> const& b)
     -> intersection_result<circle<2, ScalarT>, circle<2, ScalarT>>
 {
     // TODO: intersection circle
@@ -274,7 +274,7 @@ template <class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_coordinate(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
 {
     auto denom = dot(p.normal, a.pos1 - a.pos0);
     if (denom == 0)

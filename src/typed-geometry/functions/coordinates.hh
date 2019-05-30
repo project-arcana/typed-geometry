@@ -25,7 +25,7 @@
 namespace tg
 {
 template <class ScalarT>
-[[nodiscard]] constexpr comp<3, ScalarT> coordinates(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
+TG_NODISCARD constexpr comp<3, ScalarT> coordinates(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p)
 {
     auto pv0 = t.pos0 - p;
     auto pv1 = t.pos1 - p;
@@ -40,7 +40,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr comp<3, ScalarT> coordinates(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
+TG_NODISCARD constexpr comp<3, ScalarT> coordinates(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
 {
     auto pv0 = t.pos0 - p;
     auto pv1 = t.pos1 - p;
@@ -57,7 +57,7 @@ template <class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ScalarT coordinates(segment<D, ScalarT> const& s, pos<D, ScalarT> const& p)
+TG_NODISCARD constexpr ScalarT coordinates(segment<D, ScalarT> const& s, pos<D, ScalarT> const& p)
 {
     auto d = s.pos1 - s.pos0;
     auto t = dot(p - s.pos0, d) / dot(d, d);

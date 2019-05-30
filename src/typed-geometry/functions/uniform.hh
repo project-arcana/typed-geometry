@@ -37,23 +37,23 @@ struct sampler
 }
 
 template <class T, class Rng>
-[[nodiscard]] constexpr T uniform(Rng& rng)
+TG_NODISCARD constexpr T uniform(Rng& rng)
 {
     return detail::sampler<T>::uniform(rng);
 }
 
 template <class Rng>
-[[nodiscard]] constexpr f32 uniform(Rng& rng, f32 a, f32 b)
+TG_NODISCARD constexpr f32 uniform(Rng& rng, f32 a, f32 b)
 {
     return mix(a, b, detail::uniform01<f32>(rng));
 }
 template <class Rng>
-[[nodiscard]] constexpr f64 uniform(Rng& rng, f64 a, f64 b)
+TG_NODISCARD constexpr f64 uniform(Rng& rng, f64 a, f64 b)
 {
     return mix(a, b, detail::uniform01<f64>(rng));
 }
 template <class Rng>
-[[nodiscard]] constexpr i32 uniform(Rng& rng, i32 a, i32 b)
+TG_NODISCARD constexpr i32 uniform(Rng& rng, i32 a, i32 b)
 {
     i32 r = 0;
     auto fa = f32(a);
@@ -65,7 +65,7 @@ template <class Rng>
     return r;
 }
 template <class Rng>
-[[nodiscard]] constexpr i64 uniform(Rng& rng, i64 a, i64 b)
+TG_NODISCARD constexpr i64 uniform(Rng& rng, i64 a, i64 b)
 {
     i64 r = 0;
     auto fa = f64(a);
@@ -77,7 +77,7 @@ template <class Rng>
     return r;
 }
 template <class Rng>
-[[nodiscard]] constexpr u32 uniform(Rng& rng, u32 a, u32 b)
+TG_NODISCARD constexpr u32 uniform(Rng& rng, u32 a, u32 b)
 {
     u32 r = 0;
     auto fa = f32(a);
@@ -89,7 +89,7 @@ template <class Rng>
     return r;
 }
 template <class Rng>
-[[nodiscard]] constexpr u64 uniform(Rng& rng, u64 a, u64 b)
+TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b)
 {
     u64 r = 0;
     auto fa = f64(a);
@@ -102,31 +102,31 @@ template <class Rng>
 }
 
 template <class T, class Rng>
-[[nodiscard]] constexpr angle_t<T> uniform(Rng& rng, angle_t<T> a, angle_t<T> b)
+TG_NODISCARD constexpr angle_t<T> uniform(Rng& rng, angle_t<T> a, angle_t<T> b)
 {
     return mix(a, b, detail::uniform01<T>(rng));
 }
 
 template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<1, ScalarT> uniform(Rng& rng, aabb<1, ScalarT> const& b)
+TG_NODISCARD constexpr pos<1, ScalarT> uniform(Rng& rng, aabb<1, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x)};
 }
 template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, aabb<2, ScalarT> const& b)
+TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, aabb<2, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y)};
 }
 template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, aabb<3, ScalarT> const& b)
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, aabb<3, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y), //
             uniform(rng, b.min.z, b.max.z)};
 }
 template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<4, ScalarT> uniform(Rng& rng, aabb<4, ScalarT> const& b)
+TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, aabb<4, ScalarT> const& b)
 {
     return {uniform(rng, b.min.x, b.max.x), //
             uniform(rng, b.min.y, b.max.y), //
@@ -135,13 +135,13 @@ template <class ScalarT, class Rng>
 }
 
 template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
 {
     return b.center + b.half_extents * uniform_vec(rng, aabb<D, ScalarT>::minus_one_to_one);
 }
 
 template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& s)
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& s)
 {
     auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
     while (true)
@@ -154,7 +154,7 @@ template <int D, class ScalarT, class Rng>
 }
 
 template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const& b)
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const& b)
 {
     auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
     while (true)
@@ -167,18 +167,18 @@ template <int D, class ScalarT, class Rng>
 }
 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
-[[nodiscard]] constexpr vec<D, ScalarT> uniform(Rng& rng, vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
+TG_NODISCARD constexpr vec<D, ScalarT> uniform(Rng& rng, vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
     return mix(a, b, detail::uniform01<ScalarT>(rng));
 }
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     return mix(a, b, detail::uniform01<ScalarT>(rng));
 }
 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> const& t)
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> const& t)
 {
     auto e0 = t.pos1 - t.pos0;
     auto e1 = t.pos2 - t.pos0;
@@ -193,7 +193,7 @@ template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<S
 }
 
 template <class Rng, class... Args>
-[[nodiscard]] constexpr auto uniform_vec(Rng& rng, Args const&... args) -> decltype(uniform(rng, args...) - decltype(uniform(rng, args...))::zero)
+TG_NODISCARD constexpr auto uniform_vec(Rng& rng, Args const&... args) -> decltype(uniform(rng, args...) - decltype(uniform(rng, args...))::zero)
 {
     return uniform(rng, args...) - decltype(uniform(rng, args...))::zero;
 }

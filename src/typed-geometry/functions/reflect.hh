@@ -8,12 +8,12 @@
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] constexpr vec<D, ScalarT> reflect(vec<D, ScalarT> const& d, dir<D, ScalarT> const& normal)
+TG_NODISCARD constexpr vec<D, ScalarT> reflect(vec<D, ScalarT> const& d, dir<D, ScalarT> const& normal)
 {
     return d - (ScalarT(2) * dot(d, normal)) * normal;
 }
 template <int D, class ScalarT>
-[[nodiscard]] constexpr dir<D, ScalarT> reflect(dir<D, ScalarT> const& d, dir<D, ScalarT> const& normal)
+TG_NODISCARD constexpr dir<D, ScalarT> reflect(dir<D, ScalarT> const& d, dir<D, ScalarT> const& normal)
 {
     return dir<D, ScalarT>(reflect(vec<D, ScalarT>(d), normal));
 }
