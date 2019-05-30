@@ -18,6 +18,7 @@
 #include <typed-geometry/functions/intersection.hh>
 #include <typed-geometry/functions/inverse.hh>
 #include <typed-geometry/functions/length.hh>
+#include <typed-geometry/functions/look_at.hh>
 #include <typed-geometry/functions/math.hh>
 #include <typed-geometry/functions/minmax.hh>
 #include <typed-geometry/functions/mix.hh>
@@ -26,6 +27,7 @@
 #include <typed-geometry/functions/normalize.hh>
 #include <typed-geometry/functions/outer_product.hh>
 #include <typed-geometry/functions/perimeter.hh>
+#include <typed-geometry/functions/perspective.hh>
 #include <typed-geometry/functions/project.hh>
 #include <typed-geometry/functions/rasterize.hh>
 #include <typed-geometry/functions/reflect.hh>

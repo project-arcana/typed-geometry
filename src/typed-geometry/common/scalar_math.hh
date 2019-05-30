@@ -93,12 +93,12 @@ enum class fp_class
 [[nodiscard]] inline f64 abs(f64 v) { return std::abs(v); }
 
 template <class T>
-[[nodiscard]] angle_t<T> abs(angle_t<T> a)
-{
-    return radians(abs(a.radians()));
-}
+[[nodiscard]] angle_t<T> abs(angle_t<T> a) { return radians(abs(a.radians())); }
 
-[[nodiscard]] inline f32 floor(f32 v) { return std::floor(v); }
+    [[nodiscard]] inline f32 floor(f32 v)
+{
+    return std::floor(v);
+}
 [[nodiscard]] inline f64 floor(f64 v) { return std::floor(v); }
 [[nodiscard]] inline i32 ifloor(f32 v) { return v >= 0 || f32(i32(v)) == v ? i32(v) : i32(v) - 1; }
 [[nodiscard]] inline i64 ifloor(f64 v) { return v >= 0 || f64(i64(v)) == v ? i64(v) : i64(v) - 1; }
@@ -226,6 +226,10 @@ template <class T, class = enable_if<has_multiplication<T>>>
 [[nodiscard]] inline f64 cos(angle_t<f64> v) { return std::cos(v.radians()); }
 [[nodiscard]] inline f32 tan(angle_t<f32> v) { return std::tan(v.radians()); }
 [[nodiscard]] inline f64 tan(angle_t<f64> v) { return std::tan(v.radians()); }
+
+// TODO: use SSE intrinsic to compute both directly
+[[nodiscard]] inline pair<f32, f32> sin_cos(angle_t<f32> v) { return {sin(v), cos(v)}; }
+[[nodiscard]] inline pair<f64, f64> sin_cos(angle_t<f64> v) { return {sin(v), cos(v)}; }
 
 [[nodiscard]] inline angle_t<f32> asin(f32 v) { return radians(std::asin(v)); }
 [[nodiscard]] inline angle_t<f64> asin(f64 v) { return radians(std::asin(v)); }
