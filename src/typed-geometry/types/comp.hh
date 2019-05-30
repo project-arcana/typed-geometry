@@ -49,8 +49,8 @@ struct comp<1, ScalarT>
 
     ScalarT comp0 = ScalarT(0);
 
-    constexpr ScalarT& operator[](int i) { return comp0; }
-    constexpr ScalarT const& operator[](int i) const { return comp0; }
+    constexpr ScalarT& operator[](int) { return comp0; }
+    constexpr ScalarT const& operator[](int) const { return comp0; }
 
     constexpr comp() = default;
     constexpr comp(ScalarT v) : comp0(v) {}
