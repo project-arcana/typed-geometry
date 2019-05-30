@@ -17,19 +17,19 @@ namespace tg
 {
 // Base case for point/point:
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pair<pos<D, ScalarT>, pos<D, ScalarT>> closest_points(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+[[nodiscard]] constexpr pair<pos<D, ScalarT>, pos<D, ScalarT>> closest_points(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     return {a, b};
 }
 
 // Default implementation for point/object and object/point:
 template <int D, class ScalarT, class ObjectT>
-TG_NODISCARD constexpr auto closest_points(ObjectT const& o, pos<D, ScalarT> const& p) -> pair<decltype(project(p, o)), pos<D, ScalarT>>
+[[nodiscard]] constexpr auto closest_points(ObjectT const& o, pos<D, ScalarT> const& p) -> pair<decltype(project(p, o)), pos<D, ScalarT>>
 {
     return {project(p, o), p};
 }
 template <int D, class ScalarT, class ObjectT>
-TG_NODISCARD constexpr auto closest_points(pos<D, ScalarT> const& p, ObjectT const& o) -> pair<pos<D, ScalarT>, decltype(project(p, o))>
+[[nodiscard]] constexpr auto closest_points(pos<D, ScalarT> const& p, ObjectT const& o) -> pair<pos<D, ScalarT>, decltype(project(p, o))>
 {
     return {p, project(p, o)};
 }
@@ -43,7 +43,7 @@ TG_NODISCARD constexpr auto closest_points(pos<D, ScalarT> const& p, ObjectT con
 // =========== Other Implementations ===========
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> closest_point(quadric<3, ScalarT> const& q)
+[[nodiscard]] constexpr pos<3, ScalarT> closest_point(quadric<3, ScalarT> const& q)
 {
     // Returns a point minimizing this quadric
     // (Point is unique if any plane was added with sigma > 0)
@@ -81,7 +81,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> closest_point(quadric<3, ScalarT> const& 
     return {nom0 * denom, nom1 * denom, nom2 * denom};
 }
 template <class ScalarT>
-TG_NODISCARD constexpr pos<2, ScalarT> closest_point(quadric<2, ScalarT> const& q)
+[[nodiscard]] constexpr pos<2, ScalarT> closest_point(quadric<2, ScalarT> const& q)
 {
     // Returns a point minimizing this quadric
     // (Point is unique if any plane was added with sigma > 0)

@@ -168,7 +168,6 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(dir, dir, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(dir, dir, bool, operator!=, ||, !=);
 
 // deduction guides
-#ifdef TG_SUPPORT_CXX17
 template <class A, class = enable_if<is_scalar<A>>>
 dir(A const& x)->dir<1, A>;
 template <class A, class B>
@@ -180,6 +179,4 @@ dir(A const& x, B const& y, C const& z, D const& w)->dir<4, promoted_scalar<prom
 
 template <int D, class T>
 dir(vec<D, T> const&)->dir<D, T>;
-#endif
-
 } // namespace tg

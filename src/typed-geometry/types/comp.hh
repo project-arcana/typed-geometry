@@ -146,7 +146,6 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(comp, comp, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(comp, comp, bool, operator!=, ||, !=);
 
 // deduction guides
-#ifdef TG_SUPPORT_CXX17
 template <class A, class = enable_if<is_scalar<A>>>
 comp(A const& x)->comp<1, A>;
 template <class A, class B>
@@ -158,6 +157,4 @@ comp(A const& x, B const& y, C const& z, D const& w)->comp<4, promoted_scalar<pr
 
 template <int D, class T, template <int, class> class Obj>
 comp(Obj<D, T> const&)->comp<D, T>;
-#endif
-
 } // namespace tg

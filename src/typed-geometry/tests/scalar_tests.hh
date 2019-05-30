@@ -6,18 +6,18 @@
 
 namespace tg
 {
-TG_NODISCARD inline constexpr bool is_approx_equal(i8 a, i8 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(i16 a, i16 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(i32 a, i32 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(i64 a, i64 b) { return a == b; }
+[[nodiscard]] inline constexpr bool is_approx_equal(i8 a, i8 b) { return a == b; }
+[[nodiscard]] inline constexpr bool is_approx_equal(i16 a, i16 b) { return a == b; }
+[[nodiscard]] inline constexpr bool is_approx_equal(i32 a, i32 b) { return a == b; }
+[[nodiscard]] inline constexpr bool is_approx_equal(i64 a, i64 b) { return a == b; }
 
-TG_NODISCARD inline constexpr bool is_approx_equal(u8 a, u8 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(u16 a, u16 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(u32 a, u32 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(u64 a, u64 b) { return a == b; }
+[[nodiscard]] inline constexpr bool is_approx_equal(u8 a, u8 b) { return a == b; }
+[[nodiscard]] inline constexpr bool is_approx_equal(u16 a, u16 b) { return a == b; }
+[[nodiscard]] inline constexpr bool is_approx_equal(u32 a, u32 b) { return a == b; }
+[[nodiscard]] inline constexpr bool is_approx_equal(u64 a, u64 b) { return a == b; }
 
 // TODO: f8, f16
-TG_NODISCARD inline bool is_approx_equal(f32 a, f32 b)
+[[nodiscard]] inline bool is_approx_equal(f32 a, f32 b)
 {
     auto abs_a = tg::abs(a);
     auto abs_b = tg::abs(b);
@@ -38,7 +38,7 @@ TG_NODISCARD inline bool is_approx_equal(f32 a, f32 b)
     else
         return abs_b > 0.9999f * abs_a;
 }
-TG_NODISCARD inline bool is_approx_equal(f64 a, f64 b)
+[[nodiscard]] inline bool is_approx_equal(f64 a, f64 b)
 {
     auto abs_a = tg::abs(a);
     auto abs_b = tg::abs(b);
@@ -61,7 +61,7 @@ TG_NODISCARD inline bool is_approx_equal(f64 a, f64 b)
 }
 
 template <class T>
-TG_NODISCARD bool is_approx_equal(angle_t<T> const& a, angle_t<T> const& b)
+[[nodiscard]] bool is_approx_equal(angle_t<T> const& a, angle_t<T> const& b)
 {
     return is_approx_equal(a.radians(), b.radians());
 }

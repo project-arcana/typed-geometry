@@ -7,7 +7,7 @@ namespace tg
 {
 // Default implementation:
 template <class A, class B>
-TG_NODISCARD constexpr auto direction(A const& a, B const& b) -> decltype(normalize_safe(closest_points(a, b).second - closest_points(a, b).first))
+[[nodiscard]] constexpr auto direction(A const& a, B const& b) -> decltype(normalize_safe(closest_points(a, b).second - closest_points(a, b).first))
 {
     auto cp = closest_points(a, b);
     return normalize_safe(cp.second - cp.first);

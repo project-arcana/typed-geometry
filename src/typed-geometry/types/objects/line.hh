@@ -56,6 +56,6 @@ struct line
 
     static constexpr line from_points(pos_t a, pos_t b);
 
-    TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
+    [[nodiscard]] constexpr pos_t operator[](ScalarT t) const;
 };
 } // namespace tg

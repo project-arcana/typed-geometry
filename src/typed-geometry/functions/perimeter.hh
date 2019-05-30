@@ -17,49 +17,49 @@
 namespace tg
 {
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(ball<2, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT perimeter(ball<2, ScalarT> const& b)
 {
     return 2 * tg::pi<ScalarT>.radians() * b.radius;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(sphere<2, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT perimeter(sphere<2, ScalarT> const& b)
 {
     return 2 * tg::pi<ScalarT>.radians() * b.radius;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(disk<2, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT perimeter(disk<2, ScalarT> const& b)
 {
     return 2 * tg::pi<ScalarT>.radians() * b.radius;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(disk<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT perimeter(disk<3, ScalarT> const& b)
 {
     return 2 * tg::pi<ScalarT>.radians() * b.radius;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(circle<2, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT perimeter(circle<2, ScalarT> const& b)
 {
     return 2 * tg::pi<ScalarT>.radians() * b.radius;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(circle<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT perimeter(circle<3, ScalarT> const& b)
 {
     return 2 * tg::pi<ScalarT>.radians() * b.radius;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(rect<2, ScalarT> const& b) // TODO guess the correct term would be "perimeter"?
+[[nodiscard]] constexpr ScalarT perimeter(rect<2, ScalarT> const& b) // TODO guess the correct term would be "perimeter"?
 {
     return 4 * b.length;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(rect<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT perimeter(rect<3, ScalarT> const& b)
 {
     return 4 * b.length;
 }

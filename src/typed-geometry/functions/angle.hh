@@ -13,7 +13,7 @@ namespace tg
 {
 // returns the (smaller) angle between two vectors, i.e. the result is in 0..pi (0°..180°)
 template <int D, class ScalarT>
-TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_between(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
+[[nodiscard]] constexpr angle_t<fractional_result<ScalarT>> angle_between(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
     auto a_unit = normalize_safe(a);
     auto b_unit = normalize_safe(b);
@@ -22,7 +22,7 @@ TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_between(vec<D, 
 
 // returns the angle between any two objects with unambiguous normals. The result is in 0..pi (0°..180°)
 template <class A, class B>
-TG_NODISCARD constexpr auto angle_between(A const& a, B const& b) -> decltype(acos(dot(normal(a), normal(b))))
+[[nodiscard]] constexpr auto angle_between(A const& a, B const& b) -> decltype(acos(dot(normal(a), normal(b))))
 {
     return acos(saturate(dot(normal(a), normal(b))));
 }
@@ -30,7 +30,7 @@ TG_NODISCARD constexpr auto angle_between(A const& a, B const& b) -> decltype(ac
 // Returns the angle of a rotation of a towards b about the orthogonal_axis
 // The orthogonal axis is important to determine the direction of orientation (axb vs -axb)
 template <class ScalarT>
-TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_towards(vec<3, ScalarT> const& a, vec<3, ScalarT> const& b, vec<3, ScalarT> const& orthogonal_axis)
+[[nodiscard]] constexpr angle_t<fractional_result<ScalarT>> angle_towards(vec<3, ScalarT> const& a, vec<3, ScalarT> const& b, vec<3, ScalarT> const& orthogonal_axis)
 {
     TG_CONTRACT(are_orthogonal(a, orthogonal_axis));
     TG_CONTRACT(are_orthogonal(b, orthogonal_axis));

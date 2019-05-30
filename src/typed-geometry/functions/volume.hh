@@ -17,43 +17,43 @@
 namespace tg
 {
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT volume(size<3, ScalarT> const& s)
+[[nodiscard]] constexpr ScalarT volume(size<3, ScalarT> const& s)
 {
     return s.width * s.height * s.depth;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT volume(aabb<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT volume(aabb<3, ScalarT> const& b)
 {
     return volume(size<3, ScalarT>(b.max - b.min));
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT volume(box<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT volume(box<3, ScalarT> const& b)
 {
     return 8 * tg::sqrt(length2(b.half_extents[0]) * length2(b.half_extents[1]) * length2(b.half_extents[2]));
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT volume(ball<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT volume(ball<3, ScalarT> const& b)
 {
     return (tg::pi_scalar<ScalarT> * ScalarT(4) / ScalarT(3)) * tg::pow3(b.radius);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT volume(cylinder<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT volume(cylinder<3, ScalarT> const& b)
 {
     return (tg::pi_scalar<ScalarT> * pow2(b.radius)) * length(b.axis);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT volume(pyramid<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT volume(pyramid<3, ScalarT> const& b)
 {
     return area(b.base) * b.height * ScalarT(1) / ScalarT(3);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT volume(cone<3, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT volume(cone<3, ScalarT> const& b)
 {
     return area(b.base) * b.height * ScalarT(1) / ScalarT(3);
 }

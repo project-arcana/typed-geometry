@@ -21,10 +21,6 @@ set_property(TARGET typed-geometry PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(typed-geometry PUBLIC "src")
 
-if (CMAKE_CXX_STANDARD GREATER_EQUAL 17)
-    target_compile_definitions(typed-geometry PUBLIC TG_SUPPORT_CXX17)
-endif()
-
 if (TG_ENABLE_ASSERTIONS)
     target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:DEBUG>:TG_ENABLE_ASSERTIONS>)
     target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:RELWITHDEBINFO>:TG_ENABLE_ASSERTIONS>)

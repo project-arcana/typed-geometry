@@ -155,7 +155,6 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator!=, ||, !=);
 
 // deduction guides
-#ifdef TG_SUPPORT_CXX17
 template <class A, class = enable_if<is_scalar<A>>>
 size(A const& x)->size<1, A>;
 template <class A, class B>
@@ -169,5 +168,4 @@ template <int D, class T>
 size(pos<D, T> const&)->size<D, T>;
 template <int D, class T>
 size(vec<D, T> const&)->size<D, T>;
-#endif
 } // namespace tg
