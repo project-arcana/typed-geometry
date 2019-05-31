@@ -23,9 +23,9 @@ TG_NODISCARD mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizonta
     auto const tan_half_hfov = tan(horizontal_fov / ScalarT(2));
 
     auto m = mat<4, 4, ScalarT>::zero;
-    m[0][0] = 1.0 / (aspect_ratio * tan_half_hfov);
-    m[1][1] = 1.0 / tan_half_hfov;
-    m[2][3] = -1.0;
+    m[0][0] = ScalarT(1) / (aspect_ratio * tan_half_hfov);
+    m[1][1] = ScalarT(1) / tan_half_hfov;
+    m[2][3] = -ScalarT(1);
     m[3][2] = near_plane;
 
     return m;
