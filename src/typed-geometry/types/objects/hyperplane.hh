@@ -55,7 +55,7 @@ struct hyperplane
     dir_t normal;
     scalar_t dis;
 
-    constexpr hyperplane() = default;
+    constexpr hyperplane() = delete; // because of dir
     constexpr hyperplane(dir_t n, scalar_t d) : normal(n), dis(d) {}
     constexpr hyperplane(dir_t n, pos_t p);
 };

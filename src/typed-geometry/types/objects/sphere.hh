@@ -50,7 +50,7 @@ struct sphere
     static const sphere unit; ///< unit sphere, center zero, radius 1
 
     pos_t center;
-    scalar_t radius;
+    scalar_t radius = ScalarT(0);
 
     constexpr sphere() = default;
     constexpr sphere(pos_t c, ScalarT r) : center(c), radius(r) {}

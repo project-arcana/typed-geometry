@@ -32,7 +32,7 @@ struct cylinder<3, ScalarT>
     using seg_t = segment<3, ScalarT>;
 
     seg_t axis;
-    scalar_t radius = 0;
+    scalar_t radius = ScalarT(0);
 
     constexpr cylinder() = default;
     constexpr cylinder(seg_t const& axis, scalar_t radius) : axis(axis), radius(radius) {}

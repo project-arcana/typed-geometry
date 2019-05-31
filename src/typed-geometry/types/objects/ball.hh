@@ -54,7 +54,7 @@ struct ball
     static const ball unit; ///< unit sphere, center zero, radius 1
 
     pos_t center;
-    scalar_t radius;
+    scalar_t radius = ScalarT(0);
 
     constexpr ball() = default;
     constexpr ball(pos_t c, ScalarT r) : center(c), radius(r) {}

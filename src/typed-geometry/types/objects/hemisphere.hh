@@ -54,7 +54,7 @@ struct hemisphere
     scalar_t radius;
     dir_t normal;
 
-    constexpr hemisphere() = default;
+    constexpr hemisphere() = delete; // because of dir
     constexpr hemisphere(pos_t const& c, ScalarT r, dir_t const& normal) : center(c), radius(r), normal(normal) {}
 };
 } // namespace tg

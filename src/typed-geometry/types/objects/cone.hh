@@ -31,7 +31,7 @@ struct cone<3, ScalarT>
     disk_t base;
     scalar_t height;
 
-    constexpr cone() = default;
+    constexpr cone() = delete; // because of dir inside base
     constexpr cone(disk_t const& base, scalar_t height) : base(base), height(height) {}
 };
 } // namespace tg
