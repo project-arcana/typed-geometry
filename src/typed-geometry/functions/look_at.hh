@@ -33,7 +33,7 @@ TG_NODISCARD constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye, di
 
     m[3][0] = -dot(right, eye);
     m[3][1] = -dot(up, eye);
-    m[3][2] = -dot(fwd, eye);
+    m[3][2] = dot(fwd, eye);
 
     m[3][3] = ScalarT(1);
 
