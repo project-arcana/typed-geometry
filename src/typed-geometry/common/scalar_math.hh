@@ -93,12 +93,12 @@ TG_NODISCARD inline f32 abs(f32 v) { return std::abs(v); }
 TG_NODISCARD inline f64 abs(f64 v) { return std::abs(v); }
 
 template <class T>
-TG_NODISCARD angle_t<T> abs(angle_t<T> a) { return radians(abs(a.radians())); }
-
-    TG_NODISCARD inline f32 floor(f32 v)
+TG_NODISCARD angle_t<T> abs(angle_t<T> a)
 {
-    return std::floor(v);
+    return radians(abs(a.radians()));
 }
+
+TG_NODISCARD inline f32 floor(f32 v) { return std::floor(v); }
 TG_NODISCARD inline f64 floor(f64 v) { return std::floor(v); }
 TG_NODISCARD inline i32 ifloor(f32 v) { return v >= 0 || f32(i32(v)) == v ? i32(v) : i32(v) - 1; }
 TG_NODISCARD inline i64 ifloor(f64 v) { return v >= 0 || f64(i64(v)) == v ? i64(v) : i64(v) - 1; }
@@ -123,17 +123,6 @@ TG_NODISCARD constexpr T min(T const& a, T const& b)
 }
 template <class T, class = enable_if<is_scalar<T>>>
 TG_NODISCARD constexpr T max(T const& a, T const& b)
-{
-    return a < b ? b : a;
-}
-
-template <class T, class = enable_if<is_scalar<T>>>
-TG_NODISCARD constexpr angle_t<T> min(angle_t<T> const& a, angle_t<T> const& b)
-{
-    return a < b ? a : b;
-}
-template <class T, class = enable_if<is_scalar<T>>>
-TG_NODISCARD constexpr angle_t<T> max(angle_t<T> const& a, angle_t<T> const& b)
 {
     return a < b ? b : a;
 }

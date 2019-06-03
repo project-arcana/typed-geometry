@@ -216,4 +216,13 @@ struct type_name_prefix_t<f64>
 {
     static constexpr char const* value = "d";
 };
+
+// special scalars
+template <class T>
+struct angle_t;
+template <class T>
+struct is_scalar_t<angle_t<T>>
+{
+    static constexpr bool value = true;
+};
 } // namespace tg
