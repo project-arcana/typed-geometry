@@ -39,6 +39,11 @@ using ucomp2 = comp<2, u32>;
 using ucomp3 = comp<3, u32>;
 using ucomp4 = comp<4, u32>;
 
+using bcomp1 = comp<1, bool>;
+using bcomp2 = comp<2, bool>;
+using bcomp3 = comp<3, bool>;
+using bcomp4 = comp<4, bool>;
+
 
 // ======== IMPLEMENTATION ========
 
