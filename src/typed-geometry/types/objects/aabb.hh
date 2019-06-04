@@ -55,6 +55,7 @@ struct aabb
     pos_t max;
 
     constexpr aabb() = default;
+    constexpr aabb(ScalarT min, ScalarT max) : min(min), max(max) { TG_CONTRACT(min <= max); }
     constexpr aabb(pos_t min, pos_t max) : min(min), max(max)
     {
         for (auto i = 0; i < D; ++i)
