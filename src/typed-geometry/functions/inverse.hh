@@ -42,7 +42,7 @@ TG_NODISCARD constexpr mat<3, 3, fractional_result<ScalarT>> inverse(mat<3, 3, S
     return res;
 }
 template <class ScalarT>
-constexpr mat<4, 4, fractional_result<ScalarT>> inverse(mat<4, 4, ScalarT> const& m)
+TG_NODISCARD constexpr mat<4, 4, fractional_result<ScalarT>> inverse(mat<4, 4, ScalarT> const& m)
 {
     auto invdet = ScalarT(1.0) / determinant(m);
 

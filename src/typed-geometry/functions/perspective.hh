@@ -14,8 +14,8 @@ TG_NODISCARD mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizonta
 {
     TG_CONTRACT(near_plane > 0);
     TG_CONTRACT(aspect_ratio > 0);
-    TG_CONTRACT(horizontal_fov > 0_deg);
-    TG_CONTRACT(horizontal_fov < 180_deg);
+    TG_CONTRACT(horizontal_fov > degree(0));
+    TG_CONTRACT(horizontal_fov < degree(180));
 
     // adapted from glm for reverse Z and infinite far
     // see https://nlguillemot.wordpress.com/2016/12/07/reversed-z-in-opengl/
