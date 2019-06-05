@@ -57,7 +57,7 @@ struct disk<3, ScalarT>
     scalar_t radius;
     dir_t normal;
 
-    constexpr disk() = delete; // because of dir
+    constexpr disk() = default;
     constexpr disk(pos_t c, ScalarT r, dir_t n) : center(c), radius(r), normal(n) {}
 };
 } // namespace tg

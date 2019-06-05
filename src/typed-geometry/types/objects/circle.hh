@@ -57,7 +57,7 @@ struct circle<3, ScalarT>
     scalar_t radius;
     dir_t normal;
 
-    constexpr circle() = delete; // because of dir
+    constexpr circle() = default;
     constexpr circle(pos_t c, ScalarT r, dir_t n) : center(c), radius(r), normal(n) {}
 };
 } // namespace tg
