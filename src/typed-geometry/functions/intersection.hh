@@ -286,4 +286,45 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(segment<D, Scal
     return t;
 }
 
+template <int D, class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
+{
+    // if plane normal and raydirection are parallel there is no intersection
+    auto dotND = dot(p.normal, r.dir);
+    if (dotND == 0)
+        return {};
+
+    auto t = -(dot(p.normal, vec<D, ScalarT>(r.origin)) + p.dis) / dotND;
+
+    // check whether plane lies behind ray
+    if (t < 0)
+        return {};
+
+    return t;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
+{
+    auto const n = normal(t);
+    auto const dotND = dot(n, r.dir);
+
+    // if triangle normal and raydirection are parallel there is no intersection
+    if (dotND == 0)
+        return {};
+
+    auto const lambda = -(dot(n, vec<3, ScalarT>(r.origin)) + dot(vec<3, ScalarT>(t.pos0), n)) / dotND;
+
+    // check if triangle lies behind ray
+    if (lambda < 0)
+        return {};
+
+    // check if potential intersection point indeed lies on the triangle
+    // NOTE: contains(triangle, position) re-calculates the triangle normal which could be made redundant here
+    if (!contains(t, r.origin + r.dir * lambda))
+        return {};
+
+    // non-empty intersection
+    return lambda;
+}
 } // namespace tg
