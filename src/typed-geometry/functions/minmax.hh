@@ -22,16 +22,7 @@
 
 namespace tg
 {
-template <class T>
-TG_NODISCARD constexpr T min()
-{
-    return detail::limits<T>::min();
-}
-template <class T>
-TG_NODISCARD constexpr T max()
-{
-    return detail::limits<T>::max();
-}
+// no-arg min/max is in special_values.hh
 
 template <class T>
 TG_NODISCARD constexpr T min(T const& a)
