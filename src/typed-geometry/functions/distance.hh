@@ -38,7 +38,7 @@ TG_NODISCARD constexpr auto distance2(A const& a, B const& b) -> decltype(length
     return length2(cp.first - cp.second);
 }
 
-// Convience for distance to (0,0,0)
+// Convenience for distance to (0,0,0)
 template <class Obj>
 TG_NODISCARD constexpr auto distance_to_origin(Obj const& o) -> decltype(distance(o, pos_type_for<Obj>::zero))
 {
@@ -54,14 +54,14 @@ TG_NODISCARD constexpr auto distance2_to_origin(Obj const& o) -> decltype(distan
 // =========== Object Implementations ===========
 
 // signed distance is positive if p lies above pl, 0 if it lies on the plane and negative if below pl
-template <class ScalarT>
-TG_NODISCARD constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, plane const& pl)
+template <int D, class ScalarT>
+TG_NODISCARD constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
 {
-    return dot(p - zero<pos<3, ScalarT>>(), pl.normal) - pl.dis;
+    return dot(p - pos<D, ScalarT>::zero, pl.normal) - pl.dis;
 }
 
-template <class ScalarT>
-TG_NODISCARD constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const& p, plane const& pl)
+template <int D, class ScalarT>
+TG_NODISCARD constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
 {
     return abs(signed_distance(p, pl));
 }
