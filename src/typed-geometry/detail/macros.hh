@@ -40,8 +40,8 @@
 #define TG_FORCE_INLINE __attribute__((always_inline))
 #define TG_DONT_INLINE __attribute__((noinline))
 
-#define TG_LIKELY(x) __builtin_expect((x), 1)
-#define TG_UNLIKELY(x) __builtin_expect((x), 0)
+#define TG_LIKELY(x) __builtin_expect(bool(x), 1)
+#define TG_UNLIKELY(x) __builtin_expect(bool(x), 0)
 #define TG_COLD_FUNC __attribute__((cold))
 
 #else
