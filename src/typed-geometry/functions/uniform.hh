@@ -4,6 +4,7 @@
 #include <typed-geometry/detail/scalar_traits.hh>
 
 #include <typed-geometry/types/pos.hh>
+#include <typed-geometry/types/range.hh>
 #include <typed-geometry/types/scalar.hh>
 
 #include <typed-geometry/types/objects/aabb.hh>
@@ -53,51 +54,51 @@ TG_NODISCARD constexpr f64 uniform(Rng& rng, f64 a, f64 b)
     return mix(a, b, detail::uniform01<f64>(rng));
 }
 template <class Rng>
-TG_NODISCARD constexpr i32 uniform(Rng& rng, i32 a, i32 b)
+TG_NODISCARD constexpr i32 uniform(Rng& rng, i32 a, i32 b_inc)
 {
     i32 r = 0;
     auto fa = f32(a);
-    auto fb = f32(b) + 1;
+    auto fb = f32(b_inc) + 1;
     do
     {
         r = tg::ifloor(uniform(rng, fa, fb));
-    } while (r > b);
+    } while (r > b_inc);
     return r;
 }
 template <class Rng>
-TG_NODISCARD constexpr i64 uniform(Rng& rng, i64 a, i64 b)
+TG_NODISCARD constexpr i64 uniform(Rng& rng, i64 a, i64 b_inc)
 {
     i64 r = 0;
     auto fa = f64(a);
-    auto fb = f64(b) + 1;
+    auto fb = f64(b_inc) + 1;
     do
     {
         r = tg::ifloor(uniform(rng, fa, fb));
-    } while (r > b);
+    } while (r > b_inc);
     return r;
 }
 template <class Rng>
-TG_NODISCARD constexpr u32 uniform(Rng& rng, u32 a, u32 b)
+TG_NODISCARD constexpr u32 uniform(Rng& rng, u32 a, u32 b_inc)
 {
     u32 r = 0;
     auto fa = f32(a);
-    auto fb = f32(b) + 1;
+    auto fb = f32(b_inc) + 1;
     do
     {
         r = u32(tg::ifloor(uniform(rng, fa, fb)));
-    } while (r > b);
+    } while (r > b_inc);
     return r;
 }
 template <class Rng>
-TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b)
+TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b_inc)
 {
     u64 r = 0;
     auto fa = f64(a);
-    auto fb = f64(b) + 1;
+    auto fb = f64(b_inc) + 1;
     do
     {
         r = tg::ifloor(uniform(rng, fa, fb));
-    } while (r > b);
+    } while (r > b_inc);
     return r;
 }
 
@@ -105,6 +106,27 @@ template <class T, class Rng>
 TG_NODISCARD constexpr angle_t<T> uniform(Rng& rng, angle_t<T> a, angle_t<T> b)
 {
     return mix(a, b, detail::uniform01<T>(rng));
+}
+
+template <class Rng>
+TG_NODISCARD constexpr int uniform(Rng& rng, range1 const& b)
+{
+    return uniform(rng, b.min, b.max - 1);
+}
+
+template <class Rng>
+TG_NODISCARD constexpr comp<2, int> uniform(Rng& rng, range2 const& b)
+{
+    return {uniform(rng, b.min.comp0, b.max.comp0 - 1), //
+            uniform(rng, b.min.comp1, b.max.comp1 - 1)};
+}
+
+template <class Rng>
+TG_NODISCARD constexpr comp<3, int> uniform(Rng& rng, range3 const& b)
+{
+    return {uniform(rng, b.min.comp0, b.max.comp0 - 1), //
+            uniform(rng, b.min.comp1, b.max.comp1 - 1), //
+            uniform(rng, b.min.comp2, b.max.comp2 - 1)};
 }
 
 template <class ScalarT, class Rng>
