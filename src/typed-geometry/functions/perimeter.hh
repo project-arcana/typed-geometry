@@ -53,7 +53,7 @@ TG_NODISCARD constexpr ScalarT perimeter(circle<3, ScalarT> const& b)
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT perimeter(rect<2, ScalarT> const& b) // TODO guess the correct term would be "perimeter"?
+TG_NODISCARD constexpr ScalarT perimeter(rect<2, ScalarT> const& b)
 {
     return 4 * b.length;
 }
