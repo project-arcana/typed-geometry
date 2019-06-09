@@ -36,6 +36,7 @@
 #include <typed-geometry/functions/rotation.hh>
 #include <typed-geometry/functions/scaling.hh>
 #include <typed-geometry/functions/size.hh>
+#include <typed-geometry/functions/smoothstep.hh>
 #include <typed-geometry/functions/submatrix.hh>
 #include <typed-geometry/functions/subvector.hh>
 #include <typed-geometry/functions/tangent.hh>
