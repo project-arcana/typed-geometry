@@ -32,7 +32,14 @@ struct limits<i32>
     static constexpr i32 max() { return i32(2147483647); }
 };
 template <>
-struct limits<i64>
+struct limits<long>
+{
+    static_assert(sizeof(long) == 8, "unsupported arch");
+    static constexpr i64 min() { return i64(-9223372036854775807LL - 1); }
+    static constexpr i64 max() { return i64(9223372036854775807LL); }
+};
+template <>
+struct limits<long long>
 {
     static constexpr i64 min() { return i64(-9223372036854775807LL - 1); }
     static constexpr i64 max() { return i64(9223372036854775807LL); }
@@ -57,7 +64,14 @@ struct limits<u32>
     static constexpr u32 max() { return u32(4294967295); }
 };
 template <>
-struct limits<u64>
+struct limits<unsigned long>
+{
+    static_assert(sizeof(unsigned long) == 8, "unsupported arch");
+    static constexpr u64 min() { return u64(0); }
+    static constexpr u64 max() { return u64(18446744073709551615uLL); }
+};
+template <>
+struct limits<unsigned long long>
 {
     static constexpr u64 min() { return u64(0); }
     static constexpr u64 max() { return u64(18446744073709551615uLL); }
