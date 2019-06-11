@@ -31,18 +31,28 @@ struct limits<i32>
     static constexpr i32 min() { return i32(-2147483647 - 1); }
     static constexpr i32 max() { return i32(2147483647); }
 };
+#ifdef _MSC_VER
+template <>
+struct limits<long>
+{
+    static_assert(sizeof(long) == 4, "unsupported arch");
+    static constexpr long min() { return long(-2147483647 - 1); }
+    static constexpr long max() { return long(2147483647); }
+};
+#else
 template <>
 struct limits<long>
 {
     static_assert(sizeof(long) == 8, "unsupported arch");
-    static constexpr i64 min() { return i64(-9223372036854775807LL - 1); }
-    static constexpr i64 max() { return i64(9223372036854775807LL); }
+    static constexpr long min() { return long(-9223372036854775807LL - 1); }
+    static constexpr long max() { return long(9223372036854775807LL); }
 };
+#endif
 template <>
 struct limits<long long>
 {
-    static constexpr i64 min() { return i64(-9223372036854775807LL - 1); }
-    static constexpr i64 max() { return i64(9223372036854775807LL); }
+    static constexpr long long min() { return i64(-9223372036854775807LL - 1); }
+    static constexpr long long max() { return i64(9223372036854775807LL); }
 };
 
 template <>
@@ -63,18 +73,28 @@ struct limits<u32>
     static constexpr u32 min() { return u32(0); }
     static constexpr u32 max() { return u32(4294967295); }
 };
+#ifdef _MSC_VER
+template <>
+struct limits<unsigned long>
+{
+    static_assert(sizeof(unsigned long) == 4, "unsupported arch");
+    static constexpr unsigned long min() { return u32(0); }
+    static constexpr unsigned long max() { return u32(4294967295); }
+};
+#else
 template <>
 struct limits<unsigned long>
 {
     static_assert(sizeof(unsigned long) == 8, "unsupported arch");
-    static constexpr u64 min() { return u64(0); }
-    static constexpr u64 max() { return u64(18446744073709551615uLL); }
+    static constexpr unsigned long min() { return u64(0); }
+    static constexpr unsigned long max() { return u64(18446744073709551615uLL); }
 };
+#endif
 template <>
 struct limits<unsigned long long>
 {
-    static constexpr u64 min() { return u64(0); }
-    static constexpr u64 max() { return u64(18446744073709551615uLL); }
+    static constexpr unsigned long long min() { return u64(0); }
+    static constexpr unsigned long long max() { return u64(18446744073709551615uLL); }
 };
 
 template <>
