@@ -5,6 +5,7 @@
 #include "box.hh"
 #include "capsule.hh"
 #include "cone.hh"
+#include "infcone.hh"
 #include "cylinder.hh"
 #include "disk.hh"
 #include "frustum.hh"
