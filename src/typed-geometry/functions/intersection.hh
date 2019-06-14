@@ -11,6 +11,7 @@
 #include <typed-geometry/types/objects/triangle.hh>
 
 #include "contains.hh"
+#include "cross.hh"
 #include "dot.hh"
 #include "normal.hh"
 
@@ -102,21 +103,21 @@ TG_NODISCARD constexpr auto intersection(ray<D, ScalarT> const& r, hyperplane<D,
     return {false, result};
 }
 
+template <class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t);
+
 // returns intersection point of ray and triangle
 template <class ScalarT>
 TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
     -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
 {
-    auto p = hyperplane<3, ScalarT>(normal(t), t.pos0);
-
-    auto result = intersection(r, p);
-
-    // check whether potential intersection point indeed lies on the triangle
-    if (!contains(t, result.pos))
-        return {true, {}};
-
-    // non-empty intersection
-    return result;
+    auto lambda = intersection_coordinate(r, t);
+    if (lambda.has_value())
+    {
+        return {true, r.origin + r.dir * lambda.value()};
+    }
+    else
+        return {false, {}};
 }
 
 // returns intersection point(s) of ray and sphere
@@ -306,26 +307,29 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<D, ScalarT>
 template <class ScalarT>
 TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
 {
-    auto const n = normal(t);
-    auto const dotND = dot(n, r.dir);
+    auto constexpr eps = 0.000001f;
 
-    // if triangle normal and raydirection are parallel there is no intersection
-    if (dotND == 0)
+    auto e1 = t.pos1 - t.pos0;
+    auto e2 = t.pos2 - t.pos0;
+
+    auto pvec = tg::cross(tg::vec3(r.dir), e2);
+    auto det = dot(pvec, e1);
+
+    if (det < eps)
         return {};
 
-    auto const lambda = -(dot(n, vec<3, ScalarT>(r.origin)) + dot(vec<3, ScalarT>(t.pos0), n)) / dotND;
-
-    // check if triangle lies behind ray
-    if (lambda < 0)
+    auto tvec = r.origin - t.pos0;
+    auto u = dot(tvec, pvec);
+    if (u < 0.f || u > det)
         return {};
 
-    // check if potential intersection point indeed lies on the triangle
-    // NOTE: contains(triangle, position) re-calculates the triangle normal which could be made redundant here
-    if (!contains(t, r.origin + r.dir * lambda))
+    auto qvec = cross(tvec, e1);
+    auto v = dot(r.dir, qvec);
+    if (v < 0.f || v + u > det)
         return {};
 
-    // non-empty intersection
-    return lambda;
+    auto lambda = (1.f / det) * dot(e2, qvec);
+    return (lambda > 0) ? lambda : tg::optional<float>();
 }
 
 template <int D, class ScalarT>
