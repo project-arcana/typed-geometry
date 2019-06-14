@@ -327,4 +327,140 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT>
     // non-empty intersection
     return lambda;
 }
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<D, ScalarT> const& r, sphere<D, ScalarT> const& s)
+{
+    auto const t = dot(s.center - r.origin, r.dir);
+    auto const p = r[t];
+    auto const dt = tg::sqrt(s.radius * s.radius - distance2(p, s.center));
+
+    if (t - dt >= 0)
+        return t - dt;
+    if (t + dt >= 0)
+        return t + dt;
+    return {};
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
+{
+    // see https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp
+
+    auto const p = b.center - r.origin;
+
+    // TODO: without normalize
+    auto const X = normalize(b.half_extents[0]);
+    auto const Y = normalize(b.half_extents[1]);
+    auto const Z = normalize(b.half_extents[2]);
+
+    auto f = tg::vec3(dot(X, r.dir), //
+                      dot(Y, r.dir), //
+                      dot(Z, r.dir));
+
+    auto const e = tg::vec3(dot(X, p), //
+                            dot(Y, p), //
+                            dot(Z, p));
+
+    auto const size = tg::vec3(length(b.half_extents[0]), //
+                               length(b.half_extents[1]), //
+                               length(b.half_extents[2]));
+
+    float t[6] = {0, 0, 0, 0, 0, 0};
+    for (int i = 0; i < 3; ++i)
+    {
+        if (tg::abs(f[i]) < tg::epsilon<ScalarT> / 1000)
+        {
+            if (-e[i] - size[i] > 0 || -e[i] + size[i] < 0)
+                return {};
+
+            f[i] = tg::epsilon<ScalarT>; // Avoid div by 0!
+        }
+
+        t[i * 2 + 0] = (e[i] + size[i]) / f[i]; // tmin[x, y, z]
+        t[i * 2 + 1] = (e[i] - size[i]) / f[i]; // tmax[x, y, z]
+    }
+
+    auto const tmin = tg::max(tg::max(tg::min(t[0], t[1]), tg::min(t[2], t[3])), tg::min(t[4], t[5]));
+    auto const tmax = tg::min(tg::min(tg::max(t[0], t[1]), tg::max(t[2], t[3])), tg::max(t[4], t[5]));
+
+    // if tmax < 0, ray is intersecting AABB
+    // but entire AABB is behing it's origin
+    if (tmax < 0)
+        return {};
+
+    // if tmin > tmax, ray doesn't intersect AABB
+    if (tmin > tmax)
+        return {};
+
+    // If tmin is < 0, tmax is closer
+    return tmin < 0 ? tmax : tmin;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, disk<3, ScalarT> const& c)
+{
+    auto const t = intersection_coordinate(r, tg::plane(c.normal, c.center));
+    if (!t.has_value())
+        return t;
+
+    auto const p = r[t.value()];
+    if (distance2(p, c.center) > c.radius * c.radius)
+        return {};
+
+    return t;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
+{
+    optional<ScalarT> t;
+
+    // see
+    // https://www.gamedev.net/forums/topic/467789-raycylinder-intersection/
+
+    auto A = c.axis.pos0;
+    auto B = c.axis.pos1;
+    auto O = r.origin;
+    auto V = tg::vec3(r.dir);
+
+    auto AB = (B - A);
+    auto AO = (O - A);
+    auto AOxAB = cross(AO, AB);     // cross product
+    auto VxAB = cross(V, AB);       // cross product
+    auto ab2 = dot(AB, AB);         // dot product
+    auto pa = dot(VxAB, VxAB);      // dot product
+    auto pb = 2 * dot(VxAB, AOxAB); // dot product
+    auto pc = dot(AOxAB, AOxAB) - (c.radius * c.radius * ab2);
+
+    // solve second order equation : a*t^2 + b*t + c = 0
+    auto p = pb / pa;
+    auto q = pc / pa;
+    auto sq2 = p * p / 4 - q;
+
+    if (sq2 >= 0)
+    {
+        auto sq = sqrt(sq2);
+        auto ct = -p / 2 - sq >= 0 ? -p / 2 - sq : -p / 2 + sq;
+
+        auto rp = r[ct];
+        auto projp = project(rp, line3::from_points(c.axis.pos0, c.axis.pos1));
+        auto coord = coordinates(c.axis, projp);
+        if (0 <= coord && coord <= 1 && false)
+            t = coord;
+    }
+
+    auto d = normalize(c.axis.pos1 - c.axis.pos0);
+
+    if (auto ct = intersection_coordinate(r, disk3(c.axis.pos0, c.radius, d)); ct.has_value())
+        if (!t.has_value() || ct.value() < t.value())
+            t = ct;
+
+    if (auto ct = intersection_coordinate(r, disk3(c.axis.pos1, c.radius, d)); ct.has_value())
+        if (!t.has_value() || ct.value() < t.value())
+            t = ct;
+
+    return t;
+}
+
 } // namespace tg
