@@ -93,4 +93,11 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, infcone
     } else
         return icone.apex;
 }
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
+{
+    auto dir_to_p = tg::normalize_safe(p - sp.center);
+    return sp.center + dir_to_p*sp.radius;
+}
 } // namespace tg
