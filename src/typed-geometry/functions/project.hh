@@ -6,6 +6,7 @@
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/infcone.hh>
+#include <typed-geometry/types/objects/inftube.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
 
@@ -99,5 +100,14 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<
 {
     auto dir_to_p = tg::normalize_safe(p - sp.center);
     return sp.center + dir_to_p*sp.radius;
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inftube<D, ScalarT> const& itube)
+{
+    auto vec = p - itube.center;
+    auto h = dot(vec, itube.axis);
+    auto point_on_axis = itube.center + h*itube.axis;
+    return point_on_axis + tg::normalize(p - point_on_axis)*itube.radius;
 }
 } // namespace tg
