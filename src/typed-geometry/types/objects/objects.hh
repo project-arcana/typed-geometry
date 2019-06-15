@@ -21,3 +21,4 @@
 #include "sphere.hh"
 #include "triangle.hh"
 #include "tube.hh"
+#include "inftube.hh"
