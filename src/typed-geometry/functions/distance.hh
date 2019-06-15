@@ -73,9 +73,9 @@ TG_NODISCARD constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const
     using dir_t = dir<3, ScalarT>;
     using vec2_t = vec<2, ScalarT>;
     using dir2_t = dir<2, ScalarT>;
-    auto c = icone.apex + icone.dir;
+    auto c = icone.apex + icone.opening_dir;
     auto r = tan(icone.opening_angle / 2);
-    const dir_t& y_axis = -icone.dir;
+    const dir_t& y_axis = -icone.opening_dir;
     dir_t plane_normal = normalize(cross(normalize(p - c), y_axis));
     dir_t x_axis = normalize(cross(y_axis, plane_normal));
     if (dot(p-c, x_axis) < 0)

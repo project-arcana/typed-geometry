@@ -23,15 +23,15 @@ using uinfcone3 = infcone<3, u32>;
 template <class ScalarT>
 struct infcone<3, ScalarT>
 {
-    using dir_t = dir<3, ScalarT>;
-    using pos_t = pos<3, ScalarT>;
-    using angle_t = angle_t<ScalarT>;
+    using dir_tc = dir<3, ScalarT>;
+    using pos_tc = pos<3, ScalarT>;
+    using angle_tc = angle_t<ScalarT>;
 
-    pos_t apex;
-    dir_t dir;
-    angle_t opening_angle;
+    pos_tc apex;
+    dir_tc opening_dir;
+    angle_tc opening_angle;
 
     constexpr infcone() = default;
-    constexpr infcone(pos_t const& apex, dir_t const& dir, angle_t const& opening_angle) : apex(apex), dir(dir), opening_angle(opening_angle) {}
+    constexpr infcone(pos_tc const& apex, dir_tc const& dir, angle_tc const& opening_angle) : apex(apex), opening_dir(dir), opening_angle(opening_angle) {}
 };
 } // namespace tg
