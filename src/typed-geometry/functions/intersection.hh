@@ -290,12 +290,18 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(segment<D, Scal
 template <int D, class ScalarT>
 TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
 {
-    // if plane normal and raydirection are parallel there is no intersection
+    // if plane normal and ray direction are parallel there is no intersection
     auto dotND = dot(p.normal, r.dir);
     if (dotND == 0)
         return {};
 
-    auto t = -(dot(p.normal, vec<D, ScalarT>(r.origin)) + p.dis) / dotND;
+	// plane: <x, p.normal> = p.dis
+	// ray: x = r.origin + t * r.dir
+	// =>
+	// <r.origin + t * r.dir, p.normal> = p.dis
+	// t = (p.dis - <r.origin, p.normal>) / <r.dir, p.normal>
+
+    auto t = (p.dis - dot(p.normal, vec<D, ScalarT>(r.origin))) / dotND;
 
     // check whether plane lies behind ray
     if (t < 0)

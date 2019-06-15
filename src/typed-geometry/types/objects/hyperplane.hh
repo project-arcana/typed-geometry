@@ -53,7 +53,7 @@ struct hyperplane
     using pos_t = pos<D, ScalarT>;
 
     dir_t normal;
-    scalar_t dis;
+    scalar_t dis; // NOTE: this is not the "d" from the plane equation, but -d
 
     constexpr hyperplane() = default;
     constexpr hyperplane(dir_t n, scalar_t d) : normal(n), dis(d) {}
