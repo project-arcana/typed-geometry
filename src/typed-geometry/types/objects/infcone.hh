@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../angle.hh"
 #include "../dir.hh"
 #include "../pos.hh"
-#include "../angle.hh"
 
 namespace tg
 {
@@ -31,6 +31,9 @@ struct infcone
     angle_t<ScalarT> opening_angle;
 
     constexpr infcone() = default;
-    constexpr infcone(pos_t const& apex, dir_t const& dir, angle_t<ScalarT> const& opening_angle) : apex(apex), opening_dir(dir), opening_angle(opening_angle) {}
+    constexpr infcone(pos_t const& apex, dir_t const& dir, angle_t<ScalarT> const& opening_angle)
+      : apex(apex), opening_dir(dir), opening_angle(opening_angle)
+    {
+    }
 };
 } // namespace tg
