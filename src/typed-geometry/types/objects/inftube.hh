@@ -13,12 +13,12 @@ namespace tg
 template <int D, class ScalarT>
 struct inftube;
 
-// Common cylinder types
+// Common infinte tube types
 using inftube3 = inftube<3, f32>;
-using ftube3 = inftube<3, f32>;
-using dtube3 = inftube<3, f64>;
-using itube3 = inftube<3, i32>;
-using utube3 = inftube<3, u32>;
+using finttube3 = inftube<3, f32>;
+using dinftube3 = inftube<3, f64>;
+using iinftube3 = inftube<3, i32>;
+using uinftube3 = inftube<3, u32>;
 
 // ======== IMPLEMENTATION ========
 template <int D, class ScalarT>
@@ -29,7 +29,7 @@ struct inftube
 
     pos_t center;
     dir_t axis;
-    ScalarT radius;
+    ScalarT radius = ScalarT(0);
 
     constexpr inftube() = default;
     constexpr inftube(pos_t const& center, dir_t const& axis, ScalarT radius) : center(center), axis(axis), radius(radius) {}
