@@ -71,7 +71,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, infcone
     auto r = tan(icone.opening_angle / 2);
 
     // construct a 2D coordinate system in the plane spanned by the c (origin), apex, and p
-    const dir_t& y_axis = -icone.opening_dir;
+    dir_t y_axis = -icone.opening_dir;
     dir_t plane_normal = normalize(cross(normalize(p - c), y_axis));
     dir_t x_axis = normalize(cross(y_axis, plane_normal));
     if (dot(p-c, x_axis) < 0)
@@ -82,7 +82,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, infcone
     vec2_t p_ = {dot(p-c, x_axis), dot(p-c, y_axis)};
     vec2_t peak_ = {0, 1};
     dir2_t r_vec = normalize(r_ - peak_);
-    dir2_t n_ = {-r_vec[1], r_vec[0]};
+    dir2_t n_ = tg::perpendicular(r_vec);
     if (n_[1] < 0)
         n_ = -n_;
 
