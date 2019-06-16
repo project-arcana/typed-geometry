@@ -9,6 +9,8 @@
 #include "disk.hh"
 #include "frustum.hh"
 #include "hemisphere.hh"
+#include "infcone.hh"
+#include "inftube.hh"
 #include "line.hh"
 #include "plane.hh"
 #include "polygon.hh"
