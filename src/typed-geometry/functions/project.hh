@@ -108,6 +108,6 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inftube
     auto vec = p - itube.center;
     auto h = dot(vec, itube.axis);
     auto point_on_axis = itube.center + h*itube.axis;
-    return point_on_axis + tg::normalize(p - point_on_axis)*itube.radius;
+    return point_on_axis + tg::normalize_safe(p - point_on_axis)*itube.radius;
 }
 } // namespace tg
