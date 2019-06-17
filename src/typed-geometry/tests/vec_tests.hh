@@ -13,13 +13,13 @@ namespace tg
 template <int D, class ScalarT>
 TG_NODISCARD constexpr bool is_normalized(vec<D, ScalarT> const& v, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
-    return tg::abs(ScalarT(1) - length2(v)) < eps;
+    return tg::abs(ScalarT(1) - length_sqr(v)) < eps;
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr bool is_zero(vec<D, ScalarT> const& v, ScalarT eps = 2 * tg::epsilon<ScalarT>)
 {
-    return length2(v) < eps * eps;
+    return length_sqr(v) < eps * eps;
 }
 
 template <int D, class ScalarT>

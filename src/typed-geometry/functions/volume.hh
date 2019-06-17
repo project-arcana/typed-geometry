@@ -31,7 +31,7 @@ TG_NODISCARD constexpr ScalarT volume(aabb<3, ScalarT> const& b)
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT volume(box<3, ScalarT> const& b)
 {
-    return 8 * tg::sqrt(length2(b.half_extents[0]) * length2(b.half_extents[1]) * length2(b.half_extents[2]));
+    return 8 * tg::sqrt(length_sqr(b.half_extents[0]) * length_sqr(b.half_extents[1]) * length_sqr(b.half_extents[2]));
 }
 
 template <class ScalarT>

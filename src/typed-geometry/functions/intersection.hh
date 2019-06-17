@@ -182,7 +182,7 @@ template <class ScalarT>
 TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
     -> intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
 {
-    auto d2 = distance2(a.center, b.center);
+    auto d2 = distance_sqr(a.center, b.center);
 
     auto const empty_circle = circle<3, ScalarT>(tg::pos<3, ScalarT>::zero, ScalarT(0), tg::dir<3, ScalarT>::pos_x);
 
@@ -243,7 +243,7 @@ TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, 
     if (a.center == b.center && a.radius == b.radius)
         return {true, {}, {}};
 
-    auto d2 = distance2(a.center, b.center);
+    auto d2 = distance_sqr(a.center, b.center);
     auto d = tg::sqrt(d2);
     auto ar = a.radius;
     auto br = b.radius;
@@ -399,7 +399,7 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<D, ScalarT>
 {
     auto const t = dot(s.center - r.origin, r.dir);
     auto const p = r[t];
-    auto const dt = tg::sqrt(s.radius * s.radius - distance2(p, s.center));
+    auto const dt = tg::sqrt(s.radius * s.radius - distance_sqr(p, s.center));
 
     if (t - dt >= 0)
         return t - dt;
@@ -471,7 +471,7 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT>
         return t;
 
     auto const p = r[t.value()];
-    if (distance2(p, c.center) > c.radius * c.radius)
+    if (distance_sqr(p, c.center) > c.radius * c.radius)
         return {};
 
     return t;
