@@ -279,12 +279,12 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
 {
     // see http://mathworld.wolfram.com/Plane-PlaneIntersection.html
     auto dir = normalize(cross(a.normal, b.normal));
-    pos<3, ScalarT> p;
+    auto p = pos<3, ScalarT>::zero;
 
     if (tg::abs(dir.z) > tg::abs(dir.x)) // solve with p.z = 0
     {
-        auto n0 = tg::vec<2, ScalarT>(a.normal.x, a.normal.y);
-        auto n1 = tg::vec<2, ScalarT>(b.normal.x, b.normal.y);
+        auto n0 = tg::vec<2, ScalarT>(a.normal.x, b.normal.x);
+        auto n1 = tg::vec<2, ScalarT>(a.normal.y, b.normal.y);
         auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
         auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
         p.x = p2.x;
@@ -292,8 +292,8 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
     }
     else if (tg::abs(dir.y) > tg::abs(dir.x)) // solve with p.y = 0
     {
-        auto n0 = tg::vec<2, ScalarT>(a.normal.x, a.normal.z);
-        auto n1 = tg::vec<2, ScalarT>(b.normal.x, b.normal.z);
+        auto n0 = tg::vec<2, ScalarT>(a.normal.x, b.normal.x);
+        auto n1 = tg::vec<2, ScalarT>(a.normal.z, b.normal.z);
         auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
         auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
         p.x = p2.x;
@@ -301,8 +301,8 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
     }
     else // solve with p.x = 0
     {
-        auto n0 = tg::vec<2, ScalarT>(a.normal.y, a.normal.z);
-        auto n1 = tg::vec<2, ScalarT>(b.normal.y, b.normal.z);
+        auto n0 = tg::vec<2, ScalarT>(a.normal.y, b.normal.y);
+        auto n1 = tg::vec<2, ScalarT>(a.normal.z, b.normal.z);
         auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
         auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
         p.y = p2.x;
