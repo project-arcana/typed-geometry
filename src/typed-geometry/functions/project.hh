@@ -2,8 +2,8 @@
 
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/detail/special_values.hh>
-#include <typed-geometry/types/objects/infcone.hh>
-#include <typed-geometry/types/objects/inftube.hh>
+#include <typed-geometry/types/objects/inf_cone.hh>
+#include <typed-geometry/types/objects/inf_tube.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/segment.hh>
@@ -66,7 +66,7 @@ TG_NODISCARD constexpr vec<D, ScalarT> project(dir<D, ScalarT> const& v, hyperpl
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, infcone<3, ScalarT> const& icone)
+TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
 {
     using dir_t = dir<3, ScalarT>;
     using vec2_t = vec<2, ScalarT>;
@@ -78,7 +78,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, infcone
 
     // construct a 2D coordinate system in the plane spanned by the c (origin), apex, and p
     dir_t y_axis = -icone.opening_dir;
-    dir_t plane_normal = normalize(cross(normalize(p - c), y_axis));
+    dir_t plane_normal = normalize(cross(p - c, vec<3, ScalarT>(y_axis)));
     dir_t x_axis = normalize(cross(y_axis, plane_normal));
     if (dot(p - c, x_axis) < 0)
         x_axis = -x_axis;
@@ -89,7 +89,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, infcone
     vec2_t peak_ = {0, 1};
     dir2_t r_vec = normalize(r_ - peak_);
     dir2_t n_ = tg::perpendicular(r_vec);
-    if (n_[1] < 0)
+    if (n_.y < 0)
         n_ = -n_;
 
     // reconstruct 3D closest point
@@ -97,7 +97,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, infcone
     {
         auto d = dot(p_ - peak_, n_);
         auto proj_p2 = p_ - d * n_;
-        return c + proj_p2[0] * x_axis + proj_p2[1] * y_axis;
+        return c + proj_p2.x * x_axis + proj_p2.y * y_axis;
     }
     else
         return icone.apex;
@@ -111,7 +111,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inftube<D, ScalarT> const& itube)
+TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_tube<D, ScalarT> const& itube)
 {
     auto vec = p - itube.center;
     auto h = dot(vec, itube.axis);

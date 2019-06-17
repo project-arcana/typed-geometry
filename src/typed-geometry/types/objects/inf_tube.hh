@@ -11,18 +11,18 @@ namespace tg
  * An infinite tube is defined by a position and an axis
  */
 template <int D, class ScalarT>
-struct inftube;
+struct inf_tube;
 
 // Common infinte tube types
-using inftube3 = inftube<3, f32>;
-using finttube3 = inftube<3, f32>;
-using dinftube3 = inftube<3, f64>;
-using iinftube3 = inftube<3, i32>;
-using uinftube3 = inftube<3, u32>;
+using inf_tube3 = inf_tube<3, f32>;
+using finttube3 = inf_tube<3, f32>;
+using dinf_tube3 = inf_tube<3, f64>;
+using iinf_tube3 = inf_tube<3, i32>;
+using uinf_tube3 = inf_tube<3, u32>;
 
 // ======== IMPLEMENTATION ========
 template <int D, class ScalarT>
-struct inftube
+struct inf_tube
 {
     using pos_t = pos<D, ScalarT>;
     using dir_t = dir<D, ScalarT>;
@@ -31,7 +31,7 @@ struct inftube
     dir_t axis;
     ScalarT radius = ScalarT(0);
 
-    constexpr inftube() = default;
-    constexpr inftube(pos_t const& center, dir_t const& axis, ScalarT radius) : center(center), axis(axis), radius(radius) {}
+    constexpr inf_tube() = default;
+    constexpr inf_tube(pos_t const& center, dir_t const& axis, ScalarT radius) : center(center), axis(axis), radius(radius) {}
 };
 } // namespace tg
