@@ -52,6 +52,9 @@ struct hyperplane
     using dir_t = dir<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 
+    // points x on the plane satisfy:
+    // <x, normal> = dis
+
     dir_t normal;
     scalar_t dis; // NOTE: this is not the "d" from the plane equation, but -d
 

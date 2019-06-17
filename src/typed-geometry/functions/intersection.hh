@@ -274,6 +274,62 @@ TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, 
     return {false, p_above, p_below};
 }
 
+template <class ScalarT>
+TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> const& a, hyperplane<3, ScalarT> const& b)
+{
+    // see http://mathworld.wolfram.com/Plane-PlaneIntersection.html
+    auto dir = normalize(cross(a.normal, b.normal));
+    pos<3, ScalarT> p;
+
+    if (tg::abs(dir.z) > tg::abs(dir.x)) // solve with p.z = 0
+    {
+        auto n0 = tg::vec<2, ScalarT>(a.normal.x, a.normal.y);
+        auto n1 = tg::vec<2, ScalarT>(b.normal.x, b.normal.y);
+        auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
+        auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
+        p.x = p2.x;
+        p.y = p2.y;
+    }
+    else if (tg::abs(dir.y) > tg::abs(dir.x)) // solve with p.y = 0
+    {
+        auto n0 = tg::vec<2, ScalarT>(a.normal.x, a.normal.z);
+        auto n1 = tg::vec<2, ScalarT>(b.normal.x, b.normal.z);
+        auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
+        auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
+        p.x = p2.x;
+        p.z = p2.y;
+    }
+    else // solve with p.x = 0
+    {
+        auto n0 = tg::vec<2, ScalarT>(a.normal.y, a.normal.z);
+        auto n1 = tg::vec<2, ScalarT>(b.normal.y, b.normal.z);
+        auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
+        auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
+        p.y = p2.x;
+        p.z = p2.y;
+    }
+
+    return {p, dir};
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr ScalarT intersection_coordinate(line<3, ScalarT> const& l, hyperplane<3, ScalarT> const& p)
+{
+    return (p.dis - dot(l.pos - pos<3, ScalarT>::zero, p.normal)) / dot(l.dir, p.normal);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr pos<3, ScalarT> intersection(line<3, ScalarT> const& l, hyperplane<3, ScalarT> const& p)
+{
+    return l[intersection_coordinate(l, p)];
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr pos<3, ScalarT> intersection(hyperplane<3, ScalarT> const& a, hyperplane<3, ScalarT> const& b, hyperplane<3, ScalarT> const& c)
+{
+    return intersection(intersection(a, b), c);
+}
+
 template <int D, class ScalarT>
 TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
 {
@@ -295,11 +351,11 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<D, ScalarT>
     if (dotND == 0)
         return {};
 
-	// plane: <x, p.normal> = p.dis
-	// ray: x = r.origin + t * r.dir
-	// =>
-	// <r.origin + t * r.dir, p.normal> = p.dis
-	// t = (p.dis - <r.origin, p.normal>) / <r.dir, p.normal>
+    // plane: <x, p.normal> = p.dis
+    // ray: x = r.origin + t * r.dir
+    // =>
+    // <r.origin + t * r.dir, p.normal> = p.dis
+    // t = (p.dis - <r.origin, p.normal>) / <r.dir, p.normal>
 
     auto t = (p.dis - dot(p.normal, vec<D, ScalarT>(r.origin))) / dotND;
 

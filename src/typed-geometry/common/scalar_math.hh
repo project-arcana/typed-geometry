@@ -258,4 +258,23 @@ TG_NODISCARD constexpr f64 smoothstep(f64 edge0, f64 edge1, f64 x)
     return t * t * (f64(3) - f64(2) * t);
 }
 
+// ==================================================================
+// other Math
+
+// greatest common divisor
+// TODO: how does it work for negative numbers?
+template <class T, class = enable_if<is_integer<T>>>
+T gcd(T a, T b)
+{
+    return b ? gcd(b, a % b) : a;
+}
+
+// least common multiple
+// CAREFUL: a * b is an intermediate and might overflow
+template <class T, class = enable_if<is_integer<T>>>
+T lcm(T a, T b)
+{
+    return a * b / gcd(a, b);
+}
+
 } // namespace tg
