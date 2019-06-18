@@ -17,4 +17,7 @@ struct dir;
 
 template <int D, class ScalarT>
 struct comp;
+
+template <int D, class ScalarT>
+struct color;
 } // namespace tg

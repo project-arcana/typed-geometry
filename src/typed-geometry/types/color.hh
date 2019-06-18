@@ -44,6 +44,15 @@ struct color<3, ScalarT>
     constexpr color() = default;
     constexpr explicit color(ScalarT grey) : r(grey), g(grey), b(grey) {}
     constexpr color(ScalarT r, ScalarT g, ScalarT b) : r(r), g(g), b(b) {}
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr color(Obj const& v, ScalarT fill = ScalarT(0))
+    {
+        auto s = detail::get_dynamic_comp_size(v);
+        r = detail::comp_get(v, 0, s, fill);
+        g = detail::comp_get(v, 1, s, fill);
+        b = detail::comp_get(v, 2, s, fill);
+    }
 };
 
 template <class T>
@@ -88,6 +97,16 @@ struct color<4, ScalarT>
     constexpr explicit color(ScalarT grey) : r(grey), g(grey), b(grey), a(ScalarT(1)) {}
     constexpr color(ScalarT r, ScalarT g, ScalarT b, ScalarT a = ScalarT(1)) : r(r), g(g), b(b), a(a) {}
     constexpr color(color<3, ScalarT> c, ScalarT a = ScalarT(1)) : r(c.r), g(c.g), b(c.b), a(a) {}
+
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    explicit constexpr color(Obj const& v, ScalarT fill = ScalarT(0))
+    {
+        auto s = detail::get_dynamic_comp_size(v);
+        r = detail::comp_get(v, 0, s, fill);
+        g = detail::comp_get(v, 1, s, fill);
+        b = detail::comp_get(v, 2, s, fill);
+        a = detail::comp_get(v, 3, s, fill);
+    }
 };
 
 template <class T>

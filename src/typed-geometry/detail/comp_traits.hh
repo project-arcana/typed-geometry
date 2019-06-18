@@ -39,6 +39,11 @@ struct comp_size<size<D, T>>
     static constexpr int value = D;
 };
 template <int D, class T>
+struct comp_size<color<D, T>>
+{
+    static constexpr int value = D;
+};
+template <int D, class T>
 struct comp_size<comp<D, T>>
 {
     static constexpr int value = D;
