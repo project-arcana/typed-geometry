@@ -30,7 +30,7 @@ namespace tg
 {
 // default implementation if distance(a, pos) is available
 template <class A, int D, class ScalarT>
-TG_NODISCARD constexpr auto contains(A const& a, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0)) -> decltype(distance(a, p), false)
+TG_NODISCARD constexpr auto contains(A const& a, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0)) -> decltype(ScalarT(distance(a, p)), false)
 {
     return distance(a, p) <= eps;
 }
