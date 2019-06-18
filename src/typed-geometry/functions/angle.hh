@@ -20,6 +20,13 @@ TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_between(vec<D, 
     return acos(saturate(dot(a_unit, b_unit)));
 }
 
+// returns the (smaller) angle between two directions, i.e. the result is in 0..pi (0°..180°)
+template <int D, class ScalarT>
+TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_between(dir<D, ScalarT> const& a, dir<D, ScalarT> const& b)
+{
+    return acos(saturate(dot(a, b)));
+}
+
 // returns the angle between any two objects with unambiguous normals. The result is in 0..pi (0°..180°)
 template <class A, class B>
 TG_NODISCARD constexpr auto angle_between(A const& a, B const& b) -> decltype(acos(dot(normal(a), normal(b))))
