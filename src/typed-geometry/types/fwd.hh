@@ -13,6 +13,8 @@ template <int D, class ScalarT>
 struct dir;
 template <int D, class ScalarT>
 struct comp;
+template <int D, class ScalarT>
+struct color;
 
 // object types
 template <int D, class ScalarT>
@@ -21,5 +23,4 @@ template <int D, class ScalarT>
 struct ray;
 template <int D, class ScalarT>
 struct segment;
-
 } // namespace tg
