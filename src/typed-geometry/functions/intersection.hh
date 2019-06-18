@@ -1,18 +1,24 @@
 #pragma once
 
 #include <typed-geometry/common/assert.hh>
+#include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/detail/optional.hh>
 
+#include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/circle.hh>
+#include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/hyperplane.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
+#include <typed-geometry/types/objects/tube.hh>
 
 #include "contains.hh"
 #include "cross.hh"
+#include "direction.hh"
 #include "dot.hh"
+#include "length.hh"
 #include "normal.hh"
 
 // family of intersection functions:
@@ -52,6 +58,12 @@ namespace tg
 template <int MaxHits, class HitT>
 struct ray_hits
 {
+    static inline constexpr bool is_ray_hits = true; // tag
+    static inline constexpr int max_hits = MaxHits;
+
+    template <class OtherT>
+    using as_ray_hits = ray_hits<MaxHits, OtherT>;
+
     int size() const { return _size; }
     bool any() const { return _size > 0; }
 
@@ -114,6 +126,29 @@ TG_NODISCARD constexpr auto closest_intersection(A const& a, B const& b) -> opti
 {
     if (auto t = closest_intersection_parameter(a, b); t.has_value())
         return a[t.value()];
+    return {};
+}
+
+// if ray_hits intersection parameter is available, use that
+template <int D, class ScalarT, class Obj>
+TG_NODISCARD constexpr auto intersection(ray<D, ScalarT> const& r, Obj const& obj) ->
+    typename decltype(intersection_parameter(r, obj))::template as_ray_hits<pos<D, ScalarT>>
+{
+    auto ts = intersection_parameter(r, obj);
+    pos<D, ScalarT> hits[ts.max_hits];
+    for (auto i = 0; i < ts.size(); ++i)
+        hits[i] = r[ts[i]];
+    return {hits, ts.size()};
+}
+
+// if ray_hits intersection parameter is available, use that
+template <int D, class ScalarT, class Obj>
+TG_NODISCARD constexpr auto closest_intersection_parameter(ray<D, ScalarT> const& r, Obj const& obj)
+    -> enable_if<decltype(intersection_parameter(r, obj))::is_ray_hits, optional<ScalarT>>
+{
+    auto hits = intersection_parameter(r, obj);
+    if (hits.any())
+        return hits[0];
     return {};
 }
 
@@ -194,14 +229,95 @@ TG_NODISCARD constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, Scalar
 
     return {};
 }
-template <int D, class ScalarT>
-TG_NODISCARD constexpr ray_hits<2, pos<D, ScalarT>> intersection(ray<D, ScalarT> const& r, sphere<D, ScalarT> const& s)
+
+// ray - tube
+template <class ScalarT>
+TG_NODISCARD constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, tube<3, ScalarT> const& c)
 {
-    auto ts = intersection_parameter(r, s);
-    pos<D, ScalarT> hits[2];
-    for (auto i = 0; i < ts.size(); ++i)
-        hits[i] = r[ts[i]];
-    return {hits, ts.size()};
+    auto cdir = direction(c);
+    auto cosA = dot(cdir, r.dir);
+    auto sinA_sqr = 1 - cosA * cosA;
+
+    if (sinA_sqr <= 0)
+        return {};
+
+    // compute closest points of the two lines
+    auto origDiff = r.origin - c.axis.pos0;
+    auto fRay = dot(r.dir, origDiff);
+    auto fLine = dot(cdir, origDiff);
+    auto tRay = (cosA * fLine - fRay) / sinA_sqr;
+    auto tLine = (fLine - cosA * fRay) / sinA_sqr;
+
+    auto closest_on_ray = r.origin + tRay * r.dir;
+    auto closest_on_line = c.axis.pos0 + tLine * cdir;
+    auto line_ray_dist_sqr = distance_sqr(closest_on_ray, closest_on_line);
+    auto cyl_radius_sqr = c.radius * c.radius;
+
+    if (line_ray_dist_sqr > cyl_radius_sqr)
+        return {};
+
+    // radius in 2D slice
+    auto r_2D = sqrt(cyl_radius_sqr - line_ray_dist_sqr);
+
+    // infinite tube intersection
+    auto s = r_2D / sqrt(sinA_sqr);
+    auto cyl_intersection_0 = closest_on_ray - s * r.dir;
+    auto cyl_intersection_1 = closest_on_ray + s * r.dir;
+
+    // project onto line segment
+    auto line_length = length(c.axis);
+    auto lambda_0 = dot(cyl_intersection_0 - c.axis.pos0, cdir);
+    auto lambda_1 = dot(cyl_intersection_1 - c.axis.pos0, cdir);
+
+    ScalarT hits[2];
+    int hit_cnt = 0;
+
+    if (tRay - s >= 0 && 0 <= lambda_0 && lambda_0 < line_length)
+        hits[hit_cnt++] = tRay - s;
+    if (tRay + s >= 0 && 0 <= lambda_1 && lambda_1 < line_length)
+        hits[hit_cnt++] = tRay + s;
+
+    return {hits, hit_cnt};
+}
+
+// ray - disk
+template <class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, disk<3, ScalarT> const& d)
+{
+    auto const t = intersection_parameter(r, hyperplane<3, ScalarT>(d.normal, d.center));
+    if (!t.has_value())
+        return {};
+
+    auto const p = r[t.value()];
+    if (distance_sqr(p, d.center) > d.radius * d.radius)
+        return {};
+
+    return t;
+}
+
+// ray - cylinder
+template <class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
+{
+    auto const dir = direction(c);
+    auto const t_cyl = closest_intersection_parameter(r, tube<3, ScalarT>(c.axis, c.radius));
+    auto const t_cap0 = intersection_parameter(r, disk<3, ScalarT>(c.axis.pos0, c.radius, dir));
+    auto const t_cap1 = intersection_parameter(r, disk<3, ScalarT>(c.axis.pos1, c.radius, dir));
+
+    optional<ScalarT> t;
+
+    if (t_cyl.has_value())
+        t = t_cyl.value();
+
+    if (t_cap0.has_value() && (!t.has_value() || t.value() > t_cap0.value()))
+        t = t_cap0;
+
+    if (t_cap1.has_value() && (!t.has_value() || t.value() > t_cap1.value()))
+        t = t_cap1;
+
+    TG_INTERNAL_ASSERT(!t.has_value() || t.value() >= 0);
+
+    return t;
 }
 
 
@@ -454,38 +570,8 @@ TG_NODISCARD constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, Scalar
         return {hits, 1};
     }
 }
-template <class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
-{
-    auto hits = intersection_parameter(r, b);
-    if (hits.any())
-        return hits[0];
-    return {};
-}
-template <class ScalarT>
-TG_NODISCARD constexpr ray_hits<2, pos<3, ScalarT>> intersection(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
-{
-    auto ts = intersection_parameter(r, b);
-    pos<3, ScalarT> hits[2];
-    for (auto i = 0; i < ts.size(); ++i)
-        hits[i] = r[ts[i]];
-    return {hits, ts.size()};
-}
 
-template <class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, disk<3, ScalarT> const& c)
-{
-    auto const t = intersection_parameter(r, tg::plane(c.normal, c.center));
-    if (!t.has_value())
-        return t;
-
-    auto const p = r[t.value()];
-    if (distance_sqr(p, c.center) > c.radius * c.radius)
-        return {};
-
-    return t;
-}
-
+/*
 template <class ScalarT>
 TG_NODISCARD constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
 {
@@ -537,5 +623,5 @@ TG_NODISCARD constexpr optional<ScalarT> closest_intersection_parameter(ray<3, S
 
     return t;
 }
-
+*/
 } // namespace tg
