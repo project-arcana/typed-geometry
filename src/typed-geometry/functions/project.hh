@@ -150,24 +150,22 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<
 template <class ScalarT>
 TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c)
 {
-    // closer to caps
-    auto c0_dis_sqr = distance_sqr(p, c.axis.pos0);
-    auto c1_dis_sqr = distance_sqr(p, c.axis.pos1);
+    auto dir = direction(c);
 
-    if (c0_dis_sqr < c1_dis_sqr && c0_dis_sqr < c.radius * c.radius)
-        return project(p, disk<3, ScalarT>(c.axis.pos0, c.radius, direction(c)));
-    if (c1_dis_sqr < c0_dis_sqr && c1_dis_sqr < c.radius * c.radius)
-        return project(p, disk<3, ScalarT>(c.axis.pos1, c.radius, direction(c)));
+    auto p0 = project(p, tube<3, ScalarT>(c.axis, c.radius));
+    auto p1 = project(p, disk<3, ScalarT>(c.axis.pos0, c.radius, dir));
+    auto p2 = project(p, disk<3, ScalarT>(c.axis.pos1, c.radius, dir));
 
-    auto t = coordinates(c.axis, p);
+    auto d0 = distance_sqr(p0, p);
+    auto d1 = distance_sqr(p1, p);
+    auto d2 = distance_sqr(p2, p);
 
-    if (t < 0)
-        return project(p, disk<3, ScalarT>(c.axis.pos0, c.radius, direction(c)));
-
-    if (t > 1)
-        return project(p, disk<3, ScalarT>(c.axis.pos1, c.radius, direction(c)));
-
-    return project(p, tube<3, ScalarT>(c.axis, c.radius));
+    if (d0 <= d1 && d0 <= d2)
+        return p0;
+    else if (d1 <= d2)
+        return p1;
+    else
+        return p2;
 }
 
 template <class ScalarT>
