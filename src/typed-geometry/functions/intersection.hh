@@ -17,185 +17,210 @@
 
 // family of intersection functions:
 
-// intersects(a, b) -> bool    iff any point lies in a and in b
-// intersection(a, b) -> ???   returns an object describing the intersection
+// intersects(a, b)              -> bool
+// intersection(a, b)            -> ???
+// intersection_safe(a, b)       -> optional<???>
+// intersection_parameter(a, b)  -> coords?
+// intersection_parameters(a, b) -> pair<coords, coords>?
+// intersection_exact(a, b)      -> variant
+// closest_intersection(a, b)            -> ???
+// closest_intersection_parameter(a, b)  -> coords?
 
-// intersection_coordinate(a, b) -> coords?   such that a[coords] == intersection(a, b)
-// intersection_coordinates(a, b) -> pair<coords, coords>?   such that a[coords.first] == intersection(a, b) == b[coords.second]
+// "intersects" returns true iff any point lies in a and in b
+// "intersection" returns an object describing the intersection (NOTE: does NOT handle degenerate cases)
+// "intersection_safe" is the same as "intersection" but returns nullopt for degenerate cases
+// "intersection_parameter" returns a coordinates for the first object such that a[coords] == intersection(a, b)
+// "intersection_parameters" returns coordinates for both objects
+// "intersection_exact" returns a variant type describing all possible intersections, including degenerate cases
+// the "closest_" variants only return the closest intersection for objects where thay concept is applicable (e.g. for rays)
 
-// related function:
-//   closest_hit(ray, b) -> optional<pos>
+// Notes:
+//  - intersection_exact is currently unsupported
+//  - intersection_safe is currently unsupported
+//  - for more elaborate ray-tracing, a future ray_cast function will exist (which also returns the intersection normal)
+
 
 namespace tg
 {
-template <class A, class B>
-struct intersection_result;
+// ====================================== Result Structs ======================================
 
-template <int D, class ScalarT>
-struct intersection_result<ray<3, ScalarT>, hyperplane<D, ScalarT>>
+/// ordered list of ray intersection hits
+/// behaves like a container with
+///   .size()
+///   operator[]
+///   range-based-for
+template <int MaxHits, class HitT>
+struct ray_hits
 {
-    bool empty;
-    tg::pos<D, ScalarT> pos;
+    int size() const { return _size; }
+    bool any() const { return _size > 0; }
+
+    HitT const& operator[](int idx)
+    {
+        TG_ASSERT(0 <= idx && idx < _size);
+        return _hit[idx];
+    }
+
+    HitT const* begin() const { return _hit; }
+    HitT const* end() const { return _hit + _size; }
+
+    ray_hits() = default;
+    ray_hits(HitT* hits, int size) : _size(size)
+    {
+        for (auto i = 0; i < size; ++i)
+            _hit[i] = hits[i];
+    }
+
+private:
+    int _size = 0;
+    HitT _hit[MaxHits];
 };
 
-template <class ScalarT>
-struct intersection_result<ray<3, ScalarT>, triangle<3, ScalarT>>
-{
-    bool empty;
-    tg::pos<3, ScalarT> pos;
-};
-
-template <class ScalarT>
-struct intersection_result<ray<3, ScalarT>, sphere<3, ScalarT>>
-{
-    // empty: 0 intersections
-    // !empty && emptyB: 1 intersection (posA)
-    // !empty && !emptyB: 2 intersections (posA, posB)
-    bool empty;
-    bool emptyB;
-    tg::pos<3, ScalarT> posA;
-    tg::pos<3, ScalarT> posB;
-};
-
-template <class ScalarT>
-struct intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
-{
-    bool empty;
-    tg::circle<3, ScalarT> circle;
-};
-
-template <class ScalarT>
-struct intersection_result<circle<2, ScalarT>, circle<2, ScalarT>>
-{
-    // in general there are 0 (where empty == true) or 2 intersections
-    // in the rare case of the circles touching at one position, both posA and posB are identical
-    bool empty;
-    tg::pos<2, ScalarT> posA;
-    tg::pos<2, ScalarT> posB;
-};
+// ====================================== Default Implementations ======================================
 
 // returns whether two objects intersect
 template <class A, class B>
-TG_NODISCARD constexpr auto intersects(A const& a, B const& b) -> decltype(!intersection(a, b).empty)
+TG_NODISCARD constexpr auto intersects(A const& a, B const& b) -> decltype(intersection(a, b).has_value())
 {
-    return !intersection(a, b).empty;
+    return intersection(a, b).has_value();
 }
 
-// returns intersection point of ray and hyperplane
-template <int D, class ScalarT>
-TG_NODISCARD constexpr auto intersection(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
-    -> intersection_result<ray<D, ScalarT>, hyperplane<D, ScalarT>>
+// if a value-typed intersection parameter is available and applicable, use that
+template <class A, class B>
+TG_NODISCARD constexpr auto intersection(A const& a, B const& b) -> decltype(a[intersection_parameter(a, b)])
 {
-    // if plane normal and raydirection are parallel there is no intersection
+    return a[intersection_parameter(a, b)];
+}
+
+// if an optional intersection parameter is available and applicable, use that
+template <class A, class B>
+TG_NODISCARD constexpr auto intersection(A const& a, B const& b) -> optional<decltype(a[intersection_parameter(a, b).value()])>
+{
+    if (auto t = intersection_parameter(a, b); t.has_value())
+        return a[t.value()];
+    return {};
+}
+
+// if a value-typed closest intersection parameter is available and applicable, use that
+template <class A, class B>
+TG_NODISCARD constexpr auto closest_intersection(A const& a, B const& b) -> decltype(a[closest_intersection_parameter(a, b)])
+{
+    return a[closest_intersection_parameter(a, b)];
+}
+
+// if an optional closest intersection parameter is available and applicable, use that
+template <class A, class B>
+TG_NODISCARD constexpr auto closest_intersection(A const& a, B const& b) -> optional<decltype(a[closest_intersection_parameter(a, b).value()])>
+{
+    if (auto t = closest_intersection_parameter(a, b); t.has_value())
+        return a[t.value()];
+    return {};
+}
+
+// ====================================== Ray - Object Intersections ======================================
+
+// ray - hyperplane
+template <int D, class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> intersection_parameter(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
+{
+    // if plane normal and ray direction are parallel there is no intersection
     auto dotND = dot(p.normal, r.dir);
     if (dotND == 0)
-        return {true, {}};
+        return {};
 
-    auto t = -(dot(p.normal, vec<D, ScalarT>(r.origin)) + p.dis) / dotND;
+    // plane: <x, p.normal> = p.dis
+    // ray: x = r.origin + t * r.dir
+    // =>
+    // <r.origin + t * r.dir, p.normal> = p.dis
+    // t = (p.dis - <r.origin, p.normal>) / <r.dir, p.normal>
+
+    auto t = (p.dis - dot(p.normal, vec<D, ScalarT>(r.origin))) / dotND;
 
     // check whether plane lies behind ray
     if (t < 0)
-        return {true, {}};
+        return {};
 
-    auto result = r.origin + r.dir * t;
-
-    // non-empty intersection
-    return {false, result};
+    return t;
 }
 
-template <class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t);
-
-// returns intersection point of ray and triangle
-template <class ScalarT>
-TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
-    -> intersection_result<tg::ray<3, ScalarT>, tg::triangle<3, ScalarT>>
+// returns closest intersection point(s) of ray and sphere
+template <int D, class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> closest_intersection_parameter(ray<D, ScalarT> const& r, sphere<D, ScalarT> const& s)
 {
-    auto lambda = intersection_coordinate(r, t);
-    if (lambda.has_value())
-    {
-        return {true, r.origin + r.dir * lambda.value()};
-    }
-    else
-        return {false, {}};
+    auto t = dot(s.center - r.origin, r.dir);
+
+    auto d_sqr = distance_sqr(r[t], s.center);
+    auto r_sqr = s.radius * s.radius;
+    if (d_sqr > r_sqr)
+        return {};
+
+    auto dt = sqrt(r_sqr - d_sqr);
+
+    if (t - dt >= 0)
+        return t - dt;
+    if (t + dt >= 0)
+        return t + dt;
+
+    return {};
 }
 
 // returns intersection point(s) of ray and sphere
-template <class ScalarT>
-TG_NODISCARD constexpr auto intersection(ray<3, ScalarT> const& r, sphere<3, ScalarT> const& s)
-    -> intersection_result<tg::ray<3, ScalarT>, tg::sphere<3, ScalarT>>
+template <int D, class ScalarT>
+TG_NODISCARD constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, sphere<D, ScalarT> const& s)
 {
-    auto tA = ScalarT(0);
-    auto tB = ScalarT(0);
-    auto empty = true;
-    auto emptyB = true;
-    // analytic solution
-    auto l = r.origin - s.center;
+    auto t = dot(s.center - r.origin, r.dir);
 
-    auto a = dot(r.dir, r.dir); // as dir is always normalized
-    auto b = ScalarT(2) * dot(r.dir, l);
-    auto c = dot(l, l) - s.radius * s.radius;
+    auto d_sqr = distance_sqr(r[t], s.center);
+    auto r_sqr = s.radius * s.radius;
+    if (d_sqr > r_sqr)
+        return {};
 
-    auto discr = b * b - ScalarT(4) * a * c;
-    if (discr < 0) // no intersection
-        return {true, true, {}, {}};
-    else if (discr == 0)
-    { // one intersection
-        tA = tB = ScalarT(-0.5) * b / a;
-        empty = false;
-    }
-    else
-    { // two intersections
-        auto q = (b > 0) ? ScalarT(-0.5) * (b + sqrt(discr)) : ScalarT(-0.5) * (b - sqrt(discr));
-        tA = q / a;
-        tB = c / q;
-        empty = emptyB = false;
-    }
+    auto dt = sqrt(r_sqr - d_sqr);
 
-    // tA is closer
-    if (tA > tB)
+    ScalarT hits[2];
+
+    if (t - dt >= 0)
     {
-        auto t = tA;
-        tA = tB;
-        tB = t;
-    }
-    // tA must not be negative
-    if (tA < 0)
-    {
-        // try other t
-        tA = tB;
-        // also negative
-        if (tA < 0)
-            return {true, true, {}, {}};
-        // clear
-        tB = 0;
-        emptyB = true;
+        hits[0] = t - dt;
+        hits[1] = t + dt;
+        return {hits, 2};
     }
 
-    return {empty, emptyB, r.origin + r.dir * tA, r.origin + r.dir * tB};
+    if (t + dt >= 0)
+    {
+        hits[0] = t + dt;
+        return {hits, 1};
+    }
+
+    return {};
+}
+template <int D, class ScalarT>
+TG_NODISCARD constexpr ray_hits<2, pos<D, ScalarT>> intersection(ray<D, ScalarT> const& r, sphere<D, ScalarT> const& s)
+{
+    auto ts = intersection_parameter(r, s);
+    pos<D, ScalarT> hits[2];
+    for (auto i = 0; i < ts.size(); ++i)
+        hits[i] = r[ts[i]];
+    return {hits, ts.size()};
 }
 
 
 // returns intersection circle of sphere and sphere (normal points from a to b)
 // for now does not work if spheres are identical (result would be a sphere3 again)
 template <class ScalarT>
-TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
-    -> intersection_result<sphere<3, ScalarT>, sphere<3, ScalarT>>
+TG_NODISCARD constexpr optional<circle<3, ScalarT>> intersection(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
 {
     auto d2 = distance_sqr(a.center, b.center);
 
-    auto const empty_circle = circle<3, ScalarT>(tg::pos<3, ScalarT>::zero, ScalarT(0), tg::dir<3, ScalarT>::pos_x);
-
     // TODO: intersection sphere
     if (a.center == b.center && a.radius == b.radius)
-        return {true, empty_circle};
+        return {};
 
     auto d = tg::sqrt(d2);
 
     // no intersection
     if (d > a.radius + b.radius)
-        return {true, empty_circle};
-
+        return {};
 
     // radius and centers of larger sphere (ls) and smaller sphere (ss)
     auto lsr = a.radius;
@@ -214,7 +239,7 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
     if (d + ssr < lsr)
     {
         // Smaller sphere inside larger one and not touching it
-        return {true, empty_circle};
+        return {};
     }
 
     TG_INTERNAL_ASSERT(d > ScalarT(0));
@@ -230,28 +255,26 @@ TG_NODISCARD constexpr auto intersection(sphere<3, ScalarT> const& a, sphere<3, 
     auto irad = sqrt(ar2 - t * t * d2);
 
     // non-empty intersection (circle)
-    return {false, {ipos, irad, dir<3, ScalarT>((b.center - a.center) / d)}};
+    return tg::circle3{ipos, irad, dir<3, ScalarT>((b.center - a.center) / d)};
 }
 
 // returns intersection points of two circles in 2D
 // for now does not work if circles are identical (result would be a circle2 again)
 template <class ScalarT>
-TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, ScalarT> const& b)
-    -> intersection_result<circle<2, ScalarT>, circle<2, ScalarT>>
+TG_NODISCARD constexpr optional<pair<pos<2, ScalarT>, pos<2, ScalarT>>> intersection(circle<2, ScalarT> const& a, circle<2, ScalarT> const& b)
 {
-    // TODO: intersection circle
     if (a.center == b.center && a.radius == b.radius)
-        return {true, {}, {}};
+        return {}; // degenerate case
 
     auto d2 = distance_sqr(a.center, b.center);
     auto d = tg::sqrt(d2);
     auto ar = a.radius;
     auto br = b.radius;
     if (ar + br < d) // no intersection
-        return {true, {}, {}};
+        return {};
 
     if (d < tg::abs(ar - br)) // no intersection (one inside the other)
-        return {true, {}, {}};
+        return {};
 
     TG_INTERNAL_ASSERT(d > ScalarT(0));
 
@@ -271,8 +294,9 @@ TG_NODISCARD constexpr auto intersection(circle<2, ScalarT> const& a, circle<2, 
     auto p_above = p_between + h_by_d * a_to_b_swap;
     auto p_below = p_between - h_by_d * a_to_b_swap;
 
-    return {false, p_above, p_below};
+    return tg::pair{p_above, p_below};
 }
+
 
 template <class ScalarT>
 TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> const& a, hyperplane<3, ScalarT> const& b)
@@ -313,15 +337,9 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT intersection_coordinate(line<3, ScalarT> const& l, hyperplane<3, ScalarT> const& p)
+TG_NODISCARD constexpr ScalarT intersection_parameter(line<3, ScalarT> const& l, hyperplane<3, ScalarT> const& p)
 {
     return (p.dis - dot(l.pos - pos<3, ScalarT>::zero, p.normal)) / dot(l.dir, p.normal);
-}
-
-template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> intersection(line<3, ScalarT> const& l, hyperplane<3, ScalarT> const& p)
-{
-    return l[intersection_coordinate(l, p)];
 }
 
 template <class ScalarT>
@@ -331,7 +349,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> intersection(hyperplane<3, ScalarT> const
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
+TG_NODISCARD constexpr optional<ScalarT> intersection_parameter(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
 {
     auto denom = dot(p.normal, a.pos1 - a.pos0);
     if (denom == 0)
@@ -343,31 +361,8 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(segment<D, Scal
     return t;
 }
 
-template <int D, class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
-{
-    // if plane normal and ray direction are parallel there is no intersection
-    auto dotND = dot(p.normal, r.dir);
-    if (dotND == 0)
-        return {};
-
-    // plane: <x, p.normal> = p.dis
-    // ray: x = r.origin + t * r.dir
-    // =>
-    // <r.origin + t * r.dir, p.normal> = p.dis
-    // t = (p.dis - <r.origin, p.normal>) / <r.dir, p.normal>
-
-    auto t = (p.dis - dot(p.normal, vec<D, ScalarT>(r.origin))) / dotND;
-
-    // check whether plane lies behind ray
-    if (t < 0)
-        return {};
-
-    return t;
-}
-
 template <class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
+TG_NODISCARD constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
 {
     auto constexpr eps = 0.000001f;
 
@@ -394,22 +389,8 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT>
     return (lambda > 0) ? lambda : tg::optional<float>();
 }
 
-template <int D, class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<D, ScalarT> const& r, sphere<D, ScalarT> const& s)
-{
-    auto const t = dot(s.center - r.origin, r.dir);
-    auto const p = r[t];
-    auto const dt = tg::sqrt(s.radius * s.radius - distance_sqr(p, s.center));
-
-    if (t - dt >= 0)
-        return t - dt;
-    if (t + dt >= 0)
-        return t + dt;
-    return {};
-}
-
 template <class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
+TG_NODISCARD constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
 {
     // see https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp
 
@@ -459,14 +440,42 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT>
     if (tmin > tmax)
         return {};
 
-    // If tmin is < 0, tmax is closer
-    return tmin < 0 ? tmax : tmin;
+    ScalarT hits[2];
+
+    if (tmin >= 0) // two valid intersections
+    {
+        hits[0] = tmin;
+        hits[1] = tmax;
+        return {hits, 2};
+    }
+    else // one valid intersection
+    {
+        hits[0] = tmax;
+        return {hits, 1};
+    }
+}
+template <class ScalarT>
+TG_NODISCARD constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
+{
+    auto hits = intersection_parameter(r, b);
+    if (hits.any())
+        return hits[0];
+    return {};
+}
+template <class ScalarT>
+TG_NODISCARD constexpr ray_hits<2, pos<3, ScalarT>> intersection(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
+{
+    auto ts = intersection_parameter(r, b);
+    pos<3, ScalarT> hits[2];
+    for (auto i = 0; i < ts.size(); ++i)
+        hits[i] = r[ts[i]];
+    return {hits, ts.size()};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, disk<3, ScalarT> const& c)
+TG_NODISCARD constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, disk<3, ScalarT> const& c)
 {
-    auto const t = intersection_coordinate(r, tg::plane(c.normal, c.center));
+    auto const t = intersection_parameter(r, tg::plane(c.normal, c.center));
     if (!t.has_value())
         return t;
 
@@ -478,7 +487,7 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT>
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
+TG_NODISCARD constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
 {
     optional<ScalarT> t;
 
@@ -518,11 +527,11 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_coordinate(ray<3, ScalarT>
 
     auto d = normalize(c.axis.pos1 - c.axis.pos0);
 
-    if (auto ct = intersection_coordinate(r, disk3(c.axis.pos0, c.radius, d)); ct.has_value())
+    if (auto ct = intersection_parameter(r, disk3(c.axis.pos0, c.radius, d)); ct.has_value())
         if (!t.has_value() || ct.value() < t.value())
             t = ct;
 
-    if (auto ct = intersection_coordinate(r, disk3(c.axis.pos1, c.radius, d)); ct.has_value())
+    if (auto ct = intersection_parameter(r, disk3(c.axis.pos1, c.radius, d)); ct.has_value())
         if (!t.has_value() || ct.value() < t.value())
             t = ct;
 
