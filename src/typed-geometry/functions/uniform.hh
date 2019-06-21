@@ -3,6 +3,7 @@
 #include <typed-geometry/common/random.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
 
+#include <typed-geometry/types/color.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/scalar.hh>
 
@@ -217,6 +218,24 @@ struct sampler<angle_t<T>>
     constexpr static angle_t<T> uniform(Rng& rng)
     {
         return tg::uniform(rng, tg::radians(T(0)), 2 * tg::pi<T>);
+    }
+};
+template <class T>
+struct sampler<color<3, T>>
+{
+    template <class Rng>
+    constexpr static color<3, T> uniform(Rng& rng)
+    {
+        return tg::color3(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
+    }
+};
+template <class T>
+struct sampler<color<4, T>>
+{
+    template <class Rng>
+    constexpr static color<4, T> uniform(Rng& rng)
+    {
+        return tg::color3(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
     }
 };
 template <int D, class ScalarT>
