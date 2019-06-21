@@ -27,6 +27,7 @@
 #include <typed-geometry/functions/normalize.hh>
 #include <typed-geometry/functions/outer_product.hh>
 #include <typed-geometry/functions/perimeter.hh>
+#include <typed-geometry/functions/perpendicular.hh>
 #include <typed-geometry/functions/perspective.hh>
 #include <typed-geometry/functions/project.hh>
 #include <typed-geometry/functions/rasterize.hh>
@@ -35,6 +36,7 @@
 #include <typed-geometry/functions/rotation.hh>
 #include <typed-geometry/functions/scaling.hh>
 #include <typed-geometry/functions/size.hh>
+#include <typed-geometry/functions/smoothstep.hh>
 #include <typed-geometry/functions/submatrix.hh>
 #include <typed-geometry/functions/subvector.hh>
 #include <typed-geometry/functions/tangent.hh>

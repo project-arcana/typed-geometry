@@ -12,7 +12,7 @@ namespace tg
  *
  * Notable functions:
  *   - distance(pos, quadric)   for residual L2 error
- *   - distance2(pos, quadric)  for residual squared L2 error
+ *   - distance_sqr(pos, quadric)  for residual squared L2 error
  *   - closest_point(quadric)   for the position minimizing the distance
  *   - operator + * /
  */
@@ -73,12 +73,12 @@ public:
         r += normal * d + vec2_t(pos) * s2;
 
         // TODO: maybe positional uncertainty
-        d_sqr += d * d + distance2_to_origin(pos) * s2;
+        d_sqr += d * d + distance_sqr_to_origin(pos) * s2;
     }
 
     // TODO: fix me
     template<class T>
-    friend constexpr T distance2(pos<2, T> const& p, quadric<2, T> const& q);
+    friend constexpr T distance_sqr(pos<2, T> const& p, quadric<2, T> const& q);
     template<class T>
     friend constexpr pos<2, T> closest_point(quadric<2, T> const& q);
 };
@@ -130,7 +130,7 @@ public:
         r += normal * d + vec3_t(pos) * s2;
 
         // TODO: maybe positional uncertainty
-        d_sqr += d * d + distance2_to_origin(pos) * s2;
+        d_sqr += d * d + distance_sqr_to_origin(pos) * s2;
     }
 
     /// Adds two quadrics
@@ -150,7 +150,7 @@ public:
 
     // TODO: fix me
     template<class T>
-    friend constexpr T distance2(pos<3, T> const& p, quadric<3, T> const& q);
+    friend constexpr T distance_sqr(pos<3, T> const& p, quadric<3, T> const& q);
     template<class T>
     friend constexpr pos<3, T> closest_point(quadric<3, T> const& q);
 };

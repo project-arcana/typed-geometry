@@ -34,6 +34,8 @@ struct pair
     A first;
     B second;
 };
+template <class A, class B>
+pair(A const&, B const&)->pair<A, B>;
 
 template <class A, class B, class C>
 struct triple

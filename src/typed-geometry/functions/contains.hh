@@ -30,7 +30,7 @@ namespace tg
 {
 // default implementation if distance(a, pos) is available
 template <class A, int D, class ScalarT>
-TG_NODISCARD constexpr auto contains(A const& a, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0)) -> decltype(distance(a, p), false)
+TG_NODISCARD constexpr auto contains(A const& a, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0)) -> decltype(ScalarT(distance(a, p)), false)
 {
     return distance(a, p) <= eps;
 }
@@ -39,7 +39,7 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
     if (eps > 0)
-        return distance2(b, o) < eps * eps;
+        return distance_sqr(b, o) < eps * eps;
     return b == o;
 }
 
@@ -81,7 +81,7 @@ TG_NODISCARD constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> c
     auto r = o - b.center;
     // TODO: unroll
     for (auto i = 0; i < D; ++i)
-        if (tg::abs(dot(b.half_extents[i], r)) > length2(b.half_extents[i]) + eps)
+        if (tg::abs(dot(b.half_extents[i], r)) > length_sqr(b.half_extents[i]) + eps)
             return false;
     return true;
 }
@@ -96,13 +96,13 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr bool contains(ball<D, ScalarT> const& s, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0))
 {
     auto r = s.radius + eps;
-    return distance2(s.center, p) <= r * r;
+    return distance_sqr(s.center, p) <= r * r;
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0))
 {
-    return tg::abs(distance2(s.center, p) - s.radius * s.radius) <= eps;
+    return tg::abs(distance_sqr(s.center, p) - s.radius * s.radius) <= eps;
 }
 
 // Note that eps is used to compare 2D areas, not 1D lengths
@@ -162,7 +162,7 @@ TG_NODISCARD constexpr bool contains(cylinder<3, ScalarT> const& c, pos<3, Scala
     auto ad = c.axis.pos1 - c.axis.pos0;
     auto d0 = dot(pd, ad);
 
-    auto hsqd = length2(ad);
+    auto hsqd = length_sqr(ad);
     auto rsqd = pow2(c.radius);
 
     if (d0 < 0 || d0 > hsqd) // behind a cap

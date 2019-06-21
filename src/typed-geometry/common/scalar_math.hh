@@ -244,4 +244,37 @@ TG_NODISCARD inline f64 acosh(f64 v) { return std::acosh(v); }
 TG_NODISCARD inline f32 atanh(f32 v) { return std::atanh(v); }
 TG_NODISCARD inline f64 atanh(f64 v) { return std::atanh(v); }
 
+// ==================================================================
+// other GLSL
+
+TG_NODISCARD constexpr f32 smoothstep(f32 edge0, f32 edge1, f32 x)
+{
+    auto t = clamp((x - edge0) / (edge1 - edge0), f32(0), f32(1));
+    return t * t * (f32(3) - f32(2) * t);
+}
+TG_NODISCARD constexpr f64 smoothstep(f64 edge0, f64 edge1, f64 x)
+{
+    auto t = clamp((x - edge0) / (edge1 - edge0), f64(0), f64(1));
+    return t * t * (f64(3) - f64(2) * t);
+}
+
+// ==================================================================
+// other Math
+
+// greatest common divisor
+// TODO: how does it work for negative numbers?
+template <class T, class = enable_if<is_integer<T>>>
+T gcd(T a, T b)
+{
+    return b ? gcd(b, a % b) : a;
+}
+
+// least common multiple
+// CAREFUL: a * b is an intermediate and might overflow
+template <class T, class = enable_if<is_integer<T>>>
+T lcm(T a, T b)
+{
+    return a * b / gcd(a, b);
+}
+
 } // namespace tg

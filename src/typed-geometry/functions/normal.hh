@@ -9,6 +9,7 @@
 #include <typed-geometry/types/objects/triangle.hh>
 
 #include "normalize.hh"
+#include "perpendicular.hh"
 
 // Computes the normal at the surface of an object
 // Some objects have a fixed normal everywhere, some only at defined positions
@@ -29,39 +30,21 @@ TG_NODISCARD constexpr dir<D, ScalarT> normal(halfspace<D, ScalarT> const& h)
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr vec<2, ScalarT> normal_unnorm(vec<2, ScalarT> const& v)
+TG_NODISCARD constexpr dir<2, ScalarT> normal(line<2, ScalarT> const& l)
 {
-    return vec<2, ScalarT>(-v.y, v.x);
+    return perpendicular(l.dir);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr dir<2, ScalarT> normal(dir<2, ScalarT> const& v)
+TG_NODISCARD constexpr dir<2, ScalarT> normal(ray<2, ScalarT> const& r)
 {
-    return dir<2, ScalarT>(-v.y, v.x);
-}
-
-template <class ScalarT>
-TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(vec<2, ScalarT> const& v)
-{
-    return normalize(normal_unnorm(v));
-}
-
-template <class ScalarT>
-TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(line<2, ScalarT> const& l)
-{
-    return normal_unnorm(l.dir);
-}
-
-template <class ScalarT>
-TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(ray<2, ScalarT> const& r)
-{
-    return normal_unnorm(r.dir);
+    return perpendicular(r.dir);
 }
 
 template <class ScalarT>
 TG_NODISCARD constexpr dir<2, fractional_result<ScalarT>> normal(segment<2, ScalarT> const& s)
 {
-    return normal(s.pos1 - s.pos0);
+    return normalize(perpendicular(s.pos1 - s.pos0));
 }
 
 template <class ScalarT>
@@ -75,9 +58,9 @@ TG_NODISCARD constexpr dir<3, ScalarT> any_normal(vec<3, ScalarT> const& v)
 {
     auto b = vec3::zero;
     if (abs(v.x) > abs(v.y))
-        b[1] = 1.0f;
+        b[1] = ScalarT(1);
     else
-        b[0] = 1.0f;
+        b[0] = ScalarT(1);
     return normalize(cross(v, b));
 }
 

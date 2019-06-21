@@ -164,6 +164,24 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     return out << ss.str();
 }
 
+template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, line<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "line" << char('0' + D);
+    ss << "(" << val.pos << ", " << val.dir << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, hyperplane<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << (D == 3 ? "plane" : "hyperplane") << char('0' + D);
+    ss << "(" << val.normal << ", " << val.dis << ")";
+    return out << ss.str();
+}
+
 template <int C, int R, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, mat<C, R, ScalarT> const& val)
 {

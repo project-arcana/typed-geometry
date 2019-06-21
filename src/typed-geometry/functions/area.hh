@@ -48,7 +48,7 @@ TG_NODISCARD constexpr ScalarT area(aabb<3, ScalarT> const& b)
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT area(box<2, ScalarT> const& b)
 {
-    return 4 * tg::sqrt(length2(b.half_extents[0]) * length2(b.half_extents[1]));
+    return 4 * tg::sqrt(length_sqr(b.half_extents[0]) * length_sqr(b.half_extents[1]));
 }
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT area(box<3, ScalarT> const& b)
