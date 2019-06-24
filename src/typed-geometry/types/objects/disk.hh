@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../pos.hh"
 #include "../dir.hh"
+#include "../pos.hh"
 
 namespace tg
 {
@@ -44,6 +44,9 @@ struct disk<2, ScalarT>
 
     constexpr disk() = default;
     constexpr disk(pos_t c, ScalarT r) : center(c), radius(r) {}
+
+    TG_NODISCARD bool operator==(disk const& rhs) const { return center == rhs.center && radius == rhs.radius; }
+    TG_NODISCARD bool operator!=(disk const& rhs) const { return !operator==(rhs); }
 };
 
 template <class ScalarT>
@@ -59,5 +62,8 @@ struct disk<3, ScalarT>
 
     constexpr disk() = default;
     constexpr disk(pos_t c, ScalarT r, dir_t n) : center(c), radius(r), normal(n) {}
+
+    TG_NODISCARD bool operator==(disk const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
+    TG_NODISCARD bool operator!=(disk const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

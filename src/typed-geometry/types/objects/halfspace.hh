@@ -56,7 +56,10 @@ struct halfspace
     scalar_t dis;
 
     constexpr halfspace() = default;
-    constexpr halfspace(dir_t n, scalar_t d) : dis(d), normal(n) {}
+    constexpr halfspace(dir_t n, scalar_t d) : normal(n), dis(d) {}
     constexpr halfspace(dir_t n, pos_t p);
+
+    TG_NODISCARD bool operator==(halfspace const& rhs) const { return normal == rhs.normal && dis == rhs.dis; }
+    TG_NODISCARD bool operator!=(halfspace const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

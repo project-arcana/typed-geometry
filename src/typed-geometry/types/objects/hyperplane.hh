@@ -61,5 +61,8 @@ struct hyperplane
     constexpr hyperplane() = default;
     constexpr hyperplane(dir_t n, scalar_t d) : normal(n), dis(d) {}
     constexpr hyperplane(dir_t n, pos_t p);
+
+    TG_NODISCARD bool operator==(hyperplane const& rhs) const { return normal == rhs.normal && dis == rhs.dis; }
+    TG_NODISCARD bool operator!=(hyperplane const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

@@ -37,5 +37,8 @@ struct capsule<3, ScalarT>
     constexpr capsule() = default;
     constexpr capsule(seg_t const& axis, scalar_t radius) : axis(axis), radius(radius) {}
     constexpr capsule(pos_t const& p0, pos_t const& p1, scalar_t radius) : axis(p0, p1), radius(radius) {}
+
+    TG_NODISCARD bool operator==(capsule const& rhs) const { return axis == rhs.axis && radius == rhs.radius; }
+    TG_NODISCARD bool operator!=(capsule const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

@@ -51,5 +51,8 @@ struct triangle
 
     TG_NODISCARD constexpr pos_t operator[](comp<3, ScalarT> const& barycoords) const;
     TG_NODISCARD constexpr pos_t operator[](comp<2, ScalarT> const& barycoords) const;
+
+    TG_NODISCARD bool operator==(triangle const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1 && pos2 == rhs.pos2; }
+    TG_NODISCARD bool operator!=(triangle const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

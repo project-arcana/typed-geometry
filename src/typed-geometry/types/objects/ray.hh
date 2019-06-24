@@ -53,5 +53,8 @@ struct ray
     constexpr ray(pos_t pos, dir_t dir) : origin(pos), dir(dir) {}
 
     TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
+
+    TG_NODISCARD bool operator==(ray const& rhs) const { return origin == rhs.origin && dir == rhs.dir; }
+    TG_NODISCARD bool operator!=(ray const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

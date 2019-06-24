@@ -27,11 +27,15 @@ struct inf_tube
     using pos_t = pos<D, ScalarT>;
     using dir_t = dir<D, ScalarT>;
 
+    // TODO: use line
     pos_t center;
     dir_t axis;
     ScalarT radius = ScalarT(0);
 
     constexpr inf_tube() = default;
     constexpr inf_tube(pos_t const& center, dir_t const& axis, ScalarT radius) : center(center), axis(axis), radius(radius) {}
+
+    TG_NODISCARD bool operator==(inf_tube const& rhs) const { return center == rhs.center && radius == rhs.radius && axis == rhs.axis; }
+    TG_NODISCARD bool operator!=(inf_tube const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

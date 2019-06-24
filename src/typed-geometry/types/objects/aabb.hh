@@ -61,5 +61,8 @@ struct aabb
         for (auto i = 0; i < D; ++i)
             TG_CONTRACT(min[i] <= max[i]);
     }
+
+    TG_NODISCARD bool operator==(aabb const& rhs) const { return min == rhs.min && max == rhs.max; }
+    TG_NODISCARD bool operator!=(aabb const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

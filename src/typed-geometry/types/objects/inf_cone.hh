@@ -35,5 +35,8 @@ struct inf_cone
       : apex(apex), opening_dir(dir), opening_angle(opening_angle)
     {
     }
+
+    TG_NODISCARD bool operator==(inf_cone const& rhs) const { return apex == rhs.apex && opening_dir == rhs.opening_dir && opening_angle == rhs.opening_angle; }
+    TG_NODISCARD bool operator!=(inf_cone const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

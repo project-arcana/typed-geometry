@@ -39,6 +39,9 @@ struct rect<2, ScalarT>
 
     constexpr rect() = default;
     constexpr rect(pos_t c, ScalarT l, angle_t<ScalarT> r) : center(c), length(l), rotation(r){};
+
+    TG_NODISCARD bool operator==(rect const& rhs) const { return center == rhs.center && length == rhs.length && rotation == rhs.rotation; }
+    TG_NODISCARD bool operator!=(rect const& rhs) const { return !operator==(rhs); }
 };
 
 template <class ScalarT>
@@ -58,5 +61,11 @@ struct rect<3, ScalarT>
       : center(c), length(l), normal(n), rotation(r)
     {
     }
+
+    TG_NODISCARD bool operator==(rect const& rhs) const
+    {
+        return center == rhs.center && length == rhs.length && rotation == rhs.rotation && normal == rhs.normal;
+    }
+    TG_NODISCARD bool operator!=(rect const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

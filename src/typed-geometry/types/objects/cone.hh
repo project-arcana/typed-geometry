@@ -33,5 +33,8 @@ struct cone<3, ScalarT>
 
     constexpr cone() = default;
     constexpr cone(disk_t const& base, scalar_t height) : base(base), height(height) {}
+
+    TG_NODISCARD bool operator==(cone const& rhs) const { return base == rhs.base && height == rhs.height; }
+    TG_NODISCARD bool operator!=(cone const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg
