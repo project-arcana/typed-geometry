@@ -5,6 +5,17 @@
 namespace tg
 {
 template <int D, class ScalarT>
+TG_NODISCARD constexpr ScalarT const* data_ptr(comp<D, ScalarT> const& v)
+{
+    return &v.comp0;
+}
+template <int D, class ScalarT>
+TG_NODISCARD constexpr ScalarT* data_ptr(comp<D, ScalarT>& v)
+{
+    return &v.comp0;
+}
+
+template <int D, class ScalarT>
 TG_NODISCARD constexpr ScalarT const* data_ptr(pos<D, ScalarT> const& v)
 {
     return &v.x;
