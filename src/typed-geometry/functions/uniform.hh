@@ -109,6 +109,13 @@ TG_NODISCARD constexpr angle_t<T> uniform(Rng& rng, angle_t<T> a, angle_t<T> b)
     return mix(a, b, detail::uniform01<T>(rng));
 }
 
+template <class Rng, class Container>
+TG_NODISCARD constexpr auto uniform(Rng& rng, Container const& c) -> decltype(c[c.size()])
+{
+    TG_CONTRACT(c.size() > 0 && "cannot pick from an empty container");
+    return c[uniform(rng, 0, c.size() - 1)];
+}
+
 template <class Rng>
 TG_NODISCARD constexpr int uniform(Rng& rng, range1 const& b)
 {
