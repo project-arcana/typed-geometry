@@ -69,6 +69,13 @@ TG_NODISCARD constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const
 
 // =========== Other Implementations ===========
 
+template <class ScalarT, class = enable_if<is_scalar<ScalarT>>>
+TG_NODISCARD constexpr ScalarT distance_sqr(ScalarT a, ScalarT b)
+{
+    auto const d = a - b;
+    return d * d;
+}
+
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT distance_sqr(pos<2, ScalarT> const& p, quadric<2, ScalarT> const& q)
 {
