@@ -28,6 +28,9 @@ struct priority_tag<0>
 };
 } // namespace detail
 
+template <class...>
+using void_t = void;
+
 template <class A, class B>
 struct pair
 {
@@ -98,5 +101,16 @@ struct conditional_type_t<false, T, F>
 
 template <bool B, class T, class F>
 using conditional_type = typename conditional_type_t<B, T, F>::type;
+
+namespace detail
+{
+template <class Container>
+auto container_test(Container* c) -> decltype(c->data(), c->size(), 0);
+template <class Container>
+char container_test(...);
+}
+
+template <class Container>
+static constexpr bool is_container = sizeof(detail::container_test<Container>(nullptr)) == sizeof(int);
 
 } // namespace tg

@@ -3,6 +3,9 @@
 #include "angle.hh"
 #include "scalar.hh"
 
+#include "array.hh"
+#include "span.hh"
+
 #include "range.hh"
 
 #include "color.hh"
