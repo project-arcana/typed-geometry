@@ -19,11 +19,12 @@ struct span
 public:
     constexpr span() = default;
     constexpr span(T* data, size_t size) : _data(data), _size(size) {}
+    constexpr span(T* d_begin, T* d_end) : _data(d_begin), _size(d_end - d_begin) {}
     template <size_t N>
     constexpr span(T (&data)[N]) : _data(data), _size(N)
     {
     }
-    template <class Container, class = enable_if<is_container<Container>>>
+    template <class Container, class = enable_if<is_container<Container, T>>>
     constexpr span(Container& c) : _data(c.data()), _size(c.size())
     {
     }
