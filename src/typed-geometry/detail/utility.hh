@@ -87,6 +87,21 @@ To bit_cast(From f)
     return u.to;
 }
 
+template <class A, class B>
+struct same_or_t
+{
+    using type = A;
+};
+template <class B>
+struct same_or_t<void, B>
+{
+    using type = B;
+};
+
+// returns A == void ? A : B
+template <class A, class B>
+using same_or = typename same_or_t<A, B>::type;
+
 template <bool B, class T, class F>
 struct conditional_type_t
 {

@@ -6,6 +6,7 @@
 
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
+#include <typed-geometry/types/span.hh>
 #include <typed-geometry/types/vec.hh>
 
 #include "math.hh"
@@ -45,6 +46,26 @@ TG_NODISCARD constexpr T max(T const& a, T const& b, T const& c, Ts const&... re
 {
     return max(max(a, b), c, rest...);
 }
+
+template <class T>
+TG_NODISCARD constexpr T min(span<T> values)
+{
+    TG_CONTRACT(!values.empty());
+    auto r = values[0];
+    for (tg::size_t i = 1; i < values.size(); ++i)
+        r = min(r, values[i]);
+    return r;
+}
+template <class T>
+TG_NODISCARD constexpr T max(span<T> values)
+{
+    TG_CONTRACT(!values.empty());
+    auto r = values[0];
+    for (tg::size_t i = 1; i < values.size(); ++i)
+        r = max(r, values[i]);
+    return r;
+}
+
 
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT min_element(pos<1, ScalarT> const& p)
