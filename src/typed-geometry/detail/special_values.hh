@@ -149,78 +149,33 @@ struct special_values<mat<C, R, ScalarT>>
             m[c] = vec<R, ScalarT>(ScalarT(1));
         return m;
     }
-    static constexpr mat<C, R, ScalarT> identity()
-    {
-        mat<C, R, ScalarT> m;
-        mat_set_00(m, ScalarT(1));
-        mat_set_11(m, ScalarT(1));
-        mat_set_22(m, ScalarT(1));
-        mat_set_33(m, ScalarT(1));
-        return m;
-    }
     static constexpr mat<C, R, ScalarT> diag(ScalarT v)
     {
         mat<C, R, ScalarT> m;
-        mat_set_00(m, v);
-        mat_set_11(m, v);
-        mat_set_22(m, v);
-        mat_set_33(m, v);
+        if constexpr (C >= 1 && R >= 1)
+            m[0].x = v;
+        if constexpr (C >= 2 && R >= 2)
+            m[1].y = v;
+        if constexpr (C >= 3 && R >= 3)
+            m[2].z = v;
+        if constexpr (C >= 4 && R >= 4)
+            m[3].w = v;
         return m;
     }
     static constexpr mat<C, R, ScalarT> diag(vec<detail::min(C, R), ScalarT> const& v)
     {
         mat<C, R, ScalarT> m;
-        mat_set_00(m, v);
-        mat_set_11(m, v);
-        mat_set_22(m, v);
-        mat_set_33(m, v);
+        if constexpr (C >= 1 && R >= 1)
+            m[0].x = v.x;
+        if constexpr (C >= 2 && R >= 2)
+            m[1].y = v.y;
+        if constexpr (C >= 3 && R >= 3)
+            m[2].z = v.z;
+        if constexpr (C >= 4 && R >= 4)
+            m[3].w = v.w;
         return m;
     }
-
-    static constexpr void mat_set_00(mat<C, R, ScalarT>& m, ScalarT v) { m[0].x = v; }
-    static constexpr void mat_set_00(mat<C, R, ScalarT>& m, vec<detail::min(C, R), ScalarT> const& v) { m[0].x = v.x; }
-
-    template <int CC, class = enable_if<CC >= 2 && R >= 2>>
-    static constexpr void mat_set_11(mat<CC, R, ScalarT>& m, ScalarT v)
-    {
-        m[1].y = v;
-    }
-    template <int CC, class = enable_if<CC >= 2 && R >= 2>>
-    static constexpr void mat_set_11(mat<CC, R, ScalarT>& m, vec<detail::min(C, R), ScalarT> const& v)
-    {
-        m[1].y = v.y;
-    }
-    static constexpr void mat_set_11(...)
-    { /* nothing */
-    }
-
-    template <int CC, class = enable_if<CC >= 3 && R >= 3>>
-    static constexpr void mat_set_22(mat<CC, R, ScalarT>& m, ScalarT v)
-    {
-        m[2].z = v;
-    }
-    template <int CC, class = enable_if<CC >= 3 && R >= 3>>
-    static constexpr void mat_set_22(mat<CC, R, ScalarT>& m, vec<detail::min(C, R), ScalarT> const& v)
-    {
-        m[2].z = v.z;
-    }
-    static constexpr void mat_set_22(...)
-    { /* nothing */
-    }
-
-    template <int CC, class = enable_if<CC >= 4 && R >= 4>>
-    static constexpr void mat_set_33(mat<CC, R, ScalarT>& m, ScalarT v)
-    {
-        m[3].w = v;
-    }
-    template <int CC, class = enable_if<CC >= 4 && R >= 4>>
-    static constexpr void mat_set_33(mat<CC, R, ScalarT>& m, vec<detail::min(C, R), ScalarT> const& v)
-    {
-        m[3].w = v.w;
-    }
-    static constexpr void mat_set_33(...)
-    { /* nothing */
-    }
+    static constexpr mat<C, R, ScalarT> identity() { return diag(ScalarT(1)); }
 };
 } // namespace detail
 
