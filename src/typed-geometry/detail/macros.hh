@@ -310,6 +310,31 @@
     }                                                                                                                         \
     TG_FORCE_SEMICOLON
 
+#define TG_IMPL_COMP_DEDUCTION_GUIDES(type)                                                 \
+    template <class A, class = enable_if<is_scalar<A>>>                                     \
+    type(A const& x)->type<1, A>;                                                           \
+    template <class A, class B>                                                             \
+    type(A const& x, B const& y)->type<2, decltype(x + y)>;                                 \
+    template <class A, class B, class C>                                                    \
+    type(A const& x, B const& y, C const& z)->type<3, decltype(x + y + z)>;                 \
+    template <class A, class B, class C, class D>                                           \
+    type(A const& x, B const& y, C const& z, D const& w)->type<4, decltype(x + y + z + w)>; \
+                                                                                            \
+    template <u64 D, class T>                                                               \
+    type(array<T, D> const&)->type<int(D), T>;                                              \
+    template <int D, class T>                                                               \
+    type(vec<D, T> const&)->type<D, T>;                                                     \
+    template <int D, class T>                                                               \
+    type(color<D, T> const&)->type<D, T>;                                                   \
+    template <int D, class T>                                                               \
+    type(comp<D, T> const&)->type<D, T>;                                                    \
+    template <int D, class T>                                                               \
+    type(pos<D, T> const&)->type<D, T>;                                                     \
+    template <int D, class T>                                                               \
+    type(size<D, T> const&)->type<D, T>;                                                    \
+    template <int D, class T>                                                               \
+    type(dir<D, T> const&)->type<D, T>;
+
 
 #define TG_IMPL_DEFINE_TRAIT(trait, result_type, default_val) \
     template <class T>                                        \

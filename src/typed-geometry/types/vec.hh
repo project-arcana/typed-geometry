@@ -233,20 +233,6 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator!=, ||, !=);
 
 // deduction guides
-template <class A, class = enable_if<is_scalar<A>>>
-vec(A const& x)->vec<1, A>;
-template <class A, class B>
-vec(A const& x, B const& y)->vec<2, promoted_scalar<A, B>>;
-template <class A, class B, class C>
-vec(A const& x, B const& y, C const& z)->vec<3, promoted_scalar<A, promoted_scalar<B, C>>>;
-template <class A, class B, class C, class D>
-vec(A const& x, B const& y, C const& z, D const& w)->vec<4, promoted_scalar<promoted_scalar<A, B>, promoted_scalar<C, D>>>;
-
-template <int D, class T>
-vec(pos<D, T> const&)->vec<D, T>;
-template <int D, class T>
-vec(size<D, T> const&)->vec<D, T>;
-template <int D, class T>
-vec(dir<D, T> const&)->vec<D, T>;
+TG_IMPL_COMP_DEDUCTION_GUIDES(vec);
 
 } // namespace tg

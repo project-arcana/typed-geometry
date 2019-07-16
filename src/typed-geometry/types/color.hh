@@ -133,8 +133,6 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(color, color, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(color, color, bool, operator!=, ||, !=);
 
 // deduction guides
-template <class A, class B, class C>
-color(A const& r, B const& g, C const& b)->color<3, promoted_scalar<A, promoted_scalar<B, C>>>;
-template <class A, class B, class C, class D>
-color(A const& r, B const& g, C const& b, D const& a)->color<4, promoted_scalar<promoted_scalar<A, B>, promoted_scalar<C, D>>>;
+TG_IMPL_COMP_DEDUCTION_GUIDES(color);
+
 } // namespace tg
