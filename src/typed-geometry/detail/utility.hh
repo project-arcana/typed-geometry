@@ -36,6 +36,14 @@ inline constexpr bool always_false = false;
 template <class...>
 using void_t = void;
 
+template <class T>
+struct dont_deduce_t
+{
+    using type = T;
+};
+template <class T>
+using dont_deduce = typename dont_deduce_t<T>::type;
+
 template <class A, class B>
 struct pair
 {

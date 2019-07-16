@@ -119,164 +119,82 @@
     }                                                                                                                                        \
     TG_FORCE_SEMICOLON
 
-#define TG_IMPL_DEFINE_CONV_CTOR_IMPL(TYPE_FROM, TYPE_TO)                                                                               \
-    template <class ScalarT>                                                                                                            \
-    constexpr TYPE_TO<1, ScalarT>::TYPE_TO(TYPE_FROM<1, ScalarT> const& a) : TG_IMPL_MEMBER(TYPE_TO, 0)(a.TG_IMPL_MEMBER(TYPE_FROM, 0)) \
-    {                                                                                                                                   \
-    }                                                                                                                                   \
-    template <class ScalarT>                                                                                                            \
-    constexpr TYPE_TO<2, ScalarT>::TYPE_TO(TYPE_FROM<2, ScalarT> const& a)                                                              \
-      : TG_IMPL_MEMBER(TYPE_TO, 0)(a.TG_IMPL_MEMBER(TYPE_FROM, 0)), TG_IMPL_MEMBER(TYPE_TO, 1)(a.TG_IMPL_MEMBER(TYPE_FROM, 1))          \
-    {                                                                                                                                   \
-    }                                                                                                                                   \
-    template <class ScalarT>                                                                                                            \
-    constexpr TYPE_TO<3, ScalarT>::TYPE_TO(TYPE_FROM<3, ScalarT> const& a)                                                              \
-      : TG_IMPL_MEMBER(TYPE_TO, 0)(a.TG_IMPL_MEMBER(TYPE_FROM, 0)),                                                                     \
-        TG_IMPL_MEMBER(TYPE_TO, 1)(a.TG_IMPL_MEMBER(TYPE_FROM, 1)),                                                                     \
-        TG_IMPL_MEMBER(TYPE_TO, 2)(a.TG_IMPL_MEMBER(TYPE_FROM, 2))                                                                      \
-    {                                                                                                                                   \
-    }                                                                                                                                   \
-    template <class ScalarT>                                                                                                            \
-    constexpr TYPE_TO<4, ScalarT>::TYPE_TO(TYPE_FROM<4, ScalarT> const& a)                                                              \
-      : TG_IMPL_MEMBER(TYPE_TO, 0)(a.TG_IMPL_MEMBER(TYPE_FROM, 0)),                                                                     \
-        TG_IMPL_MEMBER(TYPE_TO, 1)(a.TG_IMPL_MEMBER(TYPE_FROM, 1)),                                                                     \
-        TG_IMPL_MEMBER(TYPE_TO, 2)(a.TG_IMPL_MEMBER(TYPE_FROM, 2)),                                                                     \
-        TG_IMPL_MEMBER(TYPE_TO, 3)(a.TG_IMPL_MEMBER(TYPE_FROM, 3))                                                                      \
-    {                                                                                                                                   \
-    }                                                                                                                                   \
+#define TG_IMPL_DEFINE_BINARY_OP(TYPE_A, TYPE_B, TYPE_R, OP)                                                                                 \
+    template <int D, class ScalarT>                                                                                                          \
+    TG_NODISCARD constexpr TYPE_R<D, ScalarT> operator OP(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                          \
+    {                                                                                                                                        \
+        if constexpr (D == 1)                                                                                                                \
+            return {a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0)};                                                             \
+                                                                                                                                             \
+        else if constexpr (D == 2)                                                                                                           \
+            return {a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0), a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1)}; \
+                                                                                                                                             \
+        else if constexpr (D == 3)                                                                                                           \
+            return {a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0), a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1),  \
+                    a.TG_IMPL_MEMBER(TYPE_A, 2) OP b.TG_IMPL_MEMBER(TYPE_B, 2)};                                                             \
+                                                                                                                                             \
+        else if constexpr (D == 4)                                                                                                           \
+            return {a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0), a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1),  \
+                    a.TG_IMPL_MEMBER(TYPE_A, 2) OP b.TG_IMPL_MEMBER(TYPE_B, 2), a.TG_IMPL_MEMBER(TYPE_A, 3) OP b.TG_IMPL_MEMBER(TYPE_B, 3)}; \
+                                                                                                                                             \
+        else                                                                                                                                 \
+            static_assert(always_false<ScalarT>, "only supported up to 4 dimensions");                                                       \
+    }                                                                                                                                        \
     TG_FORCE_SEMICOLON
 
-#define TG_IMPL_DEFINE_BINARY_OP(TYPE_A, TYPE_B, TYPE_R, OP)                                                        \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>>                      \
-    TG_NODISCARD constexpr TYPE_R<1, ScalarR> operator OP(TYPE_A<1, ScalarA> const& a, TYPE_B<1, ScalarB> const& b) \
-    {                                                                                                               \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 0)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 0))};                      \
-    }                                                                                                               \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>>                      \
-    TG_NODISCARD constexpr TYPE_R<2, ScalarR> operator OP(TYPE_A<2, ScalarA> const& a, TYPE_B<2, ScalarB> const& b) \
-    {                                                                                                               \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 0)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 0)),                       \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 1)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 1))};                      \
-    }                                                                                                               \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>>                      \
-    TG_NODISCARD constexpr TYPE_R<3, ScalarR> operator OP(TYPE_A<3, ScalarA> const& a, TYPE_B<3, ScalarB> const& b) \
-    {                                                                                                               \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 0)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 0)),                       \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 1)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 1)),                       \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 2)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 2))};                      \
-    }                                                                                                               \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>>                      \
-    TG_NODISCARD constexpr TYPE_R<4, ScalarR> operator OP(TYPE_A<4, ScalarA> const& a, TYPE_B<4, ScalarB> const& b) \
-    {                                                                                                               \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 0)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 0)),                       \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 1)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 1)),                       \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 2)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 2)),                       \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE_A, 3)) OP ScalarR(b.TG_IMPL_MEMBER(TYPE_B, 3))};                      \
-    }                                                                                                               \
+#define TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)                                                                                              \
+    template <int D, class ScalarT>                                                                                                                  \
+    TG_NODISCARD constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                    \
+    {                                                                                                                                                \
+        if constexpr (D == 1)                                                                                                                        \
+            return {a.TG_IMPL_MEMBER(TYPE, 0) OP b};                                                                                                 \
+        else if constexpr (D == 2)                                                                                                                   \
+            return {a.TG_IMPL_MEMBER(TYPE, 0) OP b, a.TG_IMPL_MEMBER(TYPE, 1) OP b};                                                                 \
+        else if constexpr (D == 3)                                                                                                                   \
+            return {a.TG_IMPL_MEMBER(TYPE, 0) OP b, a.TG_IMPL_MEMBER(TYPE, 1) OP b, a.TG_IMPL_MEMBER(TYPE, 2) OP b};                                 \
+        else if constexpr (D == 4)                                                                                                                   \
+            return {a.TG_IMPL_MEMBER(TYPE, 0) OP b, a.TG_IMPL_MEMBER(TYPE, 1) OP b, a.TG_IMPL_MEMBER(TYPE, 2) OP b, a.TG_IMPL_MEMBER(TYPE, 3) OP b}; \
+        else                                                                                                                                         \
+            static_assert(always_false<ScalarT>, "only supported up to 4 dimensions");                                                               \
+    }                                                                                                                                                \
     TG_FORCE_SEMICOLON
 
-#define TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)                                                                               \
-    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
-    TG_NODISCARD constexpr TYPE<1, ScalarR> operator OP(TYPE<1, ScalarA> const& a, ScalarB const& b)                                  \
-    {                                                                                                                                 \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b)};                                                                    \
-    }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
-    TG_NODISCARD constexpr TYPE<2, ScalarR> operator OP(TYPE<2, ScalarA> const& a, ScalarB const& b)                                  \
-    {                                                                                                                                 \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) OP ScalarR(b)};                  \
-    }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
-    TG_NODISCARD constexpr TYPE<3, ScalarR> operator OP(TYPE<3, ScalarA> const& a, ScalarB const& b)                                  \
-    {                                                                                                                                 \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) OP ScalarR(b),                   \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) OP ScalarR(b)};                                                                    \
-    }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarB>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
-    TG_NODISCARD constexpr TYPE<4, ScalarR> operator OP(TYPE<4, ScalarA> const& a, ScalarB const& b)                                  \
-    {                                                                                                                                 \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) OP ScalarR(b),                   \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) OP ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 3)) OP ScalarR(b)};                  \
-    }                                                                                                                                 \
+#define TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP)                                                                                               \
+    template <int D, class ScalarT>                                                                                                                  \
+    TG_NODISCARD constexpr TYPE<D, ScalarT> operator OP(dont_deduce<ScalarT> const& a, TYPE<D, ScalarT> const& b)                                    \
+    {                                                                                                                                                \
+        if constexpr (D == 1)                                                                                                                        \
+            return {a OP b.TG_IMPL_MEMBER(TYPE, 0)};                                                                                                 \
+        else if constexpr (D == 2)                                                                                                                   \
+            return {a OP b.TG_IMPL_MEMBER(TYPE, 0), a OP b.TG_IMPL_MEMBER(TYPE, 1)};                                                                 \
+        else if constexpr (D == 3)                                                                                                                   \
+            return {a OP b.TG_IMPL_MEMBER(TYPE, 0), a OP b.TG_IMPL_MEMBER(TYPE, 1), a OP b.TG_IMPL_MEMBER(TYPE, 2)};                                 \
+        else if constexpr (D == 4)                                                                                                                   \
+            return {a OP b.TG_IMPL_MEMBER(TYPE, 0), a OP b.TG_IMPL_MEMBER(TYPE, 1), a OP b.TG_IMPL_MEMBER(TYPE, 2), a OP b.TG_IMPL_MEMBER(TYPE, 3)}; \
+        else                                                                                                                                         \
+            static_assert(always_false<ScalarT>, "only supported up to 4 dimensions");                                                               \
+    }                                                                                                                                                \
     TG_FORCE_SEMICOLON
 
-#define TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP)                                                                                \
-    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
-    TG_NODISCARD constexpr TYPE<1, ScalarR> operator OP(ScalarA const& a, TYPE<1, ScalarB> const& b)                                  \
-    {                                                                                                                                 \
-        return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0))};                                                                    \
-    }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
-    TG_NODISCARD constexpr TYPE<2, ScalarR> operator OP(ScalarA const& a, TYPE<2, ScalarB> const& b)                                  \
-    {                                                                                                                                 \
-        return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 1))};                  \
-    }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
-    TG_NODISCARD constexpr TYPE<3, ScalarR> operator OP(ScalarA const& a, TYPE<3, ScalarB> const& b)                                  \
-    {                                                                                                                                 \
-        return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 1)),                   \
-                ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 2))};                                                                    \
-    }                                                                                                                                 \
-    template <class ScalarA, class ScalarB, class = enable_if<is_scalar<ScalarA>>, class ScalarR = promoted_scalar<ScalarA, ScalarB>> \
-    TG_NODISCARD constexpr TYPE<4, ScalarR> operator OP(ScalarA const& a, TYPE<4, ScalarB> const& b)                                  \
-    {                                                                                                                                 \
-        return {ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 0)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 1)),                   \
-                ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 2)), ScalarR(a) OP ScalarR(b.TG_IMPL_MEMBER(TYPE, 3))};                  \
-    }                                                                                                                                 \
-    TG_FORCE_SEMICOLON
-
-#define TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(TYPE)                                                                                                                                            \
-    /* scalar / type */                                                                                                                                                                      \
-    TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, /);                                                                                                                                           \
-    /* type / scalar, optimized if result is floating point */                                                                                                                               \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_floating_point<ScalarR> && is_scalar<ScalarB>>>                          \
-    TG_NODISCARD constexpr TYPE<1, ScalarR> operator/(TYPE<1, ScalarA> const& a, ScalarB const& b)                                                                                           \
-    {                                                                                                                                                                                        \
-        auto inv_b = ScalarR(1) / ScalarR(b);                                                                                                                                                \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) * inv_b};                                                                                                                                 \
-    }                                                                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_floating_point<ScalarR> && is_scalar<ScalarB>>>                          \
-    TG_NODISCARD constexpr TYPE<2, ScalarR> operator/(TYPE<2, ScalarA> const& a, ScalarB const& b)                                                                                           \
-    {                                                                                                                                                                                        \
-        auto inv_b = ScalarR(1) / ScalarR(b);                                                                                                                                                \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) * inv_b, ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) * inv_b};                                                                                     \
-    }                                                                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_floating_point<ScalarR> && is_scalar<ScalarB>>>                          \
-    TG_NODISCARD constexpr TYPE<3, ScalarR> operator/(TYPE<3, ScalarA> const& a, ScalarB const& b)                                                                                           \
-    {                                                                                                                                                                                        \
-        auto inv_b = ScalarR(1) / ScalarR(b);                                                                                                                                                \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) * inv_b, ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) * inv_b, ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) * inv_b};                                         \
-    }                                                                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<is_floating_point<ScalarR> && is_scalar<ScalarB>>>                          \
-    TG_NODISCARD constexpr TYPE<4, ScalarR> operator/(TYPE<4, ScalarA> const& a, ScalarB const& b)                                                                                           \
-    {                                                                                                                                                                                        \
-        auto inv_b = ScalarR(1) / ScalarR(b);                                                                                                                                                \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) * inv_b, ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) * inv_b, ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) * inv_b,                                          \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE, 3)) * inv_b};                                                                                                                                 \
-    }                                                                                                                                                                                        \
-    /* type / scalar, for non-float result */                                                                                                                                                \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<!is_floating_point<ScalarR> && is_scalar<ScalarB>>, class = detail::unused> \
-    TG_NODISCARD constexpr TYPE<1, ScalarR> operator/(TYPE<1, ScalarA> const& a, ScalarB const& b)                                                                                           \
-    {                                                                                                                                                                                        \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) / ScalarR(b)};                                                                                                                            \
-    }                                                                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<!is_floating_point<ScalarR> && is_scalar<ScalarB>>, class = detail::unused> \
-    TG_NODISCARD constexpr TYPE<2, ScalarR> operator/(TYPE<2, ScalarA> const& a, ScalarB const& b)                                                                                           \
-    {                                                                                                                                                                                        \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) / ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) / ScalarR(b)};                                                                           \
-    }                                                                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<!is_floating_point<ScalarR> && is_scalar<ScalarB>>, class = detail::unused> \
-    TG_NODISCARD constexpr TYPE<3, ScalarR> operator/(TYPE<3, ScalarA> const& a, ScalarB const& b)                                                                                           \
-    {                                                                                                                                                                                        \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) / ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) / ScalarR(b),                                                                            \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) / ScalarR(b)};                                                                                                                            \
-    }                                                                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarR = promoted_scalar<ScalarA, ScalarB>, class = enable_if<!is_floating_point<ScalarR> && is_scalar<ScalarB>>, class = detail::unused> \
-    TG_NODISCARD constexpr TYPE<4, ScalarR> operator/(TYPE<4, ScalarA> const& a, ScalarB const& b)                                                                                           \
-    {                                                                                                                                                                                        \
-        return {ScalarR(a.TG_IMPL_MEMBER(TYPE, 0)) / ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 1)) / ScalarR(b),                                                                            \
-                ScalarR(a.TG_IMPL_MEMBER(TYPE, 2)) / ScalarR(b), ScalarR(a.TG_IMPL_MEMBER(TYPE, 3)) / ScalarR(b)};                                                                           \
-    }                                                                                                                                                                                        \
+#define TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(TYPE)                                                                                                \
+    /* scalar / type */                                                                                                                          \
+    TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, /);                                                                                               \
+    template <int D, class ScalarT>                                                                                                              \
+    TG_NODISCARD constexpr TYPE<D, ScalarT> operator/(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                  \
+    {                                                                                                                                            \
+        if constexpr (is_floating_point<ScalarT>)                                                                                                \
+            return a * ScalarT(1 / b);                                                                                                           \
+        else if constexpr (D == 1)                                                                                                               \
+            return {a.TG_IMPL_MEMBER(TYPE, 0) / b};                                                                                              \
+        else if constexpr (D == 2)                                                                                                               \
+            return {a.TG_IMPL_MEMBER(TYPE, 0) / b, a.TG_IMPL_MEMBER(TYPE, 1) / b};                                                               \
+        else if constexpr (D == 3)                                                                                                               \
+            return {a.TG_IMPL_MEMBER(TYPE, 0) / b, a.TG_IMPL_MEMBER(TYPE, 1) / b, a.TG_IMPL_MEMBER(TYPE, 2) / b};                                \
+        else if constexpr (D == 4)                                                                                                               \
+            return {a.TG_IMPL_MEMBER(TYPE, 0) / b, a.TG_IMPL_MEMBER(TYPE, 1) / b, a.TG_IMPL_MEMBER(TYPE, 2) / b, a.TG_IMPL_MEMBER(TYPE, 3) / b}; \
+        else                                                                                                                                     \
+            static_assert(always_false<ScalarT>, "only supported up to 4 dimensions");                                                           \
+    }                                                                                                                                            \
     TG_FORCE_SEMICOLON
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR(TYPE, OP)   \
@@ -331,62 +249,56 @@
     }                                                                                                                                                \
     TG_FORCE_SEMICOLON
 
-#define TG_IMPL_DEFINE_COMPWISE_FUNC_TERNARY(TYPE, FUN)                                                                                      \
-    template <class ScalarA, class ScalarB, class ScalarC>                                                                                   \
-    TG_NODISCARD constexpr TYPE<1, decltype(FUN(ScalarA(), ScalarB(), ScalarC()))> FUN(TYPE<1, ScalarA> const& a, TYPE<1, ScalarB> const& b, \
-                                                                                       TYPE<1, ScalarC> const& c)                            \
-    {                                                                                                                                        \
-        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0))};                                       \
-    }                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarC>                                                                                   \
-    TG_NODISCARD constexpr TYPE<2, decltype(FUN(ScalarA(), ScalarB(), ScalarC()))> FUN(TYPE<2, ScalarA> const& a, TYPE<2, ScalarB> const& b, \
-                                                                                       TYPE<2, ScalarC> const& c)                            \
-    {                                                                                                                                        \
-        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                                        \
-                FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1))};                                       \
-    }                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarC>                                                                                   \
-    TG_NODISCARD constexpr TYPE<3, decltype(FUN(ScalarA(), ScalarB(), ScalarC()))> FUN(TYPE<3, ScalarA> const& a, TYPE<3, ScalarB> const& b, \
-                                                                                       TYPE<3, ScalarC> const& c)                            \
-    {                                                                                                                                        \
-        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                                        \
-                FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1)),                                        \
-                FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2), c.TG_IMPL_MEMBER(TYPE, 2))};                                       \
-    }                                                                                                                                        \
-    template <class ScalarA, class ScalarB, class ScalarC>                                                                                   \
-    TG_NODISCARD constexpr TYPE<4, decltype(FUN(ScalarA(), ScalarB(), ScalarC()))> FUN(TYPE<4, ScalarA> const& a, TYPE<4, ScalarB> const& b, \
-                                                                                       TYPE<4, ScalarC> const& c)                            \
-    {                                                                                                                                        \
-        return {FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                                        \
-                FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1)),                                        \
-                FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2), c.TG_IMPL_MEMBER(TYPE, 2)),                                        \
-                FUN(a.TG_IMPL_MEMBER(TYPE, 3), b.TG_IMPL_MEMBER(TYPE, 3), c.TG_IMPL_MEMBER(TYPE, 3))};                                       \
-    }                                                                                                                                        \
+#define TG_IMPL_DEFINE_COMPWISE_FUNC_TERNARY(TYPE, FUN)                                                                             \
+    template <int D, class ScalarT>                                                                                                 \
+    TG_NODISCARD constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b, TYPE<D, ScalarT> const& c)                \
+    {                                                                                                                               \
+        using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)))>; \
+                                                                                                                                    \
+        if constexpr (D == 1)                                                                                                       \
+            return TYPE<D, R>{FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0))};                \
+                                                                                                                                    \
+        else if constexpr (D == 2)                                                                                                  \
+            return TYPE<D, R>{FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                 \
+                              FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1))};                \
+                                                                                                                                    \
+        else if constexpr (D == 3)                                                                                                  \
+            return TYPE<D, R>{FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                 \
+                              FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1)),                 \
+                              FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2), c.TG_IMPL_MEMBER(TYPE, 2))};                \
+                                                                                                                                    \
+        else if constexpr (D == 4)                                                                                                  \
+            return TYPE<D, R>{FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)),                 \
+                              FUN(a.TG_IMPL_MEMBER(TYPE, 1), b.TG_IMPL_MEMBER(TYPE, 1), c.TG_IMPL_MEMBER(TYPE, 1)),                 \
+                              FUN(a.TG_IMPL_MEMBER(TYPE, 2), b.TG_IMPL_MEMBER(TYPE, 2), c.TG_IMPL_MEMBER(TYPE, 2)),                 \
+                              FUN(a.TG_IMPL_MEMBER(TYPE, 3), b.TG_IMPL_MEMBER(TYPE, 3), c.TG_IMPL_MEMBER(TYPE, 3))};                \
+                                                                                                                                    \
+        else                                                                                                                        \
+            static_assert(always_false<ScalarT>, "only supported up to 4 dimensions");                                              \
+    }                                                                                                                               \
     TG_FORCE_SEMICOLON
 
-#define TG_IMPL_DEFINE_REDUCTION_OP_BINARY(TYPE_A, TYPE_B, RESULT_T, NAME, REDUCE, OP)                                                                 \
-    template <class ScalarT>                                                                                                                           \
-    TG_NODISCARD constexpr RESULT_T NAME(TYPE_A<1, ScalarT> const& a, TYPE_B<1, ScalarT> const& b)                                                     \
-    {                                                                                                                                                  \
-        return a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0);                                                                             \
-    }                                                                                                                                                  \
-    template <class ScalarT>                                                                                                                           \
-    TG_NODISCARD constexpr RESULT_T NAME(TYPE_A<2, ScalarT> const& a, TYPE_B<2, ScalarT> const& b)                                                     \
-    {                                                                                                                                                  \
-        return (a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1));         \
-    }                                                                                                                                                  \
-    template <class ScalarT>                                                                                                                           \
-    TG_NODISCARD constexpr RESULT_T NAME(TYPE_A<3, ScalarT> const& a, TYPE_B<3, ScalarT> const& b)                                                     \
-    {                                                                                                                                                  \
-        return (a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1))          \
-            REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 2) OP b.TG_IMPL_MEMBER(TYPE_B, 2));                                                                        \
-    }                                                                                                                                                  \
-    template <class ScalarT>                                                                                                                           \
-    TG_NODISCARD constexpr RESULT_T NAME(TYPE_A<4, ScalarT> const& a, TYPE_B<4, ScalarT> const& b)                                                     \
-    {                                                                                                                                                  \
-        return ((a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1)))REDUCE( \
-            (a.TG_IMPL_MEMBER(TYPE_A, 2) OP b.TG_IMPL_MEMBER(TYPE_B, 2))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 3) OP b.TG_IMPL_MEMBER(TYPE_B, 3)));           \
-    }                                                                                                                                                  \
+#define TG_IMPL_DEFINE_REDUCTION_OP_BINARY(TYPE_A, TYPE_B, RESULT_T, NAME, REDUCE, OP)                                                                     \
+    template <int D, class ScalarT>                                                                                                                        \
+    TG_NODISCARD constexpr RESULT_T NAME(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                                                         \
+    {                                                                                                                                                      \
+        if constexpr (D == 1)                                                                                                                              \
+            return a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0);                                                                             \
+                                                                                                                                                           \
+        else if constexpr (D == 2)                                                                                                                         \
+            return (a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1));         \
+                                                                                                                                                           \
+        else if constexpr (D == 3)                                                                                                                         \
+            return (a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1))          \
+                REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 2) OP b.TG_IMPL_MEMBER(TYPE_B, 2));                                                                        \
+                                                                                                                                                           \
+        else if constexpr (D == 4)                                                                                                                         \
+            return ((a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 1) OP b.TG_IMPL_MEMBER(TYPE_B, 1)))REDUCE( \
+                (a.TG_IMPL_MEMBER(TYPE_A, 2) OP b.TG_IMPL_MEMBER(TYPE_B, 2))REDUCE(a.TG_IMPL_MEMBER(TYPE_A, 3) OP b.TG_IMPL_MEMBER(TYPE_B, 3)));           \
+                                                                                                                                                           \
+        else                                                                                                                                               \
+            static_assert(always_false<ScalarT>, "only supported up to 4 dimensions");                                                                     \
+    }                                                                                                                                                      \
     TG_FORCE_SEMICOLON
 
 #define TG_IMPL_DEFINE_ASSIGNMENT_OP(TYPE_THIS, OP)                                                                           \
