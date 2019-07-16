@@ -2,6 +2,8 @@
 
 namespace tg
 {
+using size_t = decltype(sizeof(0));
+
 namespace detail
 {
 struct unused;
@@ -73,6 +75,35 @@ struct is_same_t<A, A>
 template <class A, class B>
 static constexpr bool is_same = is_same_t<A, B>::value;
 
+template <class T>
+struct remove_reference_t
+{
+    using type = T;
+};
+template <class T>
+struct remove_reference_t<T&>
+{
+    using type = T;
+};
+template <class T>
+struct remove_reference_t<T&&>
+{
+    using type = T;
+};
+template <class T>
+using remove_reference = typename remove_reference_t<T>::type;
+
+template <class T>
+constexpr T&& forward(remove_reference<T>& t) noexcept
+{
+    return static_cast<T&&>(t);
+}
+template <class T>
+constexpr T&& forward(remove_reference<T>&& t) noexcept
+{
+    return static_cast<T&&>(t);
+}
+
 template <class To, class From>
 To bit_cast(From f)
 {
@@ -127,5 +158,73 @@ char container_test(...);
 
 template <class Container, class ElementT>
 static constexpr bool is_container = sizeof(detail::container_test<Container, ElementT>(nullptr)) == sizeof(int);
+
+template <class C>
+constexpr auto begin(C& c) -> decltype(c.begin())
+{
+    return c.begin();
+}
+template <class C>
+constexpr auto end(C& c) -> decltype(c.end())
+{
+    return c.end();
+}
+
+template <class C>
+constexpr auto begin(C const& c) -> decltype(c.begin())
+{
+    return c.begin();
+}
+template <class C>
+constexpr auto end(C const& c) -> decltype(c.end())
+{
+    return c.end();
+}
+
+template <class T, size_t N>
+constexpr T* begin(T (&array)[N])
+{
+    return array;
+}
+template <class T, size_t N>
+constexpr T* end(T (&array)[N])
+{
+    return array + N;
+}
+
+template <class ContainerT>
+constexpr auto container_size(ContainerT&& c) -> decltype(c.size())
+{
+    return c.size();
+}
+template <class T, size_t N>
+constexpr size_t container_size(T (&)[N])
+{
+    return N;
+}
+
+template <class Range>
+struct element_type_t
+{
+    static Range make_range();
+
+    using type = remove_reference<decltype(*tg::begin(make_range()))>;
+};
+template <class T, size_t N>
+struct element_type_t<T[N]>
+{
+    using type = T;
+};
+template <class Range>
+using element_type = typename element_type_t<Range>::type;
+
+struct identity_fun
+{
+    template <class T>
+    constexpr T&& operator()(T&& v) const noexcept
+    {
+        return forward<T>(v);
+    }
+};
 
 } // namespace tg

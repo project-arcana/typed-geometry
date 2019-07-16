@@ -77,4 +77,8 @@ private:
     T* _data = nullptr;
     size_t _size = 0;
 };
+
+// deduction guide for containers
+template <class Container, class = enable_if<is_container<Container, void>>>
+span(Container& c)->span<remove_reference<decltype(*c.data())>>;
 }

@@ -37,7 +37,7 @@
 #include <typed-geometry/functions/scaling.hh>
 #include <typed-geometry/functions/size.hh>
 #include <typed-geometry/functions/smoothstep.hh>
-#include <typed-geometry/functions/spans.hh>
+#include <typed-geometry/functions/statistics.hh>
 #include <typed-geometry/functions/submatrix.hh>
 #include <typed-geometry/functions/subvector.hh>
 #include <typed-geometry/functions/tangent.hh>
