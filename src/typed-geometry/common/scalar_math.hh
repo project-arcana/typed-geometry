@@ -159,26 +159,26 @@ TG_NODISCARD inline f32 pow(f32 b, i32 e) { return f32(std::pow(b, e)); }
 TG_NODISCARD inline f64 pow(f64 b, f64 e) { return std::pow(b, e); }
 TG_NODISCARD inline f64 pow(f64 b, i32 e) { return std::pow(b, e); }
 
-template <class T, class = enable_if<has_multiplication<T>>>
-TG_NODISCARD constexpr T pow2(T const& v)
+template <class T>
+TG_NODISCARD constexpr auto pow2(T const& v) -> decltype(v * v)
 {
     return v * v;
 }
-template <class T, class = enable_if<has_multiplication<T>>>
-TG_NODISCARD constexpr T pow3(T const& v)
+template <class T>
+TG_NODISCARD constexpr auto pow3(T const& v) -> decltype(v * v * v)
 {
     return v * v * v;
 }
-template <class T, class = enable_if<has_multiplication<T>>>
-TG_NODISCARD constexpr T pow4(T const& v)
+template <class T>
+TG_NODISCARD constexpr auto pow4(T const& v) -> decltype((v * v) * (v * v))
 {
-    auto v2 = v * v;
+    auto const v2 = v * v;
     return v2 * v2;
 }
-template <class T, class = enable_if<has_multiplication<T>>>
-TG_NODISCARD constexpr T pow5(T const& v)
+template <class T>
+TG_NODISCARD constexpr auto pow5(T const& v) -> decltype((v * v) * (v * v) * v)
 {
-    auto v2 = v * v;
+    auto const v2 = v * v;
     return v2 * v2 * v;
 }
 

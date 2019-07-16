@@ -30,17 +30,6 @@ std::basic_ostringstream<CharT, Traits> temp_sstream(std::basic_ostream<CharT, T
 }
 }
 
-// guideline:
-// - the output should be valid C++ (and reconstruct the type)
-
-// how to add a new type:
-// - extend traits.hh:
-//     template <int D, class ScalarT>
-//     struct type_name_t<aabb<D, ScalarT>>
-//     {
-//         static constexpr char const* value = "aabb";
-//     };
-
 template <class T, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, angle_t<T> const& val)
 {

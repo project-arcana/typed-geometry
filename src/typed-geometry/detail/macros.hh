@@ -396,12 +396,6 @@
     {                                                                     \
         using type = result_type;                                         \
     } // enforce ;
-#define TG_IMPL_ADD_SCALAR_TYPE(basetype, bits, rtype) \
-    template <>                                        \
-    struct scalar_t<basetype, bits>                    \
-    {                                                  \
-        using type = rtype;                            \
-    } // enforce ;
 
 #define TG_IMPL_ADD_OBJECT_TYPE(ttype)      \
     template <int D, class ScalarT>         \
@@ -435,13 +429,4 @@
     struct fractional_result_t<ttype<D, ScalarT>>                   \
     {                                                               \
         using type = ttype<D, fractional_result<ScalarT>>;          \
-    } // enforce ;
-
-
-#define TG_IMPL_INHERIT_TRAITS_FIELD_D(ttype)                      \
-    TG_IMPL_INHERIT_TRAITS_D(ttype);                               \
-    template <int D, class ScalarT>                                \
-    struct has_multiplication_t<ttype<D, ScalarT>>                 \
-    {                                                              \
-        static constexpr bool value = has_multiplication<ScalarT>; \
     } // enforce ;

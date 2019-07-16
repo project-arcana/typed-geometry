@@ -24,11 +24,6 @@ using vec2 = vec<2, f32>;
 using vec3 = vec<3, f32>;
 using vec4 = vec<4, f32>;
 
-using bvec1 = vec<1, bool>;
-using bvec2 = vec<2, bool>;
-using bvec3 = vec<3, bool>;
-using bvec4 = vec<4, bool>;
-
 using fvec1 = vec<1, f32>;
 using fvec2 = vec<2, f32>;
 using fvec3 = vec<3, f32>;
