@@ -31,6 +31,9 @@ struct priority_tag<0>
 } // namespace detail
 
 template <class...>
+inline constexpr bool always_false = false;
+
+template <class...>
 using void_t = void;
 
 template <class A, class B>
@@ -92,6 +95,22 @@ struct remove_reference_t<T&&>
 };
 template <class T>
 using remove_reference = typename remove_reference_t<T>::type;
+
+template <class T>
+struct remove_const_t
+{
+    using type = T;
+};
+template <class T>
+struct remove_const_t<const T>
+{
+    using type = T;
+};
+template <class T>
+using remove_const = typename remove_const_t<T>::type;
+
+template <class T>
+using remove_const_ref = remove_const<remove_reference<T>>;
 
 template <class T>
 constexpr T&& forward(remove_reference<T>& t) noexcept

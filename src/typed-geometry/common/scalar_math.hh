@@ -116,24 +116,24 @@ TG_NODISCARD inline i64 iround(f64 v) { return v >= 0 ? i64(v + 0.5) : i64(v - 0
 TG_NODISCARD inline f32 fract(f32 v) { return v - floor(v); }
 TG_NODISCARD inline f64 fract(f64 v) { return v - floor(v); }
 
-template <class T, class = enable_if<is_scalar<T>>>
-TG_NODISCARD constexpr T min(T const& a, T const& b)
+template <class A, class B>
+TG_NODISCARD constexpr auto min(A&& a, B&& b) -> decltype(a < b ? a : b)
 {
     return a < b ? a : b;
 }
-template <class T, class = enable_if<is_scalar<T>>>
-TG_NODISCARD constexpr T max(T const& a, T const& b)
+template <class A, class B>
+TG_NODISCARD constexpr auto max(A&& a, B&& b) -> decltype(a < b ? b : a)
 {
     return a < b ? b : a;
 }
 
-template <class T, class = enable_if<is_scalar<T>>>
-TG_NODISCARD constexpr T clamp(T const& a, T const& min_value, T const& max_value)
+template <class A, class B, class C>
+TG_NODISCARD constexpr auto clamp(A const& a, B const& min_value, C const& max_value) -> decltype(min(max(a, min_value), max_value))
 {
     return min(max(a, min_value), max_value);
 }
 
-template <class T, class = enable_if<is_scalar<T>>>
+template <class T>
 TG_NODISCARD constexpr T saturate(T const& a)
 {
     return clamp(a, T(0), T(1));

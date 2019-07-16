@@ -90,6 +90,7 @@ TG_NODISCARD constexpr ScalarT distance_sqr(pos<2, ScalarT> const& p, quadric<2,
            - 2 * dot(vec<2, ScalarT>(p), q.r) // - 2 r^T x
            + q.d_sqr;                         // + c
 }
+
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT distance_sqr(pos<3, ScalarT> const& p, quadric<3, ScalarT> const& q)
 {
@@ -105,10 +106,11 @@ TG_NODISCARD constexpr ScalarT distance_sqr(pos<3, ScalarT> const& p, quadric<3,
            - 2 * dot(vec<3, ScalarT>(p), q.r) // - 2 r^T x
            + q.d_sqr;                         // + c
 }
+
 template <int D, class ScalarT>
 TG_NODISCARD constexpr ScalarT distance_sqr(quadric<D, ScalarT> const& q, pos<D, ScalarT> const& p)
 {
-    return distance(p, q);
+    return distance_sqr(p, q);
 }
 
 } // namespace tg
