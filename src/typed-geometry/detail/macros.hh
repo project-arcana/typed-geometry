@@ -333,7 +333,7 @@
     template <int D, class T>                                                               \
     type(size<D, T> const&)->type<D, T>;                                                    \
     template <int D, class T>                                                               \
-    type(dir<D, T> const&)->type<D, T>;
+    type(dir<D, T> const&)->type<D, T> // enforce ;
 
 
 #define TG_IMPL_DEFINE_TRAIT(trait, result_type, default_val) \
