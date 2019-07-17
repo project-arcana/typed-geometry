@@ -1,6 +1,8 @@
 #pragma once
 
+#include <typed-geometry/types/fwd.hh>
 #include <typed-geometry/types/types.hh>
+
 #include "scalar_traits.hh"
 
 namespace tg
@@ -36,5 +38,11 @@ TG_IMPL_ADD_OBJECT_TYPE(ray);
 TG_IMPL_ADD_OBJECT_TYPE(sphere);
 TG_IMPL_ADD_OBJECT_TYPE(ball);
 // TODO: more
+
+// special types
+TG_IMPL_DEFINE_TRAIT(is_rng, bool, false);
+TG_IMPL_ADD_TRAIT(is_rng, bool, xorshift, true);
+TG_IMPL_ADD_TRAIT(is_rng, bool, splitmix, true);
+TG_IMPL_ADD_TRAIT(is_rng, bool, pcg, true);
 
 } // namespace tg

@@ -15,6 +15,7 @@
 #include <typed-geometry/types/objects/triangle.hh>
 
 #include "math.hh"
+#include "minmax.hh"
 #include "mix.hh"
 
 /*

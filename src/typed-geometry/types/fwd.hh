@@ -31,4 +31,9 @@ template <int D, class ScalarT>
 struct ray;
 template <int D, class ScalarT>
 struct segment;
+
+// special types:
+struct splitmix;
+struct xorshift;
+struct pcg;
 } // namespace tg
