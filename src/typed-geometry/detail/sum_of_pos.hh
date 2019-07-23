@@ -22,6 +22,7 @@ struct sum_of_pos
     /* implicit */ constexpr sum_of_pos(pos_t const& p) : accum(p) {}
 
     constexpr pos<D, div_t> operator/(div_t const& rhs) const { return accum / rhs; }
+    constexpr pos<D, div_t> operator*(div_t const& rhs) const { return accum * rhs; }
 
     constexpr sum_of_pos operator+(sum_of_pos const& rhs) const { return accum + vec(rhs); }
     constexpr sum_of_pos operator+(pos_t const& rhs) const { return accum + vec(rhs); }
