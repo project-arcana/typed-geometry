@@ -14,6 +14,11 @@ TG_NODISCARD constexpr ScalarT length_sqr(vec<D, ScalarT> const& v)
 {
     return dot(v, v);
 }
+template <int D, class ScalarT>
+[[deprecated("length of a position is ill-defined. did you mean length(vec)?")]] TG_NODISCARD constexpr ScalarT length_sqr(pos<D, ScalarT> const& v)
+{
+    return dot(vec(v), vec(v));
+}
 
 // Default implementation of length as sqrt(length_sqr)
 template <class T>

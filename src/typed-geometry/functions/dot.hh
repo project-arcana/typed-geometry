@@ -80,4 +80,11 @@ TG_NODISCARD constexpr ScalarT dot(vec<D, ScalarT> const& a, pos<D, ScalarT> con
 {
     return dot(a, vec<D, ScalarT>(b));
 }
+
+template <int D, class ScalarT>
+[[deprecated("dot product between positions is ill-defined. did you mean dot(vec, pos) or dot(vec, vec)?")]] TG_NODISCARD constexpr ScalarT dot(
+    pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+{
+    return dot(vec(a), vec(b));
+}
 } // namespace tg

@@ -22,6 +22,12 @@ TG_NODISCARD constexpr auto distance_sqr(pos<D, ScalarA> const& a, pos<D, Scalar
 {
     return length_sqr(a - b);
 }
+template <int D, class ScalarA, class ScalarB>
+[[deprecated("distance between vectors is ill-defined. did you mean distance_sqr(pos, pos)?")]] TG_NODISCARD constexpr auto distance_sqr(
+    vec<D, ScalarA> const& a, vec<D, ScalarB> const& b) -> decltype(length_sqr(a - b))
+{
+    return length_sqr(a - b);
+}
 
 // Default implementation of distance as sqrt(distance_sqr)
 template <class A, class B>

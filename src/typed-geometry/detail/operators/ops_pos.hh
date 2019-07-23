@@ -1,11 +1,11 @@
 #pragma once
 
+#include <typed-geometry/detail/macros.hh>
+#include <typed-geometry/detail/scalar_traits.hh>
+#include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
 #include <typed-geometry/types/vec.hh>
-#include <typed-geometry/types/dir.hh>
-#include <typed-geometry/detail/macros.hh>
-#include <typed-geometry/detail/scalar_traits.hh>
 
 namespace tg
 {
@@ -34,5 +34,12 @@ TG_IMPL_DEFINE_BINARY_OP_SCALAR(pos, -);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR(pos, +);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR(pos, *);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(pos);
+
+// deprecated / not supported operations
+template <int D, class ScalarT>
+[[deprecated("pos + pos is not a proper operation. did you mean pos + vec?")]] pos<D, ScalarT> operator+(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+{
+    return a + vec(b);
+}
 
 } // namespace tg

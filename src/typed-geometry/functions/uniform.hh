@@ -20,8 +20,12 @@
 
 /*
  * uniform(rng)       - fair coin flip
- * uniform(rng, a, b) - mix(a, b, uniform{0..1})
+ * uniform(rng, a, b) - uniform between a..b (inclusive!)
  * uniform(rng, obj)  - uniform sample from obj
+ *
+ * Note:
+ *  to "uniformly sample" vec3(0)..vec3(1) independent per component, use uniform(rng, tg::aabb3(0, 1))
+ *  to "uniformly sample" vec3(0)..vec3(1) as a segment, use uniform(rng, tg::segment3({0,0,0}, {1,1,1}))
  *
  * uniform_vec(rng, ...) same as uniform but returns uniform(rng, ...) as a vector
  */
@@ -198,12 +202,16 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const&
 }
 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
-TG_NODISCARD constexpr vec<D, ScalarT> uniform(Rng& rng, vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
+[[deprecated("potentially misleading operation. use uniform_vec(rng, tg::aabb3(..)) or uniform_vec(rng, tg::segment3(..)) depending on your intended "
+             "semantics")]] TG_NODISCARD constexpr vec<D, ScalarT>
+uniform(Rng& rng, vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
     return mix(a, b, detail::uniform01<ScalarT>(rng));
 }
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
-TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+[[deprecated("potentially misleading operation. use uniform(rng, tg::aabb3(..)) or uniform(rng, tg::segment3(..)) depending on your intended "
+             "semantics")]] TG_NODISCARD constexpr pos<D, ScalarT>
+uniform(Rng& rng, pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     return mix(a, b, detail::uniform01<ScalarT>(rng));
 }
