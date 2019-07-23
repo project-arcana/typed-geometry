@@ -2,6 +2,7 @@
 
 #include <typed-geometry/detail/macros.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
+#include <typed-geometry/detail/sum_of_pos.hh>
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
@@ -35,11 +36,13 @@ TG_IMPL_DEFINE_BINARY_OP_SCALAR(pos, +);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR(pos, *);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(pos);
 
-// deprecated / not supported operations
+// special pos+pos handling
 template <int D, class ScalarT>
-[[deprecated("pos + pos is not a proper operation. did you mean pos + vec?")]] pos<D, ScalarT> operator+(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+TG_NODISCARD constexpr sum_of_pos<D, ScalarT> operator+(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
-    return a + vec(b);
+    return sum_of_pos(a) + b;
 }
+
+// deprecated / not supported operations
 
 } // namespace tg
