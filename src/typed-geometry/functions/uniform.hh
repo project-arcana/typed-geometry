@@ -18,6 +18,8 @@
 #include "minmax.hh"
 #include "mix.hh"
 
+#include <initializer_list>
+
 /*
  * uniform(rng)       - fair coin flip
  * uniform(rng, a, b) - uniform between a..b (inclusive!)
@@ -103,7 +105,7 @@ TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b_inc)
     auto fb = f64(b_inc) + 1;
     do
     {
-        r = tg::ifloor(uniform(rng, fa, fb));
+        r = u64(tg::ifloor(uniform(rng, fa, fb)));
     } while (r > b_inc);
     return r;
 }
@@ -114,11 +116,18 @@ TG_NODISCARD constexpr angle_t<T> uniform(Rng& rng, angle_t<T> a, angle_t<T> b)
     return mix(a, b, detail::uniform01<T>(rng));
 }
 
+template <class Rng, class T>
+TG_NODISCARD constexpr T uniform(Rng& rng, std::initializer_list<T> list)
+{
+    TG_CONTRACT(list.size() > 0 && "cannot pick from an empty list");
+    return list.begin()[uniform(rng, u64(0), u64(list.size() - 1))];
+}
+
 template <class Rng, class Container>
 TG_NODISCARD constexpr auto uniform(Rng& rng, Container const& c) -> decltype(c[c.size()])
 {
     TG_CONTRACT(c.size() > 0 && "cannot pick from an empty container");
-    return c[uniform(rng, 0, c.size() - 1)];
+    return c[uniform(rng, u64(0), u64(c.size() - 1))];
 }
 
 template <class Rng>
