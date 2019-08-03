@@ -48,6 +48,56 @@ TG_NODISCARD constexpr auto fold_right(RangeT const& values, TransformF&& t, Red
 }
 }
 
+template <class RangeT, class KeyT>
+TG_NODISCARD constexpr auto min_by(RangeT const& values, KeyT&& key = {})
+{
+    TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
+    auto it = tg::begin(values);
+    auto const e = tg::end(values);
+
+    auto min_e = it;
+    auto min_v = key(*it);
+
+    it++;
+    while (it != e)
+    {
+        auto v = key(*it);
+        if (v < min_v)
+        {
+            min_v = v;
+            min_e = it;
+        }
+        it++;
+    }
+
+	return *min_e;
+}
+
+template <class RangeT, class KeyT>
+TG_NODISCARD constexpr auto max_by(RangeT const& values, KeyT&& key = {})
+{
+    TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
+    auto it = tg::begin(values);
+    auto const e = tg::end(values);
+
+    auto max_e = it;
+    auto max_v = key(*it);
+
+    it++;
+    while (it != e)
+    {
+        auto v = key(*it);
+        if (v > max_v)
+        {
+            max_v = v;
+            max_e = it;
+        }
+        it++;
+    }
+
+	return *max_e;
+}
+
 template <class RangeT, class TransformT = identity_fun>
 TG_NODISCARD constexpr auto min_element(RangeT const& values, TransformT&& transform = {})
 {
