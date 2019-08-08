@@ -44,6 +44,5 @@
 #include <typed-geometry/functions/subvector.hh>
 #include <typed-geometry/functions/tangent.hh>
 #include <typed-geometry/functions/translation.hh>
-#include <typed-geometry/functions/triangle.hh>
 #include <typed-geometry/functions/uniform.hh>
 #include <typed-geometry/functions/volume.hh>
