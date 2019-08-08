@@ -22,9 +22,9 @@ TG_NODISCARD constexpr triangle_obtuseness classify_obtuseness(triangle<D, Scala
 
     // make e0sqr longest (squared) edge
     if (e1sqr > e0sqr)
-        tg::swap(e0sqr, e1sqr);
+        tg::detail::swap(e0sqr, e1sqr);
     if (e2sqr > e0sqr)
-        tg::swap(e0sqr, e2sqr);
+        tg::detail::swap(e0sqr, e2sqr);
 
     auto test = e0sqr - e1sqr - e2sqr;
     if (test > ScalarT(0))
