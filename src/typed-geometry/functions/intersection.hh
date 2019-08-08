@@ -452,6 +452,30 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
     return {p, dir};
 }
 
+template <int D, class ScalarT>
+TG_NODISCARD constexpr optional<aabb<D, ScalarT>> intersection(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
+{
+    for (auto i = 0; i < D; ++i)
+    {
+        if (a.max[i] < b.min[i])
+            return {};
+
+        if (b.max[i] < a.min[i])
+            return {};
+    }
+
+    // overlap!
+    aabb<D, ScalarT> res;
+
+    for (auto i = 0; i < D; ++i)
+    {
+        res.min[i] = max(a.min[i], b.min[i]);
+        res.max[i] = min(a.max[i], b.max[i]);
+    }
+
+    return {res};
+}
+
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT intersection_parameter(line<3, ScalarT> const& l, hyperplane<3, ScalarT> const& p)
 {
