@@ -254,4 +254,16 @@ struct identity_fun
     }
 };
 
+namespace detail
+{
+// in detail ns to avoid ambiguity clash with std::swap
+template <class T>
+void swap(T& a, T& b)
+{
+    T tmp = static_cast<T&&>(a);
+    a = static_cast<T&&>(b);
+    b = static_cast<T&&>(tmp);
+}
+}
+
 } // namespace tg
