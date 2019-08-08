@@ -70,7 +70,7 @@ TG_NODISCARD constexpr auto min_by(RangeT const& values, KeyT&& key = {})
         it++;
     }
 
-	return *min_e;
+    return *min_e;
 }
 
 template <class RangeT, class KeyT>
@@ -95,7 +95,7 @@ TG_NODISCARD constexpr auto max_by(RangeT const& values, KeyT&& key = {})
         it++;
     }
 
-	return *max_e;
+    return *max_e;
 }
 
 template <class RangeT, class TransformT = identity_fun>
