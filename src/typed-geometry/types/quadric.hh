@@ -61,7 +61,7 @@ public:
     /// Adds a line (pos, normal) with a given uncertainty sigma
     /// `normal` should be normalized
     /// `sigma` is the standard deviation of the normal distribution added to `normal`
-    void add_line(pos2_t pos, dir2_t normal, scalar_t sigma)
+    void add_line(pos2_t pos, vec2_t normal, scalar_t sigma)
     {
         auto d = dot(pos - pos2_t::zero, normal);
         auto s2 = sigma * sigma;
@@ -76,10 +76,22 @@ public:
         d_sqr += d * d + distance_sqr_to_origin(pos) * s2;
     }
 
+    // add two quadrics
+    void add(quadric const& rhs)
+    {
+        A00 += rhs.A00;
+        A01 += rhs.A01;
+        A11 += rhs.A11;
+
+        r += rhs.r;
+
+        d_sqr += rhs.d_sqr;
+    }
+
     // TODO: fix me
-    template<class T>
+    template <class T>
     friend constexpr T distance_sqr(pos<2, T> const& p, quadric<2, T> const& q);
-    template<class T>
+    template <class T>
     friend constexpr pos<2, T> closest_point(quadric<2, T> const& q);
 };
 
@@ -110,12 +122,29 @@ public:
 
     // TODO: operator== and !=
 
+public:
+    constexpr mat<3, 3, ScalarT> A() const
+    {
+        mat<3, 3, ScalarT> m;
+        m[0][0] = A00;
+        m[0][1] = A01;
+        m[0][2] = A02;
+        m[1][0] = A01;
+        m[1][1] = A11;
+        m[1][2] = A12;
+        m[2][0] = A02;
+        m[2][1] = A12;
+        m[2][2] = A22;
+        return m;
+    }
+    constexpr vec<3, ScalarT> b() const { return r; }
+
     // TODO: find better place for these?
 public:
     /// Adds a plane (pos, normal) with a given uncertainty sigma
     /// `normal` should be normalized
     /// `sigma` is the standard deviation of the normal distribution added to `normal`
-    void add_plane(pos3_t pos, dir3_t normal, scalar_t sigma)
+    void add_plane(pos3_t pos, vec3_t normal, scalar_t sigma)
     {
         auto d = dot(pos - pos3_t::zero, normal);
         auto s2 = sigma * sigma;
@@ -149,10 +178,9 @@ public:
     }
 
     // TODO: fix me
-    template<class T>
+    template <class T>
     friend constexpr T distance_sqr(pos<3, T> const& p, quadric<3, T> const& q);
-    template<class T>
+    template <class T>
     friend constexpr pos<3, T> closest_point(quadric<3, T> const& q);
 };
-
 }
