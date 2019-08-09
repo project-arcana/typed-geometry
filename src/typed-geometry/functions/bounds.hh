@@ -23,14 +23,14 @@ TG_NODISCARD constexpr sphere<D, ScalarT> bounding_sphere_of(triangle<D, ScalarT
     if (e2sqr > e1sqr)
     {
         // make e1 larger than e2
-        detail::swap(e1sqr, e2sqr);
-        detail::swap(b, c);
+        tg::detail::swap(e1sqr, e2sqr);
+        tg::detail::swap(b, c);
     }
     if (e1sqr > e0sqr)
     {
         // make e0 larger than e1
-        detail::swap(e0sqr, e1sqr);
-        detail::swap(a, b);
+        tg::detail::swap(e0sqr, e1sqr);
+        tg::detail::swap(a, b);
     }
 
     if (e0sqr >= e1sqr + e2sqr) // triangle is obtuse or right
@@ -46,7 +46,7 @@ TG_NODISCARD constexpr sphere<D, ScalarT> bounding_sphere_of(triangle<D, ScalarT
     auto gamma = e2sqr * (e0sqr + e1sqr - e2sqr);
     auto bary_sum = alpha + beta + gamma;
 
-    auto center = tg::interpolate(triangle<D, ScalarT>(*a, *b, *c), alpha, beta, gamma) / bary_sum;
+    auto center = tg::interpolate(triangle(*a, *b, *c), alpha, beta, gamma) / bary_sum;
     auto radius = tg::distance(center, t.pos0);
 
     return {center, radius};
