@@ -35,6 +35,12 @@ TG_NODISCARD constexpr pos<D, ScalarT> line<D, ScalarT>::operator[](ScalarT t) c
 }
 
 template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> aabb<D, ScalarT>::operator[](comp<D, ScalarT> const& c) const
+{
+    return this->min + (this->max - this->min) * size(c);
+}
+
+template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> triangle<D, ScalarT>::operator[](comp<3, ScalarT> const& barycoords) const
 {
     return interpolate(*this, barycoords[0], barycoords[1], barycoords[2]);
