@@ -35,25 +35,25 @@ TG_NODISCARD constexpr triangle_obtuseness classify_obtuseness(triangle<D, Scala
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle_obtuseness is_obtuse_triangle(triangle<D, ScalarT> const& t)
+TG_NODISCARD constexpr bool is_obtuse_triangle(triangle<D, ScalarT> const& t)
 {
     return classify_obtuseness(t) == triangle_obtuseness::obtuse;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle_obtuseness is_right_triangle(triangle<D, ScalarT> const& t)
+TG_NODISCARD constexpr bool is_right_triangle(triangle<D, ScalarT> const& t)
 {
     return classify_obtuseness(t) == triangle_obtuseness::right;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle_obtuseness is_nonobtuse_triangle(triangle<D, ScalarT> const& t)
+TG_NODISCARD constexpr bool is_nonobtuse_triangle(triangle<D, ScalarT> const& t)
 {
     return classify_obtuseness(t) != triangle_obtuseness::obtuse;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle_obtuseness is_acute_triangle(triangle<D, ScalarT> const& t)
+TG_NODISCARD constexpr bool is_acute_triangle(triangle<D, ScalarT> const& t)
 {
     return classify_obtuseness(t) == triangle_obtuseness::acute;
 }

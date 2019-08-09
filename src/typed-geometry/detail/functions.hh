@@ -3,6 +3,7 @@
 #include <typed-geometry/functions/aabb.hh>
 #include <typed-geometry/functions/angle.hh>
 #include <typed-geometry/functions/area.hh>
+#include <typed-geometry/functions/bounds.hh>
 #include <typed-geometry/functions/centroid.hh>
 #include <typed-geometry/functions/closest_points.hh>
 #include <typed-geometry/functions/contains.hh>
