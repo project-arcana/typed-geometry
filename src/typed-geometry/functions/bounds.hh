@@ -8,6 +8,19 @@
 namespace tg
 {
 template <int D, class ScalarT>
+TG_NODISCARD constexpr aabb<D, ScalarT> shrink(aabb<D, ScalarT> const& b, tg::dont_deduce<ScalarT> s)
+{
+    // TODO: what if result is invalid?
+    return {b.min + s, b.max - s};
+}
+template <int D, class ScalarT>
+TG_NODISCARD constexpr aabb<D, ScalarT> expand(aabb<D, ScalarT> const& b, tg::dont_deduce<ScalarT> s)
+{
+    // TODO: what if result is invalid?
+    return {b.min - s, b.max + s};
+}
+
+template <int D, class ScalarT>
 TG_NODISCARD constexpr sphere<D, ScalarT> bounding_sphere_of(triangle<D, ScalarT> const& t)
 {
     auto e0sqr = distance_sqr(t.pos0, t.pos1);
