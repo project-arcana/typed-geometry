@@ -30,6 +30,16 @@ public:
     TG_NODISCARD constexpr bool operator==(T const& rhs) const { return _has_value && _value == rhs; }
     TG_NODISCARD constexpr bool operator!=(T const& rhs) const { return !_has_value || _value != rhs; }
 
+    TG_NODISCARD constexpr bool operator==(optional<T> const& rhs) const
+    {
+        if (!_has_value && !rhs._has_value)
+            return true;
+        if (!_has_value || !rhs._has_value)
+            return false;
+        return _value == rhs._value;
+    }
+    TG_NODISCARD constexpr bool operator!=(optional<T> const& rhs) const { return !operator==(rhs); }
+
     constexpr optional& operator=(optional const& rhs) noexcept = default;
     constexpr optional& operator=(optional&& rhs) noexcept = default;
 };
