@@ -15,17 +15,19 @@ namespace tg
 template <int D, class ScalarT>
 TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_between(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
+    constexpr auto lower = decltype(dot(normalize_safe(a), normalize_safe(b)))(-1);
+    constexpr auto upper = decltype(dot(normalize_safe(a), normalize_safe(b)))(1);
     auto a_unit = normalize_safe(a);
     auto b_unit = normalize_safe(b);
-    return acos(saturate(dot(a_unit, b_unit)));
+    return acos(clamp(dot(a_unit, b_unit), lower, upper));
 }
 
 // returns the (smaller) angle between two directions, i.e. the result is in 0..pi (0°..180°)
 template <int D, class ScalarT>
 TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_between(dir<D, ScalarT> const& a, dir<D, ScalarT> const& b)
 {
-    constexpr auto lower = decltype (dot(normal(a), normal(b)))(-1);
-    constexpr auto upper = decltype (dot(normal(a), normal(b)))(1);
+    constexpr auto lower = decltype(dot(normal(a), normal(b)))(-1);
+    constexpr auto upper = decltype(dot(normal(a), normal(b)))(1);
     return acos(clamp(dot(a, b), lower, upper));
 }
 
@@ -34,8 +36,8 @@ template <class A, class B>
 TG_NODISCARD constexpr auto angle_between(A const& a, B const& b) -> decltype(acos(dot(normal(a), normal(b))))
 {
     // TODO(ks): call to angle_between(dir, dir)?
-    constexpr auto lower = decltype (dot(normal(a), normal(b)))(-1);
-    constexpr auto upper = decltype (dot(normal(a), normal(b)))(1);
+    constexpr auto lower = decltype(dot(normal(a), normal(b)))(-1);
+    constexpr auto upper = decltype(dot(normal(a), normal(b)))(1);
     return acos(clamp(dot(normal(a), normal(b))), lower, upper);
 }
 
