@@ -23,7 +23,7 @@ namespace tg
  * mat.col(i), mat.row(i) return i-th column and row, respectively
  *
  * NOTE: default initialization is zero, NOT identity
- *       use tg::identity<mat4>() to get identity matrix
+ *       use mat4::identity to get identity matrix
  */
 template <int C, int R, class ScalarT>
 struct mat;
