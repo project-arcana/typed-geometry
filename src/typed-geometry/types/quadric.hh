@@ -177,6 +177,22 @@ public:
         d_sqr += rhs.d_sqr;
     }
 
+    // adds a quadric given in matrix form (x^T A x + b^T x + c)
+    // optionally with a c value
+    void add(mat<3, 3, scalar_t> const& A, vec<3, scalar_t> const& b, scalar_t c = {})
+    {
+        A00 += A[0][0];
+        A01 += A[0][1];
+        A02 += A[0][2];
+        A11 += A[1][1];
+        A12 += A[1][2];
+        A22 += A[2][2];
+
+        r += b;
+
+        d_sqr += c;
+    }
+
     // TODO: fix me
     template <class T>
     friend constexpr T distance_sqr(pos<3, T> const& p, quadric<3, T> const& q);
