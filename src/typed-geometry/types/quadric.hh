@@ -122,6 +122,37 @@ public:
 
     // TODO: operator== and !=
 
+    static constexpr quadric from_coefficients(scalar_t A00, scalar_t A01, scalar_t A02, scalar_t A11, scalar_t A12, scalar_t A22, scalar_t b0, scalar_t b1, scalar_t b2, scalar_t c)
+    {
+        quadric q;
+        q.A00 = A00;
+        q.A01 = A01;
+        q.A02 = A02;
+        q.A11 = A11;
+        q.A12 = A12;
+        q.A22 = A22;
+        q.r.x = b0;
+        q.r.y = b1;
+        q.r.z = b2;
+        q.d_sqr = c;
+        return q;
+    }
+    static constexpr quadric from_coefficients(tg::mat3 const& A, tg::vec3 const& b, float c)
+    {
+        quadric q;
+        q.A00 = A[0][0];
+        q.A01 = A[0][1];
+        q.A02 = A[0][2];
+        q.A11 = A[1][1];
+        q.A12 = A[1][2];
+        q.A22 = A[2][2];
+        q.r.x = b[0];
+        q.r.y = b[1];
+        q.r.z = b[2];
+        q.d_sqr = c;
+        return q;
+    }
+
 public:
     constexpr mat<3, 3, ScalarT> A() const
     {
@@ -138,6 +169,7 @@ public:
         return m;
     }
     constexpr vec<3, ScalarT> b() const { return r; }
+    constexpr scalar_t c() const { return d_sqr; }
 
     // TODO: find better place for these?
 public:
