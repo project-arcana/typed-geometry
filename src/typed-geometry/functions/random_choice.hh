@@ -14,7 +14,7 @@ template <class Rng, class Container>
 TG_NODISCARD constexpr auto random_choice(Rng& rng, Container const& c) -> decltype(c[c.size()])
 {
     TG_CONTRACT(c.size() > 0 && "cannot pick from an empty container");
-    return c[uniform(rng, 0, c.size() - 1)];
+    return c[uniform(rng, tg::u64(0), tg::u64(c.size() - 1))];
 }
 
 }
