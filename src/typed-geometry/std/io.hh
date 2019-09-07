@@ -163,6 +163,15 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 }
 
 template <int D, class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, segment<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "segment" << char('0' + D);
+    ss << "(" << val.pos0 << ", " << val.pos1 << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, hyperplane<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
