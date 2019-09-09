@@ -160,15 +160,6 @@ public:
             m[3] = vec<R, U>(rhs[3]);
     }
 
-    // static constexpr mat<C, R, ScalarT> from_rows()
-    // mat[x][y]
-    // mat(x, y)
-    // tg::mat3::from_rows(r0, r1, r2)
-    // tg::mat3::from_cols(c0, c1, c2)
-    // tg::from_rows(r0, r1, r2)
-    // tg::from_cols(c0, c1, c2)
-    // m.rows(2, 1)
-
     constexpr vec<R, ScalarT>& operator[](int i)
     {
         TG_CONTRACT(0 <= i && i < C);
