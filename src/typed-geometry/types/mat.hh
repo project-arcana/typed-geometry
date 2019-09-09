@@ -145,19 +145,19 @@ private:
 
 public:
     constexpr mat() = default;
-    template <class U>
-    constexpr mat(mat<C, R, U> const& rhs)
+    template <class OtherT>
+    constexpr mat(mat<C, R, OtherT> const& rhs)
     {
-        m[0] = vec<R, U>(rhs[0]);
+        m[0] = vec<R, ScalarT>(rhs[0]);
 
         if constexpr (C >= 2)
-            m[1] = vec<R, U>(rhs[1]);
+            m[1] = vec<R, ScalarT>(rhs[1]);
 
         if constexpr (C >= 3)
-            m[2] = vec<R, U>(rhs[2]);
+            m[2] = vec<R, ScalarT>(rhs[2]);
 
         if constexpr (C >= 4)
-            m[3] = vec<R, U>(rhs[3]);
+            m[3] = vec<R, ScalarT>(rhs[3]);
     }
 
     // static constexpr mat<C, R, ScalarT> from_rows()
