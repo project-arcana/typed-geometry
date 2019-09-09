@@ -53,6 +53,6 @@ TG_NODISCARD constexpr mat<3, 3, ScalarT> tbn_matrix(triangle<3, ScalarT> const&
     b = normalize_safe(b);
     auto n = normalize_safe(cross(t, b));
 
-    return {{t, b, n}};
+    return tg::mat3::from_cols(t, b, n);
 }
 }

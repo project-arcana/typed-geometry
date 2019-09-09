@@ -10,7 +10,7 @@ namespace tg
 template <class ScalarT>
 TG_NODISCARD constexpr mat<1, 1, fractional_result<ScalarT>> inverse(mat<1, 1, ScalarT> const& m)
 {
-    return {{ScalarT(1.0) / m[0].x}};
+    return tg::mat1::from_cols(ScalarT(1.0) / m[0].x);
 }
 template <class ScalarT>
 TG_NODISCARD constexpr mat<2, 2, fractional_result<ScalarT>> inverse(mat<2, 2, ScalarT> const& m)
