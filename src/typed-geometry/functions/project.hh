@@ -245,9 +245,9 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_con
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_tube<D, ScalarT> const& itube)
 {
-    auto vec = p - itube.center;
-    auto h = dot(vec, itube.axis);
-    auto point_on_axis = itube.center + h * itube.axis;
+    auto vec = p - itube.axis.pos;
+    auto h = dot(vec, itube.axis.dir);
+    auto point_on_axis = itube.axis[h];
     return point_on_axis + tg::normalize_safe(p - point_on_axis) * itube.radius;
 }
 } // namespace tg
