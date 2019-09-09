@@ -62,6 +62,11 @@ struct aabb
             TG_CONTRACT(min[i] <= max[i]);
     }
 
+    template <class OtherT>
+    constexpr aabb(pos<D, OtherT> min, pos<D, OtherT> max) : aabb(pos_t(min), pos_t(max))
+    {
+    }
+
     TG_NODISCARD constexpr pos_t operator[](tg::comp<D, ScalarT> const& c) const;
 
     TG_NODISCARD bool operator==(aabb const& rhs) const { return min == rhs.min && max == rhs.max; }

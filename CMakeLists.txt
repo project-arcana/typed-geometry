@@ -21,6 +21,10 @@ set_property(TARGET typed-geometry PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(typed-geometry PUBLIC "src")
 
+target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:DEBUG>:TG_DEBUG>)
+target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:RELEASE>:TG_RELEASE>)
+target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:RELWITHDEBINFO>:TG_RELWITHDEBINFO>)
+
 if (TG_ENABLE_ASSERTIONS)
     target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:DEBUG>:TG_ENABLE_ASSERTIONS>)
     target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:RELWITHDEBINFO>:TG_ENABLE_ASSERTIONS>)
