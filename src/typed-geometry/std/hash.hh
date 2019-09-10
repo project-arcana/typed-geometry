@@ -184,19 +184,19 @@ struct hash<tg::mat<4, R, ScalarT>>
     struct hash<tg::obj<D, ScalarT>>                                                                           \
     {                                                                                                          \
         std::size_t operator()(tg::obj<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.m0); } \
-    };
+    } // force ;
 #define TG_IMPL_OBJECT_HASH2(obj, m0, m1)                                                                            \
     template <int D, class ScalarT>                                                                                  \
     struct hash<tg::obj<D, ScalarT>>                                                                                 \
     {                                                                                                                \
         std::size_t operator()(tg::obj<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.m0, v.m1); } \
-    };
+    } // force ;
 #define TG_IMPL_OBJECT_HASH3(obj, m0, m1, m2)                                                                              \
     template <int D, class ScalarT>                                                                                        \
     struct hash<tg::obj<D, ScalarT>>                                                                                       \
     {                                                                                                                      \
         std::size_t operator()(tg::obj<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.m0, v.m1, v.m2); } \
-    };
+    } // force ;
 
 TG_IMPL_OBJECT_HASH2(aabb, min, max);
 TG_IMPL_OBJECT_HASH2(ball, center, radius);
