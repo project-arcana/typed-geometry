@@ -235,6 +235,48 @@ public:
 };
 
 template <int R, class ScalarT>
+constexpr mat<1, R, ScalarT> from_cols(vec<R, ScalarT> const& c0)
+{
+    return mat<1, R, ScalarT>::from_cols(c0);
+}
+template <int R, class ScalarT>
+constexpr mat<2, R, ScalarT> from_cols(vec<R, ScalarT> const& c0, vec<R, ScalarT> const& c1)
+{
+    return mat<2, R, ScalarT>::from_cols(c0, c1);
+}
+template <int R, class ScalarT>
+constexpr mat<3, R, ScalarT> from_cols(vec<R, ScalarT> const& c0, vec<R, ScalarT> const& c1, vec<R, ScalarT> const& c2)
+{
+    return mat<3, R, ScalarT>::from_cols(c0, c1, c2);
+}
+template <int R, class ScalarT>
+constexpr mat<4, R, ScalarT> from_cols(vec<R, ScalarT> const& c0, vec<R, ScalarT> const& c1, vec<R, ScalarT> const& c2, vec<R, ScalarT> const& c3)
+{
+    return mat<4, R, ScalarT>::from_cols(c0, c1, c2, c3);
+}
+
+template <int C, class ScalarT>
+constexpr mat<C, 1, ScalarT> from_rows(vec<C, ScalarT> const& r0)
+{
+    return mat<C, 1, ScalarT>::from_rows(r0);
+}
+template <int C, class ScalarT>
+constexpr mat<C, 2, ScalarT> from_rows(vec<C, ScalarT> const& r0, vec<C, ScalarT> const& r1)
+{
+    return mat<C, 2, ScalarT>::from_rows(r0, r1);
+}
+template <int C, class ScalarT>
+constexpr mat<C, 3, ScalarT> from_rows(vec<C, ScalarT> const& r0, vec<C, ScalarT> const& r1, vec<C, ScalarT> const& r2)
+{
+    return mat<C, 3, ScalarT>::from_rows(r0, r1, r2);
+}
+template <int C, class ScalarT>
+constexpr mat<C, 4, ScalarT> from_rows(vec<C, ScalarT> const& r0, vec<C, ScalarT> const& r1, vec<C, ScalarT> const& r2, vec<C, ScalarT> const& r3)
+{
+    return mat<C, 4, ScalarT>::from_rows(r0, r1, r2, r3);
+}
+
+template <int R, class ScalarT>
 constexpr bool operator==(mat<1, R, ScalarT> const& a, mat<1, R, ScalarT> const& b)
 {
     return a[0] == b[0];
