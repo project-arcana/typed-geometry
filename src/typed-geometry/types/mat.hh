@@ -145,7 +145,7 @@ private:
 
 public:
     constexpr mat() = default;
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, vec<R, ScalarT>>>>
     explicit constexpr mat(Obj const& v)
     {
         auto s = detail::get_dynamic_comp_size(v);
