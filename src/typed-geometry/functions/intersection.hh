@@ -601,7 +601,10 @@ TG_NODISCARD constexpr bool intersects(sphere<D, ScalarT> const& a, aabb<D, Scal
     auto const b_min = b.min;
     auto const b_max = b.max;
     auto const c = a.center;
-    auto const clamped_sqr = [](ScalarT v) { return tg::max(ScalarT(0), v * v); };
+    auto const clamped_sqr = [](ScalarT v) {
+        v = tg::max(ScalarT(0), v);
+        return v * v;
+    };
 
     auto d_min = ScalarT(0);
 
