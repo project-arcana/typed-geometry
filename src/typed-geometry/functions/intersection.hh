@@ -595,57 +595,46 @@ TG_NODISCARD constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, Scalar
     }
 }
 
-/*
-template <class ScalarT>
-TG_NODISCARD constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
+template <int D, class ScalarT>
+TG_NODISCARD constexpr bool intersects(sphere<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
 {
-    optional<ScalarT> t;
+    auto const b_min = b.min;
+    auto const b_max = b.max;
+    auto const c = a.center;
+    auto const clamped_sqr = [](ScalarT v) { return tg::max(ScalarT(0), v * v); };
 
-    // see
-    // https://www.gamedev.net/forums/topic/467789-raycylinder-intersection/
+    auto d_min = ScalarT(0);
 
-    auto A = c.axis.pos0;
-    auto B = c.axis.pos1;
-    auto O = r.origin;
-    auto V = tg::vec3(r.dir);
-
-    auto AB = (B - A);
-    auto AO = (O - A);
-    auto AOxAB = cross(AO, AB);     // cross product
-    auto VxAB = cross(V, AB);       // cross product
-    auto ab2 = dot(AB, AB);         // dot product
-    auto pa = dot(VxAB, VxAB);      // dot product
-    auto pb = 2 * dot(VxAB, AOxAB); // dot product
-    auto pc = dot(AOxAB, AOxAB) - (c.radius * c.radius * ab2);
-
-    // solve second order equation : a*t^2 + b*t + c = 0
-    auto p = pb / pa;
-    auto q = pc / pa;
-    auto sq2 = p * p / 4 - q;
-
-    if (sq2 >= 0)
+    if constexpr (D >= 1)
     {
-        auto sq = sqrt(sq2);
-        auto ct = -p / 2 - sq >= 0 ? -p / 2 - sq : -p / 2 + sq;
-
-        auto rp = r[ct];
-        auto projp = project(rp, line3::from_points(c.axis.pos0, c.axis.pos1));
-        auto coord = coordinates(c.axis, projp);
-        if (0 <= coord && coord <= 1 && false)
-            t = coord;
+        d_min += clamped_sqr(b_min.x - c.x);
+        d_min += clamped_sqr(c.x - b_max.x);
     }
 
-    auto d = normalize(c.axis.pos1 - c.axis.pos0);
+    if constexpr (D >= 2)
+    {
+        d_min += clamped_sqr(b_min.y - c.y);
+        d_min += clamped_sqr(c.y - b_max.y);
+    }
 
-    if (auto ct = intersection_parameter(r, disk3(c.axis.pos0, c.radius, d)); ct.has_value())
-        if (!t.has_value() || ct.value() < t.value())
-            t = ct;
+    if constexpr (D >= 3)
+    {
+        d_min += clamped_sqr(b_min.z - c.z);
+        d_min += clamped_sqr(c.z - b_max.z);
+    }
 
-    if (auto ct = intersection_parameter(r, disk3(c.axis.pos1, c.radius, d)); ct.has_value())
-        if (!t.has_value() || ct.value() < t.value())
-            t = ct;
+    if constexpr (D >= 4)
+    {
+        d_min += clamped_sqr(b_min.w - c.w);
+        d_min += clamped_sqr(c.w - b_max.w);
+    }
 
-    return t;
+    return d_min <= a.radius * a.radius;
 }
-*/
+template <int D, class ScalarT>
+TG_NODISCARD constexpr bool intersects(aabb<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
+{
+    return intersects(b, a);
+}
+
 } // namespace tg
