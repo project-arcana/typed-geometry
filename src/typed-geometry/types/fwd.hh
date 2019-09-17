@@ -24,6 +24,10 @@ struct comp;
 template <int D, class ScalarT>
 struct color;
 
+// matrix types:
+template <int C, int R, class ScalarT>
+struct mat;
+
 // object types:
 template <int D, class ScalarT>
 struct line;

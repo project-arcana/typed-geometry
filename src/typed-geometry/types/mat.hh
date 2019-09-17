@@ -3,6 +3,8 @@
 #include "scalar.hh"
 #include "vec.hh"
 
+#include <typed-geometry/common/assert.hh>
+
 namespace tg
 {
 /*
@@ -138,13 +140,68 @@ constexpr vec<4, ScalarT> mat_row(mat<4, R, ScalarT> const& m, int i)
 template <int C, int R, class ScalarT>
 struct mat
 {
+private:
     vec<R, ScalarT> m[C];
 
-    constexpr vec<R, ScalarT>& operator[](int i) { return m[i]; }
-    constexpr vec<R, ScalarT> const& operator[](int i) const { return m[i]; }
+public:
+    constexpr mat() = default;
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, vec<R, ScalarT>>>>
+    explicit constexpr mat(Obj const& v)
+    {
+        auto s = detail::get_dynamic_comp_size(v);
+        m[0] = detail::comp_get(v, 0, s, vec<R, ScalarT>::zero);
 
-    constexpr vec<R, ScalarT> col(int i) const { return m[i]; }
-    constexpr vec<C, ScalarT> row(int i) const { return detail::mat_row(*this, i); }
+        if constexpr (C >= 2)
+            m[1] = detail::comp_get(v, 1, s, vec<R, ScalarT>::zero);
+
+        if constexpr (C >= 3)
+            m[2] = detail::comp_get(v, 2, s, vec<R, ScalarT>::zero);
+
+        if constexpr (C >= 4)
+            m[3] = detail::comp_get(v, 3, s, vec<R, ScalarT>::zero);
+    }
+
+    template <class... Args, class = enable_if<sizeof...(Args) == C - 1 && (... && is_same<Args, vec<R, ScalarT>>)>>
+    constexpr mat(vec<R, ScalarT> const& c0, Args const&... cN)
+    {
+        m[0] = c0;
+        auto i = 1;
+        ((m[i++] = cN), ...);
+    }
+
+    constexpr vec<R, ScalarT>& operator[](int i)
+    {
+        TG_CONTRACT(0 <= i && i < C);
+        return m[i];
+    }
+    constexpr vec<R, ScalarT> const& operator[](int i) const
+    {
+        TG_CONTRACT(0 <= i && i < C);
+        return m[i];
+    }
+    constexpr ScalarT& operator()(int col, int row)
+    {
+        TG_CONTRACT(0 <= col && col < C);
+        TG_CONTRACT(0 <= row && row < R);
+        return m[col][row];
+    }
+    constexpr ScalarT const& operator()(int col, int row) const
+    {
+        TG_CONTRACT(0 <= col && col < C);
+        TG_CONTRACT(0 <= row && row < R);
+        return m[col][row];
+    }
+
+    constexpr vec<R, ScalarT> col(int i) const
+    {
+        TG_CONTRACT(0 <= i && i < C);
+        return m[i];
+    }
+    constexpr vec<C, ScalarT> row(int i) const
+    {
+        TG_CONTRACT(0 <= i && i < R);
+        return detail::mat_row(*this, i);
+    }
 
     static const mat zero;
     static const mat ones;
@@ -152,7 +209,81 @@ struct mat
 
     static constexpr mat<C, R, ScalarT> diag(ScalarT v);
     static constexpr mat<C, R, ScalarT> diag(vec<detail::min(C, R), ScalarT> const& v);
+
+    template <class... Args>
+    static constexpr mat<C, R, ScalarT> from_cols(Args const&... args)
+    {
+        static_assert(sizeof...(args) == C, "must provide exactly C args");
+
+        mat<C, R, ScalarT> m;
+        auto i = 0;
+        ((m[i++] = vec<R, ScalarT>(args)), ...);
+
+        return m;
+    }
+    template <class... Args>
+    static constexpr mat<C, R, ScalarT> from_rows(Args const&... args)
+    {
+        static_assert(sizeof...(args) == R, "must provide exactly R args");
+
+        mat<R, C, ScalarT> m;
+        auto i = 0;
+        ((m[i++] = vec<C, ScalarT>(args)), ...);
+
+        mat<C, R, ScalarT> r;
+        r[0] = m.row(0);
+        if constexpr (C >= 2)
+            r[1] = m.row(1);
+        if constexpr (C >= 3)
+            r[2] = m.row(2);
+        if constexpr (C >= 4)
+            r[3] = m.row(3);
+
+        return m;
+    }
 };
+
+template <int R, class ScalarT>
+constexpr mat<1, R, ScalarT> from_cols(vec<R, ScalarT> const& c0)
+{
+    return mat<1, R, ScalarT>::from_cols(c0);
+}
+template <int R, class ScalarT>
+constexpr mat<2, R, ScalarT> from_cols(vec<R, ScalarT> const& c0, vec<R, ScalarT> const& c1)
+{
+    return mat<2, R, ScalarT>::from_cols(c0, c1);
+}
+template <int R, class ScalarT>
+constexpr mat<3, R, ScalarT> from_cols(vec<R, ScalarT> const& c0, vec<R, ScalarT> const& c1, vec<R, ScalarT> const& c2)
+{
+    return mat<3, R, ScalarT>::from_cols(c0, c1, c2);
+}
+template <int R, class ScalarT>
+constexpr mat<4, R, ScalarT> from_cols(vec<R, ScalarT> const& c0, vec<R, ScalarT> const& c1, vec<R, ScalarT> const& c2, vec<R, ScalarT> const& c3)
+{
+    return mat<4, R, ScalarT>::from_cols(c0, c1, c2, c3);
+}
+
+template <int C, class ScalarT>
+constexpr mat<C, 1, ScalarT> from_rows(vec<C, ScalarT> const& r0)
+{
+    return mat<C, 1, ScalarT>::from_rows(r0);
+}
+template <int C, class ScalarT>
+constexpr mat<C, 2, ScalarT> from_rows(vec<C, ScalarT> const& r0, vec<C, ScalarT> const& r1)
+{
+    return mat<C, 2, ScalarT>::from_rows(r0, r1);
+}
+template <int C, class ScalarT>
+constexpr mat<C, 3, ScalarT> from_rows(vec<C, ScalarT> const& r0, vec<C, ScalarT> const& r1, vec<C, ScalarT> const& r2)
+{
+    return mat<C, 3, ScalarT>::from_rows(r0, r1, r2);
+}
+template <int C, class ScalarT>
+constexpr mat<C, 4, ScalarT> from_rows(vec<C, ScalarT> const& r0, vec<C, ScalarT> const& r1, vec<C, ScalarT> const& r2, vec<C, ScalarT> const& r3)
+{
+    return mat<C, 4, ScalarT>::from_rows(r0, r1, r2, r3);
+}
 
 template <int R, class ScalarT>
 constexpr bool operator==(mat<1, R, ScalarT> const& a, mat<1, R, ScalarT> const& b)

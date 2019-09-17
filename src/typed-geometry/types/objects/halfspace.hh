@@ -52,7 +52,7 @@ struct halfspace
     using dir_t = dir<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 
-    dir_t normal;
+    dir_t normal; //< points _away_ from the halfspace
     scalar_t dis;
 
     constexpr halfspace() = default;

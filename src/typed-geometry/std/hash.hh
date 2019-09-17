@@ -179,35 +179,75 @@ struct hash<tg::mat<4, R, ScalarT>>
 // TODO: f8 and f16
 
 // -- objects
-template <int D, class ScalarT>
-struct hash<tg::triangle<D, ScalarT>>
+#define TG_IMPL_OBJECT_HASH1(obj, m0)                                                                          \
+    template <int D, class ScalarT>                                                                            \
+    struct hash<tg::obj<D, ScalarT>>                                                                           \
+    {                                                                                                          \
+        std::size_t operator()(tg::obj<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.m0); } \
+    } // force ;
+#define TG_IMPL_OBJECT_HASH2(obj, m0, m1)                                                                            \
+    template <int D, class ScalarT>                                                                                  \
+    struct hash<tg::obj<D, ScalarT>>                                                                                 \
+    {                                                                                                                \
+        std::size_t operator()(tg::obj<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.m0, v.m1); } \
+    } // force ;
+#define TG_IMPL_OBJECT_HASH3(obj, m0, m1, m2)                                                                              \
+    template <int D, class ScalarT>                                                                                        \
+    struct hash<tg::obj<D, ScalarT>>                                                                                       \
+    {                                                                                                                      \
+        std::size_t operator()(tg::obj<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.m0, v.m1, v.m2); } \
+    } // force ;
+
+TG_IMPL_OBJECT_HASH2(aabb, min, max);
+TG_IMPL_OBJECT_HASH2(ball, center, radius);
+TG_IMPL_OBJECT_HASH2(box, center, half_extents);
+TG_IMPL_OBJECT_HASH2(capsule, axis, radius);
+TG_IMPL_OBJECT_HASH2(cone, base, height);
+TG_IMPL_OBJECT_HASH2(cylinder, axis, radius);
+TG_IMPL_OBJECT_HASH2(halfspace, normal, dis);
+TG_IMPL_OBJECT_HASH3(hemisphere, center, radius, normal);
+TG_IMPL_OBJECT_HASH2(hyperplane, normal, dis);
+TG_IMPL_OBJECT_HASH3(inf_cone, apex, opening_dir, opening_angle);
+TG_IMPL_OBJECT_HASH2(inf_tube, axis, radius);
+TG_IMPL_OBJECT_HASH2(line, pos, dir);
+TG_IMPL_OBJECT_HASH2(pyramid, base, height);
+TG_IMPL_OBJECT_HASH2(ray, origin, dir);
+TG_IMPL_OBJECT_HASH2(segment, pos0, pos1);
+TG_IMPL_OBJECT_HASH2(sphere, center, radius);
+TG_IMPL_OBJECT_HASH3(triangle, pos0, pos1, pos2);
+TG_IMPL_OBJECT_HASH2(tube, axis, radius);
+
+template <class ScalarT>
+struct hash<tg::circle<2, ScalarT>>
 {
-    std::size_t operator()(tg::triangle<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.pos0, v.pos1, v.pos2); }
+    std::size_t operator()(tg::circle<2, ScalarT> const& v) const noexcept { return tg::detail::hash(v.center, v.radius); }
 };
-template <int D, class ScalarT>
-struct hash<tg::line<D, ScalarT>>
+template <class ScalarT>
+struct hash<tg::circle<3, ScalarT>>
 {
-    std::size_t operator()(tg::line<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.dir, v.pos); }
+    std::size_t operator()(tg::circle<3, ScalarT> const& v) const noexcept { return tg::detail::hash(v.center, v.radius, v.normal); }
 };
-template <int D, class ScalarT>
-struct hash<tg::ray<D, ScalarT>>
+
+template <class ScalarT>
+struct hash<tg::disk<2, ScalarT>>
 {
-    std::size_t operator()(tg::ray<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.dir, v.origin); }
+    std::size_t operator()(tg::disk<2, ScalarT> const& v) const noexcept { return tg::detail::hash(v.center, v.radius); }
 };
-template <int D, class ScalarT>
-struct hash<tg::segment<D, ScalarT>>
+template <class ScalarT>
+struct hash<tg::disk<3, ScalarT>>
 {
-    std::size_t operator()(tg::segment<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.pos0, v.pos1); }
+    std::size_t operator()(tg::disk<3, ScalarT> const& v) const noexcept { return tg::detail::hash(v.center, v.radius, v.normal); }
 };
-template <int D, class ScalarT>
-struct hash<tg::aabb<D, ScalarT>>
+
+template <class ScalarT>
+struct hash<tg::rect<2, ScalarT>>
 {
-    std::size_t operator()(tg::aabb<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.min, v.max); }
+    std::size_t operator()(tg::rect<2, ScalarT> const& v) const noexcept { return tg::detail::hash(v.center, v.length, v.rotation); }
 };
-template <int D, class ScalarT>
-struct hash<tg::box<D, ScalarT>>
+template <class ScalarT>
+struct hash<tg::rect<3, ScalarT>>
 {
-    std::size_t operator()(tg::box<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.center, v.half_extents); }
+    std::size_t operator()(tg::rect<3, ScalarT> const& v) const noexcept { return tg::detail::hash(v.center, v.length, v.normal, v.rotation); }
 };
 
 } // namespace std

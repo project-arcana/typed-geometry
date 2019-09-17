@@ -85,32 +85,13 @@ TG_NODISCARD constexpr ScalarT distance_sqr(ScalarT a, ScalarT b)
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT distance_sqr(pos<2, ScalarT> const& p, quadric<2, ScalarT> const& q)
 {
-    /// Residual L2 error as given by x^T A x - 2 r^T x + c
-
-    vec<2, ScalarT> Ax = {
-        q.A00 * p.x + q.A01 * p.y, //
-        q.A01 * p.x + q.A11 * p.y, //
-    };
-
-    return dot(vec<2, ScalarT>(p), Ax)        // x^T A x
-           - 2 * dot(vec<2, ScalarT>(p), q.r) // - 2 r^T x
-           + q.d_sqr;                         // + c
+    return q(p);
 }
 
 template <class ScalarT>
 TG_NODISCARD constexpr ScalarT distance_sqr(pos<3, ScalarT> const& p, quadric<3, ScalarT> const& q)
 {
-    /// Residual L2 error as given by x^T A x - 2 r^T x + c
-
-    vec<3, ScalarT> Ax = {
-        q.A00 * p.x + q.A01 * p.y + q.A02 * p.z, //
-        q.A01 * p.x + q.A11 * p.y + q.A12 * p.z, //
-        q.A02 * p.x + q.A12 * p.y + q.A22 * p.z, //
-    };
-
-    return dot(vec<3, ScalarT>(p), Ax)        // x^T A x
-           - 2 * dot(vec<3, ScalarT>(p), q.r) // - 2 r^T x
-           + q.d_sqr;                         // + c
+    return q(p);
 }
 
 template <int D, class ScalarT>

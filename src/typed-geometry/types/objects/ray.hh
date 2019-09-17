@@ -50,7 +50,7 @@ struct ray
     dir_t dir;
 
     constexpr ray() = default;
-    constexpr ray(pos_t pos, dir_t dir) : origin(pos), dir(dir) {}
+    constexpr ray(pos_t origin, dir_t dir) : origin(origin), dir(dir) {}
 
     TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
 

@@ -88,6 +88,19 @@ public:
         d_sqr += rhs.d_sqr;
     }
 
+    // Residual L2 error as given by x^T A x - 2 r^T x + c
+    TG_NODISCARD constexpr ScalarT operator()(pos<2, ScalarT> const& p) const
+    {
+        vec<2, ScalarT> Ax = {
+            A00 * p.x + A01 * p.y, //
+            A01 * p.x + A11 * p.y, //
+        };
+
+        return dot(vec<2, ScalarT>(p), Ax)      // x^T A x
+               - 2 * dot(vec<2, ScalarT>(p), r) // - 2 r^T x
+               + d_sqr;                         // + c
+    }
+
     // TODO: fix me
     template <class T>
     friend constexpr T distance_sqr(pos<2, T> const& p, quadric<2, T> const& q);
@@ -223,6 +236,20 @@ public:
         r += b;
 
         d_sqr += c;
+    }
+
+    // Residual L2 error as given by x^T A x - 2 r^T x + c
+    TG_NODISCARD constexpr ScalarT operator()(pos<3, ScalarT> const& p) const
+    {
+        vec<3, ScalarT> Ax = {
+            A00 * p.x + A01 * p.y + A02 * p.z, //
+            A01 * p.x + A11 * p.y + A12 * p.z, //
+            A02 * p.x + A12 * p.y + A22 * p.z, //
+        };
+
+        return dot(vec<3, ScalarT>(p), Ax)      // x^T A x
+               - 2 * dot(vec<3, ScalarT>(p), r) // - 2 r^T x
+               + d_sqr;                         // + c
     }
 
     // TODO: fix me

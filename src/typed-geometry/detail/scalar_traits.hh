@@ -38,7 +38,7 @@ TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, u64, "u64");
 
 TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, f8, "f8");
 TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, f16, "f16");
-TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, f32, "f");
+TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, f32, ""); // vec3, not fvec3
 TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, f64, "d");
 
 TG_IMPL_ADD_TRAIT(is_scalar, bool, i8, true);

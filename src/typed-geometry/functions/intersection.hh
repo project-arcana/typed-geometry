@@ -426,7 +426,7 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
         auto n0 = tg::vec<2, ScalarT>(a.normal.x, b.normal.x);
         auto n1 = tg::vec<2, ScalarT>(a.normal.y, b.normal.y);
         auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
-        auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
+        auto p2 = inverse(mat<2, 2, ScalarT>::from_cols(n0, n1)) * r;
         p.x = p2.x;
         p.y = p2.y;
     }
@@ -435,7 +435,7 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
         auto n0 = tg::vec<2, ScalarT>(a.normal.x, b.normal.x);
         auto n1 = tg::vec<2, ScalarT>(a.normal.z, b.normal.z);
         auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
-        auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
+        auto p2 = inverse(mat<2, 2, ScalarT>::from_cols(n0, n1)) * r;
         p.x = p2.x;
         p.z = p2.y;
     }
@@ -444,7 +444,7 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
         auto n0 = tg::vec<2, ScalarT>(a.normal.y, b.normal.y);
         auto n1 = tg::vec<2, ScalarT>(a.normal.z, b.normal.z);
         auto r = tg::vec<2, ScalarT>(a.dis, b.dis);
-        auto p2 = inverse(mat<2, 2, ScalarT>{{n0, n1}}) * r;
+        auto p2 = inverse(mat<2, 2, ScalarT>::from_cols(n0, n1)) * r;
         p.y = p2.x;
         p.z = p2.y;
     }
