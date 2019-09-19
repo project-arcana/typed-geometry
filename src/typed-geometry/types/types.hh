@@ -8,6 +8,8 @@
 
 #include "range.hh"
 
+#include "random.hh"
+
 #include "color.hh"
 #include "comp.hh"
 #include "dir.hh"

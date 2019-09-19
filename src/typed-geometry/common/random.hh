@@ -1,7 +1,9 @@
 #pragma once
 
+#include <typed-geometry/types/random.hh>
 #include <typed-geometry/types/scalar.hh>
 
+#include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/functions/minmax.hh>
 
 /**
@@ -17,13 +19,6 @@
 
 namespace tg
 {
-struct splitmix;
-struct xorshift;
-struct pcg;
-
-// default rng type
-using rng = xorshift;
-
 struct splitmix
 {
 public:
