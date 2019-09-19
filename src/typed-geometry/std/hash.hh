@@ -154,6 +154,18 @@ struct hash<tg::size<4, ScalarT>>
     std::size_t operator()(tg::size<4, ScalarT> const& v) const noexcept { return tg::detail::hash(v.width, v.height, v.depth, v.w); }
 };
 
+// -- color
+template <class ScalarT>
+struct hash<tg::color<3, ScalarT>>
+{
+    std::size_t operator()(tg::color<3, ScalarT> const& v) const noexcept { return tg::detail::hash(v.r, v.g, v.b); }
+};
+template <class ScalarT>
+struct hash<tg::color<4, ScalarT>>
+{
+    std::size_t operator()(tg::color<4, ScalarT> const& v) const noexcept { return tg::detail::hash(v.r, v.g, v.b, v.a); }
+};
+
 // -- mat
 template <int R, class ScalarT>
 struct hash<tg::mat<1, R, ScalarT>>

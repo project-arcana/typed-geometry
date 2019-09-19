@@ -54,6 +54,8 @@ struct dir<1, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr dir() = default;
+    constexpr dir(dir const&) = default;
+    constexpr dir(dir&&) = default;
     constexpr dir(ScalarT x);
     constexpr explicit dir(vec<1, ScalarT> const& v); // CAUTION: this does not normalize!
     template <class T>
@@ -67,6 +69,11 @@ struct dir<1, ScalarT>
     }
 
     constexpr operator vec<1, ScalarT>() const { return vec<1, ScalarT>(*this); }
+
+    constexpr dir& operator=(dir const&) & = default;
+    constexpr dir& operator=(dir const&) && = delete;
+    constexpr dir& operator=(dir&&) & = default;
+    constexpr dir& operator=(dir&&) && = delete;
 };
 
 template <class ScalarT>
@@ -84,6 +91,8 @@ struct dir<2, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr dir() = default;
+    constexpr dir(dir const&) = default;
+    constexpr dir(dir&&) = default;
     constexpr dir(ScalarT x, ScalarT y);
     constexpr explicit dir(vec<2, ScalarT> const& v); // CAUTION: this does not normalize!
     template <class T>
@@ -97,6 +106,11 @@ struct dir<2, ScalarT>
     }
 
     constexpr operator vec<2, ScalarT>() const { return vec<2, ScalarT>(*this); }
+
+    constexpr dir& operator=(dir const&) & = default;
+    constexpr dir& operator=(dir const&) && = delete;
+    constexpr dir& operator=(dir&&) & = default;
+    constexpr dir& operator=(dir&&) && = delete;
 };
 
 template <class ScalarT>
@@ -117,6 +131,8 @@ struct dir<3, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr dir() = default;
+    constexpr dir(dir const&) = default;
+    constexpr dir(dir&&) = default;
     constexpr dir(ScalarT x, ScalarT y, ScalarT z);
     constexpr explicit dir(vec<3, ScalarT> const& v); // CAUTION: this does not normalize!
     template <class T>
@@ -130,6 +146,11 @@ struct dir<3, ScalarT>
     }
 
     constexpr operator vec<3, ScalarT>() const { return vec<3, ScalarT>(*this); }
+
+    constexpr dir& operator=(dir const&) & = default;
+    constexpr dir& operator=(dir const&) && = delete;
+    constexpr dir& operator=(dir&&) & = default;
+    constexpr dir& operator=(dir&&) && = delete;
 };
 
 template <class ScalarT>
@@ -153,6 +174,8 @@ struct dir<4, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr dir() = default;
+    constexpr dir(dir const&) = default;
+    constexpr dir(dir&&) = default;
     constexpr dir(ScalarT x, ScalarT y, ScalarT z, ScalarT w);
     constexpr explicit dir(vec<4, ScalarT> const& v); // CAUTION: this does not normalize!
     template <class T>
@@ -166,6 +189,11 @@ struct dir<4, ScalarT>
     }
 
     constexpr operator vec<4, ScalarT>() const { return vec<4, ScalarT>(*this); }
+
+    constexpr dir& operator=(dir const&) & = default;
+    constexpr dir& operator=(dir const&) && = delete;
+    constexpr dir& operator=(dir&&) & = default;
+    constexpr dir& operator=(dir&&) && = delete;
 };
 
 // comparison operators

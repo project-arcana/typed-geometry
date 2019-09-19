@@ -56,6 +56,8 @@ struct size<1, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
+    constexpr size(size const&) = default;
+    constexpr size(size&&) = default;
     constexpr size(ScalarT v) : width(v) {}
 
     template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
@@ -64,6 +66,11 @@ struct size<1, ScalarT>
         auto s = detail::get_dynamic_comp_size(v);
         width = detail::comp_get(v, 0, s, fill);
     }
+
+    constexpr size& operator=(size const&) & = default;
+    constexpr size& operator=(size const&) && = delete;
+    constexpr size& operator=(size&&) & = default;
+    constexpr size& operator=(size&&) && = delete;
 };
 
 template <class ScalarT>
@@ -80,6 +87,8 @@ struct size<2, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
+    constexpr size(size const&) = default;
+    constexpr size(size&&) = default;
     constexpr explicit size(ScalarT v) : width(v), height(v) {}
     constexpr size(ScalarT width, ScalarT height) : width(width), height(height) {}
 
@@ -90,6 +99,11 @@ struct size<2, ScalarT>
         width = detail::comp_get(v, 0, s, fill);
         height = detail::comp_get(v, 1, s, fill);
     }
+
+    constexpr size& operator=(size const&) & = default;
+    constexpr size& operator=(size const&) && = delete;
+    constexpr size& operator=(size&&) & = default;
+    constexpr size& operator=(size&&) && = delete;
 };
 
 template <class ScalarT>
@@ -107,6 +121,8 @@ struct size<3, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
+    constexpr size(size const&) = default;
+    constexpr size(size&&) = default;
     constexpr explicit size(ScalarT v) : width(v), height(v), depth(v) {}
     constexpr size(ScalarT width, ScalarT height, ScalarT depth) : width(width), height(height), depth(depth) {}
 
@@ -118,6 +134,11 @@ struct size<3, ScalarT>
         height = detail::comp_get(v, 1, s, fill);
         depth = detail::comp_get(v, 2, s, fill);
     }
+
+    constexpr size& operator=(size const&) & = default;
+    constexpr size& operator=(size const&) && = delete;
+    constexpr size& operator=(size&&) & = default;
+    constexpr size& operator=(size&&) && = delete;
 };
 
 template <class ScalarT>
@@ -136,6 +157,8 @@ struct size<4, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
 
     constexpr size() = default;
+    constexpr size(size const&) = default;
+    constexpr size(size&&) = default;
     constexpr explicit size(ScalarT v) : width(v), height(v), depth(v), w(v) {}
     constexpr size(ScalarT width, ScalarT height, ScalarT depth, ScalarT w) : width(width), height(height), depth(depth), w(w) {}
 
@@ -148,6 +171,11 @@ struct size<4, ScalarT>
         depth = detail::comp_get(v, 2, s, fill);
         w = detail::comp_get(v, 3, s, fill);
     }
+
+    constexpr size& operator=(size const&) & = default;
+    constexpr size& operator=(size const&) && = delete;
+    constexpr size& operator=(size&&) & = default;
+    constexpr size& operator=(size&&) && = delete;
 };
 
 // comparison operators

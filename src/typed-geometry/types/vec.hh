@@ -123,6 +123,8 @@ struct vec<1, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
+    constexpr vec(vec const&) = default;
+    constexpr vec(vec&&) = default;
     constexpr vec(ScalarT v) : x(v) {}
 
     template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
@@ -131,6 +133,11 @@ struct vec<1, ScalarT>
         auto s = detail::get_dynamic_comp_size(v);
         x = detail::comp_get(v, 0, s, fill);
     }
+
+    constexpr vec& operator=(vec const&) & = default;
+    constexpr vec& operator=(vec const&) && = delete;
+    constexpr vec& operator=(vec&&) & = default;
+    constexpr vec& operator=(vec&&) && = delete;
 };
 
 template <class ScalarT>
@@ -148,6 +155,8 @@ struct vec<2, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
+    constexpr vec(vec const&) = default;
+    constexpr vec(vec&&) = default;
     constexpr explicit vec(ScalarT v) : x(v), y(v) {}
     constexpr vec(ScalarT x, ScalarT y) : x(x), y(y) {}
 
@@ -158,6 +167,11 @@ struct vec<2, ScalarT>
         x = detail::comp_get(v, 0, s, fill);
         y = detail::comp_get(v, 1, s, fill);
     }
+
+    constexpr vec& operator=(vec const&) & = default;
+    constexpr vec& operator=(vec const&) && = delete;
+    constexpr vec& operator=(vec&&) & = default;
+    constexpr vec& operator=(vec&&) && = delete;
 };
 
 template <class ScalarT>
@@ -177,6 +191,8 @@ struct vec<3, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
+    constexpr vec(vec const&) = default;
+    constexpr vec(vec&&) = default;
     constexpr explicit vec(ScalarT v) : x(v), y(v), z(v) {}
     constexpr vec(ScalarT x, ScalarT y, ScalarT z) : x(x), y(y), z(z) {}
 
@@ -188,6 +204,11 @@ struct vec<3, ScalarT>
         y = detail::comp_get(v, 1, s, fill);
         z = detail::comp_get(v, 2, s, fill);
     }
+
+    constexpr vec& operator=(vec const&) & = default;
+    constexpr vec& operator=(vec const&) && = delete;
+    constexpr vec& operator=(vec&&) & = default;
+    constexpr vec& operator=(vec&&) && = delete;
 };
 
 template <class ScalarT>
@@ -209,6 +230,8 @@ struct vec<4, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
 
     constexpr vec() = default;
+    constexpr vec(vec const&) = default;
+    constexpr vec(vec&&) = default;
     constexpr explicit vec(ScalarT v) : x(v), y(v), z(v), w(v) {}
     constexpr vec(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : x(x), y(y), z(z), w(w) {}
 
@@ -221,6 +244,11 @@ struct vec<4, ScalarT>
         z = detail::comp_get(v, 2, s, fill);
         w = detail::comp_get(v, 3, s, fill);
     }
+
+    constexpr vec& operator=(vec const&) & = default;
+    constexpr vec& operator=(vec const&) && = delete;
+    constexpr vec& operator=(vec&&) & = default;
+    constexpr vec& operator=(vec&&) && = delete;
 };
 
 // comparison operators

@@ -42,6 +42,8 @@ struct color<3, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&r)[i]; }
 
     constexpr color() = default;
+    constexpr color(color const&) = default;
+    constexpr color(color&&) = default;
     constexpr explicit color(ScalarT grey) : r(grey), g(grey), b(grey) {}
     constexpr color(ScalarT r, ScalarT g, ScalarT b) : r(r), g(g), b(b) {}
 
@@ -53,6 +55,11 @@ struct color<3, ScalarT>
         g = detail::comp_get(v, 1, s, fill);
         b = detail::comp_get(v, 2, s, fill);
     }
+
+    constexpr color& operator=(color const&) & = default;
+    constexpr color& operator=(color const&) && = delete;
+    constexpr color& operator=(color&&) & = default;
+    constexpr color& operator=(color&&) && = delete;
 };
 
 template <class T>
@@ -94,6 +101,8 @@ struct color<4, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&r)[i]; }
 
     constexpr color() = default;
+    constexpr color(color const&) = default;
+    constexpr color(color&&) = default;
     constexpr explicit color(ScalarT grey) : r(grey), g(grey), b(grey), a(ScalarT(1)) {}
     constexpr color(ScalarT r, ScalarT g, ScalarT b, ScalarT a = ScalarT(1)) : r(r), g(g), b(b), a(a) {}
     constexpr color(color<3, ScalarT> c, ScalarT a = ScalarT(1)) : r(c.r), g(c.g), b(c.b), a(a) {}
@@ -107,6 +116,11 @@ struct color<4, ScalarT>
         b = detail::comp_get(v, 2, s, fill);
         a = detail::comp_get(v, 3, s, fill);
     }
+
+    constexpr color& operator=(color const&) & = default;
+    constexpr color& operator=(color const&) && = delete;
+    constexpr color& operator=(color&&) & = default;
+    constexpr color& operator=(color&&) && = delete;
 };
 
 template <class T>

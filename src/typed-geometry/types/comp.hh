@@ -58,6 +58,8 @@ struct comp<1, ScalarT>
     constexpr ScalarT const& operator[](int) const { return comp0; }
 
     constexpr comp() = default;
+    constexpr comp(comp const&) = default;
+    constexpr comp(comp&&) = default;
     constexpr comp(ScalarT v) : comp0(v) {}
 
     template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
@@ -66,6 +68,11 @@ struct comp<1, ScalarT>
         auto s = detail::get_dynamic_comp_size(v);
         comp0 = detail::comp_get(v, 0, s, fill);
     }
+
+    constexpr comp& operator=(comp const&) & = default;
+    constexpr comp& operator=(comp const&) && = delete;
+    constexpr comp& operator=(comp&&) & = default;
+    constexpr comp& operator=(comp&&) && = delete;
 };
 
 template <class ScalarT>
@@ -80,6 +87,8 @@ struct comp<2, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&comp0)[i]; }
 
     constexpr comp() = default;
+    constexpr comp(comp const&) = default;
+    constexpr comp(comp&&) = default;
     constexpr explicit comp(ScalarT v) : comp0(v), comp1(v) {}
     constexpr comp(ScalarT x, ScalarT y) : comp0(x), comp1(y) {}
 
@@ -90,6 +99,11 @@ struct comp<2, ScalarT>
         comp0 = detail::comp_get(v, 0, s, fill);
         comp1 = detail::comp_get(v, 1, s, fill);
     }
+
+    constexpr comp& operator=(comp const&) & = default;
+    constexpr comp& operator=(comp const&) && = delete;
+    constexpr comp& operator=(comp&&) & = default;
+    constexpr comp& operator=(comp&&) && = delete;
 };
 
 template <class ScalarT>
@@ -105,6 +119,8 @@ struct comp<3, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&comp0)[i]; }
 
     constexpr comp() = default;
+    constexpr comp(comp const&) = default;
+    constexpr comp(comp&&) = default;
     constexpr explicit comp(ScalarT v) : comp0(v), comp1(v), comp2(v) {}
     constexpr comp(ScalarT x, ScalarT y, ScalarT z) : comp0(x), comp1(y), comp2(z) {}
 
@@ -116,6 +132,11 @@ struct comp<3, ScalarT>
         comp1 = detail::comp_get(v, 1, s, fill);
         comp2 = detail::comp_get(v, 2, s, fill);
     }
+
+    constexpr comp& operator=(comp const&) & = default;
+    constexpr comp& operator=(comp const&) && = delete;
+    constexpr comp& operator=(comp&&) & = default;
+    constexpr comp& operator=(comp&&) && = delete;
 };
 
 template <class ScalarT>
@@ -132,6 +153,8 @@ struct comp<4, ScalarT>
     constexpr ScalarT const& operator[](int i) const { return (&comp0)[i]; }
 
     constexpr comp() = default;
+    constexpr comp(comp const&) = default;
+    constexpr comp(comp&&) = default;
     constexpr explicit comp(ScalarT v) : comp0(v), comp1(v), comp2(v), comp3(v) {}
     constexpr comp(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : comp0(x), comp1(y), comp2(z), comp3(w) {}
 
@@ -144,6 +167,11 @@ struct comp<4, ScalarT>
         comp2 = detail::comp_get(v, 2, s, fill);
         comp3 = detail::comp_get(v, 3, s, fill);
     }
+
+    constexpr comp& operator=(comp const&) & = default;
+    constexpr comp& operator=(comp const&) && = delete;
+    constexpr comp& operator=(comp&&) & = default;
+    constexpr comp& operator=(comp&&) && = delete;
 };
 
 // comparison operators
