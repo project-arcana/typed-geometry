@@ -48,6 +48,11 @@ struct comp_size<comp<D, T>>
 {
     static constexpr int value = D;
 };
+template <int C, int R, class T>
+struct comp_size<mat<C, R, T>>
+{
+    static constexpr int value = C;
+};
 
 template <class Obj, class ScalarT>
 auto test_comp_convertible(Obj* obj) -> decltype(ScalarT((*obj)[0]), true_type{});

@@ -73,7 +73,13 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D,
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
 {
-    return p - pl.normal * (dot(p - zero<pos<D, ScalarT>>(), pl.normal) - pl.dis);
+    return p - pl.normal * (dot(p, pl.normal) - pl.dis);
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, halfspace<D, ScalarT> const& pl)
+{
+    return p - pl.normal * tg::max(ScalarT(0), dot(p, pl.normal) - pl.dis);
 }
 
 template <int D, class ScalarT>

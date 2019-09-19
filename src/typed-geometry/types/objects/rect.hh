@@ -28,6 +28,9 @@ using urect2 = rect<2, u32>;
 using urect3 = rect<3, u32>;
 
 // ======== IMPLEMENTATION ========
+
+// TODO: define by two axes!
+
 template <class ScalarT>
 struct rect<2, ScalarT>
 {

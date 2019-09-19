@@ -145,19 +145,28 @@ private:
 
 public:
     constexpr mat() = default;
-    template <class OtherT>
-    constexpr mat(mat<C, R, OtherT> const& rhs)
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, vec<R, ScalarT>>>>
+    explicit constexpr mat(Obj const& v)
     {
-        m[0] = vec<R, ScalarT>(rhs[0]);
+        auto s = detail::get_dynamic_comp_size(v);
+        m[0] = detail::comp_get(v, 0, s, vec<R, ScalarT>::zero);
 
         if constexpr (C >= 2)
-            m[1] = vec<R, ScalarT>(rhs[1]);
+            m[1] = detail::comp_get(v, 1, s, vec<R, ScalarT>::zero);
 
         if constexpr (C >= 3)
-            m[2] = vec<R, ScalarT>(rhs[2]);
+            m[2] = detail::comp_get(v, 2, s, vec<R, ScalarT>::zero);
 
         if constexpr (C >= 4)
-            m[3] = vec<R, ScalarT>(rhs[3]);
+            m[3] = detail::comp_get(v, 3, s, vec<R, ScalarT>::zero);
+    }
+
+    template <class... Args, class = enable_if<sizeof...(Args) == C - 1 && (... && is_same<Args, vec<R, ScalarT>>)>>
+    constexpr mat(vec<R, ScalarT> const& c0, Args const&... cN)
+    {
+        m[0] = c0;
+        auto i = 1;
+        ((m[i++] = cN), ...);
     }
 
     constexpr vec<R, ScalarT>& operator[](int i)
