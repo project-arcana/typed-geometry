@@ -40,4 +40,6 @@ struct segment;
 struct splitmix;
 struct xorshift;
 struct pcg;
+template <int... Indices>
+struct swizzler;
 } // namespace tg
