@@ -145,8 +145,6 @@ private:
 
 public:
     constexpr mat() = default;
-    constexpr mat(mat const&) = default;
-    constexpr mat(mat&&) = default;
     template <class Obj, class = enable_if<is_comp_convertible<Obj, vec<R, ScalarT>>>>
     explicit constexpr mat(Obj const& v)
     {
@@ -243,11 +241,6 @@ public:
 
         return m;
     }
-
-    constexpr mat& operator=(mat const&) & = default;
-    constexpr mat& operator=(mat const&) && = delete;
-    constexpr mat& operator=(mat&&) & = default;
-    constexpr mat& operator=(mat&&) && = delete;
 };
 
 template <int R, class ScalarT>
