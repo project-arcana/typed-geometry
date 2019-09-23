@@ -10,7 +10,7 @@ template <class T>
 struct optional
 {
 private:
-    T _value;
+    T _value = {};
     bool _has_value = false;
 
 public:

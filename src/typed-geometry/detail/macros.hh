@@ -3,10 +3,6 @@
 // =========
 // configurations
 
-#ifndef NDEBUG
-#define TG_DEBUG
-#endif
-
 #if defined(_MSC_VER)
 #define TG_COMPILER_MSVC
 #elif defined(__clang__)

@@ -46,7 +46,7 @@ struct mutable_swizzle_proxy : base_swizzle_proxy<CompTemplate<D, ScalarT>&, Com
         operator=((other_comp_t)rhs);
     }
     template <class OtherT>
-    constexpr auto operator=(OtherT const& rhs) -> decltype((other_comp_t)rhs, void()) // only enable if implicit conversion available
+    constexpr auto operator=(OtherT const& rhs) -> decltype((void)(other_comp_t)rhs, void()) // only enable if implicit conversion available
     {
         operator=((other_comp_t)rhs);
     }
