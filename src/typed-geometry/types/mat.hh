@@ -192,12 +192,12 @@ public:
         return m[col][row];
     }
 
-    constexpr vec<R, ScalarT> col(int i) const
+    constexpr vec<R, ScalarT> const col(int i) const
     {
         TG_CONTRACT(0 <= i && i < C);
         return m[i];
     }
-    constexpr vec<C, ScalarT> row(int i) const
+    constexpr vec<C, ScalarT> const row(int i) const
     {
         TG_CONTRACT(0 <= i && i < R);
         return detail::mat_row(*this, i);
