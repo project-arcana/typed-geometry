@@ -46,136 +46,55 @@ using usize4 = size<4, u32>;
 template <class ScalarT>
 struct size<1, ScalarT>
 {
+    ScalarT width = ScalarT(0);
+
     static const size zero;
     static const size ones;
     static const size unit;
 
-    ScalarT width = static_cast<ScalarT>(0);
-
-    constexpr ScalarT& operator[](int i) { return (&width)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
-
-    constexpr size() = default;
-    constexpr size(size const&) = default;
-    constexpr size(size&&) = default;
-    constexpr size(ScalarT v) : width(v) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr size(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        width = detail::comp_get(v, 0, s, fill);
-    }
-
-    constexpr size& operator=(size const&) & = default;
-    constexpr size& operator=(size const&) && = delete;
-    constexpr size& operator=(size&&) & = default;
-    constexpr size& operator=(size&&) && = delete;
+    TG_DECLARE_COMP_TYPE_1(size);
 };
 
 template <class ScalarT>
 struct size<2, ScalarT>
 {
+    ScalarT width = ScalarT(0);
+    ScalarT height = ScalarT(0);
+
     static const size zero;
     static const size ones;
     static const size unit;
 
-    ScalarT width = static_cast<ScalarT>(0);
-    ScalarT height = static_cast<ScalarT>(0);
-
-    constexpr ScalarT& operator[](int i) { return (&width)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
-
-    constexpr size() = default;
-    constexpr size(size const&) = default;
-    constexpr size(size&&) = default;
-    constexpr explicit size(ScalarT v) : width(v), height(v) {}
-    constexpr size(ScalarT width, ScalarT height) : width(width), height(height) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr size(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        width = detail::comp_get(v, 0, s, fill);
-        height = detail::comp_get(v, 1, s, fill);
-    }
-
-    constexpr size& operator=(size const&) & = default;
-    constexpr size& operator=(size const&) && = delete;
-    constexpr size& operator=(size&&) & = default;
-    constexpr size& operator=(size&&) && = delete;
+    TG_DECLARE_COMP_TYPE_2(size);
 };
 
 template <class ScalarT>
 struct size<3, ScalarT>
 {
+    ScalarT width = ScalarT(0);
+    ScalarT height = ScalarT(0);
+    ScalarT depth = ScalarT(0);
+
     static const size zero;
     static const size ones;
     static const size unit;
 
-    ScalarT width = static_cast<ScalarT>(0);
-    ScalarT height = static_cast<ScalarT>(0);
-    ScalarT depth = static_cast<ScalarT>(0);
-
-    constexpr ScalarT& operator[](int i) { return (&width)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
-
-    constexpr size() = default;
-    constexpr size(size const&) = default;
-    constexpr size(size&&) = default;
-    constexpr explicit size(ScalarT v) : width(v), height(v), depth(v) {}
-    constexpr size(ScalarT width, ScalarT height, ScalarT depth) : width(width), height(height), depth(depth) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr size(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        width = detail::comp_get(v, 0, s, fill);
-        height = detail::comp_get(v, 1, s, fill);
-        depth = detail::comp_get(v, 2, s, fill);
-    }
-
-    constexpr size& operator=(size const&) & = default;
-    constexpr size& operator=(size const&) && = delete;
-    constexpr size& operator=(size&&) & = default;
-    constexpr size& operator=(size&&) && = delete;
+    TG_DECLARE_COMP_TYPE_3(size);
 };
 
 template <class ScalarT>
 struct size<4, ScalarT>
 {
+    ScalarT width = ScalarT(0);
+    ScalarT height = ScalarT(0);
+    ScalarT depth = ScalarT(0);
+    ScalarT w = ScalarT(0);
+
     static const size zero;
     static const size ones;
     static const size unit;
 
-    ScalarT width = static_cast<ScalarT>(0);
-    ScalarT height = static_cast<ScalarT>(0);
-    ScalarT depth = static_cast<ScalarT>(0);
-    ScalarT w = static_cast<ScalarT>(0);
-
-    constexpr ScalarT& operator[](int i) { return (&width)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&width)[i]; }
-
-    constexpr size() = default;
-    constexpr size(size const&) = default;
-    constexpr size(size&&) = default;
-    constexpr explicit size(ScalarT v) : width(v), height(v), depth(v), w(v) {}
-    constexpr size(ScalarT width, ScalarT height, ScalarT depth, ScalarT w) : width(width), height(height), depth(depth), w(w) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr size(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        width = detail::comp_get(v, 0, s, fill);
-        height = detail::comp_get(v, 1, s, fill);
-        depth = detail::comp_get(v, 2, s, fill);
-        w = detail::comp_get(v, 3, s, fill);
-    }
-
-    constexpr size& operator=(size const&) & = default;
-    constexpr size& operator=(size const&) && = delete;
-    constexpr size& operator=(size&&) & = default;
-    constexpr size& operator=(size&&) && = delete;
+    TG_DECLARE_COMP_TYPE_4(size);
 };
 
 // comparison operators

@@ -19,48 +19,6 @@
 
 namespace tg
 {
-template <class ScalarT>
-constexpr dir<1, ScalarT>::dir(ScalarT x) : x(x)
-{
-    TG_CONTRACT(dot(*this, *this) <= ScalarT(1.001) && "dirs must be normalized");
-}
-template <class ScalarT>
-constexpr dir<2, ScalarT>::dir(ScalarT x, ScalarT y) : x(x), y(y)
-{
-    TG_CONTRACT(dot(*this, *this) <= ScalarT(1.001) && "dirs must be normalized");
-}
-template <class ScalarT>
-constexpr dir<3, ScalarT>::dir(ScalarT x, ScalarT y, ScalarT z) : x(x), y(y), z(z)
-{
-    TG_CONTRACT(dot(*this, *this) <= ScalarT(1.001) && "dirs must be normalized");
-}
-template <class ScalarT>
-constexpr dir<4, ScalarT>::dir(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : x(x), y(y), z(z), w(w)
-{
-    TG_CONTRACT(dot(*this, *this) <= ScalarT(1.001) && "dirs must be normalized");
-}
-
-template <class ScalarT>
-constexpr dir<1, ScalarT>::dir(vec<1, ScalarT> const& v) : x(v.x)
-{
-    TG_CONTRACT(dot(*this, *this) <= ScalarT(1.001) && "dirs must be normalized");
-}
-template <class ScalarT>
-constexpr dir<2, ScalarT>::dir(vec<2, ScalarT> const& v) : x(v.x), y(v.y)
-{
-    TG_CONTRACT(dot(*this, *this) <= ScalarT(1.001) && "dirs must be normalized");
-}
-template <class ScalarT>
-constexpr dir<3, ScalarT>::dir(vec<3, ScalarT> const& v) : x(v.x), y(v.y), z(v.z)
-{
-    TG_CONTRACT(dot(*this, *this) <= ScalarT(1.001) && "dirs must be normalized");
-}
-template <class ScalarT>
-constexpr dir<4, ScalarT>::dir(vec<4, ScalarT> const& v) : x(v.x), y(v.y), z(v.z), w(v.w)
-{
-    TG_CONTRACT(dot(*this, *this) <= ScalarT(1.001) && "dirs must be normalized");
-}
-
 template <int D, class ScalarT>
 constexpr box<D, ScalarT>::box(aabb<D, ScalarT> const& b)
 {

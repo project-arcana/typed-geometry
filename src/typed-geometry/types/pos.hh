@@ -45,128 +45,47 @@ using upos4 = pos<4, u32>;
 template <class ScalarT>
 struct pos<1, ScalarT>
 {
+    ScalarT x = ScalarT(0);
+
     static const pos zero;
 
-    ScalarT x = static_cast<ScalarT>(0);
-
-    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
-
-    constexpr pos() = default;
-    constexpr pos(pos const&) = default;
-    constexpr pos(pos&&) = default;
-    constexpr pos(ScalarT v) : x(v) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr pos(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        x = detail::comp_get(v, 0, s, fill);
-    }
-
-    constexpr pos& operator=(pos const&) & = default;
-    constexpr pos& operator=(pos const&) && = delete;
-    constexpr pos& operator=(pos&&) & = default;
-    constexpr pos& operator=(pos&&) && = delete;
+    TG_DECLARE_COMP_TYPE_1(pos);
 };
 
 template <class ScalarT>
 struct pos<2, ScalarT>
 {
-    ScalarT x = static_cast<ScalarT>(0);
-    ScalarT y = static_cast<ScalarT>(0);
+    ScalarT x = ScalarT(0);
+    ScalarT y = ScalarT(0);
 
     static const pos zero;
 
-    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
-
-    constexpr pos() = default;
-    constexpr pos(pos const&) = default;
-    constexpr pos(pos&&) = default;
-    constexpr explicit pos(ScalarT v) : x(v), y(v) {}
-    constexpr pos(ScalarT x, ScalarT y) : x(x), y(y) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr pos(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        x = detail::comp_get(v, 0, s, fill);
-        y = detail::comp_get(v, 1, s, fill);
-    }
-
-    constexpr pos& operator=(pos const&) & = default;
-    constexpr pos& operator=(pos const&) && = delete;
-    constexpr pos& operator=(pos&&) & = default;
-    constexpr pos& operator=(pos&&) && = delete;
+    TG_DECLARE_COMP_TYPE_2(pos);
 };
 
 template <class ScalarT>
 struct pos<3, ScalarT>
 {
-    ScalarT x = static_cast<ScalarT>(0);
-    ScalarT y = static_cast<ScalarT>(0);
-    ScalarT z = static_cast<ScalarT>(0);
+    ScalarT x = ScalarT(0);
+    ScalarT y = ScalarT(0);
+    ScalarT z = ScalarT(0);
 
     static const pos zero;
 
-    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
-
-    constexpr pos() = default;
-    constexpr pos(pos const&) = default;
-    constexpr pos(pos&&) = default;
-    constexpr explicit pos(ScalarT v) : x(v), y(v), z(v) {}
-    constexpr pos(ScalarT x, ScalarT y, ScalarT z) : x(x), y(y), z(z) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr pos(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        x = detail::comp_get(v, 0, s, fill);
-        y = detail::comp_get(v, 1, s, fill);
-        z = detail::comp_get(v, 2, s, fill);
-    }
-
-    constexpr pos& operator=(pos const&) & = default;
-    constexpr pos& operator=(pos const&) && = delete;
-    constexpr pos& operator=(pos&&) & = default;
-    constexpr pos& operator=(pos&&) && = delete;
+    TG_DECLARE_COMP_TYPE_3(pos);
 };
 
 template <class ScalarT>
 struct pos<4, ScalarT>
 {
+    ScalarT x = ScalarT(0);
+    ScalarT y = ScalarT(0);
+    ScalarT z = ScalarT(0);
+    ScalarT w = ScalarT(0);
+
     static const pos zero;
 
-    ScalarT x = static_cast<ScalarT>(0);
-    ScalarT y = static_cast<ScalarT>(0);
-    ScalarT z = static_cast<ScalarT>(0);
-    ScalarT w = static_cast<ScalarT>(0);
-
-    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
-
-    constexpr pos() = default;
-    constexpr pos(pos const&) = default;
-    constexpr pos(pos&&) = default;
-    constexpr explicit pos(ScalarT v) : x(v), y(v), z(v), w(v) {}
-    constexpr pos(ScalarT x, ScalarT y, ScalarT z, ScalarT w) : x(x), y(y), z(z), w(w) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr pos(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        x = detail::comp_get(v, 0, s, fill);
-        y = detail::comp_get(v, 1, s, fill);
-        z = detail::comp_get(v, 2, s, fill);
-        w = detail::comp_get(v, 3, s, fill);
-    }
-
-    constexpr pos& operator=(pos const&) & = default;
-    constexpr pos& operator=(pos const&) && = delete;
-    constexpr pos& operator=(pos&&) & = default;
-    constexpr pos& operator=(pos&&) && = delete;
+    TG_DECLARE_COMP_TYPE_4(pos);
 };
 
 // comparison operators

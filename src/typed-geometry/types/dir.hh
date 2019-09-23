@@ -1,9 +1,12 @@
 #pragma once
 
+#include <typed-geometry/common/assert.hh>
+
 #include "../detail/comp_traits.hh"
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
+
 #include "fwd.hh"
 #include "scalar.hh"
 
@@ -42,6 +45,34 @@ using idir4 = dir<4, i32>;
 
 // ======== IMPLEMENTATION ========
 
+namespace detail
+{
+template <class ScalarT>
+bool is_dir_valid(dir<1, ScalarT> const& d)
+{
+    auto const l = d.x * d.x;
+    return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+}
+template <class ScalarT>
+bool is_dir_valid(dir<2, ScalarT> const& d)
+{
+    auto const l = d.x * d.x + d.y * d.y;
+    return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+}
+template <class ScalarT>
+bool is_dir_valid(dir<3, ScalarT> const& d)
+{
+    auto const l = d.x * d.x + d.y * d.y + d.z * d.z;
+    return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+}
+template <class ScalarT>
+bool is_dir_valid(dir<4, ScalarT> const& d)
+{
+    auto const l = d.x * d.x + d.y * d.y + d.z * d.z + d.w * d.w;
+    return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+}
+}
+
 template <class ScalarT>
 struct dir<1, ScalarT>
 {
@@ -50,18 +81,8 @@ struct dir<1, ScalarT>
     static const dir pos_x;
     static const dir neg_x;
 
-    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
+    TG_DECLARE_COMP_TYPE_1(dir);
 
-    constexpr dir() = default;
-    constexpr dir(dir const&) = default;
-    constexpr dir(dir&&) = default;
-    constexpr dir(ScalarT x);
-    constexpr explicit dir(vec<1, ScalarT> const& v); // CAUTION: this does not normalize!
-    template <class T>
-    constexpr explicit dir(dir<1, T> const& v) : x(ScalarT(v.x))
-    {
-    }
     template <class T>
     constexpr explicit operator dir<1, T>() const
     {
@@ -69,11 +90,6 @@ struct dir<1, ScalarT>
     }
 
     constexpr operator vec<1, ScalarT>() const { return vec<1, ScalarT>(*this); }
-
-    constexpr dir& operator=(dir const&) & = default;
-    constexpr dir& operator=(dir const&) && = delete;
-    constexpr dir& operator=(dir&&) & = default;
-    constexpr dir& operator=(dir&&) && = delete;
 };
 
 template <class ScalarT>
@@ -87,18 +103,8 @@ struct dir<2, ScalarT>
     static const dir neg_x;
     static const dir neg_y;
 
-    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
+    TG_DECLARE_COMP_TYPE_2(dir);
 
-    constexpr dir() = default;
-    constexpr dir(dir const&) = default;
-    constexpr dir(dir&&) = default;
-    constexpr dir(ScalarT x, ScalarT y);
-    constexpr explicit dir(vec<2, ScalarT> const& v); // CAUTION: this does not normalize!
-    template <class T>
-    constexpr explicit dir(dir<2, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y))
-    {
-    }
     template <class T>
     constexpr explicit operator dir<2, T>() const
     {
@@ -106,11 +112,6 @@ struct dir<2, ScalarT>
     }
 
     constexpr operator vec<2, ScalarT>() const { return vec<2, ScalarT>(*this); }
-
-    constexpr dir& operator=(dir const&) & = default;
-    constexpr dir& operator=(dir const&) && = delete;
-    constexpr dir& operator=(dir&&) & = default;
-    constexpr dir& operator=(dir&&) && = delete;
 };
 
 template <class ScalarT>
@@ -127,18 +128,8 @@ struct dir<3, ScalarT>
     static const dir neg_y;
     static const dir neg_z;
 
-    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
+    TG_DECLARE_COMP_TYPE_3(dir);
 
-    constexpr dir() = default;
-    constexpr dir(dir const&) = default;
-    constexpr dir(dir&&) = default;
-    constexpr dir(ScalarT x, ScalarT y, ScalarT z);
-    constexpr explicit dir(vec<3, ScalarT> const& v); // CAUTION: this does not normalize!
-    template <class T>
-    constexpr explicit dir(dir<3, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z))
-    {
-    }
     template <class T>
     constexpr explicit operator dir<3, T>() const
     {
@@ -146,11 +137,6 @@ struct dir<3, ScalarT>
     }
 
     constexpr operator vec<3, ScalarT>() const { return vec<3, ScalarT>(*this); }
-
-    constexpr dir& operator=(dir const&) & = default;
-    constexpr dir& operator=(dir const&) && = delete;
-    constexpr dir& operator=(dir&&) & = default;
-    constexpr dir& operator=(dir&&) && = delete;
 };
 
 template <class ScalarT>
@@ -170,18 +156,8 @@ struct dir<4, ScalarT>
     static const dir neg_z;
     static const dir neg_w;
 
-    constexpr ScalarT& operator[](int i) { return (&x)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&x)[i]; }
+    TG_DECLARE_COMP_TYPE_4(dir);
 
-    constexpr dir() = default;
-    constexpr dir(dir const&) = default;
-    constexpr dir(dir&&) = default;
-    constexpr dir(ScalarT x, ScalarT y, ScalarT z, ScalarT w);
-    constexpr explicit dir(vec<4, ScalarT> const& v); // CAUTION: this does not normalize!
-    template <class T>
-    constexpr explicit dir(dir<4, T> const& v) : x(ScalarT(v.x)), y(ScalarT(v.y)), z(ScalarT(v.z)), w(ScalarT(v.w))
-    {
-    }
     template <class T>
     constexpr explicit operator dir<4, T>() const
     {
@@ -189,11 +165,6 @@ struct dir<4, ScalarT>
     }
 
     constexpr operator vec<4, ScalarT>() const { return vec<4, ScalarT>(*this); }
-
-    constexpr dir& operator=(dir const&) & = default;
-    constexpr dir& operator=(dir const&) && = delete;
-    constexpr dir& operator=(dir&&) & = default;
-    constexpr dir& operator=(dir&&) && = delete;
 };
 
 // comparison operators

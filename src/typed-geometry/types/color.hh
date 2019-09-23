@@ -38,28 +38,7 @@ struct color<3, ScalarT>
     static const color magenta;
     static const color yellow;
 
-    constexpr ScalarT& operator[](int i) { return (&r)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&r)[i]; }
-
-    constexpr color() = default;
-    constexpr color(color const&) = default;
-    constexpr color(color&&) = default;
-    constexpr explicit color(ScalarT grey) : r(grey), g(grey), b(grey) {}
-    constexpr color(ScalarT r, ScalarT g, ScalarT b) : r(r), g(g), b(b) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr color(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        r = detail::comp_get(v, 0, s, fill);
-        g = detail::comp_get(v, 1, s, fill);
-        b = detail::comp_get(v, 2, s, fill);
-    }
-
-    constexpr color& operator=(color const&) & = default;
-    constexpr color& operator=(color const&) && = delete;
-    constexpr color& operator=(color&&) & = default;
-    constexpr color& operator=(color&&) && = delete;
+    TG_DECLARE_COMP_TYPE_3(color);
 };
 
 template <class T>
@@ -82,6 +61,11 @@ const color<3, T> color<3, T>::yellow = {T(1), T(1), T(0)};
 template <class ScalarT>
 struct color<4, ScalarT>
 {
+    ScalarT r = static_cast<ScalarT>(0);
+    ScalarT g = static_cast<ScalarT>(0);
+    ScalarT b = static_cast<ScalarT>(0);
+    ScalarT a = static_cast<ScalarT>(1);
+
     static const color black;
     static const color white;
     static const color red;
@@ -92,35 +76,7 @@ struct color<4, ScalarT>
     static const color yellow;
     static const color transparent;
 
-    ScalarT r = static_cast<ScalarT>(0);
-    ScalarT g = static_cast<ScalarT>(0);
-    ScalarT b = static_cast<ScalarT>(0);
-    ScalarT a = static_cast<ScalarT>(1);
-
-    constexpr ScalarT& operator[](int i) { return (&r)[i]; }
-    constexpr ScalarT const& operator[](int i) const { return (&r)[i]; }
-
-    constexpr color() = default;
-    constexpr color(color const&) = default;
-    constexpr color(color&&) = default;
-    constexpr explicit color(ScalarT grey) : r(grey), g(grey), b(grey), a(ScalarT(1)) {}
-    constexpr color(ScalarT r, ScalarT g, ScalarT b, ScalarT a = ScalarT(1)) : r(r), g(g), b(b), a(a) {}
-    constexpr color(color<3, ScalarT> c, ScalarT a = ScalarT(1)) : r(c.r), g(c.g), b(c.b), a(a) {}
-
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>
-    explicit constexpr color(Obj const& v, ScalarT fill = ScalarT(0))
-    {
-        auto s = detail::get_dynamic_comp_size(v);
-        r = detail::comp_get(v, 0, s, fill);
-        g = detail::comp_get(v, 1, s, fill);
-        b = detail::comp_get(v, 2, s, fill);
-        a = detail::comp_get(v, 3, s, fill);
-    }
-
-    constexpr color& operator=(color const&) & = default;
-    constexpr color& operator=(color const&) && = delete;
-    constexpr color& operator=(color&&) & = default;
-    constexpr color& operator=(color&&) && = delete;
+    TG_DECLARE_COMP_TYPE_4(color);
 };
 
 template <class T>

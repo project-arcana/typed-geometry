@@ -53,7 +53,7 @@
 
 #define TG_UNUSED(expr) void(sizeof((expr))) // force ;
 
-#define TG_FORCE_SEMICOLON static_assert(true, "")
+#define TG_FORCE_SEMICOLON static_assert(true)
 
 // currently a macro because clang-format interacts badly with it
 #define TG_NODISCARD [[nodiscard]]
@@ -65,38 +65,147 @@
 #define TG_IMPL_MEMBER_pos_1 y
 #define TG_IMPL_MEMBER_pos_2 z
 #define TG_IMPL_MEMBER_pos_3 w
+#define TG_IMPL_MEMBER_pos_s v
+#define TG_IMPL_MEMBER_pos_verify
 
 #define TG_IMPL_MEMBER_vec_0 x
 #define TG_IMPL_MEMBER_vec_1 y
 #define TG_IMPL_MEMBER_vec_2 z
 #define TG_IMPL_MEMBER_vec_3 w
+#define TG_IMPL_MEMBER_vec_s v
+#define TG_IMPL_MEMBER_vec_verify
 
 #define TG_IMPL_MEMBER_dir_0 x
 #define TG_IMPL_MEMBER_dir_1 y
 #define TG_IMPL_MEMBER_dir_2 z
 #define TG_IMPL_MEMBER_dir_3 w
+#define TG_IMPL_MEMBER_dir_s v
+#define TG_IMPL_MEMBER_dir_verify TG_CONTRACT(tg::detail::is_dir_valid(*this) && "dirs must be normalized");
 
 #define TG_IMPL_MEMBER_color_0 r
 #define TG_IMPL_MEMBER_color_1 g
 #define TG_IMPL_MEMBER_color_2 b
 #define TG_IMPL_MEMBER_color_3 a
+#define TG_IMPL_MEMBER_color_s grey
+#define TG_IMPL_MEMBER_color_verify
 
 #define TG_IMPL_MEMBER_size_0 width
 #define TG_IMPL_MEMBER_size_1 height
 #define TG_IMPL_MEMBER_size_2 depth
 #define TG_IMPL_MEMBER_size_3 w
+#define TG_IMPL_MEMBER_size_s v
+#define TG_IMPL_MEMBER_size_verify
+
+#define TG_IMPL_MEMBER_comp_0 comp0
+#define TG_IMPL_MEMBER_comp_1 comp1
+#define TG_IMPL_MEMBER_comp_2 comp2
+#define TG_IMPL_MEMBER_comp_3 comp3
+#define TG_IMPL_MEMBER_comp_s v
+#define TG_IMPL_MEMBER_comp_verify
 
 #define TG_IMPL_MEMBER_mat_0 m[0]
 #define TG_IMPL_MEMBER_mat_1 m[1]
 #define TG_IMPL_MEMBER_mat_2 m[2]
 #define TG_IMPL_MEMBER_mat_3 m[3]
 
-#define TG_IMPL_MEMBER_comp_0 comp0
-#define TG_IMPL_MEMBER_comp_1 comp1
-#define TG_IMPL_MEMBER_comp_2 comp2
-#define TG_IMPL_MEMBER_comp_3 comp3
-
 #define TG_IMPL_MEMBER(TYPE, COMP) TG_IMPL_MEMBER_##TYPE##_##COMP
+#define TG_IMPL_COMP_VERIFY(TYPE) TG_IMPL_MEMBER_##TYPE##_verify
+
+#define TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE)                                                     \
+    constexpr ScalarT& operator[](int i) { return (&TG_IMPL_MEMBER(TYPE, 0))[i]; }             \
+    constexpr ScalarT const& operator[](int i) const { return (&TG_IMPL_MEMBER(TYPE, 0))[i]; } \
+    TG_FORCE_SEMICOLON
+
+#define TG_DECLARE_COMP_TYPE_1(TYPE)                                                                                                 \
+    TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                                              \
+    constexpr TYPE() = default;                                                                                                      \
+    constexpr TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s)) : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)) { TG_IMPL_COMP_VERIFY(TYPE) } \
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>                                                       \
+    explicit constexpr TYPE(Obj const& v, ScalarT fill = ScalarT(0))                                                                 \
+    {                                                                                                                                \
+        auto s = detail::get_dynamic_comp_size(v);                                                                                   \
+        TG_IMPL_MEMBER(TYPE, 0) = detail::comp_get(v, 0, s, fill);                                                                   \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                                                    \
+    }                                                                                                                                \
+    TG_FORCE_SEMICOLON
+
+#define TG_DECLARE_COMP_TYPE_2(TYPE)                                                                       \
+    TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                    \
+    constexpr TYPE() = default;                                                                            \
+    constexpr explicit TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s))                                               \
+      : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)), TG_IMPL_MEMBER(TYPE, 1)(TG_IMPL_MEMBER(TYPE, s)) \
+    {                                                                                                      \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                          \
+    }                                                                                                      \
+    constexpr TYPE(ScalarT TG_IMPL_MEMBER(TYPE, 0), ScalarT TG_IMPL_MEMBER(TYPE, 1))                       \
+      : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, 0)), TG_IMPL_MEMBER(TYPE, 1)(TG_IMPL_MEMBER(TYPE, 1)) \
+    {                                                                                                      \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                          \
+    }                                                                                                      \
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>                             \
+    explicit constexpr TYPE(Obj const& v, ScalarT fill = ScalarT(0))                                       \
+    {                                                                                                      \
+        auto s = detail::get_dynamic_comp_size(v);                                                         \
+        TG_IMPL_MEMBER(TYPE, 0) = detail::comp_get(v, 0, s, fill);                                         \
+        TG_IMPL_MEMBER(TYPE, 1) = detail::comp_get(v, 1, s, fill);                                         \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                          \
+    }                                                                                                      \
+    TG_FORCE_SEMICOLON
+
+#define TG_DECLARE_COMP_TYPE_3(TYPE)                                                                                                                         \
+    TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                                                                      \
+    constexpr TYPE() = default;                                                                                                                              \
+    constexpr explicit TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s))                                                                                                 \
+      : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)), TG_IMPL_MEMBER(TYPE, 1)(TG_IMPL_MEMBER(TYPE, s)), TG_IMPL_MEMBER(TYPE, 2)(TG_IMPL_MEMBER(TYPE, s)) \
+    {                                                                                                                                                        \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                            \
+    }                                                                                                                                                        \
+    constexpr TYPE(ScalarT TG_IMPL_MEMBER(TYPE, 0), ScalarT TG_IMPL_MEMBER(TYPE, 1), ScalarT TG_IMPL_MEMBER(TYPE, 2))                                        \
+      : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, 0)), TG_IMPL_MEMBER(TYPE, 1)(TG_IMPL_MEMBER(TYPE, 1)), TG_IMPL_MEMBER(TYPE, 2)(TG_IMPL_MEMBER(TYPE, 2)) \
+    {                                                                                                                                                        \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                            \
+    }                                                                                                                                                        \
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>                                                                               \
+    explicit constexpr TYPE(Obj const& v, ScalarT fill = ScalarT(0))                                                                                         \
+    {                                                                                                                                                        \
+        auto s = detail::get_dynamic_comp_size(v);                                                                                                           \
+        TG_IMPL_MEMBER(TYPE, 0) = detail::comp_get(v, 0, s, fill);                                                                                           \
+        TG_IMPL_MEMBER(TYPE, 1) = detail::comp_get(v, 1, s, fill);                                                                                           \
+        TG_IMPL_MEMBER(TYPE, 2) = detail::comp_get(v, 2, s, fill);                                                                                           \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                            \
+    }                                                                                                                                                        \
+    TG_FORCE_SEMICOLON
+
+#define TG_DECLARE_COMP_TYPE_4(TYPE)                                                                                                                   \
+    TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                                                                \
+    constexpr TYPE() = default;                                                                                                                        \
+    constexpr explicit TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s))                                                                                           \
+      : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)),                                                                                              \
+        TG_IMPL_MEMBER(TYPE, 1)(TG_IMPL_MEMBER(TYPE, s)),                                                                                              \
+        TG_IMPL_MEMBER(TYPE, 2)(TG_IMPL_MEMBER(TYPE, s)),                                                                                              \
+        TG_IMPL_MEMBER(TYPE, 3)(TG_IMPL_MEMBER(TYPE, s))                                                                                               \
+    {                                                                                                                                                  \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                      \
+    }                                                                                                                                                  \
+    constexpr TYPE(ScalarT TG_IMPL_MEMBER(TYPE, 0), ScalarT TG_IMPL_MEMBER(TYPE, 1), ScalarT TG_IMPL_MEMBER(TYPE, 2), ScalarT TG_IMPL_MEMBER(TYPE, 3)) \
+      : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, 0)),                                                                                              \
+        TG_IMPL_MEMBER(TYPE, 1)(TG_IMPL_MEMBER(TYPE, 1)),                                                                                              \
+        TG_IMPL_MEMBER(TYPE, 2)(TG_IMPL_MEMBER(TYPE, 2)),                                                                                              \
+        TG_IMPL_MEMBER(TYPE, 3)(TG_IMPL_MEMBER(TYPE, 3))                                                                                               \
+    {                                                                                                                                                  \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                      \
+    }                                                                                                                                                  \
+    template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>                                                                         \
+    explicit constexpr TYPE(Obj const& v, ScalarT fill = ScalarT(0))                                                                                   \
+    {                                                                                                                                                  \
+        auto s = detail::get_dynamic_comp_size(v);                                                                                                     \
+        TG_IMPL_MEMBER(TYPE, 0) = detail::comp_get(v, 0, s, fill);                                                                                     \
+        TG_IMPL_MEMBER(TYPE, 1) = detail::comp_get(v, 1, s, fill);                                                                                     \
+        TG_IMPL_MEMBER(TYPE, 2) = detail::comp_get(v, 2, s, fill);                                                                                     \
+        TG_IMPL_MEMBER(TYPE, 3) = detail::comp_get(v, 3, s, fill);                                                                                     \
+        TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                      \
+    }                                                                                                                                                  \
+    TG_FORCE_SEMICOLON
 
 #define TG_IMPL_DEFINE_UNARY_OP(TYPE, OP)                                                                                                    \
     template <int D, class ScalarT>                                                                                                          \
