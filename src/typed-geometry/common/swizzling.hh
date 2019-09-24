@@ -9,7 +9,7 @@ namespace detail
 template <class StoreCompT, template <int, class> class CompTemplate, int D, class ScalarT, int... Indices>
 struct base_swizzle_proxy
 {
-#if !defined(_MSC_VER) || _MSC_VER >= 1916
+#if !defined(_MSC_VER) || _MSC_VER >= 1920
     static_assert((... && (0 <= Indices && Indices < D)), "swizzle index out of range");
 #endif
 
@@ -69,7 +69,7 @@ struct swizzler
     template <template <int, class> class CompT, int D, class ScalarT>
     TG_NODISCARD constexpr CompT<sizeof...(Indices), ScalarT> operator()(CompT<D, ScalarT> const& v) const
     {
-#if !defined(_MSC_VER) || _MSC_VER >= 1916
+#if !defined(_MSC_VER) || _MSC_VER >= 1920
         static_assert((... && (0 <= Indices && Indices < D)), "swizzle index out of range");
 #endif
         return {v[Indices]...};
