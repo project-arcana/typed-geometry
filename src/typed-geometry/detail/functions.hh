@@ -32,6 +32,7 @@
 #include <typed-geometry/functions/perpendicular.hh>
 #include <typed-geometry/functions/perspective.hh>
 #include <typed-geometry/functions/project.hh>
+#include <typed-geometry/functions/quadrics.hh>
 #include <typed-geometry/functions/random_choice.hh>
 #include <typed-geometry/functions/rasterize.hh>
 #include <typed-geometry/functions/reflect.hh>

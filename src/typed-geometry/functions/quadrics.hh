@@ -17,7 +17,7 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr quadric<D, ScalarT> point_quadric(pos<D, ScalarT> const& p)
 {
     quadric<D, ScalarT> Q;
-    Q.add(mat<D, D, ScalarT>::identity(), vec<D, ScalarT>(p), ScalarT(0));
+    Q.add(mat<D, D, ScalarT>::identity, vec<D, ScalarT>(p), ScalarT(0));
     return Q;
 }
 
