@@ -1,8 +1,8 @@
 #pragma once
 
+#include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/pos.hh>
-#include <typed-geometry/detail/special_values.hh>
 
 /*
  * Supported operations:
@@ -256,16 +256,17 @@ TG_NODISCARD constexpr mat<4, R, ScalarT> operator-(mat<4, R, ScalarT> const& a)
     return m;
 }
 
+// TODO: is this really useful?
 // mat + scalar
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<1, R, ScalarT> operator+(mat<1, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<1, R, ScalarT> operator+(mat<1, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<1, R, ScalarT> m;
     m[0] = a[0] + b;
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<2, R, ScalarT> operator+(mat<2, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<2, R, ScalarT> operator+(mat<2, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<2, R, ScalarT> m;
     m[0] = a[0] + b;
@@ -273,7 +274,7 @@ TG_NODISCARD constexpr mat<2, R, ScalarT> operator+(mat<2, R, ScalarT> const& a,
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<3, R, ScalarT> operator+(mat<3, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<3, R, ScalarT> operator+(mat<3, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<3, R, ScalarT> m;
     m[0] = a[0] + b;
@@ -282,7 +283,7 @@ TG_NODISCARD constexpr mat<3, R, ScalarT> operator+(mat<3, R, ScalarT> const& a,
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<4, R, ScalarT> operator+(mat<4, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<4, R, ScalarT> operator+(mat<4, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<4, R, ScalarT> m;
     m[0] = a[0] + b;
@@ -294,14 +295,14 @@ TG_NODISCARD constexpr mat<4, R, ScalarT> operator+(mat<4, R, ScalarT> const& a,
 
 // mat - scalar
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<1, R, ScalarT> operator-(mat<1, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<1, R, ScalarT> operator-(mat<1, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<1, R, ScalarT> m;
     m[0] = a[0] - b;
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<2, R, ScalarT> operator-(mat<2, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<2, R, ScalarT> operator-(mat<2, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<2, R, ScalarT> m;
     m[0] = a[0] - b;
@@ -309,7 +310,7 @@ TG_NODISCARD constexpr mat<2, R, ScalarT> operator-(mat<2, R, ScalarT> const& a,
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<3, R, ScalarT> operator-(mat<3, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<3, R, ScalarT> operator-(mat<3, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<3, R, ScalarT> m;
     m[0] = a[0] - b;
@@ -318,7 +319,7 @@ TG_NODISCARD constexpr mat<3, R, ScalarT> operator-(mat<3, R, ScalarT> const& a,
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<4, R, ScalarT> operator-(mat<4, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<4, R, ScalarT> operator-(mat<4, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<4, R, ScalarT> m;
     m[0] = a[0] - b;
@@ -330,14 +331,14 @@ TG_NODISCARD constexpr mat<4, R, ScalarT> operator-(mat<4, R, ScalarT> const& a,
 
 // mat * scalar
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<1, R, ScalarT> operator*(mat<1, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<1, R, ScalarT> operator*(mat<1, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<1, R, ScalarT> m;
     m[0] = a[0] * b;
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<2, R, ScalarT> operator*(mat<2, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<2, R, ScalarT> operator*(mat<2, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<2, R, ScalarT> m;
     m[0] = a[0] * b;
@@ -345,7 +346,7 @@ TG_NODISCARD constexpr mat<2, R, ScalarT> operator*(mat<2, R, ScalarT> const& a,
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<3, R, ScalarT> operator*(mat<3, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<3, R, ScalarT> operator*(mat<3, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<3, R, ScalarT> m;
     m[0] = a[0] * b;
@@ -354,7 +355,7 @@ TG_NODISCARD constexpr mat<3, R, ScalarT> operator*(mat<3, R, ScalarT> const& a,
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<4, R, ScalarT> operator*(mat<4, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<4, R, ScalarT> operator*(mat<4, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<4, R, ScalarT> m;
     m[0] = a[0] * b;
@@ -366,14 +367,14 @@ TG_NODISCARD constexpr mat<4, R, ScalarT> operator*(mat<4, R, ScalarT> const& a,
 
 // mat / scalar
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<1, R, ScalarT> operator/(mat<1, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<1, R, ScalarT> operator/(mat<1, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<1, R, ScalarT> m;
     m[0] = a[0] / b;
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<2, R, ScalarT> operator/(mat<2, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<2, R, ScalarT> operator/(mat<2, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<2, R, ScalarT> m;
     m[0] = a[0] / b;
@@ -381,7 +382,7 @@ TG_NODISCARD constexpr mat<2, R, ScalarT> operator/(mat<2, R, ScalarT> const& a,
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<3, R, ScalarT> operator/(mat<3, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<3, R, ScalarT> operator/(mat<3, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<3, R, ScalarT> m;
     m[0] = a[0] / b;
@@ -390,7 +391,7 @@ TG_NODISCARD constexpr mat<3, R, ScalarT> operator/(mat<3, R, ScalarT> const& a,
     return m;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<4, R, ScalarT> operator/(mat<4, R, ScalarT> const& a, ScalarT b)
+TG_NODISCARD constexpr mat<4, R, ScalarT> operator/(mat<4, R, ScalarT> const& a, dont_deduce<ScalarT> b)
 {
     mat<4, R, ScalarT> m;
     m[0] = a[0] / b;
@@ -398,6 +399,23 @@ TG_NODISCARD constexpr mat<4, R, ScalarT> operator/(mat<4, R, ScalarT> const& a,
     m[2] = a[2] / b;
     m[3] = a[3] / b;
     return m;
+}
+
+// scalar +-* mat
+template <int C, int R, class ScalarT>
+TG_NODISCARD constexpr mat<C, R, ScalarT> operator+(dont_deduce<ScalarT> a, mat<C, R, ScalarT> const& b)
+{
+    return b + a;
+}
+template <int C, int R, class ScalarT>
+TG_NODISCARD constexpr mat<C, R, ScalarT> operator-(dont_deduce<ScalarT> a, mat<C, R, ScalarT> const& b)
+{
+    return -b + a;
+}
+template <int C, int R, class ScalarT>
+TG_NODISCARD constexpr mat<C, R, ScalarT> operator*(dont_deduce<ScalarT> a, mat<C, R, ScalarT> const& b)
+{
+    return b * a;
 }
 
 } // namespace tg
