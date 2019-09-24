@@ -35,18 +35,19 @@ template <class ScalarT>
 struct quadric<2, ScalarT>
 {
     using scalar_t = ScalarT;
-    using vec2_t = tg::vec<2, ScalarT>;
-    using pos2_t = tg::pos<2, ScalarT>;
-    using dir2_t = tg::dir<2, ScalarT>;
+    using vec_t = tg::vec<2, ScalarT>;
+    using pos_t = tg::pos<2, ScalarT>;
 
-private:
-    scalar_t A00 = 0;
-    scalar_t A01 = 0;
-    scalar_t A11 = 0;
+    // x^T A x - 2 b^T x + c
+public:
+    scalar_t A00 = scalar_t(0);
+    scalar_t A01 = scalar_t(0);
+    scalar_t A11 = scalar_t(0);
 
-    vec2_t r = vec2_t::zero;
+    scalar_t b0 = scalar_t(0);
+    scalar_t b1 = scalar_t(0);
 
-    scalar_t d_sqr = 0;
+    scalar_t c = scalar_t(0);
 
 public:
     constexpr quadric() = default;
@@ -61,19 +62,20 @@ public:
     /// Adds a line (pos, normal) with a given uncertainty sigma
     /// `normal` should be normalized
     /// `sigma` is the standard deviation of the normal distribution added to `normal`
-    void add_line(pos2_t pos, vec2_t normal, scalar_t sigma)
+    void add_line(pos_t pos, vec_t normal, scalar_t sigma)
     {
-        auto d = dot(pos - pos2_t::zero, normal);
+        auto d = dot(pos - pos_t::zero, normal);
         auto s2 = sigma * sigma;
 
         A00 += normal.x * normal.x + s2;
         A01 += normal.x * normal.y;
         A11 += normal.y * normal.y + s2;
 
-        r += normal * d + vec2_t(pos) * s2;
+        b0 += normal.x * d + pos.x * s2;
+        b1 += normal.y * d + pos.y * s2;
 
         // TODO: maybe positional uncertainty
-        d_sqr += d * d + distance_sqr_to_origin(pos) * s2;
+        c += d * d + distance_sqr_to_origin(pos) * s2;
     }
 
     // add two quadrics
@@ -83,9 +85,10 @@ public:
         A01 += rhs.A01;
         A11 += rhs.A11;
 
-        r += rhs.r;
+        b0 += rhs.b0;
+        b1 += rhs.b1;
 
-        d_sqr += rhs.d_sqr;
+        c += rhs.c;
     }
 
     // Residual L2 error as given by x^T A x - 2 r^T x + c
@@ -96,9 +99,9 @@ public:
             A01 * p.x + A11 * p.y, //
         };
 
-        return dot(vec<2, ScalarT>(p), Ax)      // x^T A x
-               - 2 * dot(vec<2, ScalarT>(p), r) // - 2 r^T x
-               + d_sqr;                         // + c
+        return dot(vec<2, ScalarT>(p), Ax) // x^T A x
+               - 2 * (b0 * p.x + b1 * p.y) // - 2 r^T x
+               + c;                        // + c
     }
 
     // TODO: fix me
@@ -112,21 +115,23 @@ template <class ScalarT>
 struct quadric<3, ScalarT>
 {
     using scalar_t = ScalarT;
-    using vec3_t = tg::vec<3, ScalarT>;
-    using pos3_t = tg::pos<3, ScalarT>;
-    using dir3_t = tg::dir<3, ScalarT>;
+    using vec_t = tg::vec<3, ScalarT>;
+    using pos_t = tg::pos<3, ScalarT>;
 
-private:
-    scalar_t A00 = 0;
-    scalar_t A01 = 0;
-    scalar_t A02 = 0;
-    scalar_t A11 = 0;
-    scalar_t A12 = 0;
-    scalar_t A22 = 0;
+    // x^T A x - 2 b^T x + c
+public:
+    scalar_t A00 = scalar_t(0);
+    scalar_t A01 = scalar_t(0);
+    scalar_t A02 = scalar_t(0);
+    scalar_t A11 = scalar_t(0);
+    scalar_t A12 = scalar_t(0);
+    scalar_t A22 = scalar_t(0);
 
-    vec3_t r = vec3_t::zero;
+    scalar_t b0 = scalar_t(0);
+    scalar_t b1 = scalar_t(0);
+    scalar_t b2 = scalar_t(0);
 
-    scalar_t d_sqr = 0;
+    scalar_t c = scalar_t(0);
 
 public:
     constexpr quadric() = default;
@@ -144,10 +149,10 @@ public:
         q.A11 = A11;
         q.A12 = A12;
         q.A22 = A22;
-        q.r.x = b0;
-        q.r.y = b1;
-        q.r.z = b2;
-        q.d_sqr = c;
+        q.b0 = b0;
+        q.b1 = b1;
+        q.b2 = b2;
+        q.c = c;
         return q;
     }
     static constexpr quadric from_coefficients(tg::mat3 const& A, tg::vec3 const& b, float c)
@@ -159,15 +164,15 @@ public:
         q.A11 = A[1][1];
         q.A12 = A[1][2];
         q.A22 = A[2][2];
-        q.r.x = b[0];
-        q.r.y = b[1];
-        q.r.z = b[2];
-        q.d_sqr = c;
+        q.b0 = b[0];
+        q.b1 = b[1];
+        q.b2 = b[2];
+        q.c = c;
         return q;
     }
 
 public:
-    constexpr mat<3, 3, ScalarT> A() const
+    constexpr mat<3, 3, ScalarT> const A() const
     {
         mat<3, 3, ScalarT> m;
         m[0][0] = A00;
@@ -181,17 +186,16 @@ public:
         m[2][2] = A22;
         return m;
     }
-    constexpr vec<3, ScalarT> b() const { return r; }
-    constexpr scalar_t c() const { return d_sqr; }
+    constexpr vec<3, ScalarT> const b() const { return {b0, b1, b2}; }
 
     // TODO: find better place for these?
 public:
     /// Adds a plane (pos, normal) with a given uncertainty sigma
     /// `normal` should be normalized
     /// `sigma` is the standard deviation of the normal distribution added to `normal`
-    void add_plane(pos3_t pos, vec3_t normal, scalar_t sigma)
+    void add_plane(pos_t pos, vec_t normal, scalar_t sigma)
     {
-        auto d = dot(pos - pos3_t::zero, normal);
+        auto d = dot(pos - pos_t::zero, normal);
         auto s2 = sigma * sigma;
 
         A00 += normal.x * normal.x + s2;
@@ -201,10 +205,12 @@ public:
         A12 += normal.y * normal.z;
         A22 += normal.z * normal.z + s2;
 
-        r += normal * d + vec3_t(pos) * s2;
+        b0 += normal.x * d + pos.x * s2;
+        b1 += normal.y * d + pos.y * s2;
+        b2 += normal.z * d + pos.z * s2;
 
         // TODO: maybe positional uncertainty
-        d_sqr += d * d + distance_sqr_to_origin(pos) * s2;
+        c += d * d + distance_sqr_to_origin(pos) * s2;
     }
 
     /// Adds two quadrics
@@ -217,9 +223,11 @@ public:
         A12 += rhs.A12;
         A22 += rhs.A22;
 
-        r += rhs.r;
+        b0 += rhs.b0;
+        b1 += rhs.b1;
+        b2 += rhs.b2;
 
-        d_sqr += rhs.d_sqr;
+        c += rhs.c;
     }
 
     // adds a quadric given in matrix form (x^T A x + b^T x + c)
@@ -233,9 +241,11 @@ public:
         A12 += A[1][2];
         A22 += A[2][2];
 
-        r += b;
+        b0 += b.x;
+        b1 += b.y;
+        b2 += b.z;
 
-        d_sqr += c;
+        c += c;
     }
 
     // Residual L2 error as given by x^T A x - 2 r^T x + c
@@ -247,9 +257,9 @@ public:
             A02 * p.x + A12 * p.y + A22 * p.z, //
         };
 
-        return dot(vec<3, ScalarT>(p), Ax)      // x^T A x
-               - 2 * dot(vec<3, ScalarT>(p), r) // - 2 r^T x
-               + d_sqr;                         // + c
+        return dot(vec<3, ScalarT>(p), Ax)            // x^T A x
+               - 2 * (p.x * b0 + p.y * b1 + p.z * b2) // - 2 r^T x
+               + c;                                   // + c
     }
 
     // TODO: fix me

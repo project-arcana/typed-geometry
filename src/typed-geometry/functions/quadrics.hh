@@ -16,18 +16,15 @@ namespace tg
 template <int D, class ScalarT>
 TG_NODISCARD constexpr quadric<D, ScalarT> point_quadric(pos<D, ScalarT> const& p)
 {
-    quadric<D, ScalarT> Q;
-    Q.add(mat<D, D, ScalarT>::identity, vec<D, ScalarT>(p), ScalarT(0));
-    return Q;
+    auto const v = tg::vec<D, ScalarT>(p);
+    return quadric<D, ScalarT>::from_coefficients(mat<D, D, ScalarT>::identity, v, dot(v, v));
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr quadric<D, ScalarT> plane_quadric(pos<D, ScalarT> const& p, vec<D, ScalarT> const& n)
 {
     auto const d = dot(p, n);
-    quadric<D, ScalarT> Q;
-    Q.add(self_outer_product(n), n * d, d * d);
-    return Q;
+    return quadric<D, ScalarT>::from_coefficients(self_outer_product(n), n * d, d * d);
 }
 
 template <int D, class ScalarT>
@@ -49,9 +46,7 @@ TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_plane_quadric(pos<D, Sc
     auto const b = mean_n * d + sn2 * p;
     auto const c = d * d + sn2 * dot(p, p) + sp2 * dot(mean_n, mean_n) + sp2 * sn2;
 
-    quadric<D, ScalarT> Q;
-    Q.add(A, b, c);
-    return Q;
+    return quadric<D, ScalarT>::from_coefficients(A, b, c);
 }
 
 template <int D, class ScalarT>
@@ -67,23 +62,19 @@ TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_plane_quadric(pos<D, Sc
     auto const b = mean_n * d + sigma_n * p;
     auto const c = d * d + dot(p, sigma_n * p) + dot(mean_n, sigma_p * mean_n) + trace_of_product(sigma_n, sigma_p);
 
-    quadric<D, ScalarT> Q;
-    Q.add(A, b, c);
-    return Q;
+    return quadric<D, ScalarT>::from_coefficients(A, b, c);
 }
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr quadric<D, ScalarT> triangle_quadric(pos<D, ScalarT> const& p, pos<D, ScalarT> const& q, pos<D, ScalarT> const& r)
 {
-    auto const pxq = cross(p, q);
-    auto const qxr = cross(q, r);
-    auto const rxp = cross(r, p);
+    auto const pxq = cross(vec(p), vec(q));
+    auto const qxr = cross(vec(q), vec(r));
+    auto const rxp = cross(vec(r), vec(p));
 
     auto const xsum = pxq + qxr + rxp;
     auto const det = dot(pxq, r);
 
-    quadric<D, ScalarT> Q;
-    Q.add(self_outer_product(xsum), xsum * det, det * det);
-    return Q;
+    return quadric<D, ScalarT>::from_coefficients(self_outer_product(xsum), xsum * det, det * det);
 }
 }

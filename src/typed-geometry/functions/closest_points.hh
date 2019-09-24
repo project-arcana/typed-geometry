@@ -55,9 +55,9 @@ TG_NODISCARD constexpr pos<3, ScalarT> closest_point(quadric<3, ScalarT> const& 
     auto d = q.A11;
     auto e = q.A12;
     auto f = q.A22;
-    auto r0 = q.r.x;
-    auto r1 = q.r.y;
-    auto r2 = q.r.z;
+    auto r0 = q.b0;
+    auto r1 = q.b1;
+    auto r2 = q.b2;
 
     auto ad = a * d;
     auto ae = a * e;
@@ -92,8 +92,8 @@ TG_NODISCARD constexpr pos<2, ScalarT> closest_point(quadric<2, ScalarT> const& 
     auto c = q.A11;
 
     auto denom = 1 / (a * c - b * b);
-    auto nom0 = q.r.x * c - q.r.y * b;
-    auto nom1 = q.r.y * a - q.r.x * b;
+    auto nom0 = q.b0 * c - q.b1 * b;
+    auto nom1 = q.b1 * a - q.b0 * b;
 
     return {nom0 * denom, nom1 * denom};
 }
