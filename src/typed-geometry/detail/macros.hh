@@ -116,8 +116,27 @@
     constexpr ScalarT const& operator[](int i) const { return (&TG_IMPL_MEMBER(TYPE, 0))[i]; } \
     TG_FORCE_SEMICOLON
 
+#define TG_DECLARE_SELF_SWIZZLE(TYPE)                                                                                    \
+    template <int... Indices>                                                                                            \
+    TG_NODISCARD constexpr auto operator[](swizzler<Indices...> const& swizzle)                                          \
+    {                                                                                                                    \
+        return swizzle[*this];                                                                                           \
+    }                                                                                                                    \
+    template <int... Indices>                                                                                            \
+    TG_NODISCARD constexpr auto operator[](swizzler<Indices...> const& swizzle) const                                    \
+    {                                                                                                                    \
+        return swizzle[*this];                                                                                           \
+    }                                                                                                                    \
+    template <int... Indices>                                                                                            \
+    TG_NODISCARD constexpr TYPE<sizeof...(Indices), ScalarT> const operator()(swizzler<Indices...> const& swizzle) const \
+    {                                                                                                                    \
+        return swizzle(*this);                                                                                           \
+    }                                                                                                                    \
+    TG_FORCE_SEMICOLON
+
 #define TG_DECLARE_COMP_TYPE_1(TYPE)                                                                                                 \
     TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                                              \
+    TG_DECLARE_SELF_SWIZZLE(TYPE);                                                                                                   \
     constexpr TYPE() = default;                                                                                                      \
     constexpr TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s)) : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)) { TG_IMPL_COMP_VERIFY(TYPE) } \
     template <class Obj, class = enable_if<is_comp_convertible<Obj, ScalarT>>>                                                       \
@@ -131,6 +150,7 @@
 
 #define TG_DECLARE_COMP_TYPE_2(TYPE)                                                                       \
     TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                    \
+    TG_DECLARE_SELF_SWIZZLE(TYPE);                                                                         \
     constexpr TYPE() = default;                                                                            \
     constexpr explicit TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s))                                               \
       : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)), TG_IMPL_MEMBER(TYPE, 1)(TG_IMPL_MEMBER(TYPE, s)) \
@@ -154,6 +174,7 @@
 
 #define TG_DECLARE_COMP_TYPE_3(TYPE)                                                                                                                         \
     TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                                                                      \
+    TG_DECLARE_SELF_SWIZZLE(TYPE);                                                                                                                           \
     constexpr TYPE() = default;                                                                                                                              \
     constexpr explicit TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s))                                                                                                 \
       : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)), TG_IMPL_MEMBER(TYPE, 1)(TG_IMPL_MEMBER(TYPE, s)), TG_IMPL_MEMBER(TYPE, 2)(TG_IMPL_MEMBER(TYPE, s)) \
@@ -178,6 +199,7 @@
 
 #define TG_DECLARE_COMP_TYPE_4(TYPE)                                                                                                                   \
     TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                                                                \
+    TG_DECLARE_SELF_SWIZZLE(TYPE);                                                                                                                     \
     constexpr TYPE() = default;                                                                                                                        \
     constexpr explicit TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s))                                                                                           \
       : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)),                                                                                              \
