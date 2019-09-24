@@ -44,7 +44,7 @@ TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_plane_quadric(pos<D, Sc
     A[2][2] += sn2;
 
     auto const b = mean_n * d + sn2 * p;
-    auto const c = d * d + sn2 * dot(p, p) + sp2 * dot(mean_n, mean_n) + sp2 * sn2;
+    auto const c = d * d + sn2 * dot(p, p) + sp2 * dot(mean_n, mean_n) + 3 * sp2 * sn2;
 
     return quadric<D, ScalarT>::from_coefficients(A, b, c);
 }
@@ -148,7 +148,11 @@ TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_triangle_quadric(pos<D,
 
     ScalarT c = det_pqr * det_pqr;
 
-    // TODO: more c
+    c += sigma * (dot(pxq, pxq) + dot(qxr, qxr) + dot(rxp, rxp)); // 3x (a x b)^T M_c (a x b)
+
+    c += ss2 * (dot(p, p) + dot(q, q) + dot(r, r)); // 3x a^T Ci[S_b, S_c] a
+
+    c += ss6 * sigma; // Tr[S_r Ci[S_p, S_q]]
 
     return quadric<D, ScalarT>::from_coefficients(A, b, c);
 }

@@ -117,6 +117,7 @@ struct quadric<3, ScalarT>
     using scalar_t = ScalarT;
     using vec_t = tg::vec<3, ScalarT>;
     using pos_t = tg::pos<3, ScalarT>;
+    using mat_t = tg::mat<3, 3, ScalarT>;
 
     // x^T A x - 2 b^T x + c
 public:
@@ -155,7 +156,7 @@ public:
         q.c = c;
         return q;
     }
-    static constexpr quadric from_coefficients(tg::mat3 const& A, tg::vec3 const& b, float c)
+    static constexpr quadric from_coefficients(mat_t const& A, vec_t const& b, scalar_t c)
     {
         quadric q;
         q.A00 = A[0][0];
