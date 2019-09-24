@@ -77,6 +77,8 @@ struct color<4, ScalarT>
     static const color transparent;
 
     TG_DECLARE_COMP_TYPE_4(color);
+
+    constexpr color(ScalarT r, ScalarT g, ScalarT b) : r(r), g(g), b(b) {}
 };
 
 template <class T>
