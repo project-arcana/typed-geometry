@@ -79,6 +79,7 @@ struct color<4, ScalarT>
     TG_DECLARE_COMP_TYPE_4(color);
 
     constexpr color(ScalarT r, ScalarT g, ScalarT b) : r(r), g(g), b(b) {}
+    constexpr color(color<3, ScalarT> const& rgb, ScalarT a = ScalarT(1)) : r(rgb.r), g(rgb.g), b(rgb.b), a(a) {}
 };
 
 template <class T>
