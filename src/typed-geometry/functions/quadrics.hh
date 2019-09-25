@@ -2,6 +2,7 @@
 
 #include <typed-geometry/detail/macros.hh>
 #include <typed-geometry/types/mat.hh>
+#include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/quadric.hh>
 #include <typed-geometry/types/vec.hh>
@@ -21,7 +22,7 @@ TG_NODISCARD constexpr quadric<D, ScalarT> point_quadric(pos<D, ScalarT> const& 
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr quadric<D, ScalarT> plane_quadric(pos<D, ScalarT> const& p, vec<D, ScalarT> const& n)
+TG_NODISCARD constexpr quadric<D, ScalarT> plane_quadric(pos<D, ScalarT> const& p, vec_or_dir<D, ScalarT> const& n)
 {
     auto const d = dot(p, n);
     return quadric<D, ScalarT>::from_coefficients(self_outer_product(n), n * d, d * d);
@@ -29,7 +30,7 @@ TG_NODISCARD constexpr quadric<D, ScalarT> plane_quadric(pos<D, ScalarT> const& 
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_plane_quadric(pos<D, ScalarT> const& mean_p,
-                                                                       vec<D, ScalarT> const& mean_n,
+                                                                       vec_or_dir<D, ScalarT> const& mean_n,
                                                                        dont_deduce<ScalarT> stddev_p,
                                                                        dont_deduce<ScalarT> stddev_n)
 {
@@ -51,7 +52,7 @@ TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_plane_quadric(pos<D, Sc
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_plane_quadric(pos<D, ScalarT> const& mean_p,
-                                                                       vec<D, ScalarT> const& mean_n,
+                                                                       vec_or_dir<D, ScalarT> const& mean_n,
                                                                        mat<D, D, ScalarT> const& sigma_p,
                                                                        mat<D, D, ScalarT> const& sigma_n)
 {
@@ -76,6 +77,11 @@ TG_NODISCARD constexpr quadric<D, ScalarT> triangle_quadric(pos<D, ScalarT> cons
     auto const det = dot(pxq, r);
 
     return quadric<D, ScalarT>::from_coefficients(self_outer_product(xsum), xsum * det, det * det);
+}
+template <int D, class ScalarT>
+TG_NODISCARD constexpr quadric<D, ScalarT> triangle_quadric(triangle<D, ScalarT> const& t)
+{
+    return triangle_quadric(t.pos0, t.pos1, t.pos2);
 }
 
 template <int D, class ScalarT>
@@ -155,5 +161,10 @@ TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_triangle_quadric(pos<D,
     c += ss6 * sigma; // Tr[S_r Ci[S_p, S_q]]
 
     return quadric<D, ScalarT>::from_coefficients(A, b, c);
+}
+template <int D, class ScalarT>
+TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_triangle_quadric(triangle<D, ScalarT> const& t, dont_deduce<ScalarT> stddev)
+{
+    return probabilistic_triangle_quadric(t.pos0, t.pos1, t.pos2, stddev);
 }
 }

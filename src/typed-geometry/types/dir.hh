@@ -167,6 +167,10 @@ struct dir<4, ScalarT>
     constexpr operator vec<4, ScalarT>() const { return vec<4, ScalarT>(*this); }
 };
 
+// non-deducable vec or dir
+template <int D, class ScalarT>
+using vec_or_dir = dont_deduce<vec<D, ScalarT>>;
+
 // comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(dir, dir, bool, operator==, &&, ==);
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(dir, dir, bool, operator!=, ||, !=);
