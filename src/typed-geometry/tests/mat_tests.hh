@@ -7,6 +7,26 @@
 namespace tg
 {
 template <int D, class ScalarT>
+TG_NODISCARD constexpr bool is_zero(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+{
+    for (auto i = 0; i < D; ++i)
+        for (auto j = i; i < D; ++i)
+            if (tg::abs(m[i][j]) > eps)
+                return false;
+
+    return true;
+}
+template <int D, class ScalarT>
+TG_NODISCARD constexpr bool is_identity(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+{
+    for (auto i = 0; i < D; ++i)
+        for (auto j = i; i < D; ++i)
+            if (tg::abs(m[i][j] - float(i == j)) > eps)
+                return false;
+
+    return true;
+}
+template <int D, class ScalarT>
 TG_NODISCARD constexpr bool is_symmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
