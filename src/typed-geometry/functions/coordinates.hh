@@ -2,6 +2,7 @@
 
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/types/array.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
@@ -62,6 +63,12 @@ TG_NODISCARD constexpr ScalarT coordinates(segment<D, ScalarT> const& s, pos<D, 
     auto d = s.pos1 - s.pos0;
     auto t = dot(p - s.pos0, d) / dot(d, d);
     return t;
+}
+
+template <int D, class ScalarT>
+TG_NODISCARD constexpr comp<3, ScalarT> coordinates(aabb<D, ScalarT> const& s, pos<D, ScalarT> const& p)
+{
+    return tg::comp<3, ScalarT>(p - s.min) / tg::comp<3, ScalarT>(s.max - s.min);
 }
 
 } // namespace tg
