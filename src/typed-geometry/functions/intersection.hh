@@ -58,8 +58,8 @@ namespace tg
 template <int MaxHits, class HitT>
 struct ray_hits
 {
-    static inline constexpr bool is_ray_hits = true; // tag
-    static inline constexpr int max_hits = MaxHits;
+    static constexpr bool is_ray_hits = true; // tag
+    static constexpr int max_hits = MaxHits;
 
     template <class OtherT>
     using as_ray_hits = ray_hits<MaxHits, OtherT>;

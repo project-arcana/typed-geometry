@@ -17,8 +17,8 @@ struct false_type
     static constexpr bool value = false;
 };
 
-inline constexpr int min(int a, int b) { return a < b ? a : b; }
-inline constexpr int max(int a, int b) { return a < b ? b : a; }
+constexpr int min(int a, int b) { return a < b ? a : b; }
+constexpr int max(int a, int b) { return a < b ? b : a; }
 
 template <int D>
 struct priority_tag : priority_tag<D - 1>
@@ -31,7 +31,7 @@ struct priority_tag<0>
 } // namespace detail
 
 template <class...>
-inline constexpr bool always_false = false;
+constexpr bool always_false = false;
 
 template <class...>
 using void_t = void;

@@ -6,15 +6,15 @@
 
 namespace tg
 {
-TG_NODISCARD inline constexpr bool is_approx_equal(i8 a, i8 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(i16 a, i16 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(i32 a, i32 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(i64 a, i64 b) { return a == b; }
+TG_NODISCARD constexpr bool is_approx_equal(i8 a, i8 b) { return a == b; }
+TG_NODISCARD constexpr bool is_approx_equal(i16 a, i16 b) { return a == b; }
+TG_NODISCARD constexpr bool is_approx_equal(i32 a, i32 b) { return a == b; }
+TG_NODISCARD constexpr bool is_approx_equal(i64 a, i64 b) { return a == b; }
 
-TG_NODISCARD inline constexpr bool is_approx_equal(u8 a, u8 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(u16 a, u16 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(u32 a, u32 b) { return a == b; }
-TG_NODISCARD inline constexpr bool is_approx_equal(u64 a, u64 b) { return a == b; }
+TG_NODISCARD constexpr bool is_approx_equal(u8 a, u8 b) { return a == b; }
+TG_NODISCARD constexpr bool is_approx_equal(u16 a, u16 b) { return a == b; }
+TG_NODISCARD constexpr bool is_approx_equal(u32 a, u32 b) { return a == b; }
+TG_NODISCARD constexpr bool is_approx_equal(u64 a, u64 b) { return a == b; }
 
 // TODO: f8, f16
 TG_NODISCARD inline bool is_approx_equal(f32 a, f32 b)

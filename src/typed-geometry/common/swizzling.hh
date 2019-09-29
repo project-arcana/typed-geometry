@@ -98,17 +98,17 @@ struct swizzler
     }
 };
 
-inline constexpr swizzler<0, 1> xy;
-inline constexpr swizzler<0, 2> xz;
-inline constexpr swizzler<0, 3> xw;
-inline constexpr swizzler<1, 2> yz;
-inline constexpr swizzler<1, 3> yw;
-inline constexpr swizzler<2, 3> zw;
+constexpr swizzler<0, 1> xy;
+constexpr swizzler<0, 2> xz;
+constexpr swizzler<0, 3> xw;
+constexpr swizzler<1, 2> yz;
+constexpr swizzler<1, 3> yw;
+constexpr swizzler<2, 3> zw;
 
-inline constexpr swizzler<0, 1, 2> xyz;
-inline constexpr swizzler<0, 1, 3> xyw;
-inline constexpr swizzler<0, 2, 3> xzw;
-inline constexpr swizzler<1, 2, 3> yzw;
+constexpr swizzler<0, 1, 2> xyz;
+constexpr swizzler<0, 1, 3> xyw;
+constexpr swizzler<0, 2, 3> xzw;
+constexpr swizzler<1, 2, 3> yzw;
 
-inline constexpr swizzler<0, 1, 2, 3> xyzw;
+constexpr swizzler<0, 1, 2, 3> xyzw;
 }
