@@ -20,8 +20,8 @@ namespace tg
 template <class ScalarT, class F>
 constexpr void rasterize(triangle<2, ScalarT> const& t,
                          F&& f,
-                         tg::ivec2 limitMin = tg::ivec2(-std::numeric_limits<int>().max()),
-                         tg::ivec2 limitMax = tg::ivec2(std::numeric_limits<int>().max()))
+                         tg::ipos2 limitMin = tg::ipos2(-std::numeric_limits<int>().max()),
+                         tg::ipos2 limitMax = tg::ipos2(std::numeric_limits<int>().max()))
 {
     auto const b = aabb_of(t);
 
