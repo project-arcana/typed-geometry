@@ -18,13 +18,17 @@ namespace tg
 {
 // F: (tg::ipos2 p, float a, float b) -> void
 template <class ScalarT, class F>
-constexpr void rasterize(triangle<2, ScalarT> const& t, F&& f)
+constexpr void rasterize(triangle<2, ScalarT> const& t,
+                         F&& f,
+                         tg::ipos2 limitMin = tg::ipos2(-std::numeric_limits<int>().max()),
+                         tg::ipos2 limitMax = tg::ipos2(std::numeric_limits<int>().max()))
 {
     auto const b = aabb_of(t);
 
     // margin so that we can safely round/clamp to integer coords
-    auto const minPix = ifloor(b.min);
-    auto const maxPix = iceil(b.max);
+    // limitMin/Max to only rasterize on desired image size
+    auto const minPix = max(ifloor(b.min), limitMin);
+    auto const maxPix = min(iceil(b.max), limitMax);
 
     // TODO: Bresenham on two of the triangle edges, then scanline
     for (auto y = minPix.y; y <= maxPix.y; ++y)
