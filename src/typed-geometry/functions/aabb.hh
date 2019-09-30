@@ -57,20 +57,20 @@ TG_NODISCARD constexpr auto aabb_of(PrimA const& pa, PrimB const& pb, PrimsT con
 }
 
 template <class ContainerT>
-TG_NODISCARD constexpr auto aabb_of(ContainerT const& c) -> decltype((void)aabb_of(*c.begin()), aabb_of(*c.end()))
+TG_NODISCARD constexpr auto aabb_of(ContainerT const& c) -> decltype(aabb_of(*c.begin()))
 {
     auto it = c.begin();
     auto end = c.end();
     TG_ASSERT(it != end && "cannot build AABB of empty container");
 
     auto bb = aabb_of(*it);
-    it++;
+    ++it;
     while (it != end)
     {
         auto rhs = aabb_of(*it);
         bb = decltype(bb)(min(bb.min, rhs.min), max(bb.max, rhs.max));
 
-        it++;
+        ++it;
     }
 
     return bb;
