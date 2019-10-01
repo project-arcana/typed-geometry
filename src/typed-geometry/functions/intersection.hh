@@ -509,7 +509,7 @@ TG_NODISCARD constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> 
     auto e1 = t.pos1 - t.pos0;
     auto e2 = t.pos2 - t.pos0;
 
-    auto pvec = tg::cross(tg::vec3(r.dir), e2);
+    auto pvec = tg::cross(tg::vec<3, ScalarT>(r.dir), e2);
     auto det = dot(pvec, e1);
 
     if (det < eps)
