@@ -239,7 +239,7 @@ public:
         if constexpr (C >= 4)
             r[3] = m.row(3);
 
-        return m;
+        return r;
     }
 };
 
