@@ -84,33 +84,91 @@ TG_NODISCARD constexpr quadric<D, ScalarT> triangle_quadric(triangle<D, ScalarT>
     return triangle_quadric(t.pos0, t.pos1, t.pos2);
 }
 
+namespace detail
+{
+template <class ScalarT>
+mat<3, 3, ScalarT> cross_product_squared_transpose(vec<3, ScalarT> const& v)
+{
+    auto const a = v.x;
+    auto const b = v.y;
+    auto const c = v.z;
+    auto const a2 = a * a;
+    auto const b2 = b * b;
+    auto const c2 = c * c;
+
+    mat<3, 3, ScalarT> M;
+
+    M[0][0] = b2 + c2;
+    M[1][1] = a2 + c2;
+    M[2][2] = a2 + b2;
+
+    M[1][0] = M[0][1] = -a * b;
+    M[2][0] = M[0][2] = -a * c;
+    M[2][1] = M[1][2] = -b * c;
+
+    return M;
+};
+template <class ScalarT>
+mat<3, 3, ScalarT> cross_interference_matrix(mat<3, 3, ScalarT> const& A, mat<3, 3, ScalarT> const& B)
+{
+    mat<3, 3, ScalarT> m;
+
+    auto constexpr x = 0;
+    auto constexpr y = 1;
+    auto constexpr z = 2;
+
+    auto const cxx = A[y][z] * B[y][z];
+    auto const cyy = A[x][z] * B[x][z];
+    auto const czz = A[x][y] * B[x][y];
+
+    m[x][x] = A[y][y] * B[z][z] - cxx - cxx + A[z][z] * B[y][y];
+    m[y][y] = A[x][x] * B[z][z] - cyy - cyy + A[z][z] * B[x][x];
+    m[z][z] = A[x][x] * B[y][y] - czz - czz + A[y][y] * B[x][x];
+
+    m[x][y] = -A[x][y] * B[z][z] + A[x][z] * B[y][z] + A[y][z] * B[x][z] - A[z][z] * B[x][y];
+    m[x][z] = A[x][y] * B[y][z] - A[x][z] * B[y][y] - A[y][y] * B[x][z] + A[y][z] * B[x][y];
+    m[y][z] = -A[x][x] * B[y][z] + A[x][y] * B[x][z] + A[x][z] * B[x][y] - A[y][z] * B[x][x];
+
+    m[y][x] = m[x][y];
+    m[z][x] = m[x][z];
+    m[z][y] = m[y][z];
+
+    return m;
+};
+
+template <class T>
+mat<3, 3, T> first_order_tri_quad(vec<3, T> const& a, mat<3, 3, T> const& sigma)
+{
+    mat<3, 3, T> M;
+
+    auto const xx = a.x * a.x;
+    auto const xy = a.x * a.y;
+    auto const xz = a.x * a.z;
+    auto const yy = a.y * a.y;
+    auto const yz = a.y * a.z;
+    auto const zz = a.z * a.z;
+
+    M[0][0] = -sigma[1][1] * zz + 2 * sigma[1][2] * yz - sigma[2][2] * yy;
+    M[0][1] = sigma[0][1] * zz - sigma[0][2] * yz - sigma[1][2] * xz + sigma[2][2] * xy;
+    M[0][2] = -sigma[0][1] * yz + sigma[0][2] * yy + sigma[1][1] * xz - sigma[1][2] * xy;
+    M[1][1] = -sigma[0][0] * zz + 2 * sigma[0][2] * xz - sigma[2][2] * xx;
+    M[1][2] = sigma[0][0] * yz - sigma[0][1] * xz - sigma[0][2] * xy + sigma[1][2] * xx;
+    M[2][2] = -sigma[0][0] * yy + 2 * sigma[0][1] * xy - sigma[1][1] * xx;
+
+    M[1][0] = M[0][1];
+    M[2][0] = M[0][2];
+    M[2][1] = M[1][2];
+
+    return M;
+}
+}
+
 template <int D, class ScalarT>
 TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_triangle_quadric(pos<D, ScalarT> const& mean_p,
                                                                           pos<D, ScalarT> const& mean_q,
                                                                           pos<D, ScalarT> const& mean_r,
                                                                           dont_deduce<ScalarT> stddev)
 {
-    auto const cross_product_squared_transpose = [](vec<3, ScalarT> const& v) {
-        auto const a = v.x;
-        auto const b = v.y;
-        auto const c = v.z;
-        auto const a2 = a * a;
-        auto const b2 = b * b;
-        auto const c2 = c * c;
-
-        mat<3, 3, ScalarT> M;
-
-        M[0][0] = b2 + c2;
-        M[1][1] = a2 + c2;
-        M[2][2] = a2 + b2;
-
-        M[1][0] = M[0][1] = -a * b;
-        M[2][0] = M[0][2] = -a * c;
-        M[2][1] = M[1][2] = -b * c;
-
-        return M;
-    };
-
     auto const sigma = stddev * stddev;
     auto const p = tg::vec(mean_p);
     auto const q = tg::vec(mean_q);
@@ -132,9 +190,9 @@ TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_triangle_quadric(pos<D,
 
     A += self_outer_product(cross_pqr);
 
-    A += (cross_product_squared_transpose(pmq) + //
-          cross_product_squared_transpose(qmr) + //
-          cross_product_squared_transpose(rmp))
+    A += (tg::detail::cross_product_squared_transpose(pmq) + //
+          tg::detail::cross_product_squared_transpose(qmr) + //
+          tg::detail::cross_product_squared_transpose(rmp))
          * sigma;
 
     auto ss = sigma * sigma;
@@ -166,5 +224,74 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr quadric<D, ScalarT> probabilistic_triangle_quadric(triangle<D, ScalarT> const& t, dont_deduce<ScalarT> stddev)
 {
     return probabilistic_triangle_quadric(t.pos0, t.pos1, t.pos2, stddev);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr quadric<3, ScalarT> probabilistic_triangle_quadric(pos<3, ScalarT> const& mean_p,
+                                                                          pos<3, ScalarT> const& mean_q,
+                                                                          pos<3, ScalarT> const& mean_r,
+                                                                          mat<3, 3, ScalarT> const& sigma_p,
+                                                                          mat<3, 3, ScalarT> const& sigma_q,
+                                                                          mat<3, 3, ScalarT> const& sigma_r)
+{
+    auto const p = tg::vec(mean_p);
+    auto const q = tg::vec(mean_q);
+    auto const r = tg::vec(mean_r);
+
+    auto const pxq = cross(p, q);
+    auto const qxr = cross(q, r);
+    auto const rxp = cross(r, p);
+
+    auto const det_pqr = dot(pxq, r);
+
+    auto const cross_pqr = pxq + qxr + rxp;
+
+    auto const pmq = p - q;
+    auto const qmr = q - r;
+    auto const rmp = r - p;
+
+    auto const ci_pq = tg::detail::cross_interference_matrix(sigma_p, sigma_q);
+    auto const ci_qr = tg::detail::cross_interference_matrix(sigma_q, sigma_r);
+    auto const ci_rp = tg::detail::cross_interference_matrix(sigma_r, sigma_p);
+
+    mat<3, 3, ScalarT> A;
+
+    A += self_outer_product(cross_pqr);
+
+    A -= tg::detail::first_order_tri_quad(pmq, sigma_r);
+    A -= tg::detail::first_order_tri_quad(qmr, sigma_p);
+    A -= tg::detail::first_order_tri_quad(rmp, sigma_q);
+
+    A += ci_pq + ci_qr + ci_rp;
+
+    A[1][0] = A[0][1];
+    A[2][0] = A[0][2];
+    A[2][1] = A[1][2];
+
+    vec<3, ScalarT> b;
+
+    b += det_pqr * cross_pqr;
+
+    b -= cross(pmq, sigma_r * pxq);
+    b -= cross(qmr, sigma_p * qxr);
+    b -= cross(rmp, sigma_q * rxp);
+
+    b += ci_pq * r;
+    b += ci_qr * p;
+    b += ci_rp * q;
+
+    ScalarT c = det_pqr * det_pqr;
+
+    c += dot(pxq, sigma_r * pxq);
+    c += dot(qxr, sigma_p * qxr);
+    c += dot(rxp, sigma_q * rxp);
+
+    c += dot(p, ci_qr * p);
+    c += dot(q, ci_rp * q);
+    c += dot(r, ci_pq * r);
+
+    c += trace_of_product(sigma_r, ci_pq);
+
+    return quadric<3, ScalarT>::from_coefficients(A, b, c);
 }
 }
