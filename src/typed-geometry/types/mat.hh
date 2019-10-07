@@ -203,6 +203,24 @@ public:
         return detail::mat_row(*this, i);
     }
 
+    constexpr void set_row(int i, vec<C, ScalarT> const& v)
+    {
+        TG_CONTRACT(0 <= i && i < C);
+        m[0][i] = v[0];
+        if constexpr (C >= 2)
+            m[1][i] = v[1];
+        if constexpr (C >= 3)
+            m[2][i] = v[2];
+        if constexpr (C >= 4)
+            m[3][i] = v[3];
+    }
+
+    constexpr void set_col(int i, vec<R, ScalarT> const& v)
+    {
+        TG_CONTRACT(0 <= i && i < R);
+        m[i] = v;
+    }
+
     static const mat zero;
     static const mat ones;
     static const mat identity;
