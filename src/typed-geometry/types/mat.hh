@@ -205,7 +205,7 @@ public:
 
     constexpr void set_row(int i, vec<C, ScalarT> const& v)
     {
-        TG_CONTRACT(0 <= i && i < C);
+        TG_CONTRACT(0 <= i && i < R);
         m[0][i] = v[0];
         if constexpr (C >= 2)
             m[1][i] = v[1];
@@ -217,7 +217,7 @@ public:
 
     constexpr void set_col(int i, vec<R, ScalarT> const& v)
     {
-        TG_CONTRACT(0 <= i && i < R);
+        TG_CONTRACT(0 <= i && i < C);
         m[i] = v;
     }
 
