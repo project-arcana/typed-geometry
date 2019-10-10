@@ -31,10 +31,18 @@ template <int D, class ScalarA, class ScalarB>
 
 // Default implementation of distance as sqrt(distance_sqr)
 template <class A, class B>
-TG_NODISCARD constexpr auto distance(A const& a, B const& b) -> decltype(sqrt(distance_sqr(a, b)))
+TG_NODISCARD constexpr auto distance(A const& a, B const& b) -> decltype(tg::sqrt(distance_sqr(a, b)))
 {
-    return sqrt(distance_sqr(a, b));
+    return tg::sqrt(distance_sqr(a, b));
 }
+
+// Default implementation of distance as abs(signed_distance)
+// TODO: FIXME via priority_tag<>
+// template <class A, class B>
+// TG_NODISCARD constexpr auto distance(A const& a, B const& b) -> decltype(tg::abs(signed_distance(a, b)))
+// {
+//     return tg::abs(signed_distance(a, b));
+// }
 
 // Default implementation of distance_sqr as distance_sqr(ca, cb) for closest points ca and cb
 template <class A, class B>
