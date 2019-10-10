@@ -107,7 +107,7 @@ mat<3, 3, ScalarT> cross_product_squared_transpose(vec<3, ScalarT> const& v)
     M[2][1] = M[1][2] = -b * c;
 
     return M;
-};
+}
 template <class ScalarT>
 mat<3, 3, ScalarT> cross_interference_matrix(mat<3, 3, ScalarT> const& A, mat<3, 3, ScalarT> const& B)
 {
@@ -134,7 +134,7 @@ mat<3, 3, ScalarT> cross_interference_matrix(mat<3, 3, ScalarT> const& A, mat<3,
     m[z][y] = m[y][z];
 
     return m;
-};
+}
 
 template <class T>
 mat<3, 3, T> first_order_tri_quad(vec<3, T> const& a, mat<3, 3, T> const& sigma)
