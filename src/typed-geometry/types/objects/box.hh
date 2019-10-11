@@ -2,7 +2,7 @@
 
 #include "../mat.hh"
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 #include "../vec.hh"
 
 #include "aabb.hh"

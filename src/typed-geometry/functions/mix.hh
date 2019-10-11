@@ -4,7 +4,7 @@
 #include <typed-geometry/types/angle.hh>
 #include <typed-geometry/types/color.hh>
 #include <typed-geometry/types/pos.hh>
-#include <typed-geometry/types/scalar.hh>
+#include <typed-geometry/types/scalars/scalars.hh>
 #include <typed-geometry/types/vec.hh>
 
 namespace tg

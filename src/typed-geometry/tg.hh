@@ -15,8 +15,6 @@
 
 #include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/common/swizzling.hh>
-#include <typed-geometry/detail/scalars/half.hh>
-#include <typed-geometry/detail/scalars/quarter.hh>
 
 #include <typed-geometry/detail/functions.hh>
 #include <typed-geometry/detail/iterators.hh>

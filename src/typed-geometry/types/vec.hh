@@ -5,7 +5,7 @@
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
 #include "fwd.hh"
-#include "scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {

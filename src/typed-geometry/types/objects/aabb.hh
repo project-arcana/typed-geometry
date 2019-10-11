@@ -2,8 +2,8 @@
 
 #include <typed-geometry/common/assert.hh>
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "../pos.hh"
-#include "../scalar.hh"
 #include "../vec.hh"
 
 namespace tg

@@ -3,7 +3,7 @@
 #include "../angle.hh"
 #include "../dir.hh"
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {

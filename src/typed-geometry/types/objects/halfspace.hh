@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 #include "../dir.hh"
 
 // A halfspace has a distance to the origin and a normal direction

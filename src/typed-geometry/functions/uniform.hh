@@ -6,7 +6,7 @@
 #include <typed-geometry/types/color.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/range.hh>
-#include <typed-geometry/types/scalar.hh>
+#include <typed-geometry/types/scalars/scalars.hh>
 
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>

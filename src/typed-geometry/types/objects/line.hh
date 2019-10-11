@@ -2,7 +2,7 @@
 
 #include "../dir.hh"
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 #include "../size.hh"
 
 // A line has a direction and a point lying on it

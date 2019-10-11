@@ -6,7 +6,7 @@
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/detail/utility.hh>
 #include <typed-geometry/types/angle.hh>
-#include <typed-geometry/types/scalar.hh>
+#include <typed-geometry/types/scalars/default.hh>
 
 // TODO:
 // - proper f8, f16

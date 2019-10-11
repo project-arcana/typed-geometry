@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typed-geometry/types/random.hh>
-#include <typed-geometry/types/scalar.hh>
+#include <typed-geometry/types/scalars/default.hh>
 
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/functions/minmax.hh>

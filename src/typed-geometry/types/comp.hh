@@ -1,11 +1,12 @@
 #pragma once
 
+#include <typed-geometry/types/scalars/default.hh>
+
 #include "../detail/comp_traits.hh"
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
 #include "fwd.hh"
-#include "scalar.hh"
 
 namespace tg
 {
