@@ -193,7 +193,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> cons
         auto p = uniform_vec(rng, ub);
         auto l = length_sqr(p);
         if (l > ScalarT(0) && l <= ScalarT(1))
-            return s.center + p * (s.radius / tg::sqrt(l));
+            return s.center + p * (s.radius / sqrt(l));
     }
 }
 
@@ -297,7 +297,7 @@ struct sampler<dir<D, ScalarT>>
             auto p = uniform_vec(rng, ub);
             auto l = length_sqr(p);
             if (l > ScalarT(0) && l <= ScalarT(1))
-                return tg::dir<D, ScalarT>(p / tg::sqrt(l));
+                return tg::dir<D, ScalarT>(p / sqrt(l));
         }
     }
 };

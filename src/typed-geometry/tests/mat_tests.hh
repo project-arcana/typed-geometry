@@ -11,7 +11,7 @@ TG_NODISCARD constexpr bool is_zero(mat<D, D, ScalarT> const& m, ScalarT eps = 2
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i; i < D; ++i)
-            if (tg::abs(m[i][j]) > eps)
+            if (abs(m[i][j]) > eps)
                 return false;
 
     return true;
@@ -21,7 +21,7 @@ TG_NODISCARD constexpr bool is_identity(mat<D, D, ScalarT> const& m, ScalarT eps
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i; i < D; ++i)
-            if (tg::abs(m[i][j] - float(i == j)) > eps)
+            if (abs(m[i][j] - float(i == j)) > eps)
                 return false;
 
     return true;
@@ -31,7 +31,7 @@ TG_NODISCARD constexpr bool is_symmetric(mat<D, D, ScalarT> const& m, ScalarT ep
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i + 1; i < D; ++i)
-            if (tg::abs(m[i][j] - m[j][i]) > eps)
+            if (abs(m[i][j] - m[j][i]) > eps)
                 return false;
 
     return true;
@@ -42,11 +42,11 @@ TG_NODISCARD constexpr bool is_antisymmetric(mat<D, D, ScalarT> const& m, Scalar
 {
     for (auto i = 0; i < D; ++i)
     {
-        if (tg::abs(m[i][i]) > eps)
+        if (abs(m[i][i]) > eps)
             return false;
 
         for (auto j = i + 1; j < D; ++j)
-            if (tg::abs(m[i][j] + m[j][i]) > eps)
+            if (abs(m[i][j] + m[j][i]) > eps)
                 return false;
     }
 

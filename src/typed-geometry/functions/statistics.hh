@@ -157,6 +157,6 @@ TG_NODISCARD constexpr auto variance(RangeT const& values, TransformT&& transfor
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
 TG_NODISCARD constexpr auto standard_deviation(RangeT const& values, TransformT&& transform = {})
 {
-    return tg::sqrt(variance<T>(values, transform));
+    return sqrt(variance<T>(values, transform));
 }
 }

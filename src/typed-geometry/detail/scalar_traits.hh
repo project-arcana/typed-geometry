@@ -90,10 +90,16 @@ TG_IMPL_ADD_TRAIT(is_floating_point, bool, f32, true);
 TG_IMPL_ADD_TRAIT(is_floating_point, bool, f64, true);
 
 // type mapping
-TG_IMPL_DEFINE_TYPE_TRAIT(fractional_result, f32);
+TG_IMPL_DEFINE_TYPE_TRAIT(fractional_result, T);
 TG_IMPL_ADD_TYPE_TRAIT(fractional_result, f64, f64);
 TG_IMPL_ADD_TYPE_TRAIT(fractional_result, i64, f64);
 TG_IMPL_ADD_TYPE_TRAIT(fractional_result, u64, f64);
+TG_IMPL_ADD_TYPE_TRAIT(fractional_result, i32, f32);
+TG_IMPL_ADD_TYPE_TRAIT(fractional_result, u32, f32);
+TG_IMPL_ADD_TYPE_TRAIT(fractional_result, i16, f32);
+TG_IMPL_ADD_TYPE_TRAIT(fractional_result, u16, f32);
+TG_IMPL_ADD_TYPE_TRAIT(fractional_result, i8, f32);
+TG_IMPL_ADD_TYPE_TRAIT(fractional_result, u8, f32);
 
 // special scalars
 template <class T>

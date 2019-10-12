@@ -60,7 +60,7 @@ TG_NODISCARD constexpr sphere<D, ScalarT> bounding_sphere_of(triangle<D, ScalarT
 
     if (e0sqr >= e1sqr + e2sqr) // triangle is obtuse or right
     {
-        auto radius = tg::sqrt(e0sqr) / ScalarT(2);
+        auto radius = sqrt(e0sqr) / ScalarT(2);
         auto center = mix(*b, *c, ScalarT(0.5));
         return {center, radius};
     }

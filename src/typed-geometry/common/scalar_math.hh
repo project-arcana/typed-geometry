@@ -185,6 +185,10 @@ TG_NODISCARD constexpr auto pow5(T const& v) -> decltype((v * v) * (v * v) * v)
 TG_NODISCARD inline f32 sqrt(f32 v) { return std::sqrt(v); }
 TG_NODISCARD inline f64 sqrt(f64 v) { return std::sqrt(v); }
 
+// TODO: _mm_rsqrt_ss
+TG_NODISCARD inline f32 rsqrt(f32 v) { return 1 / std::sqrt(v); }
+TG_NODISCARD inline f64 rsqrt(f64 v) { return 1 / std::sqrt(v); }
+
 TG_NODISCARD inline f32 cbrt(f32 v) { return std::cbrt(v); }
 TG_NODISCARD inline f64 cbrt(f64 v) { return std::cbrt(v); }
 

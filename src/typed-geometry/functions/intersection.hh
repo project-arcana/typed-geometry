@@ -332,7 +332,7 @@ TG_NODISCARD constexpr optional<circle<3, ScalarT>> intersection(sphere<3, Scala
     if (a.center == b.center && a.radius == b.radius)
         return {};
 
-    auto d = tg::sqrt(d2);
+    auto d = sqrt(d2);
 
     // no intersection
     if (d > a.radius + b.radius)
@@ -383,13 +383,13 @@ TG_NODISCARD constexpr optional<pair<pos<2, ScalarT>, pos<2, ScalarT>>> intersec
         return {}; // degenerate case
 
     auto d2 = distance_sqr(a.center, b.center);
-    auto d = tg::sqrt(d2);
+    auto d = sqrt(d2);
     auto ar = a.radius;
     auto br = b.radius;
     if (ar + br < d) // no intersection
         return {};
 
-    if (d < tg::abs(ar - br)) // no intersection (one inside the other)
+    if (d < abs(ar - br)) // no intersection (one inside the other)
         return {};
 
     TG_INTERNAL_ASSERT(d > ScalarT(0));
@@ -398,7 +398,7 @@ TG_NODISCARD constexpr optional<pair<pos<2, ScalarT>, pos<2, ScalarT>>> intersec
     auto h2 = ar * ar - t * t;
     TG_INTERNAL_ASSERT(h2 >= ScalarT(0));
 
-    auto h = tg::sqrt(h2);
+    auto h = sqrt(h2);
     auto h_by_d = h / d;
 
     auto p_between = a.center + t / d * (b.center - a.center);
@@ -421,7 +421,7 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
     auto dir = normalize(cross(a.normal, b.normal));
     auto p = pos<3, ScalarT>::zero;
 
-    if (tg::abs(dir.z) > tg::abs(dir.x)) // solve with p.z = 0
+    if (abs(dir.z) > abs(dir.x)) // solve with p.z = 0
     {
         auto n0 = tg::vec<2, ScalarT>(a.normal.x, b.normal.x);
         auto n1 = tg::vec<2, ScalarT>(a.normal.y, b.normal.y);
@@ -430,7 +430,7 @@ TG_NODISCARD constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> cons
         p.x = p2.x;
         p.y = p2.y;
     }
-    else if (tg::abs(dir.y) > tg::abs(dir.x)) // solve with p.y = 0
+    else if (abs(dir.y) > abs(dir.x)) // solve with p.y = 0
     {
         auto n0 = tg::vec<2, ScalarT>(a.normal.x, b.normal.x);
         auto n1 = tg::vec<2, ScalarT>(a.normal.z, b.normal.z);
@@ -556,7 +556,7 @@ TG_NODISCARD constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, Scalar
     float t[6] = {0, 0, 0, 0, 0, 0};
     for (int i = 0; i < 3; ++i)
     {
-        if (tg::abs(f[i]) < tg::epsilon<ScalarT> / 1000)
+        if (abs(f[i]) < tg::epsilon<ScalarT> / 1000)
         {
             if (-e[i] - size[i] > 0 || -e[i] + size[i] < 0)
                 return {};

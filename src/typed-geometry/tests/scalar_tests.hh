@@ -19,8 +19,8 @@ TG_NODISCARD constexpr bool is_approx_equal(u64 a, u64 b) { return a == b; }
 // TODO: f8, f16
 TG_NODISCARD inline bool is_approx_equal(f32 a, f32 b)
 {
-    auto abs_a = tg::abs(a);
-    auto abs_b = tg::abs(b);
+    auto abs_a = abs(a);
+    auto abs_b = abs(b);
 
     // close to eps
     if (abs_a < 1e-5f)
@@ -40,8 +40,8 @@ TG_NODISCARD inline bool is_approx_equal(f32 a, f32 b)
 }
 TG_NODISCARD inline bool is_approx_equal(f64 a, f64 b)
 {
-    auto abs_a = tg::abs(a);
-    auto abs_b = tg::abs(b);
+    auto abs_a = abs(a);
+    auto abs_b = abs(b);
 
     // close to eps
     if (abs_a < 1e-14f)

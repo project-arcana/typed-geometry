@@ -24,7 +24,7 @@ TG_NODISCARD constexpr T normal(Rng& rng)
             s = x * x + y * y;
         } while (s > 1 || s == 0);
 
-        return x * tg::sqrt((T(-2) * tg::log(s)) / s);
+        return x * sqrt((T(-2) * tg::log(s)) / s);
     }
     else
     {
