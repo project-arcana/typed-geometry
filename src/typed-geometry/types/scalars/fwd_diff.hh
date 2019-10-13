@@ -31,4 +31,10 @@ struct fwd_diff
     TG_NODISCARD constexpr bool operator==(T const& rhs) const { return value == rhs; }
     TG_NODISCARD constexpr bool operator!=(T const& rhs) const { return value != rhs; }
 };
+
+template <class T>
+TG_NODISCARD constexpr fwd_diff<T> fwd_diff_input(T value)
+{
+    return fwd_diff<T>::input(value);
+}
 }
