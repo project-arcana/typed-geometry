@@ -179,6 +179,12 @@ TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, aabb<4, ScalarT> const&
 }
 
 template <int D, class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, segment<D, ScalarT> s)
+{
+    return mix(s.pos0, s.pos1, detail::uniform01<ScalarT>(rng));
+}
+
+template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
 {
     return b.center + b.half_extents * uniform_vec(rng, aabb<D, ScalarT>::minus_one_to_one);
