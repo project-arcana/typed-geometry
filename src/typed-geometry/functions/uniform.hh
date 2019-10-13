@@ -179,7 +179,7 @@ TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, aabb<4, ScalarT> const&
 }
 
 template <int D, class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, segment<D, ScalarT> s)
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, segment<D, ScalarT> const& s)
 {
     return mix(s.pos0, s.pos1, detail::uniform01<ScalarT>(rng));
 }
@@ -188,6 +188,38 @@ template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
 {
     return b.center + b.half_extents * uniform_vec(rng, aabb<D, ScalarT>::minus_one_to_one);
+}
+
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, circle<2, ScalarT> const& c)
+{
+    auto theta = angle::from_degree(uniform(rng, ScalarT(0), ScalarT(360)));
+    return c.center + c.radius * vec<2, ScalarT>(cos(theta), sin(theta));
+}
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, circle<3, ScalarT> const& c)
+{
+    auto theta = angle::from_degree(uniform(rng, ScalarT(0), ScalarT(360)));
+    auto x = any_normal(c.normal);
+    auto y = cross(c.normal, x);
+    return c.center + c.radius * (cos(theta) * x + sin(theta) * y);
+}
+
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, disk<2, ScalarT> const& d)
+{
+    auto theta = angle::from_degree(uniform(rng, ScalarT(0), ScalarT(360)));
+    auto r = d.radius * sqrt(detail::uniform01<ScalarT, Rng>(rng)); // sqrt is needed for uniform distribution on disk
+    return d.center + r * vec<2, ScalarT>(cos(theta), sin(theta));
+}
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, disk<3, ScalarT> const& d)
+{
+    auto theta = angle::from_degree(uniform(rng, ScalarT(0), ScalarT(360)));
+    auto x = any_normal(d.normal);
+    auto y = cross(d.normal, x);
+    auto r = d.radius * sqrt(detail::uniform01<ScalarT, Rng>(rng)); // sqrt is needed for uniform distribution on disk
+    return d.center + r * (cos(theta) * x + sin(theta) * y);
 }
 
 template <int D, class ScalarT, class Rng>
