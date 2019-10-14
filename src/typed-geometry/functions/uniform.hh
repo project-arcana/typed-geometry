@@ -193,33 +193,31 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& 
 template <class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, circle<2, ScalarT> const& c)
 {
-    auto theta = angle::from_degree(uniform(rng, ScalarT(0), ScalarT(360)));
-    return c.center + c.radius * vec<2, ScalarT>(cos(theta), sin(theta));
+    return c.center + c.radius * uniform<dir<2, ScalarT>>(rng);
 }
 template <class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, circle<3, ScalarT> const& c)
 {
-    auto theta = angle::from_degree(uniform(rng, ScalarT(0), ScalarT(360)));
+    auto d = uniform<dir<2, ScalarT>>(rng);
     auto x = any_normal(c.normal);
     auto y = cross(c.normal, x);
-    return c.center + c.radius * (cos(theta) * x + sin(theta) * y);
+    return c.center + c.radius * (d.x * x + d.y * y);
 }
 
 template <class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, disk<2, ScalarT> const& d)
 {
-    auto theta = angle::from_degree(uniform(rng, ScalarT(0), ScalarT(360)));
     auto r = d.radius * sqrt(detail::uniform01<ScalarT, Rng>(rng)); // sqrt is needed for uniform distribution on disk
-    return d.center + r * vec<2, ScalarT>(cos(theta), sin(theta));
+    return d.center + r * uniform<dir<2, ScalarT>>(rng);
 }
 template <class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, disk<3, ScalarT> const& d)
 {
-    auto theta = angle::from_degree(uniform(rng, ScalarT(0), ScalarT(360)));
+    auto direction = uniform<dir<2, ScalarT>>(rng);
     auto x = any_normal(d.normal);
     auto y = cross(d.normal, x);
     auto r = d.radius * sqrt(detail::uniform01<ScalarT, Rng>(rng)); // sqrt is needed for uniform distribution on disk
-    return d.center + r * (cos(theta) * x + sin(theta) * y);
+    return d.center + r * (direction.x * x + direction.y * y);
 }
 
 template <int D, class ScalarT, class Rng>

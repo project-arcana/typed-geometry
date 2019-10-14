@@ -60,7 +60,7 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, ray<D, ScalarT> const& r)
 {
     auto d = dot(p - r.origin, r.dir);
-    return r.origin + max(d, 0) * r.dir;
+    return r.origin + max(d, ScalarT(0)) * r.dir;
 }
 
 template <int D, class ScalarT>
