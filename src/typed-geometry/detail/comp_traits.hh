@@ -48,6 +48,11 @@ struct comp_size<comp<D, T>>
 {
     static constexpr int value = D;
 };
+template <class T>
+struct comp_size<quat<T>>
+{
+    static constexpr int value = 4;
+};
 template <int C, int R, class T>
 struct comp_size<mat<C, R, T>>
 {

@@ -103,6 +103,13 @@
 #define TG_IMPL_MEMBER_comp_s v
 #define TG_IMPL_MEMBER_comp_verify
 
+#define TG_IMPL_MEMBER_quat_0 x
+#define TG_IMPL_MEMBER_quat_1 y
+#define TG_IMPL_MEMBER_quat_2 z
+#define TG_IMPL_MEMBER_quat_3 w
+#define TG_IMPL_MEMBER_quat_s v
+#define TG_IMPL_MEMBER_quat_verify
+
 #define TG_IMPL_MEMBER_mat_0 m[0]
 #define TG_IMPL_MEMBER_mat_1 m[1]
 #define TG_IMPL_MEMBER_mat_2 m[2]
@@ -197,9 +204,8 @@
     }                                                                                                                                                        \
     TG_FORCE_SEMICOLON
 
-#define TG_DECLARE_COMP_TYPE_4(TYPE)                                                                                                                   \
+#define TG_DECLARE_COMP_TYPE_4_NO_SWIZZLE(TYPE)                                                                                                        \
     TG_DECLARE_COMP_SUBSCRIPT_OP(TYPE);                                                                                                                \
-    TG_DECLARE_SELF_SWIZZLE(TYPE);                                                                                                                     \
     constexpr TYPE() = default;                                                                                                                        \
     constexpr explicit TYPE(ScalarT TG_IMPL_MEMBER(TYPE, s))                                                                                           \
       : TG_IMPL_MEMBER(TYPE, 0)(TG_IMPL_MEMBER(TYPE, s)),                                                                                              \
@@ -228,6 +234,10 @@
         TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                      \
     }                                                                                                                                                  \
     TG_FORCE_SEMICOLON
+
+#define TG_DECLARE_COMP_TYPE_4(TYPE)         \
+    TG_DECLARE_COMP_TYPE_4_NO_SWIZZLE(TYPE); \
+    TG_DECLARE_SELF_SWIZZLE(TYPE)
 
 #define TG_IMPL_DEFINE_UNARY_OP(TYPE, OP)                                                                                                    \
     template <int D, class ScalarT>                                                                                                          \
