@@ -11,6 +11,8 @@
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/circle.hh>
+#include <typed-geometry/types/objects/disk.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -179,9 +181,43 @@ TG_NODISCARD constexpr pos<4, ScalarT> uniform(Rng& rng, aabb<4, ScalarT> const&
 }
 
 template <int D, class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, segment<D, ScalarT> const& s)
+{
+    return mix(s.pos0, s.pos1, detail::uniform01<ScalarT>(rng));
+}
+
+template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
 {
     return b.center + b.half_extents * uniform_vec(rng, aabb<D, ScalarT>::minus_one_to_one);
+}
+
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, circle<2, ScalarT> const& c)
+{
+    return c.center + c.radius * uniform<dir<2, ScalarT>>(rng);
+}
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, circle<3, ScalarT> const& c)
+{
+    auto direction = uniform<dir<2, ScalarT>>(rng);
+    auto x = any_normal(c.normal);
+    auto y = cross(c.normal, x);
+    return c.center + c.radius * (direction.x * x + direction.y * y);
+}
+
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, disk<2, ScalarT> const& d)
+{
+    return uniform(rng, ball<2, ScalarT>(d.center, d.radius));
+}
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, disk<3, ScalarT> const& d)
+{
+    auto direction = uniform(rng, ball<2, ScalarT>(pos<2, ScalarT>::zero, d.radius));
+    auto x = any_normal(d.normal);
+    auto y = cross(d.normal, x);
+    return d.center + direction.x * x + direction.y * y;
 }
 
 template <int D, class ScalarT, class Rng>

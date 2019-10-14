@@ -102,8 +102,7 @@ TG_NODISCARD constexpr bool contains(ball<D, ScalarT> const& s, pos<D, ScalarT> 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0))
 {
-    auto r = s.radius + eps;
-    return distance_sqr(s.center, p) <= r * r;
+    return abs(distance_sqr(s.center, p) - s.radius * s.radius) <= eps * eps;
 }
 
 // Note that eps is used to compare 2D areas, not 1D lengths
@@ -175,6 +174,18 @@ TG_NODISCARD constexpr bool contains(cylinder<3, ScalarT> const& c, pos<3, Scala
         return false;
 
     return true;
-} // namespace tg
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr bool contains(circle<2, ScalarT> const& c, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
+{
+    return abs(distance_sqr(c.center, p) - c.radius * c.radius) <= eps * eps;
+}
+template <class ScalarT>
+TG_NODISCARD constexpr bool contains(disk<2, ScalarT> const& d, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
+{
+    auto r = d.radius + eps;
+    return distance_sqr(d.center, p) <= r * r;
+}
 
 } // namespace tg
