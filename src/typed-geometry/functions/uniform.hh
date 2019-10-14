@@ -11,6 +11,8 @@
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/circle.hh>
+#include <typed-geometry/types/objects/disk.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -64,7 +66,7 @@ TG_NODISCARD constexpr f64 uniform(Rng& rng, f64 a, f64 b)
 template <class Rng>
 TG_NODISCARD constexpr i32 uniform(Rng& rng, i32 a, i32 b_inc)
 {
-    i32 r;
+    i32 r = 0;
     auto fa = f32(a);
     auto fb = f32(b_inc) + 1;
     do
@@ -76,7 +78,7 @@ TG_NODISCARD constexpr i32 uniform(Rng& rng, i32 a, i32 b_inc)
 template <class Rng>
 TG_NODISCARD constexpr i64 uniform(Rng& rng, i64 a, i64 b_inc)
 {
-    i64 r;
+    i64 r = 0;
     auto fa = f64(a);
     auto fb = f64(b_inc) + 1;
     do
@@ -88,7 +90,7 @@ TG_NODISCARD constexpr i64 uniform(Rng& rng, i64 a, i64 b_inc)
 template <class Rng>
 TG_NODISCARD constexpr u32 uniform(Rng& rng, u32 a, u32 b_inc)
 {
-    u32 r;
+    u32 r = 0;
     auto fa = f32(a);
     auto fb = f32(b_inc) + 1;
     do
@@ -100,7 +102,7 @@ TG_NODISCARD constexpr u32 uniform(Rng& rng, u32 a, u32 b_inc)
 template <class Rng>
 TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b_inc)
 {
-    u64 r;
+    u64 r = 0;
     auto fa = f64(a);
     auto fb = f64(b_inc) + 1;
     do
