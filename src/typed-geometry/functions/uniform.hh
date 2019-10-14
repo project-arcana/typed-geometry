@@ -64,7 +64,7 @@ TG_NODISCARD constexpr f64 uniform(Rng& rng, f64 a, f64 b)
 template <class Rng>
 TG_NODISCARD constexpr i32 uniform(Rng& rng, i32 a, i32 b_inc)
 {
-    i32 r = 0;
+    i32 r;
     auto fa = f32(a);
     auto fb = f32(b_inc) + 1;
     do
@@ -76,7 +76,7 @@ TG_NODISCARD constexpr i32 uniform(Rng& rng, i32 a, i32 b_inc)
 template <class Rng>
 TG_NODISCARD constexpr i64 uniform(Rng& rng, i64 a, i64 b_inc)
 {
-    i64 r = 0;
+    i64 r;
     auto fa = f64(a);
     auto fb = f64(b_inc) + 1;
     do
@@ -88,7 +88,7 @@ TG_NODISCARD constexpr i64 uniform(Rng& rng, i64 a, i64 b_inc)
 template <class Rng>
 TG_NODISCARD constexpr u32 uniform(Rng& rng, u32 a, u32 b_inc)
 {
-    u32 r = 0;
+    u32 r;
     auto fa = f32(a);
     auto fb = f32(b_inc) + 1;
     do
@@ -100,7 +100,7 @@ TG_NODISCARD constexpr u32 uniform(Rng& rng, u32 a, u32 b_inc)
 template <class Rng>
 TG_NODISCARD constexpr u64 uniform(Rng& rng, u64 a, u64 b_inc)
 {
-    u64 r = 0;
+    u64 r;
     auto fa = f64(a);
     auto fb = f64(b_inc) + 1;
     do
@@ -198,26 +198,24 @@ TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, circle<2, ScalarT> cons
 template <class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, circle<3, ScalarT> const& c)
 {
-    auto d = uniform<dir<2, ScalarT>>(rng);
+    auto direction = uniform<dir<2, ScalarT>>(rng);
     auto x = any_normal(c.normal);
     auto y = cross(c.normal, x);
-    return c.center + c.radius * (d.x * x + d.y * y);
+    return c.center + c.radius * (direction.x * x + direction.y * y);
 }
 
 template <class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<2, ScalarT> uniform(Rng& rng, disk<2, ScalarT> const& d)
 {
-    auto r = d.radius * sqrt(detail::uniform01<ScalarT, Rng>(rng)); // sqrt is needed for uniform distribution on disk
-    return d.center + r * uniform<dir<2, ScalarT>>(rng);
+    return uniform(rng, ball<2, ScalarT>(d.center, d.radius));
 }
 template <class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, disk<3, ScalarT> const& d)
 {
-    auto direction = uniform<dir<2, ScalarT>>(rng);
+    auto direction = uniform(rng, ball<2, ScalarT>(pos<2, ScalarT>::zero, d.radius));
     auto x = any_normal(d.normal);
     auto y = cross(d.normal, x);
-    auto r = d.radius * sqrt(detail::uniform01<ScalarT, Rng>(rng)); // sqrt is needed for uniform distribution on disk
-    return d.center + r * (direction.x * x + direction.y * y);
+    return d.center + direction.x * x + direction.y * y;
 }
 
 template <int D, class ScalarT, class Rng>
