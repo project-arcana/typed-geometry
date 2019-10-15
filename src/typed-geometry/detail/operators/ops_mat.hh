@@ -18,6 +18,8 @@
  *   mat - scalar
  *   mat / scalar
  *   mat * scalar
+ *
+ * TODO: use if constexpr for some operations
  */
 
 namespace tg

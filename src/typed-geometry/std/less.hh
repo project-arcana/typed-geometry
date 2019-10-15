@@ -149,19 +149,21 @@ template <class ScalarT>
 struct less<tg::color<3, ScalarT>>
 {
     typedef tg::color<3, ScalarT> arg_t;
-    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept
-    {
-        return std::tie(a.r, a.g, a.b) < std::tie(b.r, b.g, b.b);
-    }
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.r, a.g, a.b) < std::tie(b.r, b.g, b.b); }
 };
 template <class ScalarT>
 struct less<tg::color<4, ScalarT>>
 {
     typedef tg::color<4, ScalarT> arg_t;
-    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept
-    {
-        return std::tie(a.r, a.g, a.b, a.a) < std::tie(b.r, b.g, b.b, b.a);
-    }
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.r, a.g, a.b, a.a) < std::tie(b.r, b.g, b.b, b.a); }
+};
+
+// -- quat
+template <class ScalarT>
+struct less<tg::quaternion<ScalarT>>
+{
+    typedef tg::quaternion<ScalarT> arg_t;
+    constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.x, a.y, a.z, a.w) < std::tie(b.x, b.y, b.z, b.w); }
 };
 
 // -- mat

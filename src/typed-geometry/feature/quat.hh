@@ -1,180 +1,284 @@
 #pragma once
 
 #include <typed-geometry/common/scalar_math.hh>
+#include <typed-geometry/detail/operators/ops_mat.hh>
 #include <typed-geometry/functions/normalize.hh>
 #include <typed-geometry/types/dir.hh>
-#include <typed-geometry/types/quat.hh>
 #include <typed-geometry/types/mat.hh>
+#include <typed-geometry/types/quat.hh>
 #include <typed-geometry/types/vec.hh>
 
 namespace tg
 {
-// ================================= Name constructors =================================
+// ================================= constructors =================================
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> quat<ScalarT>::from_axis_angle(dir<3, ScalarT> const& axis, angle_t<ScalarT> angle)
+TG_NODISCARD constexpr quaternion<ScalarT> quaternion<ScalarT>::from_axis_angle(dir<3, ScalarT> const& axis, angle_t<ScalarT> angle)
 {
-    auto a_half = angle * ScalarT(0.5);
-    auto [sa, ca] = sin_cos(a_half);
+    auto const a_half = angle * ScalarT(0.5);
+    auto const [sa, ca] = sin_cos(a_half);
     return {axis * sa, ca};
 }
 
+template <class ScalarT>
+TG_NODISCARD constexpr quaternion<ScalarT>::operator mat<3, 3, ScalarT>() const
+{
+    // see https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+
+    // TODO: versor version
+    auto const s2 = ScalarT(2) / length_sqr(*this);
+
+    auto const qii = x * x;
+    auto const qij = x * y;
+    auto const qik = x * z;
+    auto const qir = x * w;
+    auto const qjj = y * y;
+    auto const qjk = y * z;
+    auto const qjr = y * w;
+    auto const qkk = z * z;
+    auto const qkr = z * w;
+
+    mat<3, 3, ScalarT> m;
+    m[0][0] = 1 - s2 * (qjj + qkk);
+    m[1][1] = 1 - s2 * (qii + qkk);
+    m[2][2] = 1 - s2 * (qii + qjj);
+    m[1][0] = s2 * (qij - qkr);
+    m[2][0] = s2 * (qik + qjr);
+    m[0][1] = s2 * (qij + qkr);
+    m[2][1] = s2 * (qjk - qir);
+    m[0][2] = s2 * (qik - qjr);
+    m[1][2] = s2 * (qjk + qir);
+    return m;
+}
+template <class ScalarT>
+TG_NODISCARD constexpr quaternion<ScalarT>::operator mat<4, 4, ScalarT>() const
+{
+    // see https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+
+    // TODO: versor version
+    auto const s2 = ScalarT(2) / length_sqr(*this);
+
+    auto const qii = x * x;
+    auto const qij = x * y;
+    auto const qik = x * z;
+    auto const qir = x * w;
+    auto const qjj = y * y;
+    auto const qjk = y * z;
+    auto const qjr = y * w;
+    auto const qkk = z * z;
+    auto const qkr = z * w;
+
+    mat<4, 4, ScalarT> m;
+    m[0][0] = 1 - s2 * (qjj + qkk);
+    m[1][1] = 1 - s2 * (qii + qkk);
+    m[2][2] = 1 - s2 * (qii + qjj);
+    m[1][0] = s2 * (qij - qkr);
+    m[2][0] = s2 * (qik + qjr);
+    m[0][1] = s2 * (qij + qkr);
+    m[2][1] = s2 * (qjk - qir);
+    m[0][2] = s2 * (qik - qjr);
+    m[1][2] = s2 * (qjk + qir);
+    m[3][3] = ScalarT(1);
+    return m;
+}
 
 // ================================= Operators =================================
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> operator+(quat<ScalarT> const& q0, quat<ScalarT> const& q1)
+TG_NODISCARD constexpr quaternion<ScalarT> operator+(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1)
 {
     return {q0.x + q1.x, q0.y + q1.y, q0.z + q1.z, q0.w + q1.w};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> operator-(quat<ScalarT> const& q0, quat<ScalarT> const& q1)
+TG_NODISCARD constexpr quaternion<ScalarT> operator-(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1)
 {
     return {q0.x - q1.x, q0.y - q1.y, q0.z - q1.z, q0.w - q1.w};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> operator*(quat<ScalarT> const& q0, quat<ScalarT> const& q1)
+TG_NODISCARD constexpr quaternion<ScalarT> operator-(quaternion<ScalarT> const& q)
+{
+    return {-q.x, -q.y, -q.z, -q.w};
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr quaternion<ScalarT> operator+(quaternion<ScalarT> const& q)
+{
+    return q;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr quaternion<ScalarT> operator*(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1)
 {
     return {
         q0.w * q1.x + q0.x * q1.w + q0.y * q1.z - q0.z * q1.y, //
         q0.w * q1.y - q0.x * q1.z + q0.y * q1.w + q0.z * q1.x, //
         q0.w * q1.z + q0.x * q1.y - q0.y * q1.x + q0.z * q1.w, //
-        q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w  //
+        q0.w * q1.w - q0.x * q1.x - q0.y * q1.y - q0.z * q1.z  //
     };
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> operator*(quat<ScalarT> const& q0, dont_deduce<ScalarT> q1)
+TG_NODISCARD constexpr quaternion<ScalarT> operator*(quaternion<ScalarT> const& q0, dont_deduce<ScalarT> q1)
 {
     return {q0.x * q1, q0.y * q1, q0.z * q1, q0.w * q1};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> operator*(dont_deduce<ScalarT> q0, quat<ScalarT> const& q1)
+TG_NODISCARD constexpr quaternion<ScalarT> operator*(dont_deduce<ScalarT> q0, quaternion<ScalarT> const& q1)
 {
     return {q0 * q1.x, q0 * q1.y, q0 * q1.z, q0 * q1.w};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> operator/(quat<ScalarT> const& q0, dont_deduce<ScalarT> q1)
+TG_NODISCARD constexpr quaternion<ScalarT> operator/(quaternion<ScalarT> const& q0, dont_deduce<ScalarT> q1)
 {
     return q0 * (ScalarT(1) / q1);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> operator/(dont_deduce<ScalarT> q0, quat<ScalarT> const& q1)
+TG_NODISCARD constexpr quaternion<ScalarT> operator/(dont_deduce<ScalarT> q0, quaternion<ScalarT> const& q1)
 {
     return {q0 / q1.x, q0 / q1.y, q0 / q1.z, q0 / q1.w};
 }
 
-// ================================= Functions =================================
-
+template <class ScalarT>
+TG_NODISCARD constexpr pos<3, ScalarT> operator*(quaternion<ScalarT> const& q, pos<3, ScalarT> const& p)
+{
+    return pos<3, ScalarT>(mat<3, 3, ScalarT>(q) * vec<3, ScalarT>(p));
+}
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT real(quat<ScalarT> const& q)
+TG_NODISCARD constexpr vec<3, ScalarT> operator*(quaternion<ScalarT> const& q, vec<3, ScalarT> const& v)
+{
+    return mat<3, 3, ScalarT>(q) * v;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr dir<3, ScalarT> operator*(quaternion<ScalarT> const& q, dir<3, ScalarT> const& d)
+{
+    return dir<3, ScalarT>(mat<3, 3, ScalarT>(q) * d);
+}
+
+
+// ================================= Functions =================================
+
+template <class ScalarT>
+TG_NODISCARD constexpr ScalarT real(quaternion<ScalarT> const& q)
 {
     return q.w;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr vec<3, ScalarT> imaginary(quat<ScalarT> const& q)
+TG_NODISCARD constexpr vec<3, ScalarT> imaginary(quaternion<ScalarT> const& q)
 {
     return {q.x, q.y, q.z};
 }
 
+template <class ScalarT>
+TG_NODISCARD constexpr mat<3, 3, ScalarT> to_mat3(quaternion<ScalarT> const& q)
+{
+    return mat<3, 3, ScalarT>(q);
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr mat<4, 4, ScalarT> to_mat4(quaternion<ScalarT> const& q)
+{
+    return mat<4, 4, ScalarT>(q);
+}
+
 // CAUTION: only works with normalized quats for now
 template <class ScalarT>
-TG_NODISCARD constexpr angle_t<ScalarT> angle_of(quat<ScalarT> const& q)
+TG_NODISCARD constexpr angle_t<ScalarT> angle_of(quaternion<ScalarT> const& q)
 {
     return acos(q.w) * ScalarT(2);
 }
 
 // CAUTION: only works with normalized quats for now
 template <class ScalarT>
-TG_NODISCARD constexpr dir<3, ScalarT> axis_of(quat<ScalarT> const& q)
+TG_NODISCARD constexpr dir<3, ScalarT> axis_of(quaternion<ScalarT> const& q)
 {
     return q.w * q.w >= ScalarT(1) ? dir<3, ScalarT>::pos_x : normalize(imaginary(q));
 }
 
 // CAUTION: only works with normalized quats for now
 template <class ScalarT>
-TG_NODISCARD constexpr angle_t<ScalarT> angle_between(quat<ScalarT> const& q0, quat<ScalarT> const& q1)
+TG_NODISCARD constexpr angle_t<ScalarT> angle_between(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1)
 {
     return acos(saturate(dot(q0, q1))) * ScalarT(2);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT length_sqr(quat<ScalarT> const& q)
+TG_NODISCARD constexpr ScalarT length_sqr(quaternion<ScalarT> const& q)
 {
     return q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT length(quat<ScalarT> const& q)
+TG_NODISCARD constexpr ScalarT length(quaternion<ScalarT> const& q)
 {
     return sqrt(length_sqr(q));
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> normalize(quat<ScalarT> const& q)
+TG_NODISCARD constexpr quaternion<ScalarT> normalize(quaternion<ScalarT> const& q)
 {
     return q / length(q);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> conjugate(quat<ScalarT> const& q)
+TG_NODISCARD constexpr quaternion<ScalarT> conjugate(quaternion<ScalarT> const& q)
 {
     return {-q.x, -q.y, -q.z, q.w};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> inverse(quat<ScalarT> const& q)
+TG_NODISCARD constexpr quaternion<ScalarT> inverse(quaternion<ScalarT> const& q)
 {
     return conjugate(q) * (ScalarT(1) / length_sqr(q));
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> normalize_safe(quat<ScalarT> const& q, dont_deduce<ScalarT> eps = ScalarT(0))
+TG_NODISCARD constexpr quaternion<ScalarT> normalize_safe(quaternion<ScalarT> const& q, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto const l = length(q);
-    return l <= eps ? quat<ScalarT>::zero : q / l;
+    return l <= eps ? quaternion<ScalarT>::zero : q / l;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> dot(quat<ScalarT> const& q0, quat<ScalarT> const& q1)
+TG_NODISCARD constexpr ScalarT dot(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1)
 {
-    return {q0.x * q1.x, q0.y * q1.y, q0.z * q1.z, q0.w * q1.w};
+    return q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> mix(quat<ScalarT> const& q0, quat<ScalarT> const& q1, dont_deduce<ScalarT> t)
+TG_NODISCARD constexpr quaternion<ScalarT> mix(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1, dont_deduce<ScalarT> t)
 {
     return {mix(q0.x, q1.x, t), mix(q0.y, q1.y, t), mix(q0.z, q1.z, t), mix(q0.w, q1.w, t)};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> lerp(quat<ScalarT> const& q0, quat<ScalarT> const& q1, dont_deduce<ScalarT> t)
+TG_NODISCARD constexpr quaternion<ScalarT> lerp(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1, dont_deduce<ScalarT> t)
 {
     return mix(q0, q1, t);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> nlerp(quat<ScalarT> const& q0, quat<ScalarT> const& q1, dont_deduce<ScalarT> t)
+TG_NODISCARD constexpr quaternion<ScalarT> nlerp(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1, dont_deduce<ScalarT> t)
 {
     return normalize(mix(q0, dot(q0, q1) >= ScalarT(0) ? q1 : -q1, t));
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> nlerp_unaligned(quat<ScalarT> const& q0, quat<ScalarT> const& q1, dont_deduce<ScalarT> t)
+TG_NODISCARD constexpr quaternion<ScalarT> nlerp_unaligned(quaternion<ScalarT> const& q0, quaternion<ScalarT> const& q1, dont_deduce<ScalarT> t)
 {
     return normalize(mix(q0, q1, t));
 }
 
 // CAUTION: only works with normalized quats for now
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> slerp(quat<ScalarT> const& q0, quat<ScalarT> q1, dont_deduce<ScalarT> t)
+TG_NODISCARD constexpr quaternion<ScalarT> slerp(quaternion<ScalarT> const& q0, quaternion<ScalarT> q1, dont_deduce<ScalarT> t)
 {
     auto dotAB = dot(q0, q1);
 
@@ -197,7 +301,7 @@ TG_NODISCARD constexpr quat<ScalarT> slerp(quat<ScalarT> const& q0, quat<ScalarT
 
 // CAUTION: only works with normalized quats for now
 template <class ScalarT>
-TG_NODISCARD constexpr quat<ScalarT> slerp_unaligned(quat<ScalarT> const& q0, quat<ScalarT> q1, dont_deduce<ScalarT> t)
+TG_NODISCARD constexpr quaternion<ScalarT> slerp_unaligned(quaternion<ScalarT> const& q0, quaternion<ScalarT> q1, dont_deduce<ScalarT> t)
 {
     auto dotAB = dot(q0, q1);
 

@@ -49,7 +49,7 @@ struct comp_size<comp<D, T>>
     static constexpr int value = D;
 };
 template <class T>
-struct comp_size<quat<T>>
+struct comp_size<quaternion<T>>
 {
     static constexpr int value = 4;
 };
@@ -59,8 +59,13 @@ struct comp_size<mat<C, R, T>>
     static constexpr int value = C;
 };
 
+template <class T>
+void obj_sink(T const&)
+{
+}
+
 template <class Obj, class ScalarT>
-auto test_comp_convertible(Obj* obj) -> decltype(ScalarT((*obj)[0]), true_type{});
+auto test_comp_convertible(Obj* obj) -> decltype(obj_sink<ScalarT>((*obj)[0]), true_type{});
 template <class Obj, class ScalarT>
 auto test_comp_convertible(...) -> false_type;
 

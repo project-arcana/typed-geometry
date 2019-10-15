@@ -24,7 +24,7 @@ struct comp;
 template <int D, class ScalarT>
 struct color;
 template <class ScalarT>
-struct quat;
+struct quaternion;
 
 // matrix types:
 template <int C, int R, class ScalarT>

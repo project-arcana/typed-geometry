@@ -103,12 +103,12 @@
 #define TG_IMPL_MEMBER_comp_s v
 #define TG_IMPL_MEMBER_comp_verify
 
-#define TG_IMPL_MEMBER_quat_0 x
-#define TG_IMPL_MEMBER_quat_1 y
-#define TG_IMPL_MEMBER_quat_2 z
-#define TG_IMPL_MEMBER_quat_3 w
-#define TG_IMPL_MEMBER_quat_s v
-#define TG_IMPL_MEMBER_quat_verify
+#define TG_IMPL_MEMBER_quaternion_0 x
+#define TG_IMPL_MEMBER_quaternion_1 y
+#define TG_IMPL_MEMBER_quaternion_2 z
+#define TG_IMPL_MEMBER_quaternion_3 w
+#define TG_IMPL_MEMBER_quaternion_s v
+#define TG_IMPL_MEMBER_quaternion_verify
 
 #define TG_IMPL_MEMBER_mat_0 m[0]
 #define TG_IMPL_MEMBER_mat_1 m[1]

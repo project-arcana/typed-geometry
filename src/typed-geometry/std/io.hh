@@ -115,6 +115,14 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     ss << "color4(" << val.r << ", " << val.g << ", " << val.b << ", " << val.a << ")";
     return out << ss.str();
 }
+template <class ScalarT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, quaternion<ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "quat";
+    ss << "(" << val.x << ", " << val.y << ", " << val.z << ", " << val.w << ")";
+    return out << ss.str();
+}
 
 //
 // =============================== Transformations ===============================
