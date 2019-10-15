@@ -261,11 +261,66 @@ public:
     static const mat ones;
     static const mat identity;
 
-    static constexpr mat<C, R, ScalarT> diag(ScalarT v);
-    static constexpr mat<C, R, ScalarT> diag(vec<detail::min(C, R), ScalarT> const& v);
+    static constexpr mat diag(ScalarT v);
+    static constexpr mat diag(vec<detail::min(C, R), ScalarT> const& v);
 
     template <class... Args>
-    static constexpr mat<C, R, ScalarT> from_cols(Args const&... args)
+    static constexpr mat from_cols(Args const&... args)
+    {
+        return from_cols_(args...);
+    }
+    template <class... Args>
+    static constexpr mat from_rows(Args const&... args)
+    {
+        return from_rows_(args...);
+    }
+
+    // explicit from_rows and from_cols to make it work properly with {...}
+    template <int R2 = R, class = enable_if<R2 == 1>>
+    static constexpr mat from_rows(vec<C, ScalarT> const& row0)
+    {
+        return from_rows_(row0);
+    }
+    template <int R2 = R, class = enable_if<R2 == 2>>
+    static constexpr mat from_rows(vec<C, ScalarT> const& row0, vec<C, ScalarT> const& row1)
+    {
+        return from_rows_(row0, row1);
+    }
+    template <int R2 = R, class = enable_if<R2 == 3>>
+    static constexpr mat from_rows(vec<C, ScalarT> const& row0, vec<C, ScalarT> const& row1, vec<C, ScalarT> const& row2)
+    {
+        return from_rows_(row0, row1, row2);
+    }
+    template <int R2 = R, class = enable_if<R2 == 4>>
+    static constexpr mat from_rows(vec<C, ScalarT> const& row0, vec<C, ScalarT> const& row1, vec<C, ScalarT> const& row2, vec<C, ScalarT> const& row3)
+    {
+        return from_rows_(row0, row1, row2, row3);
+    }
+
+    template <int C2 = C, class = enable_if<C2 == 1>>
+    static constexpr mat from_cols(vec<R, ScalarT> const& col0)
+    {
+        return from_cols_(col0);
+    }
+    template <int C2 = C, class = enable_if<C2 == 2>>
+    static constexpr mat from_cols(vec<R, ScalarT> const& col0, vec<R, ScalarT> const& col1)
+    {
+        return from_cols_(col0, col1);
+    }
+    template <int C2 = C, class = enable_if<C2 == 3>>
+    static constexpr mat from_cols(vec<R, ScalarT> const& col0, vec<R, ScalarT> const& col1, vec<R, ScalarT> const& col2)
+    {
+        return from_cols_(col0, col1, col2);
+    }
+    template <int C2 = C, class = enable_if<C2 == 4>>
+    static constexpr mat from_cols(vec<R, ScalarT> const& col0, vec<R, ScalarT> const& col1, vec<R, ScalarT> const& col2, vec<R, ScalarT> const& col3)
+    {
+        return from_cols_(col0, col1, col2, col3);
+    }
+
+private:
+    template <class... Args>
+    static constexpr mat from_cols_(Args const&... args)
     {
         static_assert(sizeof...(args) == C, "must provide exactly C args");
 
@@ -276,7 +331,7 @@ public:
         return m;
     }
     template <class... Args>
-    static constexpr mat<C, R, ScalarT> from_rows(Args const&... args)
+    static constexpr mat from_rows_(Args const&... args)
     {
         static_assert(sizeof...(args) == R, "must provide exactly R args");
 
