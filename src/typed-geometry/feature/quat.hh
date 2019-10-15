@@ -22,6 +22,61 @@ TG_NODISCARD constexpr quaternion<ScalarT> quaternion<ScalarT>::from_axis_angle(
 }
 
 template <class ScalarT>
+TG_NODISCARD constexpr quaternion<ScalarT> quaternion<ScalarT>::from_rotation_matrix(mat<3, 3, ScalarT> const& m)
+{
+    // see http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+
+    quaternion<ScalarT> q;
+    auto const trace = m[0][0] + m[1][1] + m[2][2];
+    if (trace > ScalarT(0))
+    {
+        auto const sq = sqrt(trace + ScalarT(1));
+        auto const s = ScalarT(0.5) / sq;
+        q.w = sq * ScalarT(0.5);
+        q.x = (m[1][2] - m[2][1]) * s;
+        q.y = (m[2][0] - m[0][2]) * s;
+        q.z = (m[0][1] - m[1][0]) * s;
+    }
+    else
+    {
+        if (m[0][0] > m[1][1] && m[0][0] > m[2][2])
+        {
+            auto const sq = sqrt(ScalarT(1) + m[0][0] - m[1][1] - m[2][2]);
+            auto const s = ScalarT(0.5) / sq;
+            q.x = ScalarT(0.5) * sq;
+            q.y = (m[0][1] + m[1][0]) * s;
+            q.z = (m[0][2] + m[2][0]) * s;
+            q.w = (m[1][2] - m[2][1]) * s;
+        }
+        else if (m[1][1] > m[2][2])
+        {
+            auto const sq = sqrt(ScalarT(1) + m[1][1] - m[0][0] - m[2][2]);
+            auto const s = ScalarT(0.5) / sq;
+            q.x = (m[0][1] + m[1][0]) * s;
+            q.y = ScalarT(0.5) * sq;
+            q.z = (m[1][2] + m[2][1]) * s;
+            q.w = (m[2][0] - m[0][2]) * s;
+        }
+        else
+        {
+            auto const sq = sqrt(ScalarT(1) + m[2][2] - m[0][0] - m[1][1]);
+            auto const s = ScalarT(0.5) / sq;
+            q.x = (m[0][2] + m[2][0]) * s;
+            q.y = (m[1][2] + m[2][1]) * s;
+            q.z = ScalarT(0.5) * sq;
+            q.w = (m[0][1] - m[1][0]) * s;
+        }
+    }
+    return q;
+}
+
+template <class ScalarT>
+TG_NODISCARD constexpr quaternion<ScalarT> quaternion<ScalarT>::from_rotation_matrix(mat<4, 4, ScalarT> const& m)
+{
+    return from_rotation_matrix(mat<3, 3, ScalarT>(m));
+}
+
+template <class ScalarT>
 TG_NODISCARD constexpr quaternion<ScalarT>::operator mat<3, 3, ScalarT>() const
 {
     // see https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
