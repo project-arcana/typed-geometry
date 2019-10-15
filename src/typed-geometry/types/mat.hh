@@ -148,6 +148,15 @@ public:
     template <class Obj, class = enable_if<is_comp_convertible<Obj, vec<R, ScalarT>>>>
     explicit constexpr mat(Obj const& v)
     {
+        // init to id
+        m[0][0] = ScalarT(1);
+        if constexpr (R >= 2 && C >= 2)
+            m[1][1] = ScalarT(1);
+        if constexpr (R >= 3 && C >= 3)
+            m[2][2] = ScalarT(1);
+        if constexpr (R >= 4 && C >= 4)
+            m[3][3] = ScalarT(1);
+
         auto s = detail::get_dynamic_comp_size(v);
         m[0] = detail::comp_get(v, 0, s, vec<R, ScalarT>::zero);
 
@@ -164,9 +173,36 @@ public:
     template <class... Args, class = enable_if<sizeof...(Args) == C - 1 && (... && is_same<Args, vec<R, ScalarT>>)>>
     constexpr mat(vec<R, ScalarT> const& c0, Args const&... cN)
     {
+        // init to id
+        m[0][0] = ScalarT(1);
+        if constexpr (R >= 2 && C >= 2)
+            m[1][1] = ScalarT(1);
+        if constexpr (R >= 3 && C >= 3)
+            m[2][2] = ScalarT(1);
+        if constexpr (R >= 4 && C >= 4)
+            m[3][3] = ScalarT(1);
+
         m[0] = c0;
         auto i = 1;
         ((m[i++] = cN), ...);
+    }
+
+    template <int C2, int R2, class ScalarT2>
+    explicit constexpr mat(mat<C2, R2, ScalarT2> const& rhs)
+    {
+        // init to id
+        m[0][0] = ScalarT(1);
+        if constexpr (R >= 2 && C >= 2)
+            m[1][1] = ScalarT(1);
+        if constexpr (R >= 3 && C >= 3)
+            m[2][2] = ScalarT(1);
+        if constexpr (R >= 4 && C >= 4)
+            m[3][3] = ScalarT(1);
+
+        // copy submatrix
+        for (auto x = 0; x < (C < C2 ? C : C2); ++x)
+            for (auto y = 0; y < (R < R2 ? R : R2); ++y)
+                m[x][y] = ScalarT(rhs[x][y]);
     }
 
     constexpr vec<R, ScalarT>& operator[](int i)
