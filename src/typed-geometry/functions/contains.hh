@@ -102,7 +102,10 @@ TG_NODISCARD constexpr bool contains(ball<D, ScalarT> const& s, pos<D, ScalarT> 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0))
 {
-    return abs(distance_sqr(s.center, p) - s.radius * s.radius) <= eps * eps;
+    auto const d2 = distance_sqr(s.center, p);
+    auto const s2 = s.radius * s.radius;
+    auto const e2 = eps * eps;
+    return d2 - e2 <= s2 && s2 <= d2 + e2;
 }
 
 // Note that eps is used to compare 2D areas, not 1D lengths
