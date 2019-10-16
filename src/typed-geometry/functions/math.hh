@@ -1,12 +1,18 @@
 #pragma once
 
-#include <typed-geometry/detail/macros.hh>
 #include <typed-geometry/common/scalar_math.hh>
+#include <typed-geometry/detail/macros.hh>
+#include <typed-geometry/types/color.hh>
+#include <typed-geometry/types/comp.hh>
+#include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/pos.hh>
+#include <typed-geometry/types/quat.hh>
 #include <typed-geometry/types/size.hh>
 #include <typed-geometry/types/vec.hh>
 
 // Component-wise vectorized versions of scalar math
+
+// TODO: make more generic with only one template, not repeat pos, size, vec, ...
 
 namespace tg
 {
@@ -109,4 +115,30 @@ TG_IMPL_DEFINE_COMPWISE_FUNC_TERNARY(size, clamp);
 TG_IMPL_DEFINE_COMPWISE_FUNC_UNARY(pos, saturate);
 TG_IMPL_DEFINE_COMPWISE_FUNC_UNARY(vec, saturate);
 TG_IMPL_DEFINE_COMPWISE_FUNC_UNARY(size, saturate);
+
+// tests
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(pos, is_nan);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(pos, is_inf);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(pos, is_zero);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(pos, is_finite);
+
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(vec, is_nan);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(vec, is_inf);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(vec, is_zero);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(vec, is_finite);
+
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(dir, is_nan);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(dir, is_inf);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(dir, is_zero);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(dir, is_finite);
+
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(size, is_nan);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(size, is_inf);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(size, is_zero);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(size, is_finite);
+
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(comp, is_nan);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(comp, is_inf);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(comp, is_zero);
+TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(comp, is_finite);
 } // namespace tg
