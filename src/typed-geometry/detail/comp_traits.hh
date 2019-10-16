@@ -4,6 +4,8 @@
 
 #include <typed-geometry/types/fwd.hh>
 
+#include <type_traits>
+
 namespace tg
 {
 namespace detail
@@ -59,15 +61,15 @@ struct comp_size<mat<C, R, T>>
     static constexpr int value = C;
 };
 
-template <class T>
-void obj_sink(T const&)
-{
-}
-
 template <class Obj, class ScalarT>
-auto test_comp_convertible(Obj* obj) -> decltype(obj_sink<ScalarT>((*obj)[0]), true_type{});
+auto test_comp_convertible(Obj* obj) -> decltype(ScalarT((*obj)[0]), true_type{});
 template <class Obj, class ScalarT>
 auto test_comp_convertible(...) -> false_type;
+
+template <class Obj, class ScalarT>
+auto test_mat_convertible(Obj* obj) -> decltype(ScalarT((*obj)[0][0]), true_type{});
+template <class Obj, class ScalarT>
+auto test_mat_convertible(...) -> false_type;
 
 template <class Obj, class = enable_if<comp_size<Obj>::value != -1>>
 constexpr int impl_get_dynamic_comp_size(Obj const&, priority_tag<2>)
@@ -100,6 +102,9 @@ constexpr ScalarT comp_get(Obj const& v, unsigned char idx, int size, ScalarT fi
 
 template <class Obj, class ScalarT>
 constexpr bool is_comp_convertible = decltype(detail::test_comp_convertible<Obj, ScalarT>(nullptr))::value;
+
+template <class Obj, class ScalarT>
+constexpr bool is_mat_convertible = decltype(detail::test_mat_convertible<Obj, ScalarT>(nullptr))::value;
 
 template <class Obj>
 constexpr bool is_comp_dynamic_size = detail::comp_size<Obj>::value < 0;

@@ -145,7 +145,7 @@ private:
 
 public:
     constexpr mat() = default;
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, vec<R, ScalarT>>>>
+    template <class Obj, class = enable_if<is_mat_convertible<Obj, ScalarT>>>
     explicit constexpr mat(Obj const& v)
     {
         // init to id
