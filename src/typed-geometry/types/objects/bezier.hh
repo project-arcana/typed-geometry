@@ -43,9 +43,9 @@ TG_NODISCARD constexpr auto deCastlejau(bezier<Degree, ControlPointT> const& bez
     else
     {
         T controlpoints[Degree + 1];
-        for (auto i = 0u; i <= Degree; ++i)
+        for (auto i = 0; i <= Degree; ++i)
             controlpoints[i] = T(bezier.control_points[i]);
-        for (auto d = Degree; d > 1; --d)
+        for (auto d = Degree; d >= 1; --d)
             for (auto i = 0; i < d; ++i)
                 controlpoints[i] = MixT::mix(controlpoints[i], controlpoints[i + 1], t);
         return controlpoints[0];
@@ -56,7 +56,9 @@ TG_NODISCARD constexpr auto deCastlejau(bezier<Degree, ControlPointT> const& bez
 template <int Degree, class ControlPointT>
 struct bezier
 {
-    array<ControlPointT, Degree + 1> control_points;
+    ControlPointT control_points[Degree + 1];
+
+    static constexpr int degree = Degree;
 
     //    template <int OtherDegree>
     //    constexpr explicit bezier(bezier<OtherDegree, ControlPointT> const& /*other*/)
@@ -79,29 +81,30 @@ struct bezier
 };
 
 template <class ControlPointT, class... ControlPoints>
-TG_NODISCARD constexpr auto make_bezier(ControlPointT const& p0, ControlPoints const&... pts) -> bezier<1 + sizeof...(ControlPoints), ControlPointT>
+TG_NODISCARD constexpr auto make_bezier(ControlPointT const& p0, ControlPoints const&... pts) -> bezier<sizeof...(ControlPoints), ControlPointT>
 {
     static_assert((std::is_convertible_v<ControlPoints, ControlPointT> && ...), "incompatible control points");
-    return {{{p0, pts...}}};
+    return {{p0, pts...}};
 }
 
 template <int Degree, class ControlPointT>
-TG_NODISCARD constexpr bezier<Degree - 1, ControlPointT> derivative(bezier<Degree, ControlPointT> const& c)
+TG_NODISCARD constexpr auto derivative(bezier<Degree, ControlPointT> const& c)
 {
-    bezier<Degree - 1, ControlPointT> res;
-    for (auto i = 0u; i < Degree; ++i)
-        res.control_points[i] = Degree * ((c.control_points[i] + c.control_points[i + 1]) / 1);
+    bezier<Degree - 1, decltype(Degree * (c.control_points[1] - c.control_points[0]))> res;
+    for (auto i = 0; i < Degree; ++i)
+        res.control_points[i] = Degree * (c.control_points[i + 1] - c.control_points[i]);
     return res;
 }
 
 template <int Degree, class ControlPointT>
 TG_NODISCARD constexpr bezier<Degree + 1, ControlPointT> elevate(bezier<Degree, ControlPointT> const& c)
 {
-    auto const new_degree = Degree + 1;
     bezier<Degree + 1, ControlPointT> res;
 
+    auto const new_degree = Degree + 1;
     res.control_points[0] = c.control_points[0];
-    for (auto i = 1; i < new_degree; ++i)
+
+    for (auto i = 1; i <= new_degree; ++i)
         res.control_points[i] = ((new_degree - i) * c.control_points[i] + i * c.control_points[i - 1]) / new_degree;
 
     return res;
