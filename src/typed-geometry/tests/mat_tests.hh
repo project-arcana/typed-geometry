@@ -7,7 +7,7 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_zero(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+TG_NODISCARD constexpr bool is_zero_mat(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i; i < D; ++i)

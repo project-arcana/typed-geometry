@@ -93,7 +93,7 @@ template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
 {
     auto dir_to_p = tg::normalize_safe(p - sp.center);
-    if (is_zero(dir_to_p))
+    if (is_zero_vector(dir_to_p))
         dir_to_p = vec<D, ScalarT>::unit_x;
     return sp.center + dir_to_p * sp.radius;
 }
@@ -103,7 +103,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hemisph
 {
     auto dir_to_p = tg::normalize_safe(p - h.center);
 
-    if (is_zero(dir_to_p))
+    if (is_zero_vector(dir_to_p))
         return h.center + h.normal * h.radius;
 
     if (dot(dir_to_p, h.normal) < 0)
@@ -127,7 +127,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3,
     auto lp = project(p, t.axis);
     auto dir = normalize_safe(p - lp);
 
-    if (is_zero(dir))
+    if (is_zero_vector(dir))
         dir = any_normal(t.axis.pos0 - t.axis.pos1);
 
     return lp + dir * t.radius;
@@ -142,7 +142,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, disk<3,
         return hp;
 
     auto dir = normalize_safe(hp - d.center);
-    if (is_zero(dir))
+    if (is_zero_vector(dir))
         dir = any_normal(d.normal);
 
     return d.center + dir * d.radius;
@@ -154,7 +154,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<
     auto hp = project(p, hyperplane<3, ScalarT>(c.normal, c.center));
 
     auto dir = normalize_safe(hp - c.center);
-    if (is_zero(dir))
+    if (is_zero_vector(dir))
         dir = any_normal(c.normal);
 
     return c.center + dir * c.radius;
