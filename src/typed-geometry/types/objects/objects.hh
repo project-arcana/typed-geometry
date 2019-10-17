@@ -2,6 +2,7 @@
 
 #include "aabb.hh"
 #include "ball.hh"
+#include "bezier.hh"
 #include "box.hh"
 #include "capsule.hh"
 #include "circle.hh"
