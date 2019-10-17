@@ -16,12 +16,18 @@ struct bezier;
 
 namespace detail
 {
+template <class A, class T>
+constexpr auto mix_helper(A const& a0, A const& a1, T const& t)
+{
+    return mix(a0, a1, t);
+}
+
 struct default_mix_t
 {
     template <class A, class T>
-    static constexpr auto mix(A const& a0, A const& a1, T const& t) -> decltype(mix(a0, a1, t))
+    static constexpr auto mix(A const& a0, A const& a1, T const& t)
     {
-        return mix(a0, a1, t);
+        return mix_helper(a0, a1, t);
     }
 };
 
@@ -37,8 +43,8 @@ TG_NODISCARD constexpr auto deCastlejau(bezier<Degree, ControlPointT> const& bez
     else
     {
         T controlpoints[Degree + 1];
-        for (auto i = 0; i <= Degree; ++i)
-            controlpoints[i] = T(bezier.p[i]);
+        for (auto i = 0u; i <= Degree; ++i)
+            controlpoints[i] = T(bezier.control_points[i]);
         for (auto d = Degree; d > 1; --d)
             for (auto i = 0; i < d; ++i)
                 controlpoints[i] = MixT::mix(controlpoints[i], controlpoints[i + 1], t);
@@ -83,8 +89,8 @@ template <int Degree, class ControlPointT>
 TG_NODISCARD constexpr bezier<Degree - 1, ControlPointT> derivative(bezier<Degree, ControlPointT> const& c)
 {
     bezier<Degree - 1, ControlPointT> res;
-    for (auto i = 0; i < Degree; ++i)
-        res.control_points[i] = Degree * (c.control_points[i] + c.control_points[i + 1]);
+    for (auto i = 0u; i < Degree; ++i)
+        res.control_points[i] = Degree * ((c.control_points[i] + c.control_points[i + 1]) / 1);
     return res;
 }
 
