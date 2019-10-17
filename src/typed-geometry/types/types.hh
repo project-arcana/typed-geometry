@@ -26,3 +26,5 @@
 #include "objects/objects.hh"
 
 #include "scalars/scalars.hh"
+
+#include "bezier.hh"

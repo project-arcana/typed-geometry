@@ -1,19 +1,33 @@
 #pragma once
 
-#include <typed-geometry/functions/mix.hh>
-#include <typed-geometry/types/array.hh>
+#include <typed-geometry/types/bezier.hh>
+
+/*
+    TODO:
+    * arithmetic operations if ControlPointT allows them
+    * automatically promote bezier type
+    * extremeties up to degree 3 or 4
+    * aabb_of up to degree 3 or 4
+    * derivative_at
+    * split -> pair<bezier>
+    * merge?
+    * normal
+    * tangent
+    * curvature
+    * bitangent
+    * torsion
+    * at and _f(captured lambda)
+    * map
+    * length
+    * arc_length_curve
+    * project
+    * bezier::from_fit(...)
+    * fit_bezier(...)
+    * splines
+*/
 
 namespace tg
 {
-// fwd
-template <int Degree, class ControlPointT>
-struct bezier;
-// namespace detail
-//{
-// template <int Degree, class ControlPointT, class ScalarT>
-// TG_NODISCARD constexpr ControlPointT deCastlejau(bezier<Degree, ControlPointT> const& bezier, ScalarT const& t);
-//}
-
 namespace detail
 {
 template <class A, class T>
@@ -31,7 +45,7 @@ struct default_mix_t
     }
 };
 
-template <int Degree, class ControlPointT, class ScalarT, class MixT = default_mix_t>
+template <class MixT, int Degree, class ControlPointT, class ScalarT>
 TG_NODISCARD constexpr auto deCastlejau(bezier<Degree, ControlPointT> const& bezier, ScalarT const& t)
 {
     using T = std::decay_t<decltype(MixT::mix(std::declval<ControlPointT>(), std::declval<ControlPointT>(), t))>;
@@ -51,40 +65,20 @@ TG_NODISCARD constexpr auto deCastlejau(bezier<Degree, ControlPointT> const& bez
         return controlpoints[0];
     }
 }
+
+}
+template <int Degree, class ControlPointT>
+template <class ScalarT, class MixT>
+TG_NODISCARD constexpr auto bezier<Degree, ControlPointT>::operator()(ScalarT const& t) const
+{
+    return detail::deCastlejau<MixT>(*this, t);
 }
 
 template <int Degree, class ControlPointT>
-struct bezier
+template <class ScalarT, class MixT>
+TG_NODISCARD constexpr auto bezier<Degree, ControlPointT>::operator[](ScalarT const& t) const
 {
-    ControlPointT control_points[Degree + 1];
-
-    static constexpr int degree = Degree;
-
-    //    template <int OtherDegree>
-    //    constexpr explicit bezier(bezier<OtherDegree, ControlPointT> const& /*other*/)
-    //    {
-    //        static_assert(Degree >= OtherDegree, "must have at least the same degree");
-    //        // todo
-    //    }
-
-    template <class ScalarT>
-    TG_NODISCARD constexpr ControlPointT operator()(ScalarT const& t) const
-    {
-        return detail::deCastlejau(*this, t);
-    }
-
-    template <class ScalarT>
-    TG_NODISCARD constexpr ControlPointT operator[](ScalarT const& t) const
-    {
-        return detail::deCastlejau(*this, t);
-    }
-};
-
-template <class ControlPointT, class... ControlPoints>
-TG_NODISCARD constexpr auto make_bezier(ControlPointT const& p0, ControlPoints const&... pts) -> bezier<sizeof...(ControlPoints), ControlPointT>
-{
-    static_assert((std::is_convertible_v<ControlPoints, ControlPointT> && ...), "incompatible control points");
-    return {{p0, pts...}};
+    return detail::deCastlejau<MixT>(*this, t);
 }
 
 template <int Degree, class ControlPointT>
