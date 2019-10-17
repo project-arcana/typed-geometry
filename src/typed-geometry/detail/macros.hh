@@ -338,6 +338,29 @@
     TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP); \
     TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)
 
+#define TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(TYPE, FUN)                                                                                                          \
+    template <int D, class ScalarT>                                                                                                                            \
+    TG_NODISCARD constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                 \
+    {                                                                                                                                                          \
+        using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0)))>;                                                                                  \
+                                                                                                                                                               \
+        if constexpr (D == 1)                                                                                                                                  \
+            return comp<D, R>{FUN(a.TG_IMPL_MEMBER(TYPE, 0))};                                                                                                 \
+                                                                                                                                                               \
+        else if constexpr (D == 2)                                                                                                                             \
+            return comp<D, R>{FUN(a.TG_IMPL_MEMBER(TYPE, 0)), FUN(a.TG_IMPL_MEMBER(TYPE, 1))};                                                                 \
+                                                                                                                                                               \
+        else if constexpr (D == 3)                                                                                                                             \
+            return comp<D, R>{FUN(a.TG_IMPL_MEMBER(TYPE, 0)), FUN(a.TG_IMPL_MEMBER(TYPE, 1)), FUN(a.TG_IMPL_MEMBER(TYPE, 2))};                                 \
+                                                                                                                                                               \
+        else if constexpr (D == 4)                                                                                                                             \
+            return comp<D, R>{FUN(a.TG_IMPL_MEMBER(TYPE, 0)), FUN(a.TG_IMPL_MEMBER(TYPE, 1)), FUN(a.TG_IMPL_MEMBER(TYPE, 2)), FUN(a.TG_IMPL_MEMBER(TYPE, 3))}; \
+                                                                                                                                                               \
+        else                                                                                                                                                   \
+            static_assert(always_false<ScalarT>, "only supported up to 4 dimensions");                                                                         \
+    }                                                                                                                                                          \
+    TG_FORCE_SEMICOLON
+
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_UNARY(TYPE, FUN)                                                                                                          \
     template <int D, class ScalarT>                                                                                                                            \
     TG_NODISCARD constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                 \

@@ -6,6 +6,8 @@
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/mat.hh>
 
+#include <typed-geometry/detail/operators/ops_mat.hh>
+
 #include "normalize.hh"
 #include "translation.hh"
 
@@ -16,7 +18,7 @@ TG_NODISCARD constexpr mat<4, 4, T> rotation_around(dir<3, T> const& axis, angle
 {
     auto ca = cos(angle);
     auto sa = sin(angle);
-    auto one_minus_ca = 1 - ca;
+    auto one_minus_ca = T(1) - ca;
 
     auto ux = axis.x;
     auto uy = axis.y;
@@ -84,6 +86,53 @@ TG_NODISCARD constexpr mat<4, 4, T> rotation_z(angle_t<T> a)
     return m;
 }
 
+// TODO: more performant with no matrix mul
+template <class T>
+TG_NODISCARD constexpr vec<3, T> rotate_x(vec<3, T> const& v, angle_t<T> a)
+{
+    return rotation_x(a) * v;
+}
+template <class T>
+TG_NODISCARD constexpr dir<3, T> rotate_x(dir<3, T> const& v, angle_t<T> a)
+{
+    return dir<3, T>(rotation_x(a) * v);
+}
+template <class T>
+TG_NODISCARD constexpr pos<3, T> rotate_x(pos<3, T> const& v, angle_t<T> a)
+{
+    return rotation_x(a) * v;
+}
+template <class T>
+TG_NODISCARD constexpr vec<3, T> rotate_y(vec<3, T> const& v, angle_t<T> a)
+{
+    return rotation_y(a) * v;
+}
+template <class T>
+TG_NODISCARD constexpr dir<3, T> rotate_y(dir<3, T> const& v, angle_t<T> a)
+{
+    return dir<3, T>(rotation_y(a) * v);
+}
+template <class T>
+TG_NODISCARD constexpr pos<3, T> rotate_y(pos<3, T> const& v, angle_t<T> a)
+{
+    return rotation_y(a) * v;
+}
+template <class T>
+TG_NODISCARD constexpr vec<3, T> rotate_z(vec<3, T> const& v, angle_t<T> a)
+{
+    return rotation_z(a) * v;
+}
+template <class T>
+TG_NODISCARD constexpr dir<3, T> rotate_z(dir<3, T> const& v, angle_t<T> a)
+{
+    return dir<3, T>(rotation_z(a) * v);
+}
+template <class T>
+TG_NODISCARD constexpr pos<3, T> rotate_z(pos<3, T> const& v, angle_t<T> a)
+{
+    return rotation_z(a) * v;
+}
+
 template <class ScalarT>
 TG_NODISCARD constexpr mat<3, 3, ScalarT> rotation_around(pos<2, ScalarT> p, angle_t<ScalarT> a)
 {
@@ -93,7 +142,6 @@ TG_NODISCARD constexpr mat<3, 3, ScalarT> rotation_around(pos<2, ScalarT> p, ang
     auto sa = sin(a);
 
     auto r = mat<3, 3, ScalarT>::identity;
-    r[2][2] = 1.0f;
 
     r[0][0] = ca;
     r[1][0] = -sa;
