@@ -112,6 +112,27 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangl
     else
         return p2;
 }
+template <class ScalarT>
+TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, triangle<2, ScalarT> const& t)
+{
+    if (contains(t, p))
+        return p;
+
+    auto p0 = project(p, segment<2, ScalarT>(t.pos0, t.pos1));
+    auto p1 = project(p, segment<2, ScalarT>(t.pos0, t.pos2));
+    auto p2 = project(p, segment<2, ScalarT>(t.pos1, t.pos2));
+
+    auto d0 = distance_sqr(p0, p);
+    auto d1 = distance_sqr(p1, p);
+    auto d2 = distance_sqr(p2, p);
+
+    if (d0 <= d1 && d0 <= d2)
+        return p0;
+    else if (d1 <= d2)
+        return p1;
+    else
+        return p2;
+}
 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
@@ -171,6 +192,18 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, disk<3,
 
     return d.center + dir * d.radius;
 }
+template <class ScalarT>
+TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, disk<2, ScalarT> const& d)
+{
+    if (distance_sqr(p, d.center) <= d.radius * d.radius)
+        return p;
+
+    auto dir = normalize_safe(p - d.center);
+    if (is_zero_vector(dir))
+        dir = tg::dir<2, ScalarT>::pos_x;
+
+    return d.center + dir * d.radius;
+}
 
 template <class ScalarT>
 TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<3, ScalarT> const& c)
@@ -180,6 +213,15 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<
     auto dir = normalize_safe(hp - c.center);
     if (is_zero_vector(dir))
         dir = any_normal(c.normal);
+
+    return c.center + dir * c.radius;
+}
+template <class ScalarT>
+TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, circle<2, ScalarT> const& c)
+{
+    auto dir = normalize_safe(p - c.center);
+    if (is_zero_vector(dir))
+        dir = tg::dir<2, ScalarT>::pos_x;
 
     return c.center + dir * c.radius;
 }
