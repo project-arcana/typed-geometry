@@ -89,6 +89,30 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, halfspa
     return p - pl.normal * tg::max(ScalarT(0), dot(p, pl.normal) - pl.dis);
 }
 
+template <class ScalarT>
+TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangle<3, ScalarT> const& t)
+{
+    auto pPlane = project(p, hyperplane<3, ScalarT>(normal(t), t.pos0));
+
+    if (contains(t, pPlane))
+        return pPlane;
+
+    auto p0 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos1));
+    auto p1 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos2));
+    auto p2 = project(pPlane, segment<3, ScalarT>(t.pos1, t.pos2));
+
+    auto d0 = distance_sqr(p0, pPlane);
+    auto d1 = distance_sqr(p1, pPlane);
+    auto d2 = distance_sqr(p2, pPlane);
+
+    if (d0 <= d1 && d0 <= d2)
+        return p0;
+    else if (d1 <= d2)
+        return p1;
+    else
+        return p2;
+}
+
 template <int D, class ScalarT>
 TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
 {
