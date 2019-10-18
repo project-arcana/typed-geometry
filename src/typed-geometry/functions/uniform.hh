@@ -220,6 +220,14 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, disk<3, ScalarT> const&
     return d.center + direction.x * x + direction.y * y;
 }
 
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, tube<3, ScalarT> const& t)
+{
+    auto c = circle<3, ScalarT>(pos<3, ScalarT>::zero, t.radius, normalize(t.axis.pos1 - t.axis.pos0));
+    return uniform(rng ,t.axis) + vec<3, ScalarT>(uniform(rng, c));
+}
+
+
 template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& s)
 {
