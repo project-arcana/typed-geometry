@@ -221,14 +221,14 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, disk<3, ScalarT> const&
 }
 
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, tube<3, ScalarT> const& t)
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, tube<3, ScalarT> const& t) // boundary
 {
     auto c = circle<3, ScalarT>(pos<3, ScalarT>::zero, t.radius, normalize(t.axis.pos1 - t.axis.pos0));
     return uniform(rng, t.axis) + vec<3, ScalarT>(uniform(rng, c));
 }
 
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cylinder<3, ScalarT> const& c)
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cylinder<3, ScalarT> const& c) // boundary, including caps
 {
     auto x = c.axis.pos1 - c.axis.pos0;
     auto h = length(x);
@@ -245,7 +245,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cylinder<3, ScalarT> co
 }
 
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, capsule<3, ScalarT> const& c)
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, capsule<3, ScalarT> const& c) // boundary, including caps (does no_caps make sense here?)
 {
     auto x = c.axis.pos1 - c.axis.pos0;
     auto h = length(x);
@@ -291,7 +291,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const&
 }
 
 template <class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cone<3, ScalarT> const& c)
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cone<3, ScalarT> const& c) // boundary, no_caps (not on base)
 {
     auto ub = tg::aabb<2, ScalarT>::minus_one_to_one;
     while (true)
@@ -309,7 +309,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cone<3, ScalarT> const&
 }
 
 template <int D, class ScalarT, class Rng>
-TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> const& h)
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> const& h) // boundary, no_caps (not on base)
 {
     auto p = uniform(rng, sphere<D, ScalarT>(h.center, h.radius));
     auto v = p - h.center;

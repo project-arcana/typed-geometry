@@ -144,7 +144,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h)
+TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
 {
     auto dir_to_p = tg::normalize_safe(p - h.center);
 
@@ -157,7 +157,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisph
     return project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
 }
 template <class ScalarT>
-TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h)
+TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h) // boundary, including caps
 {
     auto dir_to_p = tg::normalize_safe(p - h.center);
 
@@ -181,7 +181,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, ball<D,
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t)
+TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t) // boundary
 {
     auto lp = project(p, t.axis);
     auto dir = normalize_safe(p - lp);
@@ -241,7 +241,7 @@ TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, circle<
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c)
+TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // boundary, including caps
 {
     auto dir = direction(c);
 
@@ -262,7 +262,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinde
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c)
+TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // boundary, including caps
 {
     auto t = coordinates(c.axis, p);
 
