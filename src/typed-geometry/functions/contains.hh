@@ -191,4 +191,19 @@ TG_NODISCARD constexpr bool contains(disk<2, ScalarT> const& d, pos<2, ScalarT> 
     return distance_sqr(d.center, p) <= r * r;
 }
 
+template <class ScalarT>
+TG_NODISCARD constexpr bool contains(cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, ScalarT eps = ScalarT(0))
+{
+    auto center = c.base.center - eps * c.base.normal;
+
+    if (dot(p - center, c.base.normal) < 0)
+        return false; // Not inside if on the other side of the base
+
+    auto apex = c.base.center + (c.height + eps) * c.base.normal;
+    auto pRing = c.base.center + (c.base.radius + eps) * any_normal(c.base.normal);
+
+    // Inside iff the point is closer to the axis (in terms of angle wrt. the apex) than some point on the outer boundary
+    return dot(-c.base.normal, normalize(p - apex)) > dot(-c.base.normal, normalize(pRing - apex));
+}
+
 } // namespace tg

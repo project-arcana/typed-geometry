@@ -290,6 +290,24 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const&
     }
 }
 
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cone<3, ScalarT> const& c)
+{
+    auto ub = tg::aabb<2, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length_sqr(p);
+        if (l <= ScalarT(1))
+        {
+            p *= c.base.radius;   
+            auto x = any_normal(c.base.normal);
+            auto y = cross(c.base.normal, x);
+            return c.base.center + p.x * x + p.y * y + (1 - sqrt(l)) * c.base.normal * c.height;
+        }
+    }
+}
+
 template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> const& h)
 {
