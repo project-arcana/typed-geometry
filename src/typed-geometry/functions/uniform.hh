@@ -244,6 +244,26 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cylinder<3, ScalarT> co
     return uniform(rng, capDisk);
 }
 
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, capsule<3, ScalarT> const& c)
+{
+    auto x = c.axis.pos1 - c.axis.pos0;
+    auto h = length(x);
+    auto sideArea = 2 * c.radius * h;   // * Pi, but that does not matter here
+    auto capArea = 2 * c.radius * c.radius; // * Pi
+    auto totalArea = 2 * capArea + sideArea;
+    auto part = detail::uniform01<ScalarT>(rng) * totalArea;
+    if (part < sideArea) // Uniform sampling on capsule side
+        return uniform(rng, tube<3, ScalarT>(c.axis, c.radius));
+
+    // Otherwise sampling on one of the caps
+    auto capHemi = hemisphere<3, ScalarT>();
+    capHemi.radius = c.radius;
+    capHemi.center = part < sideArea + capArea ? c.axis.pos0 : c.axis.pos1;
+    capHemi.normal = part < sideArea + capArea ? -normalize(x) : normalize(x);
+    return uniform(rng, capHemi);
+}
+
 template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& s)
 {
