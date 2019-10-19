@@ -143,18 +143,32 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<
     return sp.center + dir_to_p * sp.radius;
 }
 
-template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hemisphere<D, ScalarT> const& h)
+template <class ScalarT>
+TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h)
 {
     auto dir_to_p = tg::normalize_safe(p - h.center);
 
     if (is_zero_vector(dir_to_p))
         return h.center + h.normal * h.radius;
 
-    if (dot(dir_to_p, h.normal) < 0)
-        return project(p, disk<D, ScalarT>(h.center, h.radius, h.normal));
+    if (dot(dir_to_p, h.normal) >= 0)
+        return h.center + dir_to_p * h.radius;
 
-    return h.center + dir_to_p * h.radius;
+    return project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
+}
+template <class ScalarT>
+TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h)
+{
+    auto dir_to_p = tg::normalize_safe(p - h.center);
+
+    if (is_zero_vector(dir_to_p))
+        return h.center + h.normal * h.radius;
+
+    if (dot(dir_to_p, h.normal) >= 0)
+        return h.center + dir_to_p * h.radius;
+
+    auto v = perpendicular(h.normal) * h.radius;
+    return project(p, segment<2, ScalarT>(h.center - v, h.center + v));
 }
 
 template <int D, class ScalarT>
