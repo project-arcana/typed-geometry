@@ -26,8 +26,8 @@ TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_between(vec<D, 
 template <int D, class ScalarT>
 TG_NODISCARD constexpr angle_t<fractional_result<ScalarT>> angle_between(dir<D, ScalarT> const& a, dir<D, ScalarT> const& b)
 {
-    constexpr auto lower = decltype(dot(normal(a), normal(b)))(-1);
-    constexpr auto upper = decltype(dot(normal(a), normal(b)))(1);
+    constexpr auto lower = decltype(dot(a, b))(-1);
+    constexpr auto upper = decltype(dot(a, b))(1);
     return acos(clamp(dot(a, b), lower, upper));
 }
 
