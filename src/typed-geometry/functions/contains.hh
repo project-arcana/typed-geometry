@@ -38,7 +38,7 @@ TG_NODISCARD constexpr auto contains(A const& a, pos<D, ScalarT> const& p, Scala
 template <int D, class ScalarT>
 TG_NODISCARD constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
 {
-    if (eps > 0)
+    if (eps > ScalarT(0))
         return distance_sqr(b, o) < eps * eps;
     return b == o;
 }
@@ -119,7 +119,7 @@ TG_NODISCARD constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, Scala
     auto A1 = cross(pv2, pv0);
     auto A2 = cross(pv0, pv1);
 
-    if (eps > 0)
+    if (eps > ScalarT(0))
         return ((A0 >= -std::copysign(eps, A0)) == (A1 >= -std::copysign(eps, A0))) && //
                ((A1 >= -std::copysign(eps, A0)) == (A2 >= -std::copysign(eps, A0)));
 
@@ -138,17 +138,17 @@ TG_NODISCARD constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, Scala
     // checking whether point lies on right side of any edge
     auto e = t.pos1 - t.pos0;
     auto C = cross(e, p - t.pos0);
-    if (dot(n, C) < 0)
+    if (dot(n, C) < ScalarT(0))
         return false;
 
     e = t.pos2 - t.pos1;
     C = cross(e, p - t.pos1);
-    if (dot(n, C) < 0)
+    if (dot(n, C) < ScalarT(0))
         return false;
 
     e = t.pos0 - t.pos2;
     C = cross(e, p - t.pos2);
-    if (dot(n, C) < 0)
+    if (dot(n, C) < ScalarT(0))
         return false;
 
     // point always on left side
@@ -168,7 +168,7 @@ TG_NODISCARD constexpr bool contains(cylinder<3, ScalarT> const& c, pos<3, Scala
     auto hsqd = length_sqr(ad);
     auto rsqd = pow2(c.radius);
 
-    if (d0 < 0 || d0 > hsqd) // behind a cap
+    if (d0 < ScalarT(0) || d0 > hsqd) // behind a cap
         return false;
 
     // check whether distance from p to axis is less or equal to radius
@@ -196,7 +196,7 @@ TG_NODISCARD constexpr bool contains(cone<3, ScalarT> const& c, pos<3, ScalarT> 
 {
     auto center = c.base.center - eps * c.base.normal;
 
-    if (dot(p - center, c.base.normal) < 0)
+    if (dot(p - center, c.base.normal) < ScalarT(0))
         return false; // Not inside if on the other side of the base
 
     auto apex = c.base.center + (c.height + eps) * c.base.normal;

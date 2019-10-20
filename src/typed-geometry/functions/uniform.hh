@@ -232,9 +232,9 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cylinder<3, ScalarT> co
 {
     auto x = c.axis.pos1 - c.axis.pos0;
     auto h = length(x);
-    auto sideArea = 2 * c.radius * h; // * Pi, but that does not matter here
+    auto sideArea = ScalarT(2) * c.radius * h; // * Pi, but that does not matter here
     auto capArea = c.radius * c.radius; // * Pi
-    auto totalArea = 2 * capArea + sideArea;
+    auto totalArea = ScalarT(2) * capArea + sideArea;
     auto part = detail::uniform01<ScalarT>(rng) * totalArea;
     if (part < sideArea) // Uniform sampling on cylinder side
         return uniform(rng, tube<3, ScalarT>(c.axis, c.radius));
@@ -249,9 +249,9 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, capsule<3, ScalarT> con
 {
     auto x = c.axis.pos1 - c.axis.pos0;
     auto h = length(x);
-    auto sideArea = 2 * c.radius * h;   // * Pi, but that does not matter here
-    auto capArea = 2 * c.radius * c.radius; // * Pi
-    auto totalArea = 2 * capArea + sideArea;
+    auto sideArea = ScalarT(2) * c.radius * h;   // * Pi, but that does not matter here
+    auto capArea = ScalarT(2) * c.radius * c.radius; // * Pi
+    auto totalArea = ScalarT(2) * capArea + sideArea;
     auto part = detail::uniform01<ScalarT>(rng) * totalArea;
     if (part < sideArea) // Uniform sampling on capsule side
         return uniform(rng, tube<3, ScalarT>(c.axis, c.radius));
@@ -303,7 +303,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cone<3, ScalarT> const&
             p *= c.base.radius;   
             auto x = any_normal(c.base.normal);
             auto y = cross(c.base.normal, x);
-            return c.base.center + p.x * x + p.y * y + (1 - sqrt(l)) * c.base.normal * c.height;
+            return c.base.center + p.x * x + p.y * y + (ScalarT(1) - sqrt(l)) * c.base.normal * c.height;
         }
     }
 }
@@ -313,7 +313,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> 
 {
     auto p = uniform(rng, sphere<D, ScalarT>(h.center, h.radius));
     auto v = p - h.center;
-    if (dot(v, h.normal) >= 0)
+    if (dot(v, h.normal) >= ScalarT(0))
         return p;
     else
         return h.center - v;
