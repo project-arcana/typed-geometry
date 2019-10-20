@@ -276,6 +276,17 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule
 }
 
 template <class ScalarT>
+TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT> const& c)
+{
+    auto closestOnBase = project(p, c.base);
+    auto apex = c.base.center + c.height * c.base.normal;
+    if (dot(p - closestOnBase, closestOnBase - apex) >= 0)
+        return closestOnBase;
+
+    return project(p, inf_cone<3, ScalarT>(apex, -c.base.normal, 2 * angle_between(normalize(closestOnBase - apex), -c.base.normal)));
+}
+
+template <class ScalarT>
 TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
 {
     using dir_t = dir<3, ScalarT>;
