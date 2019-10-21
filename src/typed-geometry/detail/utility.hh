@@ -2,6 +2,11 @@
 
 namespace tg
 {
+using u8 = unsigned char;
+using u16 = unsigned short;
+using u32 = unsigned int;
+using u64 = unsigned long long;
+
 using size_t = decltype(sizeof(0));
 
 namespace detail
@@ -264,6 +269,22 @@ void swap(T& a, T& b)
     a = static_cast<T&&>(b);
     b = static_cast<T&&>(tmp);
 }
+
+template <u64 N, u64 Alignment>
+auto helper_size_t()
+{
+    if constexpr (N < (1 << 8) && Alignment <= 1)
+        return u8{};
+    else if constexpr (N < (1 << 16) && Alignment <= 2)
+        return u16{};
+    else if constexpr (N < (1uLL << 32) && Alignment <= 4)
+        return u32{};
+    else
+        return u64{};
 }
 
+template <u64 N, u64 Alignment>
+using size_t_for = decltype(helper_size_t<N, Alignment>());
+
+}
 } // namespace tg
