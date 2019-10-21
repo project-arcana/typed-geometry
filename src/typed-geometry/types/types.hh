@@ -28,3 +28,6 @@
 #include "scalars/scalars.hh"
 
 #include "bezier.hh"
+
+#include "capped_array.hh"
+#include "capped_vector.hh"
