@@ -1,50 +1,83 @@
 #pragma once
 
-#include <type_traits>
 #include <typed-geometry/common/assert.hh>
+#include <typed-geometry/detail/utility.hh>
 
 namespace tg
 {
 /// Array type with compile time memory footprint but runtime size
-template <class T, std::size_t N>
+template <class T, size_t N>
 struct capped_array
 {
-    constexpr capped_array(std::size_t size) : _size(size)
+    using index_t = detail::size_t_for<N, alignof(T)>;
+
+    constexpr capped_array(size_t size) : _size(index_t(size))
     {
         TG_CONTRACT(size <= N);
-        new (&_data[0]) T[size]();
+        new (&_u._data[0]) T[size]();
     }
 
     ~capped_array()
     {
-        for (std::size_t i = 0; i < _size; ++i)
-            reinterpret_cast<T*>(&_data[i])->~T();
+        for (size_t i = 0; i < _size; ++i)
+            _u._data[i].~T();
     }
 
-    const T& operator[](std::size_t pos) const
+    const T& operator[](size_t pos) const
     {
         TG_CONTRACT(pos < _size);
-        return reinterpret_cast<T const&>(_data[pos]);
+        return _u._data[pos];
     }
 
-    T& operator[](std::size_t pos)
+    T& operator[](size_t pos)
     {
         TG_CONTRACT(pos < _size);
-        return reinterpret_cast<T&>(_data[pos]);
+        return _u._data[pos];
     }
 
-    constexpr T* begin() { return reinterpret_cast<T*>(&_data); }
-    constexpr T* end() { return reinterpret_cast<T*>(&_data + _size); }
-    constexpr T const* begin() const { return reinterpret_cast<T const*>(&_data); }
-    constexpr T const* end() const { return reinterpret_cast<T const*>(&_data + _size); }
+    constexpr T* begin() { return &_u._data[0]; }
+    constexpr T* end() { return &_u._data[0] + _size; }
+    constexpr T const* begin() const { return &_u._data[0]; }
+    constexpr T const* end() const { return &_u._data[0] + _size; }
 
-    constexpr std::size_t size() const { return _size; }
+    constexpr size_t size() const { return _size; }
 
-    constexpr T* data() { return *reinterpret_cast<T*>(&_data); }
-    constexpr T const* data() const { return reinterpret_cast<T const*>(&_data); }
+    constexpr T* data() { return &_u._data[0]; }
+    constexpr T const* data() const { return &_u._data[0]; }
+
+    template <int M>
+    constexpr bool operator==(capped_array<T, M> const& rhs) const
+    {
+        if (_size != rhs._size)
+            return false;
+        for (size_t i = 0; i < _size; ++i)
+        {
+            if ((*this)[i] != rhs[i])
+                return false;
+        }
+        return true;
+    }
+
+    template <int M>
+    constexpr bool operator!=(capped_array<T, M> const& rhs) const
+    {
+        if (_size != rhs._size)
+            return true;
+        for (size_t i = 0; i < _size; ++i)
+        {
+            if ((*this)[i] != rhs[i])
+                return true;
+        }
+        return false;
+    }
 
 private:
-    std::size_t _size;
-    std::aligned_storage_t<sizeof(T), alignof(T)> _data[N];
+    union DataHolder {
+        DataHolder() {}
+        ~DataHolder() {}
+        T _data[N];
+    };
+    index_t _size = 0;
+    DataHolder _u;
 };
 }
