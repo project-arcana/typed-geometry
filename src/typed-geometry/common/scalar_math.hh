@@ -22,6 +22,16 @@ namespace tg
 TG_NODISCARD inline bool is_nan(f32 x) { return std::isnan(x); }
 TG_NODISCARD inline bool is_nan(f64 x) { return std::isnan(x); }
 
+TG_NODISCARD inline bool is_zero(i8 x) { return x == 0; }
+TG_NODISCARD inline bool is_zero(i16 x) { return x == 0; }
+TG_NODISCARD inline bool is_zero(i32 x) { return x == 0; }
+TG_NODISCARD inline bool is_zero(i64 x) { return x == 0; }
+
+TG_NODISCARD inline bool is_zero(u8 x) { return x == 0; }
+TG_NODISCARD inline bool is_zero(u16 x) { return x == 0; }
+TG_NODISCARD inline bool is_zero(u32 x) { return x == 0; }
+TG_NODISCARD inline bool is_zero(u64 x) { return x == 0; }
+
 TG_NODISCARD inline bool is_zero(f32 x) { return x == 0; }
 TG_NODISCARD inline bool is_zero(f64 x) { return x == 0; }
 

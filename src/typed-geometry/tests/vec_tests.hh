@@ -16,6 +16,12 @@ TG_NODISCARD constexpr bool is_normalized(vec<D, ScalarT> const& v, ScalarT eps 
     return abs(ScalarT(1) - length_sqr(v)) < eps;
 }
 
+template <int D, class ScalarT, class = enable_if<is_integer<ScalarT>>>
+TG_NODISCARD constexpr bool is_zero_vector(vec<D, ScalarT> const& v)
+{
+    return v == vec<D, ScalarT>::zero;
+}
+
 template <int D, class ScalarT, class = enable_if<is_floating_point<ScalarT>>>
 TG_NODISCARD constexpr bool is_zero_vector(vec<D, ScalarT> const& v, ScalarT eps = 2 * tg::epsilon<ScalarT>)
 {
