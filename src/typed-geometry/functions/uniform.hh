@@ -220,6 +220,50 @@ TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, disk<3, ScalarT> const&
     return d.center + direction.x * x + direction.y * y;
 }
 
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, tube<3, ScalarT> const& t) // boundary
+{
+    auto c = circle<3, ScalarT>(pos<3, ScalarT>::zero, t.radius, normalize(t.axis.pos1 - t.axis.pos0));
+    return uniform(rng, t.axis) + vec<3, ScalarT>(uniform(rng, c));
+}
+
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cylinder<3, ScalarT> const& c) // boundary, including caps
+{
+    auto x = c.axis.pos1 - c.axis.pos0;
+    auto h = length(x);
+    auto sideArea = ScalarT(2) * c.radius * h; // * Pi, but that does not matter here
+    auto capArea = c.radius * c.radius; // * Pi
+    auto totalArea = ScalarT(2) * capArea + sideArea;
+    auto part = detail::uniform01<ScalarT>(rng) * totalArea;
+    if (part < sideArea) // Uniform sampling on cylinder side
+        return uniform(rng, tube<3, ScalarT>(c.axis, c.radius));
+
+    // Otherwise sampling on one of the caps
+    auto capDisk = disk<3, ScalarT>(part < sideArea + capArea ? c.axis.pos0 : c.axis.pos1, c.radius, normalize(x));
+    return uniform(rng, capDisk);
+}
+
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, capsule<3, ScalarT> const& c) // boundary, including caps (does no_caps make sense here?)
+{
+    auto x = c.axis.pos1 - c.axis.pos0;
+    auto h = length(x);
+    auto sideArea = ScalarT(2) * c.radius * h;   // * Pi, but that does not matter here
+    auto capArea = ScalarT(2) * c.radius * c.radius; // * Pi
+    auto totalArea = ScalarT(2) * capArea + sideArea;
+    auto part = detail::uniform01<ScalarT>(rng) * totalArea;
+    if (part < sideArea) // Uniform sampling on capsule side
+        return uniform(rng, tube<3, ScalarT>(c.axis, c.radius));
+
+    // Otherwise sampling on one of the caps
+    auto capHemi = hemisphere<3, ScalarT>();
+    capHemi.radius = c.radius;
+    capHemi.center = part < sideArea + capArea ? c.axis.pos0 : c.axis.pos1;
+    capHemi.normal = part < sideArea + capArea ? -normalize(x) : normalize(x);
+    return uniform(rng, capHemi);
+}
+
 template <int D, class ScalarT, class Rng>
 TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& s)
 {
@@ -244,6 +288,35 @@ TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, ball<D, ScalarT> const&
         if (l <= ScalarT(1))
             return b.center + p * b.radius;
     }
+}
+
+template <class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<3, ScalarT> uniform(Rng& rng, cone<3, ScalarT> const& c) // boundary, no_caps (not on base)
+{
+    auto ub = tg::aabb<2, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length_sqr(p);
+        if (l <= ScalarT(1))
+        {
+            p *= c.base.radius;   
+            auto x = any_normal(c.base.normal);
+            auto y = cross(c.base.normal, x);
+            return c.base.center + p.x * x + p.y * y + (ScalarT(1) - sqrt(l)) * c.base.normal * c.height;
+        }
+    }
+}
+
+template <int D, class ScalarT, class Rng>
+TG_NODISCARD constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> const& h) // boundary, no_caps (not on base)
+{
+    auto p = uniform(rng, sphere<D, ScalarT>(h.center, h.radius));
+    auto v = p - h.center;
+    if (dot(v, h.normal) >= ScalarT(0))
+        return p;
+    else
+        return h.center - v;
 }
 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
