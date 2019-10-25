@@ -42,6 +42,8 @@ TG_NODISCARD constexpr mat<4, C, ScalarT> transpose(mat<C, 4, ScalarT> const& m)
 template <int R, class ScalarT>
 TG_NODISCARD constexpr mat<R, 1, ScalarT> transpose(vec<R, ScalarT> const& v)
 {
-    return mat<R, 1, ScalarT>(v);
+    mat<R, 1, ScalarT> m;
+    m.set_row(0, v);
+    return m;
 }
 } // namespace tg
