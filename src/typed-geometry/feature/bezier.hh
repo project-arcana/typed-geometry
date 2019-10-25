@@ -1,6 +1,9 @@
 #pragma once
 
+#include <type_traits> // std::is_invocable_r_t, std::decay_t
+
 #include <typed-geometry/functions/minmax.hh>
+#include <typed-geometry/functions/perpendicular.hh>
 #include <typed-geometry/types/bezier.hh>
 #include <typed-geometry/types/capped_vector.hh>
 
@@ -39,24 +42,24 @@ namespace tg::detail
 template <class ScalarT, class F>
 ScalarT integrate_simpson(F&& f, ScalarT start, ScalarT end, i32 n_limit, ScalarT max_error)
 {
-    static_assert(is_same<decltype(f(ScalarT{})), ScalarT>, "f must map from ScalarT to ScalarT!");
+    static_assert(std::is_invocable_r_v<ScalarT, F, ScalarT>, "f must map from ScalarT to ScalarT!");
 
     i32 n = 1;
     ScalarT multiplier = (end - start) / ScalarT(6.0);
     ScalarT endsum = f(start) + f(end);
     ScalarT interval = (end - start) / ScalarT(2.0);
-    ScalarT asum = 0;
+    ScalarT asum = ScalarT(0);
     ScalarT bsum = f(start + interval);
-    ScalarT est1 = multiplier * (endsum + 2 * asum + 4 * bsum);
-    ScalarT est0 = 2 * est1;
+    ScalarT est1 = multiplier * (endsum + ScalarT(2) * asum + ScalarT(4) * bsum);
+    ScalarT est0 = ScalarT(2) * est1;
 
-    while (n < n_limit && (abs(est1) > 0 && abs((est1 - est0) / est1) > max_error))
+    while (n < n_limit && (abs(est1) > ScalarT(0) && abs((est1 - est0) / est1) > max_error))
     {
         n *= 2;
-        multiplier /= 2;
-        interval /= 2;
+        multiplier /= ScalarT(2);
+        interval /= ScalarT(2);
         asum += bsum;
-        bsum = 0;
+        bsum = ScalarT(0);
         est0 = est1;
         ScalarT interval_div_2n = interval / (ScalarT(2.0) * n);
 
@@ -66,7 +69,7 @@ ScalarT integrate_simpson(F&& f, ScalarT start, ScalarT end, i32 n_limit, Scalar
             bsum += f(t);
         }
 
-        est1 = multiplier * (endsum + 2 * asum + 4 * bsum);
+        est1 = multiplier * (endsum + ScalarT(2) * asum + ScalarT(4) * bsum);
     }
 
     return est1;
@@ -136,7 +139,7 @@ template <int Degree, class ControlPointT>
         return bezier<0, ControlPointT>(); // always zero
     else
     {
-        bezier<Degree - 1, decltype(Degree * (c.control_points[1] - c.control_points[0]))> res;
+        bezier<Degree - 1, std::decay_t<decltype(Degree * (c.control_points[1] - c.control_points[0]))>> res;
         for (auto i = 0; i < Degree; ++i)
             res.control_points[i] = Degree * (c.control_points[i + 1] - c.control_points[i]);
         return res;
@@ -159,9 +162,9 @@ template <int Degree, class ControlPointT>
 
 template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
 [[nodiscard]] constexpr auto operator+(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
-    -> bezier<max(DegreeA, DegreeB), decltype(a.control_points[0] + b.control_points[0])>
+    -> bezier<max(DegreeA, DegreeB), std::decay_t<decltype(a.control_points[0] + b.control_points[0])>>
 {
-    using T = decltype(a.control_points[0] + b.control_points[0]);
+    using T = std::decay_t<decltype(a.control_points[0] + b.control_points[0])>;
     bezier<max(DegreeA, DegreeB), T> res;
 
     if constexpr (DegreeA == DegreeB)
@@ -186,9 +189,9 @@ template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
 
 template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
 [[nodiscard]] constexpr auto operator-(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
-    -> bezier<max(DegreeA, DegreeB), decltype(a.control_points[0] - b.control_points[0])>
+    -> bezier<max(DegreeA, DegreeB), std::decay_t<decltype(a.control_points[0] - b.control_points[0])>>
 {
-    using T = decltype(a.control_points[0] - b.control_points[0]);
+    using T = std::decay_t<decltype(a.control_points[0] - b.control_points[0])>;
     bezier<max(DegreeA, DegreeB), T> res;
 
     if constexpr (DegreeA == DegreeB)
@@ -213,9 +216,9 @@ template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
 
 template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
 [[nodiscard]] constexpr auto operator*(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
-    -> bezier<max(DegreeA, DegreeB), decltype(a.control_points[0] * b.control_points[0])>
+    -> bezier<max(DegreeA, DegreeB), std::decay_t<decltype(a.control_points[0] * b.control_points[0])>>
 {
-    using T = decltype(a.control_points[0] * b.control_points[0]);
+    using T = std::decay_t<decltype(a.control_points[0] * b.control_points[0])>;
     bezier<max(DegreeA, DegreeB), T> res;
 
     if constexpr (DegreeA == DegreeB)
@@ -240,9 +243,9 @@ template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
 
 template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
 [[nodiscard]] constexpr auto operator/(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
-    -> bezier<max(DegreeA, DegreeB), decltype(a.control_points[0] / b.control_points[0])>
+    -> bezier<max(DegreeA, DegreeB), std::decay_t<decltype(a.control_points[0] / b.control_points[0])>>
 {
-    using T = decltype(a.control_points[0] / b.control_points[0]);
+    using T = std::decay_t<decltype(a.control_points[0] / b.control_points[0])>;
     bezier<max(DegreeA, DegreeB), T> res;
 
     if constexpr (DegreeA == DegreeB)
@@ -312,6 +315,7 @@ template <int Degree, class ControlPointT, class... ControlPoints>
     (void)p0;
     // (void)pts;
     // todo
+    return {}; // because constexpr return
 }
 
 template <int Degree, class ControlPointT, class ScalarT>
@@ -363,20 +367,17 @@ template <int Degree, class ScalarT>
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
     return [d = d1, dd = d2](auto t) {
-        auto const a = normalize(d1(t));
+        auto const a = normalize(d(t));
         auto const b = normalize(a + dd(t));
-        auto const r = normalize(cross(a, b));
-        return normalize(cross(r, a));
+        auto const r = cross(a, b); // is normalized
+        return cross(r, a);         // is normalized
     };
 }
 
 template <int Degree, class ScalarT>
 [[nodiscard]] constexpr auto normal_f(bezier<Degree, pos<2, ScalarT>> const& c)
 {
-    return [tang = tangent_f(c)](auto t) {
-        auto const tangent = tang(t);
-        return tg::dir<2, ScalarT>{tangent.y, -tangent.x};
-    };
+    return [tang = tangent_f(c)](auto t) { return perpendicular(tang(t)); };
 }
 
 template <int Degree, class ControlPointT>
@@ -391,9 +392,9 @@ template <int Degree, class ScalarT>
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
     return [d = d1, dd = d2](auto t) {
-        auto const a = normalize(d1(t));
+        auto const a = normalize(d(t));
         auto const b = normalize(a + dd(t));
-        return normalize(cross(a, b));
+        return cross(a, b); // is normalized
     };
 }
 
@@ -406,7 +407,8 @@ template <int Degree, class ScalarT>
         auto const dt = d(t);
         auto const ddt = dd(t);
         auto const numerator = dt.x * ddt.y + ddt.x * dt.y;
-        auto const denominator = pow(dt.x * dt.x + dt.y * dt.y, ScalarT(1.5));
+        auto const x = dt.x * dt.x + dt.y * dt.y;
+        auto const denominator = x * sqrt(x);
         return numerator / denominator;
     };
 }
@@ -420,10 +422,8 @@ template <int Degree, class ScalarT>
         auto const dt = d(t);
         auto const ddt = dd(t);
         auto const numerator = length(cross(dt, ddt));
-        // todo: performance compare: pow vs 3 mult and 1 sqrt
-        //        auto const x = sqrt(dt.x * dt.x + dt.y * dt.y + dt.z * dt.z);
-        //        auto const denominator = x * x * x;
-        auto const denominator = pow(dt.x * dt.x + dt.y * dt.y + dt.z * dt.z, ScalarT(1.5));
+        auto const x = dt.x * dt.x + dt.y * dt.y + dt.z * dt.z;
+        auto const denominator = x * sqrt(x);
         return numerator / denominator;
     };
 }
@@ -451,6 +451,7 @@ template <class ScalarT>
     // up to one extremety
     auto const d = derivative(c);
     // todo
+    return {}; // because constexpr return
 }
 
 template <int Degree, class ControlPointT>
@@ -474,5 +475,6 @@ template <int Degree, class ControlPointT>
     {
         // todo: do numerical integration sceme of your choice
     }
+    return {}; // because constexpr return
 }
 }
