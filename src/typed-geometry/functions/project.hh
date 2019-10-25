@@ -181,15 +181,27 @@ template <int D, class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t) // boundary
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t)
 {
-    auto lp = project(p, t.axis);
+    auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
+    auto sp = project(lp, t.axis);
+    auto dir = p - lp;
+    auto l = length(dir);
+    if (l > t.radius)
+        dir *= t.radius / l;
+
+    return sp + dir;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t)
+{
+    auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
+    auto sp = project(lp, t.axis);
     auto dir = normalize_safe(p - lp);
-
     if (is_zero_vector(dir))
-        dir = any_normal(t.axis.pos0 - t.axis.pos1);
+        dir = any_normal(t.axis.pos1 - t.axis.pos0);
 
-    return lp + dir * t.radius;
+    return sp + dir * t.radius;
 }
 
 template <class ScalarT>
