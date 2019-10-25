@@ -35,7 +35,7 @@ struct inf_tube
     constexpr inf_tube() = default;
     constexpr inf_tube(line_t const& axis, ScalarT radius) : axis(axis), radius(radius) {}
 
-    TG_NODISCARD bool operator==(inf_tube const& rhs) const { return axis == rhs.axis && radius == rhs.radius; }
-    TG_NODISCARD bool operator!=(inf_tube const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(inf_tube const& rhs) const { return axis == rhs.axis && radius == rhs.radius; }
+    [[nodiscard]] bool operator!=(inf_tube const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

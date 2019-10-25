@@ -23,17 +23,17 @@ struct fwd_diff
     explicit constexpr fwd_diff(T value) : value(value), derivative(0) {}
     constexpr fwd_diff(T value, T derivative) : value(value), derivative(derivative) {}
 
-    TG_NODISCARD static constexpr fwd_diff input(T value) { return {value, T(1)}; }
-    TG_NODISCARD static constexpr fwd_diff constant(T value) { return {value, T(0)}; }
+    [[nodiscard]] static constexpr fwd_diff input(T value) { return {value, T(1)}; }
+    [[nodiscard]] static constexpr fwd_diff constant(T value) { return {value, T(0)}; }
 
-    TG_NODISCARD constexpr bool operator==(fwd_diff const& rhs) const { return value == rhs.value && derivative == rhs.derivative; }
-    TG_NODISCARD constexpr bool operator!=(fwd_diff const& rhs) const { return value != rhs.value || derivative != rhs.derivative; }
-    TG_NODISCARD constexpr bool operator==(T const& rhs) const { return value == rhs; }
-    TG_NODISCARD constexpr bool operator!=(T const& rhs) const { return value != rhs; }
+    [[nodiscard]] constexpr bool operator==(fwd_diff const& rhs) const { return value == rhs.value && derivative == rhs.derivative; }
+    [[nodiscard]] constexpr bool operator!=(fwd_diff const& rhs) const { return value != rhs.value || derivative != rhs.derivative; }
+    [[nodiscard]] constexpr bool operator==(T const& rhs) const { return value == rhs; }
+    [[nodiscard]] constexpr bool operator!=(T const& rhs) const { return value != rhs; }
 };
 
 template <class T>
-TG_NODISCARD constexpr fwd_diff<T> fwd_diff_input(T value)
+[[nodiscard]] constexpr fwd_diff<T> fwd_diff_input(T value)
 {
     return fwd_diff<T>::input(value);
 }

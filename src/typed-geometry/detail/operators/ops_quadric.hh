@@ -5,7 +5,7 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr quadric<D, ScalarT> operator+(quadric<D, ScalarT> const& a, quadric<D, ScalarT> const& b)
+[[nodiscard]] constexpr quadric<D, ScalarT> operator+(quadric<D, ScalarT> const& a, quadric<D, ScalarT> const& b)
 {
     quadric<D, ScalarT> r = a; // copy
     r.add(b);
@@ -13,7 +13,7 @@ TG_NODISCARD constexpr quadric<D, ScalarT> operator+(quadric<D, ScalarT> const& 
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quadric<3, ScalarT> operator*(quadric<3, ScalarT> q, dont_deduce<ScalarT> s)
+[[nodiscard]] constexpr quadric<3, ScalarT> operator*(quadric<3, ScalarT> q, dont_deduce<ScalarT> s)
 {
     // q is already a copy
     q.A00 *= s;
@@ -30,12 +30,12 @@ TG_NODISCARD constexpr quadric<3, ScalarT> operator*(quadric<3, ScalarT> q, dont
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr quadric<3, ScalarT> operator*(dont_deduce<ScalarT> s, quadric<3, ScalarT> q)
+[[nodiscard]] constexpr quadric<3, ScalarT> operator*(dont_deduce<ScalarT> s, quadric<3, ScalarT> q)
 {
     return q * s;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr quadric<3, ScalarT> operator/(quadric<3, ScalarT> q, dont_deduce<ScalarT> s)
+[[nodiscard]] constexpr quadric<3, ScalarT> operator/(quadric<3, ScalarT> q, dont_deduce<ScalarT> s)
 {
     return q * (ScalarT(1) / s);
 }

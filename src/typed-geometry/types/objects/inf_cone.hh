@@ -36,7 +36,7 @@ struct inf_cone
     {
     }
 
-    TG_NODISCARD bool operator==(inf_cone const& rhs) const { return apex == rhs.apex && opening_dir == rhs.opening_dir && opening_angle == rhs.opening_angle; }
-    TG_NODISCARD bool operator!=(inf_cone const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(inf_cone const& rhs) const { return apex == rhs.apex && opening_dir == rhs.opening_dir && opening_angle == rhs.opening_angle; }
+    [[nodiscard]] bool operator!=(inf_cone const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

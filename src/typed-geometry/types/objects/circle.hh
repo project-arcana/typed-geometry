@@ -45,8 +45,8 @@ struct circle<2, ScalarT>
     constexpr circle() = default;
     constexpr circle(pos_t c, ScalarT r) : center(c), radius(r) {}
 
-    TG_NODISCARD bool operator==(circle const& rhs) const { return center == rhs.center && radius == rhs.radius; }
-    TG_NODISCARD bool operator!=(circle const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(circle const& rhs) const { return center == rhs.center && radius == rhs.radius; }
+    [[nodiscard]] bool operator!=(circle const& rhs) const { return !operator==(rhs); }
 };
 
 template <class ScalarT>
@@ -63,7 +63,7 @@ struct circle<3, ScalarT>
     constexpr circle() = default;
     constexpr circle(pos_t c, ScalarT r, dir_t n) : center(c), radius(r), normal(n) {}
 
-    TG_NODISCARD bool operator==(circle const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
-    TG_NODISCARD bool operator!=(circle const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(circle const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
+    [[nodiscard]] bool operator!=(circle const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

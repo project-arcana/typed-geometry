@@ -38,7 +38,7 @@ struct tube<3, ScalarT>
     constexpr tube(seg_t const& axis, scalar_t radius) : axis(axis), radius(radius) {}
     constexpr tube(pos_t const& p0, pos_t const& p1, scalar_t radius) : axis(p0, p1), radius(radius) {}
 
-    TG_NODISCARD bool operator==(tube const& rhs) const { return axis == rhs.axis && radius == rhs.radius; }
-    TG_NODISCARD bool operator!=(tube const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(tube const& rhs) const { return axis == rhs.axis && radius == rhs.radius; }
+    [[nodiscard]] bool operator!=(tube const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

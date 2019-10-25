@@ -49,10 +49,10 @@ struct triangle
     constexpr triangle(pos_t p0, pos_t p1, pos_t p2) : pos0(p0), pos1(p1), pos2(p2) {}
     constexpr triangle(array<pos_t, 3> const& v) : pos0(v[0]), pos1(v[1]), pos2(v[2]) {}
 
-    TG_NODISCARD constexpr pos_t operator[](comp<3, ScalarT> const& barycoords) const;
-    TG_NODISCARD constexpr pos_t operator[](comp<2, ScalarT> const& barycoords) const;
+    [[nodiscard]] constexpr pos_t operator[](comp<3, ScalarT> const& barycoords) const;
+    [[nodiscard]] constexpr pos_t operator[](comp<2, ScalarT> const& barycoords) const;
 
-    TG_NODISCARD bool operator==(triangle const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1 && pos2 == rhs.pos2; }
-    TG_NODISCARD bool operator!=(triangle const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(triangle const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1 && pos2 == rhs.pos2; }
+    [[nodiscard]] bool operator!=(triangle const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

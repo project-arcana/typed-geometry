@@ -38,7 +38,7 @@ TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(pos);
 
 // special pos+pos handling
 template <int D, class ScalarT>
-TG_NODISCARD constexpr sum_of_pos<D, ScalarT> operator+(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+[[nodiscard]] constexpr sum_of_pos<D, ScalarT> operator+(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     return sum_of_pos(a) + b;
 }

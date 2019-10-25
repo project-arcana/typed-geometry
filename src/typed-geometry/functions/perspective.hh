@@ -10,7 +10,7 @@ namespace tg
 {
 /// aspect ratio is width / height
 template <class ScalarT>
-TG_NODISCARD mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane)
+[[nodiscard]] mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane)
 {
     TG_CONTRACT(near_plane > 0);
     TG_CONTRACT(aspect_ratio > 0);
@@ -32,7 +32,7 @@ TG_NODISCARD mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizonta
 }
 
 template <class ScalarT>
-TG_NODISCARD mat<4, 4, ScalarT> perspective_directx(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane, ScalarT far_plane)
+[[nodiscard]] mat<4, 4, ScalarT> perspective_directx(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane, ScalarT far_plane)
 {
     TG_CONTRACT(near_plane > 0);
     TG_CONTRACT(far_plane > 0);
@@ -55,7 +55,7 @@ TG_NODISCARD mat<4, 4, ScalarT> perspective_directx(angle_t<ScalarT> horizontal_
 }
 
 template <class ScalarT>
-TG_NODISCARD mat<4, 4, ScalarT> perspective_opengl(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane, ScalarT far_plane)
+[[nodiscard]] mat<4, 4, ScalarT> perspective_opengl(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane, ScalarT far_plane)
 {
     TG_CONTRACT(near_plane > 0);
     TG_CONTRACT(far_plane > 0);
@@ -78,7 +78,7 @@ TG_NODISCARD mat<4, 4, ScalarT> perspective_opengl(angle_t<ScalarT> horizontal_f
 }
 
 template <class ScalarT>
-TG_NODISCARD ScalarT reverse_z_to_linear_depth(ScalarT d, ScalarT near_plane)
+[[nodiscard]] ScalarT reverse_z_to_linear_depth(ScalarT d, ScalarT near_plane)
 {
     TG_CONTRACT(0 <= d && d <= 1);
     return near_plane / d;

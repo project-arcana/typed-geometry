@@ -35,58 +35,58 @@ struct special_values
 } // namespace detail
 
 template <class T>
-TG_NODISCARD constexpr T min()
+[[nodiscard]] constexpr T min()
 {
     return detail::limits<T>::min();
 }
 template <class T>
-TG_NODISCARD constexpr T max()
+[[nodiscard]] constexpr T max()
 {
     return detail::limits<T>::max();
 }
 
 template <class T>
-TG_NODISCARD constexpr T zero()
+[[nodiscard]] constexpr T zero()
 {
     return {}; // all our types zero-initialize by default
 }
 template <class T>
-TG_NODISCARD constexpr auto ones() -> decltype(detail::special_values<T>::ones())
+[[nodiscard]] constexpr auto ones() -> decltype(detail::special_values<T>::ones())
 {
     return detail::special_values<T>::ones();
 }
 template <class T>
-TG_NODISCARD constexpr auto unit() -> decltype(detail::special_values<T>::unit())
+[[nodiscard]] constexpr auto unit() -> decltype(detail::special_values<T>::unit())
 {
     return detail::special_values<T>::unit();
 }
 template <class T>
-TG_NODISCARD constexpr auto unit_x() -> decltype(detail::special_values<T>::unit_x())
+[[nodiscard]] constexpr auto unit_x() -> decltype(detail::special_values<T>::unit_x())
 {
     return detail::special_values<T>::unit_x();
 }
 template <class T>
-TG_NODISCARD constexpr auto unit_y() -> decltype(detail::special_values<T>::unit_y())
+[[nodiscard]] constexpr auto unit_y() -> decltype(detail::special_values<T>::unit_y())
 {
     return detail::special_values<T>::unit_y();
 }
 template <class T>
-TG_NODISCARD constexpr auto unit_z() -> decltype(detail::special_values<T>::unit_z())
+[[nodiscard]] constexpr auto unit_z() -> decltype(detail::special_values<T>::unit_z())
 {
     return detail::special_values<T>::unit_z();
 }
 template <class T>
-TG_NODISCARD constexpr auto unit_w() -> decltype(detail::special_values<T>::unit_w())
+[[nodiscard]] constexpr auto unit_w() -> decltype(detail::special_values<T>::unit_w())
 {
     return detail::special_values<T>::unit_w();
 }
 template <class T>
-TG_NODISCARD constexpr auto identity() -> decltype(detail::special_values<T>::identity())
+[[nodiscard]] constexpr auto identity() -> decltype(detail::special_values<T>::identity())
 {
     return detail::special_values<T>::identity();
 }
 template <class T, class V>
-TG_NODISCARD constexpr auto diag(V const& v) -> decltype(detail::special_values<T>::diag(v))
+[[nodiscard]] constexpr auto diag(V const& v) -> decltype(detail::special_values<T>::diag(v))
 {
     return detail::special_values<T>::diag(v);
 }

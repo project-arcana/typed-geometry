@@ -9,25 +9,25 @@
 namespace tg
 {
 template <class ScalarT>
-TG_NODISCARD constexpr vec<2, ScalarT> perpendicular(vec<2, ScalarT> const& v)
+[[nodiscard]] constexpr vec<2, ScalarT> perpendicular(vec<2, ScalarT> const& v)
 {
     return vec<2, ScalarT>(-v.y, v.x);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr dir<2, ScalarT> perpendicular(dir<2, ScalarT> const& v)
+[[nodiscard]] constexpr dir<2, ScalarT> perpendicular(dir<2, ScalarT> const& v)
 {
     return dir<2, ScalarT>(-v.y, v.x);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr line<2, ScalarT> perpendicular(line<2, ScalarT> const& l)
+[[nodiscard]] constexpr line<2, ScalarT> perpendicular(line<2, ScalarT> const& l)
 {
     return {l.pos, perpendicular(l.dir)};
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr dir<2, ScalarT> perpendicular(ray<2, ScalarT> const& r)
+[[nodiscard]] constexpr dir<2, ScalarT> perpendicular(ray<2, ScalarT> const& r)
 {
     return {r.origin, perpendicular(r.dir)};
 }

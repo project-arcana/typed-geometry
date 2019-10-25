@@ -19,18 +19,18 @@ public:
     constexpr optional(optional const&) noexcept = default;
     constexpr optional(optional&&) noexcept = default;
 
-    TG_NODISCARD constexpr bool has_value() const { return _has_value; }
+    [[nodiscard]] constexpr bool has_value() const { return _has_value; }
 
-    TG_NODISCARD constexpr T value() const
+    [[nodiscard]] constexpr T value() const
     {
         TG_CONTRACT(has_value());
         return _value;
     }
 
-    TG_NODISCARD constexpr bool operator==(T const& rhs) const { return _has_value && _value == rhs; }
-    TG_NODISCARD constexpr bool operator!=(T const& rhs) const { return !_has_value || _value != rhs; }
+    [[nodiscard]] constexpr bool operator==(T const& rhs) const { return _has_value && _value == rhs; }
+    [[nodiscard]] constexpr bool operator!=(T const& rhs) const { return !_has_value || _value != rhs; }
 
-    TG_NODISCARD constexpr bool operator==(optional<T> const& rhs) const
+    [[nodiscard]] constexpr bool operator==(optional<T> const& rhs) const
     {
         if (!_has_value && !rhs._has_value)
             return true;
@@ -38,7 +38,7 @@ public:
             return false;
         return _value == rhs._value;
     }
-    TG_NODISCARD constexpr bool operator!=(optional<T> const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] constexpr bool operator!=(optional<T> const& rhs) const { return !operator==(rhs); }
 
     constexpr optional& operator=(optional const& rhs) noexcept = default;
     constexpr optional& operator=(optional&& rhs) noexcept = default;
