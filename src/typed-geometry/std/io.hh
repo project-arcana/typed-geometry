@@ -42,6 +42,22 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     return out << ss.str();
 }
 
+template <class T, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, fwd_diff<T> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << "<" << val.value << ", " << val.derivative << ">";
+    return out << ss.str();
+}
+
+template <class T, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, interval<T> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << "[" << val.min << ".." << val.max << "]";
+    return out << ss.str();
+}
+
 //
 // =============================== Comps ===============================
 //

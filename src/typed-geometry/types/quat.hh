@@ -32,15 +32,15 @@ struct quaternion
 
     constexpr quaternion(vec<3, ScalarT> const& i, ScalarT r) : x(i.x), y(i.y), z(i.z), w(r) {}
 
-    TG_NODISCARD constexpr bool operator==(quaternion const& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
-    TG_NODISCARD constexpr bool operator!=(quaternion const& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w; }
+    [[nodiscard]] constexpr bool operator==(quaternion const& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
+    [[nodiscard]] constexpr bool operator!=(quaternion const& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w; }
 
-    TG_NODISCARD static constexpr quaternion from_axis_angle(dir<3, ScalarT> const& axis, angle_t<ScalarT> angle);
-    TG_NODISCARD static constexpr quaternion from_rotation_matrix(tg::mat<3, 3, ScalarT> const& m);
-    TG_NODISCARD static constexpr quaternion from_rotation_matrix(tg::mat<4, 4, ScalarT> const& m);
+    [[nodiscard]] static constexpr quaternion from_axis_angle(dir<3, ScalarT> const& axis, angle_t<ScalarT> angle);
+    [[nodiscard]] static constexpr quaternion from_rotation_matrix(tg::mat<3, 3, ScalarT> const& m);
+    [[nodiscard]] static constexpr quaternion from_rotation_matrix(tg::mat<4, 4, ScalarT> const& m);
 
-    TG_NODISCARD constexpr explicit operator mat<3, 3, ScalarT>() const;
-    TG_NODISCARD constexpr explicit operator mat<4, 4, ScalarT>() const;
+    [[nodiscard]] constexpr explicit operator mat<3, 3, ScalarT>() const;
+    [[nodiscard]] constexpr explicit operator mat<4, 4, ScalarT>() const;
 };
 template <class T>
 const quaternion<T> quaternion<T>::zero = {T(0), T(0), T(0), T(0)};

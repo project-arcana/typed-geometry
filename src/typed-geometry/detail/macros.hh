@@ -55,8 +55,6 @@
 
 #define TG_FORCE_SEMICOLON static_assert(true)
 
-// currently a macro because clang-format interacts badly with it
-#define TG_NODISCARD [[nodiscard]]
 
 // =========
 // operations and classes
@@ -125,17 +123,17 @@
 
 #define TG_DECLARE_SELF_SWIZZLE(TYPE)                                                                                    \
     template <int... Indices>                                                                                            \
-    TG_NODISCARD constexpr auto operator[](swizzler<Indices...> const& swizzle)                                          \
+    [[nodiscard]] constexpr auto operator[](swizzler<Indices...> const& swizzle)                                          \
     {                                                                                                                    \
         return swizzle[*this];                                                                                           \
     }                                                                                                                    \
     template <int... Indices>                                                                                            \
-    TG_NODISCARD constexpr auto operator[](swizzler<Indices...> const& swizzle) const                                    \
+    [[nodiscard]] constexpr auto operator[](swizzler<Indices...> const& swizzle) const                                    \
     {                                                                                                                    \
         return swizzle[*this];                                                                                           \
     }                                                                                                                    \
     template <int... Indices>                                                                                            \
-    TG_NODISCARD constexpr TYPE<sizeof...(Indices), ScalarT> const operator()(swizzler<Indices...> const& swizzle) const \
+    [[nodiscard]] constexpr TYPE<sizeof...(Indices), ScalarT> const operator()(swizzler<Indices...> const& swizzle) const \
     {                                                                                                                    \
         return swizzle(*this);                                                                                           \
     }                                                                                                                    \
@@ -241,7 +239,7 @@
 
 #define TG_IMPL_DEFINE_UNARY_OP(TYPE, OP)                                                                                                    \
     template <int D, class ScalarT>                                                                                                          \
-    TG_NODISCARD constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a)                                                           \
+    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a)                                                           \
     {                                                                                                                                        \
         if constexpr (D == 1)                                                                                                                \
             return {OP a.TG_IMPL_MEMBER(TYPE, 0)};                                                                                           \
@@ -258,7 +256,7 @@
 
 #define TG_IMPL_DEFINE_BINARY_OP(TYPE_A, TYPE_B, TYPE_R, OP)                                                                                 \
     template <int D, class ScalarT>                                                                                                          \
-    TG_NODISCARD constexpr TYPE_R<D, ScalarT> operator OP(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                          \
+    [[nodiscard]] constexpr TYPE_R<D, ScalarT> operator OP(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                          \
     {                                                                                                                                        \
         if constexpr (D == 1)                                                                                                                \
             return {a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0)};                                                             \
@@ -281,7 +279,7 @@
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)                                                                                              \
     template <int D, class ScalarT>                                                                                                                  \
-    TG_NODISCARD constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                    \
+    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                    \
     {                                                                                                                                                \
         if constexpr (D == 1)                                                                                                                        \
             return {a.TG_IMPL_MEMBER(TYPE, 0) OP b};                                                                                                 \
@@ -298,7 +296,7 @@
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP)                                                                                               \
     template <int D, class ScalarT>                                                                                                                  \
-    TG_NODISCARD constexpr TYPE<D, ScalarT> operator OP(dont_deduce<ScalarT> const& a, TYPE<D, ScalarT> const& b)                                    \
+    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(dont_deduce<ScalarT> const& a, TYPE<D, ScalarT> const& b)                                    \
     {                                                                                                                                                \
         if constexpr (D == 1)                                                                                                                        \
             return {a OP b.TG_IMPL_MEMBER(TYPE, 0)};                                                                                                 \
@@ -317,7 +315,7 @@
     /* scalar / type */                                                                                                                          \
     TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, /);                                                                                               \
     template <int D, class ScalarT>                                                                                                              \
-    TG_NODISCARD constexpr TYPE<D, ScalarT> operator/(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                  \
+    [[nodiscard]] constexpr TYPE<D, ScalarT> operator/(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                  \
     {                                                                                                                                            \
         if constexpr (is_floating_point<ScalarT>)                                                                                                \
             return a * ScalarT(1 / b);                                                                                                           \
@@ -340,7 +338,7 @@
 
 #define TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(TYPE, FUN)                                                                                                          \
     template <int D, class ScalarT>                                                                                                                            \
-    TG_NODISCARD constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                 \
+    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                 \
     {                                                                                                                                                          \
         using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0)))>;                                                                                  \
                                                                                                                                                                \
@@ -363,7 +361,7 @@
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_UNARY(TYPE, FUN)                                                                                                          \
     template <int D, class ScalarT>                                                                                                                            \
-    TG_NODISCARD constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                 \
+    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                 \
     {                                                                                                                                                          \
         using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0)))>;                                                                                  \
                                                                                                                                                                \
@@ -386,7 +384,7 @@
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_BINARY(TYPE, FUN)                                                                                               \
     template <int D, class ScalarT>                                                                                                                  \
-    TG_NODISCARD constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b)                                                            \
+    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b)                                                            \
     {                                                                                                                                                \
         using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0)))>;                                             \
                                                                                                                                                      \
@@ -411,7 +409,7 @@
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_TERNARY(TYPE, FUN)                                                                             \
     template <int D, class ScalarT>                                                                                                 \
-    TG_NODISCARD constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b, TYPE<D, ScalarT> const& c)                \
+    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b, TYPE<D, ScalarT> const& c)                \
     {                                                                                                                               \
         using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)))>; \
                                                                                                                                     \
@@ -440,7 +438,7 @@
 
 #define TG_IMPL_DEFINE_REDUCTION_OP_BINARY(TYPE_A, TYPE_B, RESULT_T, NAME, REDUCE, OP)                                                                     \
     template <int D, class ScalarT>                                                                                                                        \
-    TG_NODISCARD constexpr RESULT_T NAME(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                                                         \
+    [[nodiscard]] constexpr RESULT_T NAME(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                                                         \
     {                                                                                                                                                      \
         if constexpr (D == 1)                                                                                                                              \
             return a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0);                                                                             \

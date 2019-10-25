@@ -8,32 +8,32 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> shrink(aabb<D, ScalarT> const& b, tg::dont_deduce<ScalarT> s)
+[[nodiscard]] constexpr aabb<D, ScalarT> shrink(aabb<D, ScalarT> const& b, tg::dont_deduce<ScalarT> s)
 {
     // TODO: what if result is invalid?
     return {b.min + s, b.max - s};
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> shrink(aabb<D, ScalarT> const& b, size<D, ScalarT> s)
+[[nodiscard]] constexpr aabb<D, ScalarT> shrink(aabb<D, ScalarT> const& b, size<D, ScalarT> s)
 {
     // TODO: what if result is invalid?
     return {b.min + tg::vec<D, ScalarT>(s), b.max - tg::vec<D, ScalarT>(s)};
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> expand(aabb<D, ScalarT> const& b, tg::dont_deduce<ScalarT> s)
+[[nodiscard]] constexpr aabb<D, ScalarT> expand(aabb<D, ScalarT> const& b, tg::dont_deduce<ScalarT> s)
 {
     // TODO: what if result is invalid?
     return {b.min - s, b.max + s};
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> expand(aabb<D, ScalarT> const& b, size<D, ScalarT> s)
+[[nodiscard]] constexpr aabb<D, ScalarT> expand(aabb<D, ScalarT> const& b, size<D, ScalarT> s)
 {
     // TODO: what if result is invalid?
     return {b.min - tg::vec<D, ScalarT>(s), b.max + tg::vec<D, ScalarT>(s)};
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr sphere<D, ScalarT> bounding_sphere_of(triangle<D, ScalarT> const& t)
+[[nodiscard]] constexpr sphere<D, ScalarT> bounding_sphere_of(triangle<D, ScalarT> const& t)
 {
     auto e0sqr = distance_sqr(t.pos0, t.pos1);
     auto e1sqr = distance_sqr(t.pos1, t.pos2);

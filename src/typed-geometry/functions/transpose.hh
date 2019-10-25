@@ -6,14 +6,14 @@
 namespace tg
 {
 template <int C, class ScalarT>
-TG_NODISCARD constexpr mat<1, C, ScalarT> transpose(mat<C, 1, ScalarT> const& m)
+[[nodiscard]] constexpr mat<1, C, ScalarT> transpose(mat<C, 1, ScalarT> const& m)
 {
     mat<1, C, ScalarT> r;
     r[0] = m.row(0);
     return r;
 }
 template <int C, class ScalarT>
-TG_NODISCARD constexpr mat<2, C, ScalarT> transpose(mat<C, 2, ScalarT> const& m)
+[[nodiscard]] constexpr mat<2, C, ScalarT> transpose(mat<C, 2, ScalarT> const& m)
 {
     mat<2, C, ScalarT> r;
     r[0] = m.row(0);
@@ -21,7 +21,7 @@ TG_NODISCARD constexpr mat<2, C, ScalarT> transpose(mat<C, 2, ScalarT> const& m)
     return r;
 }
 template <int C, class ScalarT>
-TG_NODISCARD constexpr mat<3, C, ScalarT> transpose(mat<C, 3, ScalarT> const& m)
+[[nodiscard]] constexpr mat<3, C, ScalarT> transpose(mat<C, 3, ScalarT> const& m)
 {
     mat<3, C, ScalarT> r;
     r[0] = m.row(0);
@@ -30,7 +30,7 @@ TG_NODISCARD constexpr mat<3, C, ScalarT> transpose(mat<C, 3, ScalarT> const& m)
     return r;
 }
 template <int C, class ScalarT>
-TG_NODISCARD constexpr mat<4, C, ScalarT> transpose(mat<C, 4, ScalarT> const& m)
+[[nodiscard]] constexpr mat<4, C, ScalarT> transpose(mat<C, 4, ScalarT> const& m)
 {
     mat<4, C, ScalarT> r;
     r[0] = m.row(0);
@@ -40,8 +40,10 @@ TG_NODISCARD constexpr mat<4, C, ScalarT> transpose(mat<C, 4, ScalarT> const& m)
     return r;
 }
 template <int R, class ScalarT>
-TG_NODISCARD constexpr mat<R, 1, ScalarT> transpose(vec<R, ScalarT> const& v)
+[[nodiscard]] constexpr mat<R, 1, ScalarT> transpose(vec<R, ScalarT> const& v)
 {
-    return mat<R, 1, ScalarT>(v);
+    mat<R, 1, ScalarT> m;
+    m.set_row(0, v);
+    return m;
 }
 } // namespace tg

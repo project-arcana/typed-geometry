@@ -7,7 +7,7 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_zero_mat(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_zero_mat(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i; i < D; ++i)
@@ -17,7 +17,7 @@ TG_NODISCARD constexpr bool is_zero_mat(mat<D, D, ScalarT> const& m, ScalarT eps
     return true;
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_identity(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_identity(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i; i < D; ++i)
@@ -27,7 +27,7 @@ TG_NODISCARD constexpr bool is_identity(mat<D, D, ScalarT> const& m, ScalarT eps
     return true;
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_symmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_symmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i + 1; i < D; ++i)
@@ -38,7 +38,7 @@ TG_NODISCARD constexpr bool is_symmetric(mat<D, D, ScalarT> const& m, ScalarT ep
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_antisymmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_antisymmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
     {
@@ -54,7 +54,7 @@ TG_NODISCARD constexpr bool is_antisymmetric(mat<D, D, ScalarT> const& m, Scalar
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_orthogonal(mat<D, D, ScalarT> const& m, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_orthogonal(mat<D, D, ScalarT> const& m, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i + 1; j < D; ++j)
@@ -65,7 +65,7 @@ TG_NODISCARD constexpr bool is_orthogonal(mat<D, D, ScalarT> const& m, ScalarT e
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_orthonormal(mat<D, D, ScalarT> const& m, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_orthonormal(mat<D, D, ScalarT> const& m, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
     {

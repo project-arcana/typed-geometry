@@ -5,7 +5,7 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr ScalarT trace(mat<D, D, ScalarT> const& A)
+[[nodiscard]] constexpr ScalarT trace(mat<D, D, ScalarT> const& A)
 {
     if constexpr (D == 1)
         return A[0][0];
@@ -21,7 +21,7 @@ TG_NODISCARD constexpr ScalarT trace(mat<D, D, ScalarT> const& A)
 
 // trace(A * B)
 template <int N, int M, class ScalarT>
-TG_NODISCARD constexpr ScalarT trace_of_product(mat<N, M, ScalarT> const& A, mat<M, N, ScalarT> const& B)
+[[nodiscard]] constexpr ScalarT trace_of_product(mat<N, M, ScalarT> const& A, mat<M, N, ScalarT> const& B)
 {
     auto r = ScalarT(0);
     for (auto i = 0; i < N; ++i)

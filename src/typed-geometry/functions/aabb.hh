@@ -11,43 +11,43 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> aabb_of(pos<D, ScalarT> const& v)
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(pos<D, ScalarT> const& v)
 {
     return {v, v};
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> aabb_of(aabb<D, ScalarT> const& b)
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(aabb<D, ScalarT> const& b)
 {
     return b;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> aabb_of(ball<D, ScalarT> const& s)
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(ball<D, ScalarT> const& s)
 {
     return {s.center - s.radius, s.center + s.radius};
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> aabb_of(sphere<D, ScalarT> const& s)
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(sphere<D, ScalarT> const& s)
 {
     return {s.center - s.radius, s.center + s.radius};
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> aabb_of(segment<D, ScalarT> const& s)
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(segment<D, ScalarT> const& s)
 {
     return aabb_of(s.pos0, s.pos1);
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr aabb<D, ScalarT> aabb_of(triangle<D, ScalarT> const& t)
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(triangle<D, ScalarT> const& t)
 {
     return aabb_of(t.pos0, t.pos1, t.pos2);
 }
 
 template <class PrimA, class PrimB, class... PrimsT>
-TG_NODISCARD constexpr auto aabb_of(PrimA const& pa, PrimB const& pb, PrimsT const&... prims) -> decltype(aabb_of(pa))
+[[nodiscard]] constexpr auto aabb_of(PrimA const& pa, PrimB const& pb, PrimsT const&... prims) -> decltype(aabb_of(pa))
 {
     auto ba = aabb_of(pa);
     auto bb = aabb_of(pb);
@@ -57,7 +57,7 @@ TG_NODISCARD constexpr auto aabb_of(PrimA const& pa, PrimB const& pb, PrimsT con
 }
 
 template <class ContainerT>
-TG_NODISCARD constexpr auto aabb_of(ContainerT const& c) -> decltype(aabb_of(*c.begin()))
+[[nodiscard]] constexpr auto aabb_of(ContainerT const& c) -> decltype(aabb_of(*c.begin()))
 {
     auto it = c.begin();
     auto end = c.end();

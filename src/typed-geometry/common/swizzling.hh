@@ -16,9 +16,9 @@ struct base_swizzle_proxy
     using comp_t = CompTemplate<D, ScalarT>;
     using other_comp_t = CompTemplate<sizeof...(Indices), ScalarT>;
 
-    TG_NODISCARD constexpr operator other_comp_t() const { return other_comp_t(ref[Indices]...); }
+    [[nodiscard]] constexpr operator other_comp_t() const { return other_comp_t(ref[Indices]...); }
     template <class OtherT>
-    TG_NODISCARD explicit constexpr operator OtherT() const
+    [[nodiscard]] explicit constexpr operator OtherT() const
     {
         return OtherT(ref[Indices]...);
     }
@@ -67,7 +67,7 @@ struct swizzler
 {
     // directly apply swizzling
     template <template <int, class> class CompT, int D, class ScalarT>
-    TG_NODISCARD constexpr CompT<sizeof...(Indices), ScalarT> const operator()(CompT<D, ScalarT> const& v) const
+    [[nodiscard]] constexpr CompT<sizeof...(Indices), ScalarT> const operator()(CompT<D, ScalarT> const& v) const
     {
 #if !defined(_MSC_VER) || _MSC_VER >= 1920
         static_assert((... && (0 <= Indices && Indices < D)), "swizzle index out of range");
@@ -77,22 +77,22 @@ struct swizzler
 
     // return proxy object to allow assignment
     template <template <int, class> class CompT, int D, class ScalarT>
-    TG_NODISCARD constexpr detail::mutable_swizzle_proxy<CompT, D, ScalarT, Indices...> operator[](CompT<D, ScalarT>& v) const
+    [[nodiscard]] constexpr detail::mutable_swizzle_proxy<CompT, D, ScalarT, Indices...> operator[](CompT<D, ScalarT>& v) const
     {
         return detail::mutable_swizzle_proxy<CompT, D, ScalarT, Indices...>(v);
     }
     template <template <int, class> class CompT, int D, class ScalarT>
-    TG_NODISCARD constexpr detail::const_swizzle_proxy<CompT, D, ScalarT, Indices...> operator[](CompT<D, ScalarT> const& v) const
+    [[nodiscard]] constexpr detail::const_swizzle_proxy<CompT, D, ScalarT, Indices...> operator[](CompT<D, ScalarT> const& v) const
     {
         return detail::const_swizzle_proxy<CompT, D, ScalarT, Indices...>(v);
     }
     template <template <int, class> class CompT, int D, class ScalarT>
-    TG_NODISCARD constexpr detail::owning_swizzle_proxy<CompT, D, ScalarT, Indices...> operator[](CompT<D, ScalarT>&& v) const
+    [[nodiscard]] constexpr detail::owning_swizzle_proxy<CompT, D, ScalarT, Indices...> operator[](CompT<D, ScalarT>&& v) const
     {
         return detail::owning_swizzle_proxy<CompT, D, ScalarT, Indices...>(static_cast<CompT<D, ScalarT>&&>(v));
     }
     template <template <int, class> class CompT, int D, class ScalarT>
-    TG_NODISCARD constexpr detail::owning_swizzle_proxy<CompT, D, ScalarT, Indices...> operator[](CompT<D, ScalarT> const&& v) const
+    [[nodiscard]] constexpr detail::owning_swizzle_proxy<CompT, D, ScalarT, Indices...> operator[](CompT<D, ScalarT> const&& v) const
     {
         return detail::owning_swizzle_proxy<CompT, D, ScalarT, Indices...>(v);
     }
