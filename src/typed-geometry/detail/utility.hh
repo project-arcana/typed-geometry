@@ -136,6 +136,12 @@ constexpr T&& forward(remove_reference<T>&& t) noexcept
     return static_cast<T&&>(t);
 }
 
+template <typename T>
+constexpr remove_reference<T>&& move(T&& t) noexcept
+{
+    return static_cast<remove_reference<T>&&>(t);
+}
+
 template <class To, class From>
 To bit_cast(From f)
 {
