@@ -1,7 +1,6 @@
 #pragma once
 
-#include <typed-geometry/functions/mix.hh>
-#include <typed-geometry/types/array.hh>
+#include <type_traits>
 
 namespace tg
 {
@@ -16,9 +15,9 @@ struct default_mix_t;
 template <int Degree, class ControlPointT>
 struct bezier
 {
-    ControlPointT control_points[Degree + 1];
-
     static constexpr int degree = Degree;
+
+    ControlPointT control_points[Degree + 1];
 
     constexpr bezier() = default;
 
@@ -41,12 +40,12 @@ struct bezier
     }
 
     template <class ScalarT, class MixT = detail::default_mix_t>
-    TG_NODISCARD constexpr auto operator()(ScalarT const& t) const;
+    [[nodiscard]] constexpr auto operator()(ScalarT const& t) const;
 
     template <class ScalarT, class MixT = detail::default_mix_t>
-    TG_NODISCARD constexpr auto operator[](ScalarT const& t) const;
+    [[nodiscard]] constexpr auto operator[](ScalarT const& t) const;
 
-    TG_NODISCARD constexpr bool operator==(bezier const& rhs) const noexcept
+    [[nodiscard]] constexpr bool operator==(bezier const& rhs) const noexcept
     {
         for (auto i = 0; i <= Degree; ++i)
             if (control_points[i] != rhs.control_points[i])
@@ -54,7 +53,7 @@ struct bezier
         return true;
     }
 
-    TG_NODISCARD constexpr bool operator!=(bezier const& rhs) const noexcept
+    [[nodiscard]] constexpr bool operator!=(bezier const& rhs) const noexcept
     {
         for (auto i = 0; i <= Degree; ++i)
             if (control_points[i] != rhs.control_points[i])
@@ -64,7 +63,7 @@ struct bezier
 };
 
 template <class ControlPointT, class... ControlPoints>
-TG_NODISCARD constexpr auto make_bezier(ControlPointT const& p0, ControlPoints const&... pts) -> bezier<sizeof...(ControlPoints), ControlPointT>
+[[nodiscard]] constexpr auto make_bezier(ControlPointT const& p0, ControlPoints const&... pts) -> bezier<sizeof...(ControlPoints), ControlPointT>
 {
     static_assert((std::is_convertible_v<ControlPoints, ControlPointT> && ...), "incompatible control points");
     return {p0, pts...};

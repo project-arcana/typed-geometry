@@ -2,11 +2,10 @@
 
 #include <typed-geometry/common/assert.hh>
 #include <typed-geometry/detail/utility.hh>
-#include <utility> // std::move
 
 namespace tg
 {
-/// stack allocated vector type with compile time memory footprint but runtime size
+/// stack allocated vector type with compile time memory footprint but runtime size and vector interface
 template <class T, size_t N>
 struct capped_vector
 {
@@ -14,19 +13,14 @@ struct capped_vector
 
     constexpr capped_vector() = default;
 
-    constexpr capped_vector(size_t size) : _size(index_t(size))
-    {
-        TG_CONTRACT(size <= N);
-        new (&_u._data[0]) T[size]();
-    }
-
     ~capped_vector()
     {
-        for (size_t i = 0; i < _size; ++i)
-            _u._data[i].~T();
+        // deconstruct in reverse order
+        for (size_t i = _size; i > 0; --i)
+            _u._data[i - 1].~T();
     }
 
-    const T& operator[](size_t pos) const
+    T const& operator[](size_t pos) const
     {
         TG_CONTRACT(pos < _size);
         return _u._data[pos];
@@ -48,7 +42,7 @@ struct capped_vector
     void push_back(T&& t)
     {
         TG_CONTRACT(_size < N);
-        new (&_u._data[_size]) T(std::move(t));
+        new (&_u._data[_size]) T(move(t));
         ++_size;
     }
 
@@ -63,15 +57,16 @@ struct capped_vector
     T& emplace_back(Args&&... args)
     {
         TG_CONTRACT(_size < N);
-        new (&_u._data[_size]) T(std::forward<Args>(args)...);
+        new (&_u._data[_size]) T(forward<Args>(args)...);
         ++_size;
         return _u._data[_size - 1];
     }
 
     void clear()
     {
-        for (size_t i = 0; i < _size; ++i)
-            _u._data[i].~T();
+        // deconstruct in reverse order
+        for (size_t i = _size; i > 0; --i)
+            _u._data[i - 1].~T();
         _size = 0;
     }
 
@@ -80,6 +75,8 @@ struct capped_vector
         TG_CONTRACT(new_size <= N);
         for (size_t i = _size; i < new_size; ++i)
             new (&_u._data[i]) T();
+        for (size_t i = _size; i > new_size; --i)
+            _u._data[i - 1].~T();
         _size = index_t(new_size);
     }
 
@@ -108,8 +105,8 @@ struct capped_vector
     }
 
     constexpr T* begin() { return &_u._data[0]; }
-    constexpr T* end() { return &_u._data[0] + _size; }
     constexpr T const* begin() const { return &_u._data[0]; }
+    constexpr T* end() { return &_u._data[0] + _size; }
     constexpr T const* end() const { return &_u._data[0] + _size; }
 
     constexpr size_t size() const { return _size; }
@@ -146,6 +143,7 @@ struct capped_vector
     }
 
 private:
+    /// uninitialized memory
     union DataHolder {
         DataHolder() {}
         ~DataHolder() {}

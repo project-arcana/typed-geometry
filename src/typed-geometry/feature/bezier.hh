@@ -2,7 +2,7 @@
 
 #include <typed-geometry/functions/minmax.hh>
 #include <typed-geometry/types/bezier.hh>
-#include <typed-geometry/types/capped_array.hh>
+#include <typed-geometry/types/capped_vector.hh>
 
 /*
     TODO:
@@ -31,14 +31,15 @@
     * [ ] number of extremeties depends on the number of dimension of the control points
 */
 
-/// simpsons integration
+
 namespace tg::detail
 {
+/// simpsons integration
 /// http://steve.hollasch.net/cgindex/curves/cbezarclen.html
 template <class ScalarT, class F>
 ScalarT integrate_simpson(F&& f, ScalarT start, ScalarT end, i32 n_limit, ScalarT max_error)
 {
-    static_assert(is_same<decltype(f(ScalarT())), ScalarT>, "f must map from ScalarT to ScalarT!");
+    static_assert(is_same<decltype(f(ScalarT{})), ScalarT>, "f must map from ScalarT to ScalarT!");
 
     i32 n = 1;
     ScalarT multiplier = (end - start) / ScalarT(6.0);
@@ -92,7 +93,7 @@ struct default_mix_t
 };
 
 template <class MixT, int Degree, class ControlPointT, class ScalarT>
-TG_NODISCARD constexpr auto deCastlejau(bezier<Degree, ControlPointT> const& b, ScalarT const& t)
+[[nodiscard]] constexpr auto deCastlejau(bezier<Degree, ControlPointT> const& b, ScalarT const& t)
 {
     TG_CONTRACT(ScalarT(0) <= t && t <= ScalarT(1));
     using T = std::decay_t<decltype(MixT::mix(std::declval<ControlPointT>(), std::declval<ControlPointT>(), t))>;
@@ -116,20 +117,20 @@ TG_NODISCARD constexpr auto deCastlejau(bezier<Degree, ControlPointT> const& b, 
 }
 template <int Degree, class ControlPointT>
 template <class ScalarT, class MixT>
-TG_NODISCARD constexpr auto bezier<Degree, ControlPointT>::operator()(ScalarT const& t) const
+[[nodiscard]] constexpr auto bezier<Degree, ControlPointT>::operator()(ScalarT const& t) const
 {
     return detail::deCastlejau<MixT>(*this, t);
 }
 
 template <int Degree, class ControlPointT>
 template <class ScalarT, class MixT>
-TG_NODISCARD constexpr auto bezier<Degree, ControlPointT>::operator[](ScalarT const& t) const
+[[nodiscard]] constexpr auto bezier<Degree, ControlPointT>::operator[](ScalarT const& t) const
 {
     return detail::deCastlejau<MixT>(*this, t);
 }
 
 template <int Degree, class ControlPointT>
-TG_NODISCARD constexpr auto derivative(bezier<Degree, ControlPointT> const& c)
+[[nodiscard]] constexpr auto derivative(bezier<Degree, ControlPointT> const& c)
 {
     if constexpr (Degree == 0)
         return bezier<0, ControlPointT>(); // always zero
@@ -143,7 +144,7 @@ TG_NODISCARD constexpr auto derivative(bezier<Degree, ControlPointT> const& c)
 }
 
 template <int Degree, class ControlPointT>
-TG_NODISCARD constexpr bezier<Degree + 1, ControlPointT> elevate(bezier<Degree, ControlPointT> const& c)
+[[nodiscard]] constexpr bezier<Degree + 1, ControlPointT> elevate(bezier<Degree, ControlPointT> const& c)
 {
     bezier<Degree + 1, ControlPointT> res;
 
@@ -157,7 +158,7 @@ TG_NODISCARD constexpr bezier<Degree + 1, ControlPointT> elevate(bezier<Degree, 
 }
 
 template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
-TG_NODISCARD constexpr auto operator+(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
+[[nodiscard]] constexpr auto operator+(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
     -> bezier<max(DegreeA, DegreeB), decltype(a.control_points[0] + b.control_points[0])>
 {
     using T = decltype(a.control_points[0] + b.control_points[0]);
@@ -184,7 +185,7 @@ TG_NODISCARD constexpr auto operator+(bezier<DegreeA, ControlPoinAT> const& a, b
 }
 
 template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
-TG_NODISCARD constexpr auto operator-(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
+[[nodiscard]] constexpr auto operator-(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
     -> bezier<max(DegreeA, DegreeB), decltype(a.control_points[0] - b.control_points[0])>
 {
     using T = decltype(a.control_points[0] - b.control_points[0]);
@@ -211,7 +212,7 @@ TG_NODISCARD constexpr auto operator-(bezier<DegreeA, ControlPoinAT> const& a, b
 }
 
 template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
-TG_NODISCARD constexpr auto operator*(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
+[[nodiscard]] constexpr auto operator*(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
     -> bezier<max(DegreeA, DegreeB), decltype(a.control_points[0] * b.control_points[0])>
 {
     using T = decltype(a.control_points[0] * b.control_points[0]);
@@ -238,7 +239,7 @@ TG_NODISCARD constexpr auto operator*(bezier<DegreeA, ControlPoinAT> const& a, b
 }
 
 template <int DegreeA, class ControlPoinAT, int DegreeB, class ControlPoinBT>
-TG_NODISCARD constexpr auto operator/(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
+[[nodiscard]] constexpr auto operator/(bezier<DegreeA, ControlPoinAT> const& a, bezier<DegreeB, ControlPoinBT> const& b)
     -> bezier<max(DegreeA, DegreeB), decltype(a.control_points[0] / b.control_points[0])>
 {
     using T = decltype(a.control_points[0] / b.control_points[0]);
@@ -265,7 +266,7 @@ TG_NODISCARD constexpr auto operator/(bezier<DegreeA, ControlPoinAT> const& a, b
 }
 
 template <class MixT = detail::default_mix_t, int Degree, class ControlPointT, class ScalarT>
-TG_NODISCARD constexpr auto split_at(bezier<Degree, ControlPointT> const& c, ScalarT t)
+[[nodiscard]] constexpr auto split_at(bezier<Degree, ControlPointT> const& c, ScalarT t)
 {
     TG_CONTRACT(ScalarT(0) <= t && t <= ScalarT(1));
     using T = std::decay_t<decltype(MixT::mix(std::declval<ControlPointT>(), std::declval<ControlPointT>(), t))>;
@@ -292,7 +293,7 @@ TG_NODISCARD constexpr auto split_at(bezier<Degree, ControlPointT> const& c, Sca
 }
 
 template <int Degree, class ControlPointT, class F>
-TG_NODISCARD auto map(bezier<Degree, ControlPointT> const& c, F&& f) -> bezier<Degree, decltype(f(c.control_points[0]))>
+[[nodiscard]] auto map(bezier<Degree, ControlPointT> const& c, F&& f) -> bezier<Degree, decltype(f(c.control_points[0]))>
 {
     bezier<Degree, decltype(f(c.control_points[0]))> res;
     for (auto i = 0; i <= Degree; ++i)
@@ -301,7 +302,7 @@ TG_NODISCARD auto map(bezier<Degree, ControlPointT> const& c, F&& f) -> bezier<D
 }
 
 template <int Degree, class ControlPointT, class... ControlPoints>
-TG_NODISCARD constexpr auto fit_bezier(ControlPointT const& p0, ControlPoints const&... /*pts*/) -> bezier<sizeof...(ControlPoints), ControlPointT>
+[[nodiscard]] constexpr auto fit_bezier(ControlPointT const& p0, ControlPoints const&... /*pts*/) -> bezier<sizeof...(ControlPoints), ControlPointT>
 {
     // todo:
     // if number of control points == Degree -1 : perfect fit
@@ -314,50 +315,50 @@ TG_NODISCARD constexpr auto fit_bezier(ControlPointT const& p0, ControlPoints co
 }
 
 template <int Degree, class ControlPointT, class ScalarT>
-TG_NODISCARD constexpr auto derivative_at(bezier<Degree, ControlPointT> const& c, ScalarT t)
+[[nodiscard]] constexpr auto derivative_at(bezier<Degree, ControlPointT> const& c, ScalarT t)
 {
     // todo: more performant version
     return derivative(c)(t);
 }
 
 template <int Degree, int Dim, class ScalarT>
-TG_NODISCARD constexpr auto normal_at(bezier<Degree, pos<Dim, ScalarT>> const& c, ScalarT t)
+[[nodiscard]] constexpr auto normal_at(bezier<Degree, pos<Dim, ScalarT>> const& c, ScalarT t)
 {
     return normal_f(c)(t);
 }
 
 template <int Degree, class ControlPointT, class ScalarT>
-TG_NODISCARD constexpr auto tangent_at(bezier<Degree, ControlPointT> const& c, ScalarT t)
+[[nodiscard]] constexpr auto tangent_at(bezier<Degree, ControlPointT> const& c, ScalarT t)
 {
     return tangent_f(c)(t);
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto binormal_at(bezier<Degree, pos<3, ScalarT>> const& c, ScalarT t)
+[[nodiscard]] constexpr auto binormal_at(bezier<Degree, pos<3, ScalarT>> const& c, ScalarT t)
 {
     return binormal_f(c)(t);
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto curvature_at(bezier<Degree, pos<3, ScalarT>> const& c, ScalarT t)
+[[nodiscard]] constexpr auto curvature_at(bezier<Degree, pos<3, ScalarT>> const& c, ScalarT t)
 {
     return curvature_f(c)(t);
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto torsion_at(bezier<Degree, pos<3, ScalarT>> const& c, ScalarT t)
+[[nodiscard]] constexpr auto torsion_at(bezier<Degree, pos<3, ScalarT>> const& c, ScalarT t)
 {
     return torsion_f(c)(t);
 }
 
 template <int Degree, class ControlPointT, class ScalarT>
-TG_NODISCARD constexpr auto archlength_at(bezier<Degree, ControlPointT> const& c, ScalarT t)
+[[nodiscard]] constexpr auto archlength_at(bezier<Degree, ControlPointT> const& c, ScalarT t)
 {
     return length_f(c)(t);
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto normal_f(bezier<Degree, pos<3, ScalarT>> const& c)
+[[nodiscard]] constexpr auto normal_f(bezier<Degree, pos<3, ScalarT>> const& c)
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
@@ -370,7 +371,7 @@ TG_NODISCARD constexpr auto normal_f(bezier<Degree, pos<3, ScalarT>> const& c)
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto normal_f(bezier<Degree, pos<2, ScalarT>> const& c)
+[[nodiscard]] constexpr auto normal_f(bezier<Degree, pos<2, ScalarT>> const& c)
 {
     return [tang = tangent_f(c)](auto t) {
         auto const tangent = tang(t);
@@ -379,13 +380,13 @@ TG_NODISCARD constexpr auto normal_f(bezier<Degree, pos<2, ScalarT>> const& c)
 }
 
 template <int Degree, class ControlPointT>
-TG_NODISCARD constexpr auto tangent_f(bezier<Degree, ControlPointT> const& c)
+[[nodiscard]] constexpr auto tangent_f(bezier<Degree, ControlPointT> const& c)
 {
     return [d = derivative(c)](auto t) { return normalize(d(t)); };
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto binormal_f(bezier<Degree, pos<3, ScalarT>> const& c)
+[[nodiscard]] constexpr auto binormal_f(bezier<Degree, pos<3, ScalarT>> const& c)
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
@@ -397,7 +398,7 @@ TG_NODISCARD constexpr auto binormal_f(bezier<Degree, pos<3, ScalarT>> const& c)
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto curvature_f(bezier<Degree, pos<2, ScalarT>> const& c)
+[[nodiscard]] constexpr auto curvature_f(bezier<Degree, pos<2, ScalarT>> const& c)
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
@@ -411,7 +412,7 @@ TG_NODISCARD constexpr auto curvature_f(bezier<Degree, pos<2, ScalarT>> const& c
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto curvature_f(bezier<Degree, pos<3, ScalarT>> const& c)
+[[nodiscard]] constexpr auto curvature_f(bezier<Degree, pos<3, ScalarT>> const& c)
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
@@ -428,7 +429,7 @@ TG_NODISCARD constexpr auto curvature_f(bezier<Degree, pos<3, ScalarT>> const& c
 }
 
 template <int Degree, class ScalarT>
-TG_NODISCARD constexpr auto torsion_f(bezier<Degree, pos<3, ScalarT>> const& c)
+[[nodiscard]] constexpr auto torsion_f(bezier<Degree, pos<3, ScalarT>> const& c)
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
@@ -444,23 +445,16 @@ TG_NODISCARD constexpr auto torsion_f(bezier<Degree, pos<3, ScalarT>> const& c)
     };
 }
 
-
 template <class ScalarT>
-TG_NODISCARD constexpr auto extremeties_t(bezier<1, comp<1, ScalarT>> const& c)
-{
-    // not actually useful
-}
-
-template <class ScalarT>
-TG_NODISCARD constexpr capped_array<ScalarT, 1> extremeties_t(bezier<2, comp<1, ScalarT>> const& c)
+[[nodiscard]] constexpr capped_vector<ScalarT, 1> extremeties_t(bezier<2, comp<1, ScalarT>> const& c)
 {
     // up to one extremety
     auto const d = derivative(c);
+    // todo
 }
 
-
 template <int Degree, class ControlPointT>
-TG_NODISCARD constexpr auto archlength_f(bezier<Degree, ControlPointT> const& c) -> decltype(length(c.control_points[1] - c.control_points[0]))
+[[nodiscard]] constexpr auto archlength_f(bezier<Degree, ControlPointT> const& c) -> decltype(length(c.control_points[1] - c.control_points[0]))
 {
     // implement this maybe
     //    http://steve.hollasch.net/cgindex/curves/cbezarclen.html

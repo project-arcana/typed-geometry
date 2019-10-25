@@ -36,8 +36,8 @@ struct capped_array
     }
 
     constexpr T* begin() { return &_u._data[0]; }
-    constexpr T* end() { return &_u._data[0] + _size; }
     constexpr T const* begin() const { return &_u._data[0]; }
+    constexpr T* end() { return &_u._data[0] + _size; }
     constexpr T const* end() const { return &_u._data[0] + _size; }
 
     constexpr size_t size() const { return _size; }
@@ -72,6 +72,7 @@ struct capped_array
     }
 
 private:
+    /// uninitialized data
     union DataHolder {
         DataHolder() {}
         ~DataHolder() {}
