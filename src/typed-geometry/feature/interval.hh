@@ -11,53 +11,53 @@ namespace tg
 // ================================= Test =================================
 
 template <class T>
-TG_NODISCARD constexpr bool contains_zero(interval<T> const& a)
+[[nodiscard]] constexpr bool contains_zero(interval<T> const& a)
 {
     return a.min <= T(0) && T(0) <= a.max;
 }
 template <class T>
-TG_NODISCARD constexpr bool can_be_positive(interval<T> const& a)
+[[nodiscard]] constexpr bool can_be_positive(interval<T> const& a)
 {
     return a.max > T(0);
 }
 template <class T>
-TG_NODISCARD constexpr bool is_fully_positive(interval<T> const& a)
+[[nodiscard]] constexpr bool is_fully_positive(interval<T> const& a)
 {
     return a.min > T(0);
 }
 template <class T>
-TG_NODISCARD constexpr bool can_be_negative(interval<T> const& a)
+[[nodiscard]] constexpr bool can_be_negative(interval<T> const& a)
 {
     return a.min < T(0);
 }
 template <class T>
-TG_NODISCARD constexpr bool is_fully_negative(interval<T> const& a)
+[[nodiscard]] constexpr bool is_fully_negative(interval<T> const& a)
 {
     return a.max < T(0);
 }
 template <class T>
-TG_NODISCARD constexpr bool is_complete(interval<T> const& a)
+[[nodiscard]] constexpr bool is_complete(interval<T> const& a)
 {
     return a.min == -tg::inf<T> && a.max == tg::inf<T>;
 }
 
 template <class T>
-TG_NODISCARD constexpr bool contains(interval<T> const& a, dont_deduce<T> const& v)
+[[nodiscard]] constexpr bool contains(interval<T> const& a, dont_deduce<T> const& v)
 {
     return a.min <= v && v <= a.max;
 }
 template <class T>
-TG_NODISCARD constexpr bool contains(interval<T> const& a, dont_deduce<T> const& v, dont_deduce<T> const& eps)
+[[nodiscard]] constexpr bool contains(interval<T> const& a, dont_deduce<T> const& v, dont_deduce<T> const& eps)
 {
     return a.min - eps <= v && v <= a.max + eps;
 }
 template <class T>
-TG_NODISCARD constexpr bool contains(interval<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr bool contains(interval<T> const& a, interval<T> const& b)
 {
     return a.min <= b.min && b.max <= a.max;
 }
 template <class T>
-TG_NODISCARD constexpr bool contains(interval<T> const& a, interval<T> const& b, dont_deduce<T> const& eps)
+[[nodiscard]] constexpr bool contains(interval<T> const& a, interval<T> const& b, dont_deduce<T> const& eps)
 {
     return a.min - eps <= b.min && b.max <= a.max + eps;
 }
@@ -66,7 +66,7 @@ TG_NODISCARD constexpr bool contains(interval<T> const& a, interval<T> const& b,
 // ================================= Helper =================================
 
 template <class T>
-TG_NODISCARD constexpr interval<T> merge(interval<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr interval<T> merge(interval<T> const& a, interval<T> const& b)
 {
     return {min(a.min, b.min), max(a.max, b.max)};
 }
@@ -76,19 +76,19 @@ TG_NODISCARD constexpr interval<T> merge(interval<T> const& a, interval<T> const
 
 // auto-diff
 template <class T>
-TG_NODISCARD constexpr interval<T> operator+(interval<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr interval<T> operator+(interval<T> const& a, interval<T> const& b)
 {
     return {a.min + b.min, a.max + b.max};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator-(interval<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr interval<T> operator-(interval<T> const& a, interval<T> const& b)
 {
     if (&a == &b)
         return {T(0), T(0)};
     return {a.min - b.max, a.max - b.min};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator*(interval<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr interval<T> operator*(interval<T> const& a, interval<T> const& b)
 {
     if (&a == &b)
     {
@@ -119,7 +119,7 @@ TG_NODISCARD constexpr interval<T> operator*(interval<T> const& a, interval<T> c
     return {min(v0, v1, v2, v3), max(v0, v1, v2, v3)};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator/(interval<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr interval<T> operator/(interval<T> const& a, interval<T> const& b)
 {
     if (&a == &b)
         return {T(1), T(1)};
@@ -174,39 +174,39 @@ TG_NODISCARD constexpr interval<T> operator/(interval<T> const& a, interval<T> c
     }
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator+(interval<T> const& a)
+[[nodiscard]] constexpr interval<T> operator+(interval<T> const& a)
 {
     return {a.min, a.max};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator-(interval<T> const& a)
+[[nodiscard]] constexpr interval<T> operator-(interval<T> const& a)
 {
     return {-a.max, -a.min};
 }
 
 // scalars
 template <class T>
-TG_NODISCARD constexpr interval<T> operator+(interval<T> const& a, dont_deduce<T> const& b)
+[[nodiscard]] constexpr interval<T> operator+(interval<T> const& a, dont_deduce<T> const& b)
 {
     return {a.min + b, a.max + b};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator+(dont_deduce<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr interval<T> operator+(dont_deduce<T> const& a, interval<T> const& b)
 {
     return {a + b.min, a + b.max};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator-(interval<T> const& a, dont_deduce<T> const& b)
+[[nodiscard]] constexpr interval<T> operator-(interval<T> const& a, dont_deduce<T> const& b)
 {
     return {a.min - b, a.max - b};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator-(dont_deduce<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr interval<T> operator-(dont_deduce<T> const& a, interval<T> const& b)
 {
     return {a - b.max, a - b.min};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator*(interval<T> const& a, dont_deduce<T> const& b)
+[[nodiscard]] constexpr interval<T> operator*(interval<T> const& a, dont_deduce<T> const& b)
 {
     if (b > T(0))
         return {a.min * b, a.max * b};
@@ -216,7 +216,7 @@ TG_NODISCARD constexpr interval<T> operator*(interval<T> const& a, dont_deduce<T
         return {T(0), T(0)};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator*(dont_deduce<T> const& a, interval<T> const& b)
+[[nodiscard]] constexpr interval<T> operator*(dont_deduce<T> const& a, interval<T> const& b)
 {
     if (a > T(0))
         return {a * b.min, a * b.max};
@@ -226,7 +226,7 @@ TG_NODISCARD constexpr interval<T> operator*(dont_deduce<T> const& a, interval<T
         return {T(0), T(0)};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator/(interval<T> const& a, dont_deduce<T> const& b)
+[[nodiscard]] constexpr interval<T> operator/(interval<T> const& a, dont_deduce<T> const& b)
 {
     // b == 0 is undefined behavior
     auto inv_b = 1 / b;
@@ -236,7 +236,7 @@ TG_NODISCARD constexpr interval<T> operator/(interval<T> const& a, dont_deduce<T
         return {a.max * inv_b, a.min * inv_b};
 }
 template <class T>
-TG_NODISCARD constexpr interval<T> operator/(dont_deduce<T> a, interval<T> b)
+[[nodiscard]] constexpr interval<T> operator/(dont_deduce<T> a, interval<T> b)
 {
     if (a == T(0))
         return {T(0), T(0)};
@@ -265,7 +265,7 @@ TG_NODISCARD constexpr interval<T> operator/(dont_deduce<T> a, interval<T> b)
 // ================================= Math =================================
 
 template <class T>
-TG_NODISCARD constexpr interval<T> abs(interval<T> const& v)
+[[nodiscard]] constexpr interval<T> abs(interval<T> const& v)
 {
     if (contains_zero(v))
         return {T(0), max(-v.min, v.max)};
@@ -276,19 +276,19 @@ TG_NODISCARD constexpr interval<T> abs(interval<T> const& v)
 }
 
 template <class T>
-TG_NODISCARD constexpr interval<T> sqrt(interval<T> const& v)
+[[nodiscard]] constexpr interval<T> sqrt(interval<T> const& v)
 {
     return {sqrt(max(v.min, T(0))), sqrt(max(v.max, T(0)))};
 }
 
 template <class T>
-TG_NODISCARD constexpr interval<T> exp(interval<T> const& v)
+[[nodiscard]] constexpr interval<T> exp(interval<T> const& v)
 {
     return {exp(v.min), exp(v.max)};
 }
 
 template <class T>
-TG_NODISCARD constexpr interval<T> log(interval<T> const& v)
+[[nodiscard]] constexpr interval<T> log(interval<T> const& v)
 {
     return {log(max(T(0), v.min)), log(max(T(0), v.max))};
 }

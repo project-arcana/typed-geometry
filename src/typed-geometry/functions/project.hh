@@ -25,25 +25,25 @@ namespace tg
 // ============================== Vec Projections ==============================
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
+[[nodiscard]] constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
     return b * dot(a, b) / dot(b, b);
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& a, dir<D, ScalarT> const& b)
+[[nodiscard]] constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& a, dir<D, ScalarT> const& b)
 {
     return b * dot(a, b);
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
 {
     return v - pl.normal * dot(v, pl.normal);
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, ScalarT> project(dir<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr vec<D, ScalarT> project(dir<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
 {
     return v - pl.normal * dot(v, pl.normal);
 }
@@ -51,20 +51,20 @@ TG_NODISCARD constexpr vec<D, ScalarT> project(dir<D, ScalarT> const& v, hyperpl
 // ============================== Pos Projections ==============================
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, line<D, ScalarT> const& l)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, line<D, ScalarT> const& l)
 {
     return l.pos + project(p - l.pos, l.dir);
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, ray<D, ScalarT> const& r)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, ray<D, ScalarT> const& r)
 {
     auto d = dot(p - r.origin, r.dir);
     return r.origin + max(d, ScalarT(0)) * r.dir;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, segment<D, ScalarT> const& s)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, segment<D, ScalarT> const& s)
 {
     auto t = coordinates(s, p);
     t = clamp(t, ScalarT(0), ScalarT(1));
@@ -72,25 +72,25 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, segment
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D, ScalarT> const& s)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D, ScalarT> const& s)
 {
     return clamp(p, s.min, s.max);
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
 {
     return p - pl.normal * (dot(p, pl.normal) - pl.dis);
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, halfspace<D, ScalarT> const& pl)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, halfspace<D, ScalarT> const& pl)
 {
     return p - pl.normal * tg::max(ScalarT(0), dot(p, pl.normal) - pl.dis);
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangle<3, ScalarT> const& t)
 {
     auto pPlane = project(p, hyperplane<3, ScalarT>(normal(t), t.pos0));
 
@@ -113,7 +113,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangl
         return p2;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, triangle<2, ScalarT> const& t)
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, triangle<2, ScalarT> const& t)
 {
     if (contains(t, p))
         return p;
@@ -135,7 +135,7 @@ TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, triangl
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
 {
     auto dir_to_p = tg::normalize_safe(p - sp.center);
     if (is_zero_vector(dir_to_p))
@@ -144,7 +144,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
 {
     auto dir_to_p = tg::normalize_safe(p - h.center);
 
@@ -157,7 +157,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisph
     return project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
 }
 template <class ScalarT>
-TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h) // boundary, including caps
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h) // boundary, including caps
 {
     auto dir_to_p = tg::normalize_safe(p - h.center);
 
@@ -172,7 +172,7 @@ TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisph
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, ball<D, ScalarT> const& b)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, ball<D, ScalarT> const& b)
 {
     if (contains(b, p))
         return p;
@@ -181,7 +181,7 @@ TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, ball<D,
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t) // boundary
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t) // boundary
 {
     auto lp = project(p, t.axis);
     auto dir = normalize_safe(p - lp);
@@ -193,7 +193,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3,
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, disk<3, ScalarT> const& d)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, disk<3, ScalarT> const& d)
 {
     auto hp = project(p, hyperplane<3, ScalarT>(d.normal, d.center));
 
@@ -207,7 +207,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, disk<3,
     return d.center + dir * d.radius;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, disk<2, ScalarT> const& d)
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, disk<2, ScalarT> const& d)
 {
     if (distance_sqr(p, d.center) <= d.radius * d.radius)
         return p;
@@ -220,7 +220,7 @@ TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, disk<2,
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<3, ScalarT> const& c)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<3, ScalarT> const& c)
 {
     auto hp = project(p, hyperplane<3, ScalarT>(c.normal, c.center));
 
@@ -231,7 +231,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<
     return c.center + dir * c.radius;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, circle<2, ScalarT> const& c)
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, circle<2, ScalarT> const& c)
 {
     auto dir = normalize_safe(p - c.center);
     if (is_zero_vector(dir))
@@ -241,7 +241,7 @@ TG_NODISCARD constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, circle<
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // boundary, including caps
 {
     auto dir = direction(c);
 
@@ -262,7 +262,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinde
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // boundary, including caps
 {
     auto t = coordinates(c.axis, p);
 
@@ -276,7 +276,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT> const& c)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT> const& c)
 {
     auto closestOnBase = project(p, c.base);
     auto apex = c.base.center + c.height * c.base.normal;
@@ -287,7 +287,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3,
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
 {
     using dir_t = dir<3, ScalarT>;
     using vec2_t = vec<2, ScalarT>;
@@ -347,7 +347,7 @@ TG_NODISCARD constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_con
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_tube<D, ScalarT> const& itube)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_tube<D, ScalarT> const& itube)
 {
     auto vec = p - itube.axis.pos;
     auto h = dot(vec, itube.axis.dir);

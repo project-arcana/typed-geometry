@@ -5,7 +5,7 @@
 namespace tg
 {
 template <int D>
-TG_NODISCARD bool any(comp<D, bool> const& c)
+[[nodiscard]] bool any(comp<D, bool> const& c)
 {
     if constexpr (D == 1)
         return c.comp0;
@@ -20,7 +20,7 @@ TG_NODISCARD bool any(comp<D, bool> const& c)
 }
 
 template <int D>
-TG_NODISCARD bool all(comp<D, bool> const& c)
+[[nodiscard]] bool all(comp<D, bool> const& c)
 {
     if constexpr (D == 1)
         return c.comp0;

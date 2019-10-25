@@ -9,7 +9,7 @@ namespace tg
 // -- operator@ --
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle<D, ScalarT> operator+(triangle<D, ScalarT> const& a, vec<D, ScalarT> const& b)
+[[nodiscard]] constexpr triangle<D, ScalarT> operator+(triangle<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
     triangle<D, ScalarT> r;
     r.pos0 = a.pos0 + b;
@@ -19,7 +19,7 @@ TG_NODISCARD constexpr triangle<D, ScalarT> operator+(triangle<D, ScalarT> const
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle<D, ScalarT> operator-(triangle<D, ScalarT> const& a, vec<D, ScalarT> const& b)
+[[nodiscard]] constexpr triangle<D, ScalarT> operator-(triangle<D, ScalarT> const& a, vec<D, ScalarT> const& b)
 {
     triangle<D, ScalarT> r;
     r.pos0 = a.pos0 - b;
@@ -29,7 +29,7 @@ TG_NODISCARD constexpr triangle<D, ScalarT> operator-(triangle<D, ScalarT> const
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle<D, ScalarT> operator*(triangle<D, ScalarT> const& a, ScalarT b)
+[[nodiscard]] constexpr triangle<D, ScalarT> operator*(triangle<D, ScalarT> const& a, ScalarT b)
 {
     triangle<D, ScalarT> r;
     r.pos0 = a.pos0 * b;
@@ -39,7 +39,7 @@ TG_NODISCARD constexpr triangle<D, ScalarT> operator*(triangle<D, ScalarT> const
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle<D, ScalarT> operator*(triangle<D, ScalarT> const& a, size<D, ScalarT> const& b)
+[[nodiscard]] constexpr triangle<D, ScalarT> operator*(triangle<D, ScalarT> const& a, size<D, ScalarT> const& b)
 {
     triangle<D, ScalarT> r;
     r.pos0 = a.pos0 * b;
@@ -49,7 +49,7 @@ TG_NODISCARD constexpr triangle<D, ScalarT> operator*(triangle<D, ScalarT> const
 }
 
 template <int D, class ScalarT, class = enable_if<is_floating_point<ScalarT>>>
-TG_NODISCARD constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, ScalarT b)
+[[nodiscard]] constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, ScalarT b)
 {
     triangle<D, ScalarT> r;
     auto inv_b = ScalarT(1) / b;
@@ -60,7 +60,7 @@ TG_NODISCARD constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const
 }
 
 template <int D, class IntegerT, class ScalarT, class = enable_if<is_floating_point<ScalarT> && is_integer<IntegerT>>>
-TG_NODISCARD constexpr triangle<D, ScalarT> operator/(triangle<D, IntegerT> const& a, ScalarT b)
+[[nodiscard]] constexpr triangle<D, ScalarT> operator/(triangle<D, IntegerT> const& a, ScalarT b)
 {
     triangle<D, ScalarT> r;
     auto inv_b = ScalarT(1) / b;
@@ -71,7 +71,7 @@ TG_NODISCARD constexpr triangle<D, ScalarT> operator/(triangle<D, IntegerT> cons
 }
 
 template <int D, class ScalarT, class = enable_if<is_integer<ScalarT>>, class = detail::unused>
-TG_NODISCARD constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, ScalarT b)
+[[nodiscard]] constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, ScalarT b)
 {
     triangle<D, ScalarT> r;
     r.pos0 = a.pos0 / b;
@@ -81,7 +81,7 @@ TG_NODISCARD constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, size<D, ScalarT> const& b)
+[[nodiscard]] constexpr triangle<D, ScalarT> operator/(triangle<D, ScalarT> const& a, size<D, ScalarT> const& b)
 {
     triangle<D, ScalarT> r;
     auto inv_b = ScalarT(1) / b;

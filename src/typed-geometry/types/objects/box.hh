@@ -65,7 +65,7 @@ struct box
     constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
     constexpr box(aabb<D, ScalarT> const& b); // requires tg.hh
 
-    TG_NODISCARD bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
-    TG_NODISCARD bool operator!=(box const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
+    [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

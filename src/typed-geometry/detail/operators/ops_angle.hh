@@ -7,46 +7,46 @@
 namespace tg
 {
 template <class T>
-TG_NODISCARD constexpr angle_t<T> operator-(angle_t<T> const& a)
+[[nodiscard]] constexpr angle_t<T> operator-(angle_t<T> const& a)
 {
     return radians(-a.radians());
 }
 template <class T>
-TG_NODISCARD constexpr angle_t<T> operator+(angle_t<T> const& a)
+[[nodiscard]] constexpr angle_t<T> operator+(angle_t<T> const& a)
 {
     return a;
 }
 
 template <class T>
-TG_NODISCARD constexpr angle_t<T> operator+(angle_t<T> a, angle_t<T> b)
+[[nodiscard]] constexpr angle_t<T> operator+(angle_t<T> a, angle_t<T> b)
 {
     return radians(a.radians() + b.radians());
 }
 template <class T>
-TG_NODISCARD constexpr angle_t<T> operator-(angle_t<T> a, angle_t<T> b)
+[[nodiscard]] constexpr angle_t<T> operator-(angle_t<T> a, angle_t<T> b)
 {
     return radians(a.radians() - b.radians());
 }
 
 template <class T>
-TG_NODISCARD constexpr angle_t<T> operator*(angle_t<T> a, dont_deduce<T> b)
+[[nodiscard]] constexpr angle_t<T> operator*(angle_t<T> a, dont_deduce<T> b)
 {
     return radians(a.radians() * b);
 }
 template <class T>
-TG_NODISCARD constexpr angle_t<T> operator/(angle_t<T> a, dont_deduce<T> b)
+[[nodiscard]] constexpr angle_t<T> operator/(angle_t<T> a, dont_deduce<T> b)
 {
     return radians(a.radians() / b);
 }
 
 template <class T>
-TG_NODISCARD constexpr angle_t<T> operator*(dont_deduce<T> a, angle_t<T> b)
+[[nodiscard]] constexpr angle_t<T> operator*(dont_deduce<T> a, angle_t<T> b)
 {
     return radians(a * b.radians());
 }
 
 template <class T>
-TG_NODISCARD constexpr T operator/(angle_t<T> a, angle_t<T> b)
+[[nodiscard]] constexpr T operator/(angle_t<T> a, angle_t<T> b)
 {
     return a.radians() / b.radians();
 }

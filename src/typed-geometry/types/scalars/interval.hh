@@ -27,8 +27,8 @@ struct interval
     explicit constexpr interval(T v) : min(v), max(v) {}
     constexpr interval(T min, T max) : min(min), max(max) { TG_CONTRACT(min <= max); }
 
-    TG_NODISCARD constexpr bool operator==(interval const& rhs) const { return min == rhs.min && max == rhs.max; }
-    TG_NODISCARD constexpr bool operator!=(interval const& rhs) const { return min != rhs.min || max != rhs.max; }
+    [[nodiscard]] constexpr bool operator==(interval const& rhs) const { return min == rhs.min && max == rhs.max; }
+    [[nodiscard]] constexpr bool operator!=(interval const& rhs) const { return min != rhs.min || max != rhs.max; }
 };
 
 template <class T>

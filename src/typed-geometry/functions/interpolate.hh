@@ -19,48 +19,48 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, ScalarT> interpolate(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT t)
+[[nodiscard]] constexpr vec<D, ScalarT> interpolate(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT t)
 {
     return mix(a, b, t);
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr vec<D, ScalarT> interpolate(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT wa, ScalarT wb)
+[[nodiscard]] constexpr vec<D, ScalarT> interpolate(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT wa, ScalarT wb)
 {
     return a * wa + b * wb;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> interpolate(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b, ScalarT t)
+[[nodiscard]] constexpr pos<D, ScalarT> interpolate(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b, ScalarT t)
 {
     return mix(a, b, t);
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> interpolate(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b, ScalarT wa, ScalarT wb)
+[[nodiscard]] constexpr pos<D, ScalarT> interpolate(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b, ScalarT wa, ScalarT wb)
 {
     auto z = pos<D, ScalarT>::zero;
     return z + (a - z) * wa + (b - z) * wb;
 }
 
 template <class ScalarT, class = enable_if<is_scalar<ScalarT>>>
-TG_NODISCARD constexpr ScalarT interpolate(ScalarT a, ScalarT b, ScalarT t)
+[[nodiscard]] constexpr ScalarT interpolate(ScalarT a, ScalarT b, ScalarT t)
 {
     return mix(a, b, t);
 }
 
 template <class ScalarT, class = enable_if<is_scalar<ScalarT>>>
-TG_NODISCARD constexpr ScalarT interpolate(ScalarT a, ScalarT b, ScalarT wa, ScalarT wb)
+[[nodiscard]] constexpr ScalarT interpolate(ScalarT a, ScalarT b, ScalarT wa, ScalarT wb)
 {
     return a * wa + b * wb;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> interpolate(triangle<D, ScalarT> const& t, ScalarT wa, ScalarT wb)
+[[nodiscard]] constexpr pos<D, ScalarT> interpolate(triangle<D, ScalarT> const& t, ScalarT wa, ScalarT wb)
 {
     auto z = pos<D, ScalarT>::zero;
     return z + (t.pos0 - z) * wa + (t.pos1 - z) * wb + (t.pos2 - z) * (ScalarT(1) - wb - wa);
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr pos<D, ScalarT> interpolate(triangle<D, ScalarT> const& t, ScalarT wa, ScalarT wb, ScalarT wc)
+[[nodiscard]] constexpr pos<D, ScalarT> interpolate(triangle<D, ScalarT> const& t, ScalarT wa, ScalarT wb, ScalarT wc)
 {
     auto z = pos<D, ScalarT>::zero;
     return z + (t.pos0 - z) * wa + (t.pos1 - z) * wb + (t.pos2 - z) * wc;
