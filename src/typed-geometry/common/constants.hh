@@ -30,7 +30,7 @@ static constexpr T inf = INFINITY;
 template <class T>
 static constexpr T epsilon = type_error::unsupported_type<T>::value;
 template <>
-static constexpr float epsilon<float> = 1.19209290E-07F; // FLT_EPSILON
+constexpr float epsilon<float> = 1.19209290E-07F; // FLT_EPSILON
 template <>
-static constexpr double epsilon<double> = 2.2204460492503131e-16; // DBL_EPSILON
+constexpr double epsilon<double> = 2.2204460492503131e-16; // DBL_EPSILON
 }
