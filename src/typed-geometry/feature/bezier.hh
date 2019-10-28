@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <type_traits> // std::is_invocable_r_t, std::decay_t
@@ -366,9 +367,9 @@ template <int Degree, class ScalarT>
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
-    return [d = d1, dd = d2](auto t) {
-        auto const a = normalize(d(t));
-        auto const b = normalize(a + dd(t));
+    return [d1, d2](auto t) {
+        auto const a = normalize(d1(t));
+        auto const b = normalize(a + d2(t));
         auto const r = cross(a, b); // is normalized
         return cross(r, a);         // is normalized
     };
@@ -391,9 +392,9 @@ template <int Degree, class ScalarT>
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
-    return [d = d1, dd = d2](auto t) {
-        auto const a = normalize(d(t));
-        auto const b = normalize(a + dd(t));
+    return [d1, d2](auto t) {
+        auto const a = normalize(d1(t));
+        auto const b = normalize(a + d2(t));
         return cross(a, b); // is normalized
     };
 }
@@ -403,9 +404,9 @@ template <int Degree, class ScalarT>
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
-    return [d = d1, dd = d2](auto t) {
-        auto const dt = d(t);
-        auto const ddt = dd(t);
+    return [d1, d2](auto t) {
+        auto const dt = d1(t);
+        auto const ddt = d2(t);
         auto const numerator = dt.x * ddt.y + ddt.x * dt.y;
         auto const x = dt.x * dt.x + dt.y * dt.y;
         auto const denominator = x * sqrt(x);
@@ -418,9 +419,9 @@ template <int Degree, class ScalarT>
 {
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
-    return [d = d1, dd = d2](auto t) {
-        auto const dt = d(t);
-        auto const ddt = dd(t);
+    return [d1, d2](auto t) {
+        auto const dt = d1(t);
+        auto const ddt = d2(t);
         auto const numerator = length(cross(dt, ddt));
         auto const x = dt.x * dt.x + dt.y * dt.y + dt.z * dt.z;
         auto const denominator = x * sqrt(x);
@@ -434,10 +435,10 @@ template <int Degree, class ScalarT>
     auto const d1 = derivative(c);
     auto const d2 = derivative(d1);
     auto const d3 = derivative(d2);
-    return [d = d1, dd = d2, ddd = d3](auto t) {
-        auto const v0 = d(t);
-        auto const v1 = dd(t);
-        auto const v2 = ddd(t);
+    return [d1, d2, d3](auto t) {
+        auto const v0 = d1(t);
+        auto const v1 = d2(t);
+        auto const v2 = d3(t);
         auto const m = from_cols(v0, v1, v2);
         auto const numerator = determinant(m);
         auto const denominator = length(cross(v1, v2));
@@ -460,21 +461,46 @@ template <int Degree, class ControlPointT>
     // implement this maybe
     //    http://steve.hollasch.net/cgindex/curves/cbezarclen.html
 
-    static_assert(Degree < 2, "not yet implemented");
+    //    static_assert(Degree < 2, "not yet implemented");
 
     if constexpr (Degree == 0)
-        return {};
+        return [](auto) { return 0; };
     if constexpr (Degree == 1)
-        return length(c.control_points[1] - c.control_points[0]);
-    if constexpr (Degree == 2)
-    {
-        // 2D:
-        //     2/3 x^(3/2) (4 (-a (1 - x) - 2 b x + b + c x)^2 + 4 (-d (1 - x) - 2 e x + e + f x)^2)
-    }
+        return [=](auto t) { return length(t * c.control_points[1] - (1 - t) * c.control_points[0]); };
     else
     {
-        // todo: do numerical integration sceme of your choice
+        auto const d = derivative(c);
+        auto const dl = [d](auto t) { return length(d(t)); };
+        // todo: change these magic values to something useful and/or make configurable
+        return [dl](auto t) { return detail::integrate_simpson(dl, 0.0, t, 100, 0.00001); };
     }
+
+    // there are still closed forms for Degree == 2, possibly implement them later
+    //    if constexpr (Degree == 2)
+    //    {
+    //        // 2D:
+    //        //     2/3 x^(3/2) (4 (-a (1 - x) - 2 b x + b + c x)^2 + 4 (-d (1 - x) - 2 e x + e + f x)^2)
+    //    }
+    //    else
+    //    {
+    //        // todo: do numerical integration sceme of your choice
+    //    }
     return {}; // because constexpr return
+}
+template <int Degree, class ControlPointT>
+[[nodiscard]] constexpr auto archlength(bezier<Degree, ControlPointT> const& c) -> decltype(length(c.control_points[1] - c.control_points[0]))
+{
+    using T = decltype(length(c.control_points[1] - c.control_points[0]));
+    if constexpr (Degree == 0)
+        return T(0);
+    if constexpr (Degree == 1)
+        return length(c.control_points[1] - c.control_points[0]);
+    else
+    {
+        auto const d = derivative(c);
+        auto const dl = [d](auto t) { return length(d(t)); };
+        // todo: change these magic values to something useful and/or make configurable
+        return detail::integrate_simpson(dl, 0.0, 1.0, 100, 0.00001);
+    }
 }
 }
