@@ -364,4 +364,21 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     ss << "(" << val.axis << ", " << val.radius << ")";
     return out << ss.str();
 }
+
+//
+// =============================== Bezier ===============================
+//
+
+template <int D, class ControlPointT, class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, bezier<D, ControlPointT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << "bezier" << char('0' + D);
+    ss << "(";
+    ss << val.control_points[0];
+    for (auto i = 1; i <= D; ++i)
+        ss << ", " << val.control_points[i];
+    ss << ")";
+    return out << ss.str();
+}
 } // namespace tg
