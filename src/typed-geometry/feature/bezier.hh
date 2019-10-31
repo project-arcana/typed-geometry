@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <type_traits> // std::is_invocable_r_t, std::decay_t
@@ -105,7 +104,7 @@ template <class MixT, int Degree, class ControlPointT, class ScalarT>
     if constexpr (Degree < 0)
         return T{};
     else if constexpr (Degree == 0)
-        return T(b.p[0]);
+        return T(b.control_points[0]);
     else
     {
         T controlpoints[Degree + 1];
@@ -119,6 +118,7 @@ template <class MixT, int Degree, class ControlPointT, class ScalarT>
 }
 
 }
+
 template <int Degree, class ControlPointT>
 template <class ScalarT, class MixT>
 [[nodiscard]] constexpr auto bezier<Degree, ControlPointT>::operator()(ScalarT const& t) const
@@ -136,11 +136,13 @@ template <class ScalarT, class MixT>
 template <int Degree, class ControlPointT>
 [[nodiscard]] constexpr auto derivative(bezier<Degree, ControlPointT> const& c)
 {
+    using T = std::decay_t<decltype(Degree * (c.control_points[1] - c.control_points[0]))>;
+
     if constexpr (Degree == 0)
-        return bezier<0, ControlPointT>(); // always zero
+        return bezier<0, T>(); // always zero
     else
     {
-        bezier<Degree - 1, std::decay_t<decltype(Degree * (c.control_points[1] - c.control_points[0]))>> res;
+        bezier<Degree - 1, T> res;
         for (auto i = 0; i < Degree; ++i)
             res.control_points[i] = Degree * (c.control_points[i + 1] - c.control_points[i]);
         return res;
@@ -344,8 +346,8 @@ template <int Degree, class ScalarT>
     return binormal_f(c)(t);
 }
 
-template <int Degree, class ScalarT>
-[[nodiscard]] constexpr auto curvature_at(bezier<Degree, pos<3, ScalarT>> const& c, ScalarT t)
+template <int Degree, class ScalarT, int D>
+[[nodiscard]] constexpr auto curvature_at(bezier<Degree, pos<D, ScalarT>> const& c, ScalarT t)
 {
     return curvature_f(c)(t);
 }
@@ -399,6 +401,7 @@ template <int Degree, class ScalarT>
     };
 }
 
+
 template <int Degree, class ScalarT>
 [[nodiscard]] constexpr auto curvature_f(bezier<Degree, pos<2, ScalarT>> const& c)
 {
@@ -407,8 +410,8 @@ template <int Degree, class ScalarT>
     return [d1, d2](auto t) {
         auto const dt = d1(t);
         auto const ddt = d2(t);
-        auto const numerator = dt.x * ddt.y + ddt.x * dt.y;
-        auto const x = dt.x * dt.x + dt.y * dt.y;
+        auto const numerator = cross(dt, ddt);
+        auto const x = length_sqr(dt);
         auto const denominator = x * sqrt(x);
         return numerator / denominator;
     };
@@ -423,7 +426,7 @@ template <int Degree, class ScalarT>
         auto const dt = d1(t);
         auto const ddt = d2(t);
         auto const numerator = length(cross(dt, ddt));
-        auto const x = dt.x * dt.x + dt.y * dt.y + dt.z * dt.z;
+        auto const x = length_sqr(dt);
         auto const denominator = x * sqrt(x);
         return numerator / denominator;
     };
