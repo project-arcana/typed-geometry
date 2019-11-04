@@ -292,5 +292,11 @@ auto helper_size_t()
 template <u64 N, u64 Alignment>
 using size_t_for = decltype(helper_size_t<N, Alignment>());
 
+/// Indirection workaround for a current MSVC compiler bug (19.23)
+/// without indirection: https://godbolt.org/z/iQ19yj
+/// with indirection: https://godbolt.org/z/6MoWE4
+/// Bug report: https://developercommunity.visualstudio.com/content/problem/800899/false-positive-for-c2975-on-alias-template-fixed-w.html
+template <class T, size_t N>
+using compact_size_t_typed = size_t_for<N, alignof(T)>;
 }
 } // namespace tg
