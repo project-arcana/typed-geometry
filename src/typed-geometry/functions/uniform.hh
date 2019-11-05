@@ -13,6 +13,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/circle.hh>
+#include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/disk.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
@@ -70,6 +71,7 @@ template <class Rng>
 template <class Rng>
 [[nodiscard]] constexpr i32 uniform(Rng& rng, i32 a, i32 b_inc)
 {
+    TG_CONTRACT(a <= b_inc);
     i32 r = 0;
     auto fa = f32(a);
     auto fb = f32(b_inc) + 1;
@@ -82,6 +84,7 @@ template <class Rng>
 template <class Rng>
 [[nodiscard]] constexpr long uniform(Rng& rng, long a, long b_inc)
 {
+    TG_CONTRACT(a <= b_inc);
     long r = 0;
     auto fa = f64(a);
     auto fb = f64(b_inc) + 1;
@@ -94,6 +97,7 @@ template <class Rng>
 template <class Rng>
 [[nodiscard]] constexpr i64 uniform(Rng& rng, long long a, long long b_inc)
 {
+    TG_CONTRACT(a <= b_inc);
     long long r = 0;
     auto fa = f64(a);
     auto fb = f64(b_inc) + 1;
@@ -118,6 +122,7 @@ template <class Rng>
 template <class Rng>
 [[nodiscard]] constexpr unsigned long uniform(Rng& rng, unsigned long a, unsigned long b_inc)
 {
+    TG_CONTRACT(a <= b_inc);
     unsigned long r = 0;
     auto fa = f64(a);
     auto fb = f64(b_inc) + 1;
@@ -130,6 +135,7 @@ template <class Rng>
 template <class Rng>
 [[nodiscard]] constexpr unsigned long long uniform(Rng& rng, unsigned long long a, unsigned long long b_inc)
 {
+    TG_CONTRACT(a <= b_inc);
     unsigned long long r = 0;
     auto fa = f64(a);
     auto fb = f64(b_inc) + 1;
@@ -138,6 +144,31 @@ template <class Rng>
         r = (unsigned long long)(tg::ifloor(uniform(rng, fa, fb)));
     } while (r > b_inc);
     return r;
+}
+template <class Rng>
+[[nodiscard]] constexpr char uniform(Rng& rng, char a, char b_inc)
+{
+    return char(uniform(rng, i32(a), i32(b_inc)));
+}
+template <class Rng>
+[[nodiscard]] constexpr i8 uniform(Rng& rng, i8 a, i8 b_inc)
+{
+    return i8(uniform(rng, i32(a), i32(b_inc)));
+}
+template <class Rng>
+[[nodiscard]] constexpr i16 uniform(Rng& rng, i16 a, i16 b_inc)
+{
+    return i16(uniform(rng, i32(a), i32(b_inc)));
+}
+template <class Rng>
+[[nodiscard]] constexpr u8 uniform(Rng& rng, u8 a, u8 b_inc)
+{
+    return u8(uniform(rng, i32(a), i32(b_inc)));
+}
+template <class Rng>
+[[nodiscard]] constexpr u16 uniform(Rng& rng, u16 a, u16 b_inc)
+{
+    return u16(uniform(rng, i32(a), i32(b_inc)));
 }
 
 template <class T, class Rng>
