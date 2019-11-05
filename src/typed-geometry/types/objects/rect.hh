@@ -3,7 +3,7 @@
 #include "../angle.hh"
 #include "../dir.hh"
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {
@@ -43,8 +43,8 @@ struct rect<2, ScalarT>
     constexpr rect() = default;
     constexpr rect(pos_t c, ScalarT l, angle_t<ScalarT> r) : center(c), length(l), rotation(r){};
 
-    TG_NODISCARD bool operator==(rect const& rhs) const { return center == rhs.center && length == rhs.length && rotation == rhs.rotation; }
-    TG_NODISCARD bool operator!=(rect const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(rect const& rhs) const { return center == rhs.center && length == rhs.length && rotation == rhs.rotation; }
+    [[nodiscard]] bool operator!=(rect const& rhs) const { return !operator==(rhs); }
 };
 
 template <class ScalarT>
@@ -65,10 +65,10 @@ struct rect<3, ScalarT>
     {
     }
 
-    TG_NODISCARD bool operator==(rect const& rhs) const
+    [[nodiscard]] bool operator==(rect const& rhs) const
     {
         return center == rhs.center && length == rhs.length && rotation == rhs.rotation && normal == rhs.normal;
     }
-    TG_NODISCARD bool operator!=(rect const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator!=(rect const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

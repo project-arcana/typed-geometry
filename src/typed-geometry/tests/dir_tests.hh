@@ -10,8 +10,8 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool are_orthogonal(dir<D, ScalarT> const& a, dir<D, ScalarT> const& b, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool are_orthogonal(dir<D, ScalarT> const& a, dir<D, ScalarT> const& b, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
 {
-    return tg::abs(dot(a, b)) < eps;
+    return abs(dot(a, b)) < eps;
 }
 }

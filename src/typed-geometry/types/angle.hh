@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {

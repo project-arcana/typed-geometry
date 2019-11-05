@@ -23,43 +23,43 @@ TG_IMPL_DEFINE_UNARY_OP(dir, -);
 
 // decays to vector
 template <int D, class ScalarT, class T>
-TG_NODISCARD constexpr auto operator*(dir<D, ScalarT> const& lhs, T const& rhs) -> decltype(vec<D, ScalarT>(lhs) * rhs)
+[[nodiscard]] constexpr auto operator*(dir<D, ScalarT> const& lhs, T const& rhs) -> decltype(vec<D, ScalarT>(lhs) * rhs)
 {
     return vec<D, ScalarT>(lhs) * rhs;
 }
 template <int D, class ScalarT, class T>
-TG_NODISCARD constexpr auto operator/(dir<D, ScalarT> const& lhs, T const& rhs) -> decltype(vec<D, ScalarT>(lhs) / rhs)
+[[nodiscard]] constexpr auto operator/(dir<D, ScalarT> const& lhs, T const& rhs) -> decltype(vec<D, ScalarT>(lhs) / rhs)
 {
     return vec<D, ScalarT>(lhs) / rhs;
 }
 template <int D, class ScalarT, class T>
-TG_NODISCARD constexpr auto operator+(dir<D, ScalarT> const& lhs, T const& rhs) -> decltype(vec<D, ScalarT>(lhs) + rhs)
+[[nodiscard]] constexpr auto operator+(dir<D, ScalarT> const& lhs, T const& rhs) -> decltype(vec<D, ScalarT>(lhs) + rhs)
 {
     return vec<D, ScalarT>(lhs) + rhs;
 }
 template <int D, class ScalarT, class T>
-TG_NODISCARD constexpr auto operator-(dir<D, ScalarT> const& lhs, T const& rhs) -> decltype(vec<D, ScalarT>(lhs) - rhs)
+[[nodiscard]] constexpr auto operator-(dir<D, ScalarT> const& lhs, T const& rhs) -> decltype(vec<D, ScalarT>(lhs) - rhs)
 {
     return vec<D, ScalarT>(lhs) - rhs;
 }
 
 template <int D, class ScalarT, class T>
-TG_NODISCARD constexpr auto operator*(T const& lhs, dir<D, ScalarT> const& rhs) -> decltype(lhs * vec<D, ScalarT>(rhs))
+[[nodiscard]] constexpr auto operator*(T const& lhs, dir<D, ScalarT> const& rhs) -> decltype(lhs * vec<D, ScalarT>(rhs))
 {
     return lhs * vec<D, ScalarT>(rhs);
 }
 template <int D, class ScalarT, class T>
-TG_NODISCARD constexpr auto operator/(T const& lhs, dir<D, ScalarT> const& rhs) -> decltype(lhs / vec<D, ScalarT>(rhs))
+[[nodiscard]] constexpr auto operator/(T const& lhs, dir<D, ScalarT> const& rhs) -> decltype(lhs / vec<D, ScalarT>(rhs))
 {
     return lhs / vec<D, ScalarT>(rhs);
 }
 template <int D, class ScalarT, class T>
-TG_NODISCARD constexpr auto operator+(T const& lhs, dir<D, ScalarT> const& rhs) -> decltype(lhs + vec<D, ScalarT>(rhs))
+[[nodiscard]] constexpr auto operator+(T const& lhs, dir<D, ScalarT> const& rhs) -> decltype(lhs + vec<D, ScalarT>(rhs))
 {
     return lhs + vec<D, ScalarT>(rhs);
 }
 template <int D, class ScalarT, class T>
-TG_NODISCARD constexpr auto operator-(T const& lhs, dir<D, ScalarT> const& rhs) -> decltype(lhs - vec<D, ScalarT>(rhs))
+[[nodiscard]] constexpr auto operator-(T const& lhs, dir<D, ScalarT> const& rhs) -> decltype(lhs - vec<D, ScalarT>(rhs))
 {
     return lhs - vec<D, ScalarT>(rhs);
 }

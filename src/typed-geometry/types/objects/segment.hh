@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 #include "../size.hh"
 #include "../vec.hh"
 
@@ -51,9 +51,9 @@ struct segment
     constexpr segment() = default;
     constexpr segment(pos_t p0, pos_t p1) : pos0(p0), pos1(p1) {}
 
-    TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
+    [[nodiscard]] constexpr pos_t operator[](ScalarT t) const;
 
-    TG_NODISCARD bool operator==(segment const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1; }
-    TG_NODISCARD bool operator!=(segment const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(segment const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1; }
+    [[nodiscard]] bool operator!=(segment const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

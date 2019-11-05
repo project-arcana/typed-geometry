@@ -5,6 +5,8 @@
 
 namespace tg
 {
+// TODO: make proper generic comp ops
+
 // comp is always component-wise
 TG_IMPL_DEFINE_BINARY_OP(comp, comp, comp, +);
 TG_IMPL_DEFINE_BINARY_OP(comp, comp, comp, -);
@@ -63,4 +65,11 @@ TG_IMPL_DEFINE_BINARY_OP(vec, comp, vec, /);
 
 TG_IMPL_DEFINE_UNARY_OP(comp, +);
 TG_IMPL_DEFINE_UNARY_OP(comp, -);
+TG_IMPL_DEFINE_UNARY_OP(comp, !);
+
+// scalar OP comp, comp OP scalar
+TG_IMPL_DEFINE_BINARY_OP_SCALAR(comp, -);
+TG_IMPL_DEFINE_BINARY_OP_SCALAR(comp, +);
+TG_IMPL_DEFINE_BINARY_OP_SCALAR(comp, *);
+TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(comp);
 }

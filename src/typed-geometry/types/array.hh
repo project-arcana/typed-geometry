@@ -2,7 +2,7 @@
 
 #include <typed-geometry/common/assert.hh>
 
-#include <typed-geometry/types/scalar.hh>
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {

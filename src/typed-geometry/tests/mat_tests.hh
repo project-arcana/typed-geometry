@@ -7,46 +7,46 @@
 namespace tg
 {
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_zero(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_zero_mat(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i; i < D; ++i)
-            if (tg::abs(m[i][j]) > eps)
+            if (abs(m[i][j]) > eps)
                 return false;
 
     return true;
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_identity(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_identity(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i; i < D; ++i)
-            if (tg::abs(m[i][j] - float(i == j)) > eps)
+            if (abs(m[i][j] - float(i == j)) > eps)
                 return false;
 
     return true;
 }
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_symmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_symmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i + 1; i < D; ++i)
-            if (tg::abs(m[i][j] - m[j][i]) > eps)
+            if (abs(m[i][j] - m[j][i]) > eps)
                 return false;
 
     return true;
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_antisymmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_antisymmetric(mat<D, D, ScalarT> const& m, ScalarT eps = 2 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
     {
-        if (tg::abs(m[i][i]) > eps)
+        if (abs(m[i][i]) > eps)
             return false;
 
         for (auto j = i + 1; j < D; ++j)
-            if (tg::abs(m[i][j] + m[j][i]) > eps)
+            if (abs(m[i][j] + m[j][i]) > eps)
                 return false;
     }
 
@@ -54,7 +54,7 @@ TG_NODISCARD constexpr bool is_antisymmetric(mat<D, D, ScalarT> const& m, Scalar
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_orthogonal(mat<D, D, ScalarT> const& m, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_orthogonal(mat<D, D, ScalarT> const& m, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
         for (auto j = i + 1; j < D; ++j)
@@ -65,7 +65,7 @@ TG_NODISCARD constexpr bool is_orthogonal(mat<D, D, ScalarT> const& m, ScalarT e
 }
 
 template <int D, class ScalarT>
-TG_NODISCARD constexpr bool is_orthonormal(mat<D, D, ScalarT> const& m, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool is_orthonormal(mat<D, D, ScalarT> const& m, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
 {
     for (auto i = 0; i < D; ++i)
     {

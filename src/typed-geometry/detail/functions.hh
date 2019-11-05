@@ -27,10 +27,12 @@
 #include <typed-geometry/functions/norm.hh>
 #include <typed-geometry/functions/normal.hh>
 #include <typed-geometry/functions/normalize.hh>
+#include <typed-geometry/functions/orthographic.hh>
 #include <typed-geometry/functions/outer_product.hh>
 #include <typed-geometry/functions/perimeter.hh>
 #include <typed-geometry/functions/perpendicular.hh>
 #include <typed-geometry/functions/perspective.hh>
+#include <typed-geometry/functions/predicates.hh>
 #include <typed-geometry/functions/project.hh>
 #include <typed-geometry/functions/quadrics.hh>
 #include <typed-geometry/functions/random_choice.hh>

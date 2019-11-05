@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 #include "vec.hh"
 
 #include <typed-geometry/common/assert.hh>
@@ -145,9 +145,18 @@ private:
 
 public:
     constexpr mat() = default;
-    template <class Obj, class = enable_if<is_comp_convertible<Obj, vec<R, ScalarT>>>>
+    template <class Obj, class = enable_if<is_mat_convertible<Obj, ScalarT>>>
     explicit constexpr mat(Obj const& v)
     {
+        // init to id
+        m[0][0] = ScalarT(1);
+        if constexpr (R >= 2 && C >= 2)
+            m[1][1] = ScalarT(1);
+        if constexpr (R >= 3 && C >= 3)
+            m[2][2] = ScalarT(1);
+        if constexpr (R >= 4 && C >= 4)
+            m[3][3] = ScalarT(1);
+
         auto s = detail::get_dynamic_comp_size(v);
         m[0] = detail::comp_get(v, 0, s, vec<R, ScalarT>::zero);
 
@@ -164,9 +173,36 @@ public:
     template <class... Args, class = enable_if<sizeof...(Args) == C - 1 && (... && is_same<Args, vec<R, ScalarT>>)>>
     constexpr mat(vec<R, ScalarT> const& c0, Args const&... cN)
     {
+        // init to id
+        m[0][0] = ScalarT(1);
+        if constexpr (R >= 2 && C >= 2)
+            m[1][1] = ScalarT(1);
+        if constexpr (R >= 3 && C >= 3)
+            m[2][2] = ScalarT(1);
+        if constexpr (R >= 4 && C >= 4)
+            m[3][3] = ScalarT(1);
+
         m[0] = c0;
         auto i = 1;
         ((m[i++] = cN), ...);
+    }
+
+    template <int C2, int R2, class ScalarT2>
+    explicit constexpr mat(mat<C2, R2, ScalarT2> const& rhs)
+    {
+        // init to id
+        m[0][0] = ScalarT(1);
+        if constexpr (R >= 2 && C >= 2)
+            m[1][1] = ScalarT(1);
+        if constexpr (R >= 3 && C >= 3)
+            m[2][2] = ScalarT(1);
+        if constexpr (R >= 4 && C >= 4)
+            m[3][3] = ScalarT(1);
+
+        // copy submatrix
+        for (auto x = 0; x < (C < C2 ? C : C2); ++x)
+            for (auto y = 0; y < (R < R2 ? R : R2); ++y)
+                m[x][y] = ScalarT(rhs[x][y]);
     }
 
     constexpr vec<R, ScalarT>& operator[](int i)
@@ -203,15 +239,88 @@ public:
         return detail::mat_row(*this, i);
     }
 
+    constexpr void set_row(int i, vec<C, ScalarT> const& v)
+    {
+        TG_CONTRACT(0 <= i && i < R);
+        m[0][i] = v[0];
+        if constexpr (C >= 2)
+            m[1][i] = v[1];
+        if constexpr (C >= 3)
+            m[2][i] = v[2];
+        if constexpr (C >= 4)
+            m[3][i] = v[3];
+    }
+
+    constexpr void set_col(int i, vec<R, ScalarT> const& v)
+    {
+        TG_CONTRACT(0 <= i && i < C);
+        m[i] = v;
+    }
+
     static const mat zero;
     static const mat ones;
     static const mat identity;
 
-    static constexpr mat<C, R, ScalarT> diag(ScalarT v);
-    static constexpr mat<C, R, ScalarT> diag(vec<detail::min(C, R), ScalarT> const& v);
+    static constexpr mat diag(ScalarT v);
+    static constexpr mat diag(vec<detail::min(C, R), ScalarT> const& v);
 
     template <class... Args>
-    static constexpr mat<C, R, ScalarT> from_cols(Args const&... args)
+    static constexpr mat from_cols(Args const&... args)
+    {
+        return from_cols_(args...);
+    }
+    template <class... Args>
+    static constexpr mat from_rows(Args const&... args)
+    {
+        return from_rows_(args...);
+    }
+
+    // explicit from_rows and from_cols to make it work properly with {...}
+    template <int R2 = R, class = enable_if<R2 == 1>>
+    static constexpr mat from_rows(vec<C, ScalarT> const& row0)
+    {
+        return from_rows_(row0);
+    }
+    template <int R2 = R, class = enable_if<R2 == 2>>
+    static constexpr mat from_rows(vec<C, ScalarT> const& row0, vec<C, ScalarT> const& row1)
+    {
+        return from_rows_(row0, row1);
+    }
+    template <int R2 = R, class = enable_if<R2 == 3>>
+    static constexpr mat from_rows(vec<C, ScalarT> const& row0, vec<C, ScalarT> const& row1, vec<C, ScalarT> const& row2)
+    {
+        return from_rows_(row0, row1, row2);
+    }
+    template <int R2 = R, class = enable_if<R2 == 4>>
+    static constexpr mat from_rows(vec<C, ScalarT> const& row0, vec<C, ScalarT> const& row1, vec<C, ScalarT> const& row2, vec<C, ScalarT> const& row3)
+    {
+        return from_rows_(row0, row1, row2, row3);
+    }
+
+    template <int C2 = C, class = enable_if<C2 == 1>>
+    static constexpr mat from_cols(vec<R, ScalarT> const& col0)
+    {
+        return from_cols_(col0);
+    }
+    template <int C2 = C, class = enable_if<C2 == 2>>
+    static constexpr mat from_cols(vec<R, ScalarT> const& col0, vec<R, ScalarT> const& col1)
+    {
+        return from_cols_(col0, col1);
+    }
+    template <int C2 = C, class = enable_if<C2 == 3>>
+    static constexpr mat from_cols(vec<R, ScalarT> const& col0, vec<R, ScalarT> const& col1, vec<R, ScalarT> const& col2)
+    {
+        return from_cols_(col0, col1, col2);
+    }
+    template <int C2 = C, class = enable_if<C2 == 4>>
+    static constexpr mat from_cols(vec<R, ScalarT> const& col0, vec<R, ScalarT> const& col1, vec<R, ScalarT> const& col2, vec<R, ScalarT> const& col3)
+    {
+        return from_cols_(col0, col1, col2, col3);
+    }
+
+private:
+    template <class... Args>
+    static constexpr mat from_cols_(Args const&... args)
     {
         static_assert(sizeof...(args) == C, "must provide exactly C args");
 
@@ -222,7 +331,7 @@ public:
         return m;
     }
     template <class... Args>
-    static constexpr mat<C, R, ScalarT> from_rows(Args const&... args)
+    static constexpr mat from_rows_(Args const&... args)
     {
         static_assert(sizeof...(args) == R, "must provide exactly R args");
 
@@ -239,7 +348,7 @@ public:
         if constexpr (C >= 4)
             r[3] = m.row(3);
 
-        return m;
+        return r;
     }
 };
 

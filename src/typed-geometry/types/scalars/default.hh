@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../detail/scalars/half.hh"
-#include "../detail/scalars/quarter.hh"
+#include "half.hh"
+#include "quarter.hh"
 
 namespace tg
 {

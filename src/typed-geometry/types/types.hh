@@ -1,7 +1,6 @@
 #pragma once
 
 #include "angle.hh"
-#include "scalar.hh"
 
 #include "array.hh"
 #include "span.hh"
@@ -25,3 +24,10 @@
 #include "transform.hh"
 
 #include "objects/objects.hh"
+
+#include "scalars/scalars.hh"
+
+#include "bezier.hh"
+
+#include "capped_array.hh"
+#include "capped_vector.hh"

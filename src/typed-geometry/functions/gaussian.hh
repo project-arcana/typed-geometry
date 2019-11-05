@@ -12,7 +12,7 @@
 namespace tg
 {
 template <class T, class Rng, class = enable_if<is_rng<Rng>>>
-TG_NODISCARD constexpr T normal(Rng& rng)
+[[nodiscard]] constexpr T normal(Rng& rng)
 {
     if constexpr (is_scalar<T>) // Marsaglia polar method
     {
@@ -24,7 +24,7 @@ TG_NODISCARD constexpr T normal(Rng& rng)
             s = x * x + y * y;
         } while (s > 1 || s == 0);
 
-        return x * tg::sqrt((T(-2) * tg::log(s)) / s);
+        return x * sqrt((T(-2) * tg::log(s)) / s);
     }
     else
     {
@@ -34,7 +34,7 @@ TG_NODISCARD constexpr T normal(Rng& rng)
 }
 
 template <class T, class Rng>
-TG_NODISCARD constexpr T gaussian(Rng& rng, T mean, T sigma)
+[[nodiscard]] constexpr T gaussian(Rng& rng, T mean, T sigma)
 {
     // TODO: scalar, vector, mixed versions
 

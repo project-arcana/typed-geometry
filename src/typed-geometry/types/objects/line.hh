@@ -2,7 +2,7 @@
 
 #include "../dir.hh"
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 #include "../size.hh"
 
 // A line has a direction and a point lying on it
@@ -56,9 +56,9 @@ struct line
 
     static constexpr line from_points(pos_t a, pos_t b);
 
-    TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
+    [[nodiscard]] constexpr pos_t operator[](ScalarT t) const;
 
-    TG_NODISCARD bool operator==(line const& rhs) const { return pos == rhs.pos && dir == rhs.dir; }
-    TG_NODISCARD bool operator!=(line const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(line const& rhs) const { return pos == rhs.pos && dir == rhs.dir; }
+    [[nodiscard]] bool operator!=(line const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

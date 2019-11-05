@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {
@@ -60,7 +60,7 @@ struct ball
     constexpr ball(pos_t c, ScalarT r) : center(c), radius(r) {}
     constexpr ball(sphere_t const& s) : center(s.center), radius(s.radius) {}
 
-    TG_NODISCARD bool operator==(ball const& rhs) const { return center == rhs.center && radius == rhs.radius; }
-    TG_NODISCARD bool operator!=(ball const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(ball const& rhs) const { return center == rhs.center && radius == rhs.radius; }
+    [[nodiscard]] bool operator!=(ball const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

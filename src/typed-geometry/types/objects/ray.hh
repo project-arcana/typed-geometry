@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 #include "../size.hh"
 #include "../dir.hh"
 
@@ -52,9 +52,9 @@ struct ray
     constexpr ray() = default;
     constexpr ray(pos_t origin, dir_t dir) : origin(origin), dir(dir) {}
 
-    TG_NODISCARD constexpr pos_t operator[](ScalarT t) const;
+    [[nodiscard]] constexpr pos_t operator[](ScalarT t) const;
 
-    TG_NODISCARD bool operator==(ray const& rhs) const { return origin == rhs.origin && dir == rhs.dir; }
-    TG_NODISCARD bool operator!=(ray const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(ray const& rhs) const { return origin == rhs.origin && dir == rhs.dir; }
+    [[nodiscard]] bool operator!=(ray const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

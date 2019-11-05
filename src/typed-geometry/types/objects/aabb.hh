@@ -2,8 +2,8 @@
 
 #include <typed-geometry/common/assert.hh>
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "../pos.hh"
-#include "../scalar.hh"
 #include "../vec.hh"
 
 namespace tg
@@ -67,9 +67,9 @@ struct aabb
     {
     }
 
-    TG_NODISCARD constexpr pos_t operator[](tg::comp<D, ScalarT> const& c) const;
+    [[nodiscard]] constexpr pos_t operator[](tg::comp<D, ScalarT> const& c) const;
 
-    TG_NODISCARD bool operator==(aabb const& rhs) const { return min == rhs.min && max == rhs.max; }
-    TG_NODISCARD bool operator!=(aabb const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(aabb const& rhs) const { return min == rhs.min && max == rhs.max; }
+    [[nodiscard]] bool operator!=(aabb const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

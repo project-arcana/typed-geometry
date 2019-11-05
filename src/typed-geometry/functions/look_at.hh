@@ -12,7 +12,7 @@
 namespace tg
 {
 template <class ScalarT>
-TG_NODISCARD constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye, dir<3, ScalarT> const& fwd, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye, dir<3, ScalarT> const& fwd, vec<3, ScalarT> const& ref_up)
 {
     auto right = normalize(cross(vec(fwd), ref_up));
     auto up = vec(cross(right, fwd));
@@ -40,12 +40,12 @@ TG_NODISCARD constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye, di
     return m;
 }
 template <class ScalarT>
-TG_NODISCARD constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye, pos<3, ScalarT> const& target, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye, pos<3, ScalarT> const& target, vec<3, ScalarT> const& ref_up)
 {
     return look_at(eye, normalize(target - eye), ref_up);
 }
 template <class ScalarT>
-TG_NODISCARD constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye, vec<3, ScalarT> const& fwd, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye, vec<3, ScalarT> const& fwd, vec<3, ScalarT> const& ref_up)
 {
     return look_at(eye, normalize(fwd), ref_up);
 }

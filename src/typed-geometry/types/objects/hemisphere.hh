@@ -2,7 +2,7 @@
 
 #include "../dir.hh"
 #include "../pos.hh"
-#include "../scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {
@@ -57,7 +57,7 @@ struct hemisphere
     constexpr hemisphere() = default;
     constexpr hemisphere(pos_t const& c, ScalarT r, dir_t const& normal) : center(c), radius(r), normal(normal) {}
 
-    TG_NODISCARD bool operator==(hemisphere const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
-    TG_NODISCARD bool operator!=(hemisphere const& rhs) const { return !operator==(rhs); }
+    [[nodiscard]] bool operator==(hemisphere const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
+    [[nodiscard]] bool operator!=(hemisphere const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

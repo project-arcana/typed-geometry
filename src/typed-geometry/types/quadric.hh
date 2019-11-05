@@ -92,7 +92,7 @@ public:
     }
 
     // Residual L2 error as given by x^T A x - 2 r^T x + c
-    TG_NODISCARD constexpr ScalarT operator()(pos<2, ScalarT> const& p) const
+    [[nodiscard]] constexpr ScalarT operator()(pos<2, ScalarT> const& p) const
     {
         vec<2, ScalarT> Ax = {
             A00 * p.x + A01 * p.y, //
@@ -250,7 +250,7 @@ public:
     }
 
     // Residual L2 error as given by x^T A x - 2 r^T x + c
-    TG_NODISCARD constexpr ScalarT operator()(pos<3, ScalarT> const& p) const
+    [[nodiscard]] constexpr ScalarT operator()(pos<3, ScalarT> const& p) const
     {
         vec<3, ScalarT> Ax = {
             A00 * p.x + A01 * p.y + A02 * p.z, //

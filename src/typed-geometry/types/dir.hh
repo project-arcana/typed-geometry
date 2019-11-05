@@ -7,8 +7,8 @@
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "fwd.hh"
-#include "scalar.hh"
 
 namespace tg
 {
@@ -86,10 +86,10 @@ struct dir<1, ScalarT>
     template <class T>
     constexpr explicit operator dir<1, T>() const
     {
-        return dir<1, T>(*this);
+        return {T(x)};
     }
 
-    constexpr operator vec<1, ScalarT>() const { return vec<1, ScalarT>(*this); }
+    constexpr operator vec<1, ScalarT>() const { return {x}; }
 };
 
 template <class ScalarT>
@@ -108,10 +108,10 @@ struct dir<2, ScalarT>
     template <class T>
     constexpr explicit operator dir<2, T>() const
     {
-        return dir<2, T>(*this);
+        return {T(x), T(y)};
     }
 
-    constexpr operator vec<2, ScalarT>() const { return vec<2, ScalarT>(*this); }
+    constexpr operator vec<2, ScalarT>() const { return {x, y}; }
 };
 
 template <class ScalarT>
@@ -133,10 +133,10 @@ struct dir<3, ScalarT>
     template <class T>
     constexpr explicit operator dir<3, T>() const
     {
-        return dir<3, T>(*this);
+        return {T(x), T(y), T(z)};
     }
 
-    constexpr operator vec<3, ScalarT>() const { return vec<3, ScalarT>(*this); }
+    constexpr operator vec<3, ScalarT>() const { return {x, y, z}; }
 };
 
 template <class ScalarT>
@@ -161,10 +161,10 @@ struct dir<4, ScalarT>
     template <class T>
     constexpr explicit operator dir<4, T>() const
     {
-        return dir<4, T>(*this);
+        return {T(x), T(y), T(z), T(w)};
     }
 
-    constexpr operator vec<4, ScalarT>() const { return vec<4, ScalarT>(*this); }
+    constexpr operator vec<4, ScalarT>() const { return {x, y, z, w}; }
 };
 
 // non-deducable vec or dir

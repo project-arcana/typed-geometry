@@ -30,7 +30,7 @@ namespace tg
 namespace detail
 {
 template <class T = void, class RangeT, class TransformF, class ReduceF>
-TG_NODISCARD constexpr auto fold_right(RangeT const& values, TransformF&& t, ReduceF&& f)
+[[nodiscard]] constexpr auto fold_right(RangeT const& values, TransformF&& t, ReduceF&& f)
 {
     TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
     using R = same_or<T, element_type<RangeT>>;
@@ -49,7 +49,7 @@ TG_NODISCARD constexpr auto fold_right(RangeT const& values, TransformF&& t, Red
 }
 
 template <class RangeT, class KeyT>
-TG_NODISCARD constexpr auto min_by(RangeT const& values, KeyT&& key = {})
+[[nodiscard]] constexpr auto min_by(RangeT const& values, KeyT&& key = {})
 {
     TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
     auto it = tg::begin(values);
@@ -74,7 +74,7 @@ TG_NODISCARD constexpr auto min_by(RangeT const& values, KeyT&& key = {})
 }
 
 template <class RangeT, class KeyT>
-TG_NODISCARD constexpr auto max_by(RangeT const& values, KeyT&& key = {})
+[[nodiscard]] constexpr auto max_by(RangeT const& values, KeyT&& key = {})
 {
     TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
     auto it = tg::begin(values);
@@ -99,50 +99,50 @@ TG_NODISCARD constexpr auto max_by(RangeT const& values, KeyT&& key = {})
 }
 
 template <class RangeT, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto min_element(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto min_element(RangeT const& values, TransformT&& transform = {})
 {
     return detail::fold_right(values, transform, [](auto&& a, auto&& b) { return min(a, b); });
 }
 
 template <class RangeT, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto max_element(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto max_element(RangeT const& values, TransformT&& transform = {})
 {
     return detail::fold_right(values, transform, [](auto&& a, auto&& b) { return max(a, b); });
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto sum(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto sum(RangeT const& values, TransformT&& transform = {})
 {
     return detail::fold_right<T>(values, transform, [](auto&& a, auto&& b) { return a + b; });
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto product(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto product(RangeT const& values, TransformT&& transform = {})
 {
     return detail::fold_right<T>(values, transform, [](auto&& a, auto&& b) { return a * b; });
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto arithmetic_mean(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto arithmetic_mean(RangeT const& values, TransformT&& transform = {})
 {
     auto const s = sum<T>(values, transform);
     return s / static_cast<decltype(s)>(tg::container_size(values));
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto average(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto average(RangeT const& values, TransformT&& transform = {})
 {
     return arithmetic_mean<T>(values, transform);
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto mean(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto mean(RangeT const& values, TransformT&& transform = {})
 {
     return arithmetic_mean<T>(values, transform);
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto variance(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto variance(RangeT const& values, TransformT&& transform = {})
 {
     using R = same_or<T, element_type<RangeT>>;
 
@@ -155,8 +155,8 @@ TG_NODISCARD constexpr auto variance(RangeT const& values, TransformT&& transfor
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
-TG_NODISCARD constexpr auto standard_deviation(RangeT const& values, TransformT&& transform = {})
+[[nodiscard]] constexpr auto standard_deviation(RangeT const& values, TransformT&& transform = {})
 {
-    return tg::sqrt(variance<T>(values, transform));
+    return sqrt(variance<T>(values, transform));
 }
 }

@@ -8,7 +8,7 @@
 namespace tg
 {
 template <class ScalarT>
-TG_NODISCARD constexpr vec<3, ScalarT> cross(vec<3, ScalarT> const& a, vec<3, ScalarT> const& b)
+[[nodiscard]] constexpr vec<3, ScalarT> cross(vec<3, ScalarT> const& a, vec_or_dir<3, ScalarT> const& b)
 {
     return {
         a.y * b.z - a.z * b.y, //
@@ -18,13 +18,13 @@ TG_NODISCARD constexpr vec<3, ScalarT> cross(vec<3, ScalarT> const& a, vec<3, Sc
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT cross(vec<2, ScalarT> const& a, vec<2, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT cross(vec<2, ScalarT> const& a, vec_or_dir<2, ScalarT> const& b)
 {
     return a.x * b.y - a.y * b.x;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr vec<3, ScalarT> cross(dir<3, ScalarT> const& a, dir<3, ScalarT> const& b)
+[[nodiscard]] constexpr vec<3, ScalarT> cross(dir<3, ScalarT> const& a, vec_or_dir<3, ScalarT> const& b)
 {
     return {
         a.y * b.z - a.z * b.y, //
@@ -34,13 +34,13 @@ TG_NODISCARD constexpr vec<3, ScalarT> cross(dir<3, ScalarT> const& a, dir<3, Sc
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr ScalarT cross(dir<2, ScalarT> const& a, dir<2, ScalarT> const& b)
+[[nodiscard]] constexpr ScalarT cross(dir<2, ScalarT> const& a, vec_or_dir<2, ScalarT> const& b)
 {
     return a.x * b.y - a.y * b.x;
 }
 
 template <class ScalarT>
-TG_NODISCARD constexpr mat<3, 3, ScalarT> cross_product_matrix(vec<3, ScalarT> const& v)
+[[nodiscard]] constexpr mat<3, 3, ScalarT> cross_product_matrix(vec<3, ScalarT> const& v)
 {
     mat<3, 3, ScalarT> m;
     m[1][0] = -v.z;

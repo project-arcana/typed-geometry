@@ -4,7 +4,7 @@
 
 #include <typed-geometry/detail/utility.hh>
 
-#include "scalar.hh"
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {
