@@ -67,17 +67,18 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
     };
 
     // TODO how to capture f? &f?
-    auto renderBlock = [f, edgeFunction, edgeConstants](int x, int y, int size, bool contained) {
+    auto renderBlock = [f, edgeFunction, edgeConstants](int x, int y, int sizeX = 8, int sizeY = 8, bool contained = false) {
         // all pixels in this block are contained, simply render
         if (contained)
         {
-            for (auto py = y; py < y + size; py++)
-                for (auto px = x; px < x + size; px++)
+            // TODO <= ?
+            for (auto py = y; py <= y + sizeY; py++)
+                for (auto px = x; px <= x + sizeX; px++)
                     f(tg::ipos2(px, py));
         }
         else
         {
-            // compute once, then increment as we go zig-zag
+            // compute once, increment later
             auto pos = tg::ipos2(x, y);
             auto cy1 = edgeFunction(pos, 0);
             auto cy2 = edgeFunction(pos, 1);
@@ -87,27 +88,26 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
             auto cx2 = cy2;
             auto cx3 = cy3;
 
-
-            // TODO incremental half space with edge functions
-            for (auto py = y; py < y + size; py++)
+            // TODO <= ?
+            for (auto py = y; py <= y + sizeY; py++)
             {
                 // update cx values to new row too
                 cx1 = cy1;
                 cx2 = cy2;
                 cx3 = cy3;
 
-                for (auto px = x; px < x + size; px++)
+                for (auto px = x; px <= x + sizeX; px++)
                 {
-                    // TODO not sure about sign here, this should do it though
-                    // TODO in paper just > not >=
-                    if ((cx1 >= 0 && cx2 >= 0 && cx3 >= 0) || (cx1 < 0 && cx2 < 0 && cx3 < 0))
+                    // note: using > and < to comply with tg::contains. equal to 0 if on edge/corner.
+                    if ((cx1 > 0 && cx2 > 0 && cx3 > 0) || (cx1 < 0 && cx2 < 0 && cx3 < 0))
                     {
+                        f(tg::ipos2(px, py));
                     }
                     // increment
-                    // TODO minus sign?
-                    cx1 += edgeConstants[3 * 0]; // I values
-                    cx2 += edgeConstants[3 * 1];
-                    cx3 += edgeConstants[3 * 2];
+                    // TODO in paper they use a minus sign for no specified reason
+                    cx1 += edgeConstants[3 * 0 + 0]; // I values
+                    cx2 += edgeConstants[3 * 1 + 0];
+                    cx3 += edgeConstants[3 * 2 + 0];
                 }
 
                 // update cy values
@@ -118,8 +118,20 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
         }
     };
 
-    // TODO rn: true, always use block rasterization
-    if (true || (orientation > 0.4 && orientation < 1.6f))
+    bool pixelSets = orientation > 0.4 && orientation < 1.6f;
+
+    // DEBUG
+    pixelSets = false;
+
+    if (!pixelSets)
+    {
+        auto width = box.max.x - box.min.x;
+        auto height = box.max.y - box.min.y;
+
+        // render pixel by pixel
+        renderBlock(box.min.x, box.min.y, width, height);
+    }
+    else
     {
         // find topmost vertex to get left and right point
         // sort vertices vertically
