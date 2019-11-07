@@ -118,7 +118,8 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
     auto width = box.max.x - box.min.x;
     auto height = box.max.y - box.min.y;
 
-    if (!pixelSets)
+    // DEBUG
+    if (true || !pixelSets)
     {
         // render pixel by pixel
         renderBlock(box.min.x, box.min.y, width, height);
@@ -145,7 +146,6 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
         auto leftPoint = ifloor(verts[0].x);
         auto rightPoint = iceil(verts[0].x);
 
-
         for (auto upwards = 0; upwards < 2; upwards++)
         {
             if (upwards)
@@ -155,49 +155,79 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
                 rightPoint = iceil(verts[2].x);
             }
 
-            // TODO at some point not sure whether = should be involved, i.e. <= instead of <
+            // TODO at a few points not sure whether = should be involved, i.e. <= instead of <
             auto j = box.min.y;
             if (upwards)
-                j = box.max.y &~(blockSize-1);
-            for (; upwards ? j > halfY : j < halfY + q; upwards ? j -= q : j += q)
+                j = box.max.y & ~(blockSize - 1);
+            for (; upwards ? j >= halfY : j <= halfY + q; upwards ? j -= blockSize : j += blockSize)
             {
-                for (auto x = box.min.x; x <= box.max.x; x += q)
+                auto midPoint = leftPoint + ((rightPoint - leftPoint) >> 1) & ~(blockSize - 1);
+                auto x = midPoint;
+
+                auto insideBlockLeft = false; // signals whether left bound may be updated
+                for (auto left = 0; left < 2; left++)
                 {
-                    // are all/none/some corners of current box contained?
-                    // TODO why -1?
-                    const int xVals[2] = {x, x + blockSize};
-                    const int yVals[2] = {j, j + blockSize};
-                    auto count = 0;
-                    for (auto vx = 0; vx < 2; vx++)
+                    for (; left ? x >= box.min.x - blockSize : x <= box.max.x; x += q)
                     {
-                        for (auto vy = 0; vy < 2; vy++)
+                        // are all/none/some corners of current box contained?
+                        // TODO why -1?
+                        const int xVals[2] = {x, x + blockSize};
+                        const int yVals[2] = {j, j + blockSize};
+                        auto count = 0;
+                        for (auto vx = 0; vx < 2; vx++)
                         {
-                            auto corner = tg::ipos2(xVals[vx], yVals[vy]);
-                            auto F0 = edgeFunction(corner, 0);
-                            auto F1 = edgeFunction(corner, 1);
-                            auto F2 = edgeFunction(corner, 2);
-                            if ((F0 > 0 && F1 > 0 && F2 > 0) || (F0 < 0 && F1 < 0 && F2 < 0))
-                                count++;
+                            for (auto vy = 0; vy < 2; vy++)
+                            {
+                                auto corner = tg::ipos2(xVals[vx], yVals[vy]);
+                                auto F0 = edgeFunction(corner, 0);
+                                auto F1 = edgeFunction(corner, 1);
+                                auto F2 = edgeFunction(corner, 2);
+                                if ((F0 >= 0 && F1 >= 0 && F2 >= 0) || (F0 <= 0 && F1 <= 0 && F2 <= 0))
+                                    count++;
+                            }
+                        }
+
+
+                        if (count == 0)
+                        {
+                            // box' corners not in triangle at all
+                            continue;
+                        }
+                        else
+                        {
+                            if (left)
+                                insideBlockLeft = true;
+                            if (count == 4)
+                            {                                                  // box completely contained, render all contained pixels
+                                renderBlock(x, j, blockSize, blockSize, true); // true: just render
+                            }
+
+                            else
+                            {
+                                // box partly contained, fallback to pixel rendering
+                                renderBlock(x, j, blockSize, blockSize);
+                            }
                         }
                     }
 
-                    // box is not on triangle at all
-                    if (count == 0)
+                    // turn around
+                    q = -q;
+
+
+                    if (left)
                     {
-                        continue;
+                        // p.15: "..the value of the ‘Left bound’ should only be changed if any inside block is found during the left directed traversal.."
+                        // TODO this is however neglected in their pseudo code?
+                        if (insideBlockLeft)
+                            leftPoint = x + blockSize;
                     }
-                    else
+                    else // walked right
                     {
-                        // box completely contained, render all contained pixels
-                        if (count == 4)
-                        {
-                            renderBlock(x, j, q, q, true); // true: just render
-                        }
-                        // box partly contained, fallback to pixel rendering
-                        else
-                        {
-                            renderBlock(x, j, q, q);
-                        }
+                        // update bound, as we started inside the triangle (comp. above)
+                        rightPoint = x - blockSize;
+
+                        // start at one block to the left
+                        x = midPoint - blockSize;
                     }
                 }
             }
