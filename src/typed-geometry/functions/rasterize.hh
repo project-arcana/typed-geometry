@@ -39,12 +39,8 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
     // clip to render target
 
     // TODO left and right point computed later would be off?
-    // thus currently skipped
-    if (false)
-    {
-        box.min = tg::ipos2(max(ifloor(fbox.min), limitMin));
-        box.max = tg::ipos2(min(iceil(fbox.max), limitMax));
-    }
+    box.min = tg::ipos2(max(ifloor(fbox.min), limitMin));
+    box.max = tg::ipos2(min(iceil(fbox.max), limitMax));
 
     // TODO assuming ccw! (irrelevant?)
     tg::pos<2, ScalarT> verts[3] = {t.pos0, t.pos1, t.pos2};
@@ -72,8 +68,8 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
         if (contained)
         {
             // TODO <= ?
-            for (auto py = y; py <= y + sizeY; py++)
-                for (auto px = x; px <= x + sizeX; px++)
+            for (auto py = y; py < y + sizeY; py++)
+                for (auto px = x; px < x + sizeX; px++)
                     f(tg::ipos2(px, py));
         }
         else
@@ -88,15 +84,14 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
             auto cx2 = cy2;
             auto cx3 = cy3;
 
-            // TODO <= ?
-            for (auto py = y; py <= y + sizeY; py++)
+            for (auto py = y; py < y + sizeY; py++)
             {
                 // update cx values to new row too
                 cx1 = cy1;
                 cx2 = cy2;
                 cx3 = cy3;
 
-                for (auto px = x; px <= x + sizeX; px++)
+                for (auto px = x; px < x + sizeX; px++)
                 {
                     // note: using > and < to comply with tg::contains. equal to 0 if on edge/corner.
                     if ((cx1 > 0 && cx2 > 0 && cx3 > 0) || (cx1 < 0 && cx2 < 0 && cx3 < 0))
@@ -120,21 +115,23 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
 
     bool pixelSets = orientation > 0.4 && orientation < 1.6f;
 
-    // DEBUG
-    pixelSets = false;
+    auto width = box.max.x - box.min.x;
+    auto height = box.max.y - box.min.y;
 
     if (!pixelSets)
     {
-        auto width = box.max.x - box.min.x;
-        auto height = box.max.y - box.min.y;
-
         // render pixel by pixel
         renderBlock(box.min.x, box.min.y, width, height);
     }
     else
     {
-        // find topmost vertex to get left and right point
-        // sort vertices vertically
+        // TODO this might lead to skipping very small triangles, or does the midpoint method fix that?
+        auto const blockSize = 8; // 8x8 supposedly is a good block size
+        auto q = blockSize;       // step, will be flipped
+
+        auto const halfY = (box.min.y + ((box.max.y - box.min.y) >> 1)) & ~(blockSize - 1);
+
+        // sort vertices vertically (first is top)
         if (verts[0].y > verts[1].y)
             std::swap(verts[0], verts[1]);
         if (verts[1].y > verts[2].y)
@@ -144,144 +141,69 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
                 std::swap(verts[0], verts[1]);
         }
 
-        // TODO paper does not specify what left and right point exactly is supposed to be initially
-        // assuming is simply the x coord, but ifloor/iceil?
-
-        // first element is top
+        // we start at the top vertex
         auto leftPoint = ifloor(verts[0].x);
         auto rightPoint = iceil(verts[0].x);
 
-        int const blockSize = 8; // 8x8 supposedly is a good block size
-        auto q = blockSize;
-        // TODO maybe use normal arithmetic? or proper box type?
-        auto const halfY = (box.min.y + ((box.max.y - box.min.y) >> 1)) & ~(blockSize - 1);
 
-        for (auto run = 0; run < 2; run++)
+        for (auto upwards = 0; upwards < 2; upwards++)
         {
-            // run from top, then bottom
-            if (run > 0)
+            if (upwards)
             {
-                // use bottom vertex
+                // start at bottom midpoint to go upwards
                 leftPoint = ifloor(verts[2].x);
                 rightPoint = iceil(verts[2].x);
             }
+
+            // TODO at some point not sure whether = should be involved, i.e. <= instead of <
             auto j = box.min.y;
-            auto increment = blockSize;
-
-            if (run > 0)
+            if (upwards)
+                j = box.max.y &~(blockSize-1);
+            for (; upwards ? j > halfY : j < halfY + q; upwards ? j -= q : j += q)
             {
-                j = box.max.y & ~(blockSize - 1);
-                increment *= -1;
-            }
-
-            for (; run == 0 ? j < halfY + blockSize : j > halfY; j += increment)
-            {
-                // TODO not sure if bit operation is correct
-                auto midpoint = (leftPoint + ((rightPoint - leftPoint) >> 1)) & ~(blockSize - 1);
-                auto x = midpoint;
-
-                for (auto k = 0; k < 2; k++)
+                for (auto x = box.min.x; x <= box.max.x; x += q)
                 {
-                    // from midpoint, walk to left/right border in steps of boxsize
-                    for (; q > 0 ? x < box.max.x : x > box.min.x - q; x += q)
+                    // are all/none/some corners of current box contained?
+                    // TODO why -1?
+                    const int xVals[2] = {x, x + blockSize};
+                    const int yVals[2] = {j, j + blockSize};
+                    auto count = 0;
+                    for (auto vx = 0; vx < 2; vx++)
                     {
-                        // are all/none/some corners of current box contained?
-                        const int xVals[2] = {x, x + blockSize - 1};
-                        const int yVals[2] = {j, j + blockSize - 1};
-
-                        auto count = 0;
-                        for (auto vx = 0; vx < 2; vx++)
-                            for (auto vy = 0; vy < 2; vy++)
-                            {
-                                auto corner = tg::ipos2(xVals[vx], yVals[vy]);
-                                if (edgeFunction(corner, 0) >= 0 && edgeFunction(corner, 1) >= 0 && edgeFunction(corner, 2) >= 0)
-                                {
-                                    count++;
-                                }
-                            }
-                        if (count == 0)
+                        for (auto vy = 0; vy < 2; vy++)
                         {
-                            // TODO pseudo code in paper says "continue", but shouldn't we break here?
-                            // "When the edge of a triangle is reached in a row, we can move straight to the next row because only empty blocks can be
-                            // found from this position."
-                            break;
-                        }
-                        else
-                        {
-                            if (count == 4)
-                            {
-                                // all corners inside triangle
-                                // render block with topleft corner at i, j and size q*q
-                                renderBlock(x, j, q, true); // true: just render
-                            }
-                            else
-                            {
-                                // some contained, fall back to incremental half-space rasterization
-                                renderBlock(x, j, q, false); // false: check for each pixel
-                            }
+                            auto corner = tg::ipos2(xVals[vx], yVals[vy]);
+                            auto F0 = edgeFunction(corner, 0);
+                            auto F1 = edgeFunction(corner, 1);
+                            auto F2 = edgeFunction(corner, 2);
+                            if ((F0 > 0 && F1 > 0 && F2 > 0) || (F0 < 0 && F1 < 0 && F2 < 0))
+                                count++;
                         }
                     }
-                    // swap direction
-                    q = -q;
 
-                    // TODO paper mentions that check is necessary whether we started *outside* the triangle before updating the bounds
-                    if (k == 0)
-                        rightPoint = x - blockSize;
+                    // box is not on triangle at all
+                    if (count == 0)
+                    {
+                        continue;
+                    }
                     else
-                        leftPoint = x + blockSize;
-                    x = midpoint - blockSize;
+                    {
+                        // box completely contained, render all contained pixels
+                        if (count == 4)
+                        {
+                            renderBlock(x, j, q, q, true); // true: just render
+                        }
+                        // box partly contained, fallback to pixel rendering
+                        else
+                        {
+                            renderBlock(x, j, q, q);
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-/*
-template  <class ScalarT>
-constexpr  ScalarT perp_dot(tg::vec<2, ScalarT> a, tg::vec<2, ScalarT> b){
-    // 2d equivalent of 3d cross-product
-    return dot(perpendicular(a), b);
-}
-// F: (tg::ipos2 p) -> void
-template <class ScalarT, class F>
-constexpr void simple_fill(triangle<2, ScalarT> const& t,
-                         F&& f,
-                         const tg::ipos2& limitMin = tg::ipos2(tg::detail::limits<int>().min()),
-                         const tg::ipos2& limitMax = tg::ipos2(tg::detail::limits<int>().max()))
-{
-    // half-space rasterization
-    // adapted from page 7 https://www.uni-obuda.hu/journal/Mileff_Nehez_Dudra_63.pdf
-
-    auto const box = aabb_of(t);
-
-    // margin so that we can safely round/clamp to integer coords
-    // limitMin/Max to only rasterize on desired image size
-    auto const minPix = max(ifloor(box.min), limitMin);
-    auto const maxPix = min(iceil(box.max), limitMax);
-
-    // TODO the paper seems to be wrong here
-
-    auto ab = t.pos1 - t.pos0; // from a to b
-    auto bc = t.pos2 - t.pos1;
-    auto ca = t.pos0 - t.pos2;
-
-    for (auto y = minPix.y; y <= maxPix.y; ++y)
-        for (auto x = minPix.x; x <= maxPix.x; ++x)
-        {
-            auto const pos = tg::pos<2, ScalarT>(ScalarT(x), ScalarT(y));
-            auto const c0 = perp_dot(ab, pos - t.pos0);
-            auto const c1 = perp_dot(bc, pos - t.pos1);
-            auto const c2 = perp_dot(ca, pos - t.pos2);
-
-            // perp_dot(a,b) > 0 -> b is ccw from a
-            if ((c0 >= 0 && c1 >= 0 && c2 >= 0) || (c0 < 0 && c1 < 0 && c2 < 0))
-            {
-                // inside triangle
-                f(ipos2(x, y));
-            }
-        }
-}
-*/
 
 // F: (tg::ipos2 p, float a, float b) -> void
 template <class ScalarT, class F>
