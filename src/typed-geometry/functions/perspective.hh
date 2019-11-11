@@ -83,4 +83,10 @@ template <class ScalarT>
     TG_CONTRACT(0 <= d && d <= 1);
     return near_plane / d;
 }
+
+template <class ScalarT>
+[[nodiscard]] mat<4, 4, ScalarT> perspective(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane, ScalarT far_plane)
+{
+    return perspective_opengl(horizontal_fov, aspect_ratio, near_plane, far_plane);
+}
 }
