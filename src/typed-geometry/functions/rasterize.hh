@@ -141,46 +141,78 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
         auto leftPoint = ifloor(verts[0].x) - 1; // TODO - 1?
         auto rightPoint = iceil(verts[0].x);
 
+        auto j = box.min.y;
+        auto midPoint = int(leftPoint + (rightPoint - leftPoint) / 2.0f);
+        // compute edge functions at top vertex once
+        // will increment later
+        auto pos = tg::ipos2(midPoint, j);
+        auto top1 = edgeFunction(pos, 0);
+        auto top2 = edgeFunction(pos, 1);
+        auto top3 = edgeFunction(pos, 2);
+
         for (auto upwards = 0; upwards < 2; upwards++)
         {
             if (upwards)
             {
+                auto dx = midPoint;
+                auto dy = j;
                 // start at bottom midpoint to go upwards
                 leftPoint = ifloor(verts[2].x) - 1; // TODO - 1?
                 rightPoint = iceil(verts[2].x);
+                midPoint = int(leftPoint + (rightPoint - leftPoint) / 2.0f);
+
+                j = box.max.y;
+
+                dx -= midPoint;
+                dy -= j;
+
+                top1 += dx * edgeConstants[3 * 0 + 0];
+                top1 += dy * edgeConstants[3 * 0 + 1];
+
+                top2 += dx * edgeConstants[3 * 1 + 0];
+                top2 += dy * edgeConstants[3 * 1 + 1];
+
+                top3 += dx * edgeConstants[3 * 2 + 0];
+                top3 += dy * edgeConstants[3 * 2 + 1];
             }
 
-            // TODO at a few points not sure whether = should be involved, i.e. <= instead of <
-            auto j = box.min.y;
-            if (upwards)
-                j = box.max.y; // & ~(blockSize - 1);
-            for (; upwards ? j >= halfY : j <= halfY + q; upwards ? j-- : j++)
+            auto cy1 = top1;
+            auto cy2 = top2;
+            auto cy3 = top3;
+
+            auto pos = tg::ipos2(midPoint, j);
+            cy1 = edgeFunction(pos, 0);
+            cy2 = edgeFunction(pos, 1);
+            cy3 = edgeFunction(pos, 2);
+
+            for (; upwards ? j >= halfY : j <= halfY + 1; upwards ? j-- : j++)
             {
-                auto midPoint = int(leftPoint + (rightPoint - leftPoint) / 2.0f);
+                auto dx = midPoint;
+                midPoint = int(leftPoint + (rightPoint - leftPoint) / 2.0f);
+                dx -= midPoint;
+
+                auto cx1 = cy1 - dx * edgeConstants[3 * 0 + 0];
+                auto cx2 = cy2 - dx * edgeConstants[3 * 1 + 0];
+                auto cx3 = cy3 - dx * edgeConstants[3 * 2 + 0];
+
+                cy1 = cx1;
+                cy2 = cx2;
+                cy3 = cx3;
+
+/*
+                // TODO compute this by incrementing ^^^
+                auto pos = tg::ipos2(midPoint, j);
+                cx1 = edgeFunction(pos, 0);
+                cx2 = edgeFunction(pos, 1);
+                cx3 = edgeFunction(pos, 2);*/
 
                 auto x = midPoint;
 
-                // evaluate edge function just once, increment whenever x and y change
-                // compute once, increment later
-                auto pos = tg::ipos2(x, j);
-                auto cy1 = edgeFunction(pos, 0);
-                auto cy2 = edgeFunction(pos, 1);
-                auto cy3 = edgeFunction(pos, 2);
-
-                auto cx1 = cy1;
-                auto cx2 = cy2;
-                auto cx3 = cy3;
 
                 auto insideBlockLeft = false; // signals whether left bound may be updated
 
                 for (auto left = 0; left < 2; left++)
                 {
-                    // TODO derive from movement by increments
-                    pos = tg::ipos2(x, j);
-                    cx1 = edgeFunction(pos, 0); // cx1;
-                    cx2 = edgeFunction(pos, 1); // cx2;
-                    cx3 = edgeFunction(pos, 2); // cx3;
-
                     for (; left ? x >= box.min.x - 1 : x <= box.max.x; x += q)
                     {
                         auto out = (cx1 > 0 && cx2 > 0 && cx3 > 0);
@@ -212,10 +244,19 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
                         rightPoint = x - 1;
 
                         // TODO change cx!!
-                        // start at one block to the left
+                        // start at one block to the left, update edge eval
                         x = midPoint - 1;
+
+                        cx1 = cy1 - edgeConstants[3 * 0 + 0];
+                        cx2 = cy2 - edgeConstants[3 * 1 + 0];
+                        cx3 = cy3 - edgeConstants[3 * 2 + 0];
                     }
                 }
+
+                auto sign = upwards ? -1 : 1;
+                cy1 += edgeConstants[3 * 0 + 1] * sign;
+                cy2 += edgeConstants[3 * 1 + 1] * sign;
+                cy3 += edgeConstants[3 * 2 + 1] * sign;
             }
         }
     }
