@@ -9,7 +9,7 @@ namespace tg
 template <class T, size_t N>
 struct capped_array
 {
-    using index_t = detail::size_t_for<N, alignof(T)>;
+    using index_t = detail::compact_size_t_typed<T, N>;
 
     constexpr capped_array(size_t size) : _size(index_t(size))
     {

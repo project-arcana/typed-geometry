@@ -1,5 +1,7 @@
 #pragma once
 
+#include <typed-geometry/common/random.hh>
+
 namespace tg
 {
 struct splitmix;
