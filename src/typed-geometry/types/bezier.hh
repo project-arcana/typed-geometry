@@ -39,6 +39,21 @@ struct bezier
             *this = bezier(elevate(rhs));
     }
 
+    template <class OtherControlPointT>
+    constexpr explicit bezier(bezier<Degree, OtherControlPointT> const& rhs)
+    {
+        for (auto i = 0; i <= Degree; ++i)
+            control_points[i] = ControlPointT(rhs.control_points[i]);
+    }
+
+    template <class OtherControlPointT>
+    constexpr explicit bezier(bezier<Degree, OtherControlPointT>&& rhs)
+    {
+        for (auto i = 0; i <= Degree; ++i)
+            control_points[i] = ControlPointT(rhs.control_points[i]);
+    }
+
+
     template <class ScalarT, class MixT = detail::default_mix_t>
     [[nodiscard]] constexpr auto operator()(ScalarT const& t) const;
 
