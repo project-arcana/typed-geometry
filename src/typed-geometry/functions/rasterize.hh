@@ -49,6 +49,8 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
         edgeConstants[e * 3 + 1] = verts[next].x - verts[e].x;
         edgeConstants[e * 3 + 2] = verts[e].x * verts[next].y - verts[e].y * verts[next].x;
     }
+
+    // TODO ipos2 by reference?
     auto edgeFunction = [edgeConstants](const tg::ipos2& P, int f = 0) {
         auto first = min(f * 3, 6);
         return edgeConstants[first + 0] * P.x + edgeConstants[first + 1] * P.y + edgeConstants[first + 2];
@@ -112,20 +114,18 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
     auto height = box.max.y - box.min.y;
 
     // DEBUG
-    // TODO use pixel approach only
+    // TODO remove false
     if (false && !pixelSets)
     {
-        // render pixel by pixel
+        // ruse naive pixel approach
         renderBlock(box.min.x, box.min.y, width, height);
     }
-
     else
     {
-        // TODO this might lead to skipping very small triangles, or does the midpoint method fix that?
-        auto const blockSize = 1; // 8x8 supposedly is a good block size
-        auto q = blockSize;       // step, will be flipped
+        // not using blocks but bisection to start at top vertex and skip empty pixels
+        auto q = 1; // step, will be flipped
 
-        auto const halfY = (box.min.y + ((box.max.y - box.min.y) >> 1)); //& ~(blockSize - 1);
+        auto const halfY = box.min.y + (box.max.y - box.min.y) / 2.0f;
 
         // sort vertices vertically (first is top)
         if (verts[0].y > verts[1].y)
@@ -146,92 +146,109 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
             if (upwards)
             {
                 // start at bottom midpoint to go upwards
-                leftPoint = ifloor(verts[2].x);
+                leftPoint = ifloor(verts[2].x) - 1; // TODO - 1?
                 rightPoint = iceil(verts[2].x);
             }
 
             // TODO at a few points not sure whether = should be involved, i.e. <= instead of <
             auto j = box.min.y;
             if (upwards)
-                j = box.max.y;// & ~(blockSize - 1);
-            for (; upwards ? j >= halfY : j <= halfY + q; upwards ? j -= blockSize : j += blockSize)
+                j = box.max.y; // & ~(blockSize - 1);
+            for (; upwards ? j >= halfY : j <= halfY + q; upwards ? j-- : j++)
             {
-                auto midPoint = leftPoint + ((rightPoint - leftPoint) >> 1);// & ~(blockSize - 1);
+                auto midPoint = int(leftPoint + (rightPoint - leftPoint) / 2.0f);
+
                 auto x = midPoint;
 
+                // evaluate edge function just once, increment whenever x and y change
+                // compute once, increment later
+                auto pos = tg::ipos2(x, j);
+                auto cy1 = edgeFunction(pos, 0);
+                auto cy2 = edgeFunction(pos, 1);
+                auto cy3 = edgeFunction(pos, 2);
+
+                auto cx1 = cy1;
+                auto cx2 = cy2;
+                auto cx3 = cy3;
+
                 auto insideBlockLeft = false; // signals whether left bound may be updated
+
                 for (auto left = 0; left < 2; left++)
                 {
-                    for (; left ? x >= box.min.x - blockSize : x <= box.max.x; x += q)
+                    // TODO derive from movement by increments
+                    pos = tg::ipos2(x, j);
+                    cx1 = edgeFunction(pos, 0); // cx1;
+                    cx2 = edgeFunction(pos, 1); // cx2;
+                    cx3 = edgeFunction(pos, 2); // cx3;
+
+                    for (; left ? x >= box.min.x - 1 : x <= box.max.x; x += q)
                     {
-                        // are all/none/some corners of current box contained?
-                        // TODO ignoring box approach
-                        /*
-                        const int xVals[2] = {x, x + blockSize};
-                        const int yVals[2] = {j, j + blockSize};
-                        auto count = 0;
-                        for (auto vx = 0; vx < 2; vx++)
+                        auto out = (cx1 > 0 && cx2 > 0 && cx3 > 0);
+                        auto in = (cx1 < 0 && cx2 < 0 && cx3 < 0);
+                        if (in || out)
                         {
-                            for (auto vy = 0; vy < 2; vy++)
-                            {
-                                auto corner = tg::ipos2(xVals[vx], yVals[vy]);
-                                auto F0 = edgeFunction(corner, 0);
-                                auto F1 = edgeFunction(corner, 1);
-                                auto F2 = edgeFunction(corner, 2);
-                                if ((F0 >= 0 && F1 >= 0 && F2 >= 0) || (F0 <= 0 && F1 <= 0 && F2 <= 0))
-                                    count++;
-                            }
+                            f(tg::ipos2(x, j));
                         }
 
-
-                        if (count == 0)
-                        {
-                            // box' corners not in triangle at all
-                            continue;
-                        }
-                        else
-                        {
-                            if (left)
-                                insideBlockLeft = true;
-                            if (count == 4)
-                            {                                                  // box completely contained, render all contained pixels
-                                renderBlock(x, j, blockSize, blockSize, true); // true: just render
-                            }
-
-                            else
-                            {
-                                // box partly contained, fallback to pixel rendering
-                                renderBlock(x, j, blockSize, blockSize);
-                            }
-                        }*/
-                        // TODO construct edge functions just once, not for each pixel!
-                        renderBlock(x, j, blockSize, blockSize);
+                        // increment
+                        cx1 += edgeConstants[3 * 0 + 0] * q; // I values
+                        cx2 += edgeConstants[3 * 1 + 0] * q;
+                        cx3 += edgeConstants[3 * 2 + 0] * q;
                     }
 
                     // turn around
                     q = -q;
-
 
                     if (left)
                     {
                         // p.15: "..the value of the ‘Left bound’ should only be changed if any inside block is found during the left directed traversal.."
                         // TODO this is however neglected in their pseudo code?
                         if (insideBlockLeft)
-                            leftPoint = x + blockSize;
+                            leftPoint = x + 1;
                     }
                     else // walked right
                     {
                         // update bound, as we started inside the triangle (comp. above)
-                        rightPoint = x - blockSize;
+                        rightPoint = x - 1;
 
+                        // TODO change cx!!
                         // start at one block to the left
-                        x = midPoint - blockSize;
+                        x = midPoint - 1;
                     }
                 }
             }
         }
     }
 }
+
+/*
+ * for (auto py = y; py < y + sizeY; py++)
+            {
+                // update cx values to new row too
+                cx1 = cy1;
+                cx2 = cy2;
+                cx3 = cy3;
+
+                for (auto px = x; px < x + sizeX; px++)
+                {
+                    // note: using > and < to comply with tg::contains. equal to 0 if on edge/corner.
+                    auto out = (cx1 > 0 && cx2 > 0 && cx3 > 0);
+                    auto in = (cx1 < 0 && cx2 < 0 && cx3 < 0);
+                    if (in || out)
+                    {
+                        f(tg::ipos2(px, py));
+                    }
+                    // increment
+                    cx1 += edgeConstants[3 * 0 + 0]; // I values
+                    cx2 += edgeConstants[3 * 1 + 0];
+                    cx3 += edgeConstants[3 * 2 + 0];
+                }
+
+                // update cy values
+                cy1 += edgeConstants[3 * 0 + 1]; // J values
+                cy2 += edgeConstants[3 * 1 + 1];
+                cy3 += edgeConstants[3 * 2 + 1];
+            }*/
 
 // F: (tg::ipos2 p, float a, float b) -> void
 template <class ScalarT, class F>
