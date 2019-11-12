@@ -32,15 +32,7 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
     auto const fbox = aabb_of(t);
     auto const orientation = (fbox.max.x - fbox.min.x) / float(fbox.max.y - fbox.min.y);
 
-    auto box = tg::aabb<2, int>(tg::ipos2(fbox.min), tg::ipos2(fbox.max));
-
-    // TODO do before orientation computation?
-    // margin so that we can safely round/clamp to integer coords
-    // clip to render target
-
-    // TODO left and right point computed later would be off?
-    box.min = tg::ipos2(max(ifloor(fbox.min), limitMin));
-    box.max = tg::ipos2(min(iceil(fbox.max), limitMax));
+    auto box = tg::aabb<2, int>(tg::ipos2(max(ifloor(fbox.min), limitMin)), tg::ipos2(min(iceil(fbox.max), limitMax)));
 
     // TODO assuming ccw! (irrelevant?)
     tg::pos<2, ScalarT> verts[3] = {t.pos0, t.pos1, t.pos2};
@@ -94,12 +86,13 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
                 for (auto px = x; px < x + sizeX; px++)
                 {
                     // note: using > and < to comply with tg::contains. equal to 0 if on edge/corner.
-                    if ((cx1 > 0 && cx2 > 0 && cx3 > 0) || (cx1 < 0 && cx2 < 0 && cx3 < 0))
+                    auto out = (cx1 > 0 && cx2 > 0 && cx3 > 0);
+                    auto in = (cx1 < 0 && cx2 < 0 && cx3 < 0);
+                    if (in || out)
                     {
                         f(tg::ipos2(px, py));
                     }
                     // increment
-                    // TODO in paper they use a minus sign for no specified reason
                     cx1 += edgeConstants[3 * 0 + 0]; // I values
                     cx2 += edgeConstants[3 * 1 + 0];
                     cx3 += edgeConstants[3 * 2 + 0];
@@ -119,18 +112,20 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
     auto height = box.max.y - box.min.y;
 
     // DEBUG
-    if (true || !pixelSets)
+    // TODO use pixel approach only
+    if (false && !pixelSets)
     {
         // render pixel by pixel
         renderBlock(box.min.x, box.min.y, width, height);
     }
+
     else
     {
         // TODO this might lead to skipping very small triangles, or does the midpoint method fix that?
-        auto const blockSize = 8; // 8x8 supposedly is a good block size
+        auto const blockSize = 1; // 8x8 supposedly is a good block size
         auto q = blockSize;       // step, will be flipped
 
-        auto const halfY = (box.min.y + ((box.max.y - box.min.y) >> 1)) & ~(blockSize - 1);
+        auto const halfY = (box.min.y + ((box.max.y - box.min.y) >> 1)); //& ~(blockSize - 1);
 
         // sort vertices vertically (first is top)
         if (verts[0].y > verts[1].y)
@@ -143,7 +138,7 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
         }
 
         // we start at the top vertex
-        auto leftPoint = ifloor(verts[0].x);
+        auto leftPoint = ifloor(verts[0].x) - 1; // TODO - 1?
         auto rightPoint = iceil(verts[0].x);
 
         for (auto upwards = 0; upwards < 2; upwards++)
@@ -158,10 +153,10 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
             // TODO at a few points not sure whether = should be involved, i.e. <= instead of <
             auto j = box.min.y;
             if (upwards)
-                j = box.max.y & ~(blockSize - 1);
+                j = box.max.y;// & ~(blockSize - 1);
             for (; upwards ? j >= halfY : j <= halfY + q; upwards ? j -= blockSize : j += blockSize)
             {
-                auto midPoint = leftPoint + ((rightPoint - leftPoint) >> 1) & ~(blockSize - 1);
+                auto midPoint = leftPoint + ((rightPoint - leftPoint) >> 1);// & ~(blockSize - 1);
                 auto x = midPoint;
 
                 auto insideBlockLeft = false; // signals whether left bound may be updated
@@ -170,7 +165,8 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
                     for (; left ? x >= box.min.x - blockSize : x <= box.max.x; x += q)
                     {
                         // are all/none/some corners of current box contained?
-                        // TODO why -1?
+                        // TODO ignoring box approach
+                        /*
                         const int xVals[2] = {x, x + blockSize};
                         const int yVals[2] = {j, j + blockSize};
                         auto count = 0;
@@ -207,7 +203,9 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t,
                                 // box partly contained, fallback to pixel rendering
                                 renderBlock(x, j, blockSize, blockSize);
                             }
-                        }
+                        }*/
+                        // TODO construct edge functions just once, not for each pixel!
+                        renderBlock(x, j, blockSize, blockSize);
                     }
 
                     // turn around
@@ -262,6 +260,38 @@ constexpr void rasterize(triangle<2, ScalarT> const& t,
             {
                 // inside triangle
                 f(ipos2(x, y), a, b);
+            }
+        }
+}
+
+// F: (tg::ipos2 p) -> void
+template <class ScalarT, class F>
+constexpr void rasterize_fast(triangle<2, ScalarT> const& t,
+                              F&& f,
+                              const tg::ipos2& limitMin = tg::ipos2(tg::detail::limits<int>().min()),
+                              const tg::ipos2& limitMax = tg::ipos2(tg::detail::limits<int>().max()))
+{
+    auto const box = aabb_of(t);
+
+    // margin so that we can safely round/clamp to integer coords
+    // limitMin/Max to only rasterize on desired image size
+    auto const minPix = max(ifloor(box.min), limitMin);
+    auto const maxPix = min(iceil(box.max), limitMax);
+
+    // TODO: Bresenham on two of the triangle edges, then scanline
+    for (auto y = minPix.y; y <= maxPix.y; ++y)
+        for (auto x = minPix.x; x <= maxPix.x; ++x)
+        {
+            auto const pos = tg::pos<2, ScalarT>(ScalarT(x), ScalarT(y));
+            auto const bary = coordinates(t, pos);
+            auto const a = bary[0];
+            auto const b = bary[1];
+            auto const c = bary[2];
+            if (a >= 0 && b >= 0 && c >= 0)
+            {
+                // inside triangle
+                // rasterize fast, dont return barycentrics
+                f(ipos2(x, y)); //, a, b);
             }
         }
 }

@@ -129,30 +129,19 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
 {
-    // TODO
-    // use eps?
-    // does this also work for triangles where vertices are not ordered cc? should it?
+    auto sign = [](pos<3, ScalarT> p1, pos<3, ScalarT> p2, pos<3, ScalarT> p3)
+    {
+        return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+    };
 
-    auto n = normal(t);
+    ScalarT d1 = sign(p, t.pos0, t.pos1);
+    ScalarT d2 = sign(p, t.pos1, t.pos2);
+    ScalarT d3 = sign(p, t.pos2, t.pos0);
 
-    // checking whether point lies on right side of any edge
-    auto e = t.pos1 - t.pos0;
-    auto C = cross(e, p - t.pos0);
-    if (dot(n, C) < ScalarT(0))
-        return false;
+    bool has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+    bool has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
 
-    e = t.pos2 - t.pos1;
-    C = cross(e, p - t.pos1);
-    if (dot(n, C) < ScalarT(0))
-        return false;
-
-    e = t.pos0 - t.pos2;
-    C = cross(e, p - t.pos2);
-    if (dot(n, C) < ScalarT(0))
-        return false;
-
-    // point always on left side
-    return true;
+    return !(has_neg && has_pos);
 }
 
 template <class ScalarT>
