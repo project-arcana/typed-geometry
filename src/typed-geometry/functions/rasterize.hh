@@ -11,6 +11,8 @@
 // TODO how to swap in tg?
 #include <algorithm>
 
+#include <iostream>
+
 /**
  * Rasterization of objects
  *
@@ -27,7 +29,7 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, bool bisect 
     // adaptive half-space rasterization
     // see https://www.uni-obuda.hu/journal/Mileff_Nehez_Dudra_63.pdf
     auto const fbox = aabb_of(t);
-    auto const orientation = (fbox.max.x - fbox.min.x) / float(fbox.max.y - fbox.min.y);
+    // auto const orientation = (fbox.max.x - fbox.min.x) / float(fbox.max.y - fbox.min.y);
 
     auto box = tg::aabb<2, int>(tg::ipos2(ifloor(fbox.min)), tg::ipos2(iceil(fbox.max)));
 
@@ -81,7 +83,10 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, bool bisect 
                     // note: using > and < to comply with tg::contains. equal to 0 if on edge/corner.
                     auto in = (cx1 < 0 && cx2 < 0 && cx3 < 0) || (cx1 >= 0 && cx2 >= 0 && cx3 >= 0);
                     if (in)
+                    {
+                        // std::cout << "called at " << px << ", " << py;
                         f(tg::ipos2(px, py));
+                    }
 
                     // increment
                     cx1 += edgeConstants[3 * 0 + 0]; // I values
@@ -97,14 +102,16 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, bool bisect 
         }
     };
 
-    bool pixelSets = orientation > 0.4 && orientation < 1.6f;
+    // bool pixelSets = orientation > 0.4 && orientation < 1.6f;
 
     auto width = box.max.x - box.min.x;
     auto height = box.max.y - box.min.y;
 
     // DEBUG
     // TODO remove false
-    if (!bisect || !pixelSets)
+    // TODO no, we should always use the bisecting algorithm below, no?
+
+    if (!bisect) // false && (!bisect || !pixelSets))
     {
         // use naive pixel approach
         renderBlock(box.min.x, box.min.y, width, height);
@@ -114,7 +121,7 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, bool bisect 
         // not using blocks but bisection to start at top vertex and skip empty pixels
         auto q = 1; // step, will be flipped
 
-        auto const halfY = box.min.y + ((box.max.y - box.min.y) >> 2);
+        auto const halfY = box.min.y + tg::iceil((box.max.y - box.min.y) / 2.0f);
 
         // sort vertices vertically (first is top)
         if (verts[0].y > verts[1].y)
@@ -126,16 +133,30 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, bool bisect 
                 std::swap(verts[0], verts[1]);
         }
 
+        // cout information on procedure
+        bool report = false;
+
+        if (report)
+            std::cout << "vertices: (" << verts[0].x << ", " << verts[0].y << "), (" << verts[1].x << ", " << verts[1].y << "), (" << verts[2].x
+                      << ", " << verts[2].y << ")." << std::endl;
+
+
         // we start at the top vertex
-         auto midPoint =  ifloor(verts[0].x) ;
-        auto leftPoint = midPoint - 1;
-        auto rightPoint = midPoint + 1;
+
+        auto centerX = ifloor(verts[0].x);
+        auto leftBoundX = centerX - 1;
+        auto rightBoundX = centerX + 1;
+        // dont recompute in next iteration
+        auto boundsSet = true;
 
         auto y = box.min.y;
+        if (report)
+            std::cout << "y = " << y << ", center: " << centerX << ", left: " << leftBoundX << ", right: " << rightBoundX << std::endl;
+
 
         // compute edge functions at top vertex once
         // will increment later
-        auto pos = tg::ipos2(midPoint, y);
+        auto pos = tg::ipos2(centerX, y);
         auto top1 = edgeFunction(pos, 0);
         auto top2 = edgeFunction(pos, 1);
         auto top3 = edgeFunction(pos, 2);
@@ -145,16 +166,23 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, bool bisect 
             // midpoint is recomputed, y set to bottom
             if (upwards)
             {
-                auto dx = midPoint;
+                auto dx = centerX;
                 auto dy = y;
-                // start at bottom midpoint to go upwards
+                /*
+                 // TODO how should the midpoint and bounds be initiliased?
                 leftPoint = ifloor(verts[2].x) - 1; // TODO - 1?
                 rightPoint = iceil(verts[2].x);
-                midPoint = rightPoint - 1;
+                midPoint = leftPoint + iceil((rightPoint - leftPoint) / 2.0f);
+                */
 
-                y = box.max.y;
+                // use most bottom vertex now
+                centerX = ifloor(verts[2].x);
+                leftBoundX = centerX - 1;
+                rightBoundX = centerX + 1;
 
-                dx -= midPoint;
+                y = box.max.y - 1; // TODO -1?
+
+                dx -= centerX;
                 dy -= y;
 
                 top1 += dx * edgeConstants[3 * 0 + 0];
@@ -171,44 +199,66 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, bool bisect 
             auto cy2 = top2;
             auto cy3 = top3;
 
-            auto pos = tg::ipos2(midPoint, y);
+            auto pos = tg::ipos2(centerX, y);
             cy1 = edgeFunction(pos, 0);
             cy2 = edgeFunction(pos, 1);
             cy3 = edgeFunction(pos, 2);
 
-            for (; upwards ? y >= halfY : y <= halfY + 1; upwards ? y-- : y++)
+            auto cx1 = cy1;
+            auto cx2 = cy2;
+            auto cx3 = cy3;
+
+            for (; upwards ? y > halfY : y <= halfY + 0; upwards ? y-- : y++)
             {
-                auto dx = midPoint;
-                midPoint = int(leftPoint + ((rightPoint - leftPoint) >> 2));
-                dx -= midPoint;
-
-                auto cx1 = cy1 - dx * edgeConstants[3 * 0 + 0];
-                auto cx2 = cy2 - dx * edgeConstants[3 * 1 + 0];
-                auto cx3 = cy3 - dx * edgeConstants[3 * 2 + 0];
-                cy1 = cx1;
-                cy2 = cx2;
-                cy3 = cx3;
-
-                auto x = midPoint;
-
-                auto insideBlockLeft = false; // signals whether left bound may be updated
-
-                for (auto left : {false, true})
+                if (!boundsSet)
                 {
-                    insideBlockLeft = false;
-                    for (; left ? x >= box.min.x - 1 : x <= box.max.x; x += q)
+                    auto dx = centerX;
+                    centerX = leftBoundX + iceil((rightBoundX - leftBoundX) / 2.0f);
+                    dx -= centerX;
+
+                    cx1 = cy1 - dx * edgeConstants[3 * 0 + 0];
+                    cx2 = cy2 - dx * edgeConstants[3 * 1 + 0];
+                    cx3 = cy3 - dx * edgeConstants[3 * 2 + 0];
+                    cy1 = cx1;
+                    cy2 = cx2;
+                    cy3 = cx3;
+                }
+                boundsSet = false;
+
+                auto x = centerX;
+
+                auto walkedOverNonEmpty = false; // signals whether left bound may be updated
+
+                if (report)
+                    std::cout << upwards << " < upwards, "
+                              << "y = " << y << ", center: " << centerX << ", left: " << leftBoundX << ", right: " << rightBoundX << std::endl;
+
+
+                for (auto walkingLeft : {false, true})
+                {
+                    walkedOverNonEmpty = false;
+                    for (; walkingLeft ? x >= box.min.x - 1 : x <= box.max.x; x += q)
                     {
+                        /*
+                            // TODO remove, once everything else works
+                            auto pos = tg::ipos2(x, y);
+                            cx1 = edgeFunction(pos, 0);
+                            cx2 = edgeFunction(pos, 1);
+                            cx3 = edgeFunction(pos, 2);
+                            // ===
+                            */
+
+
                         auto in = (cx1 < 0 && cx2 < 0 && cx3 < 0) || (cx1 >= 0 && cx2 >= 0 && cx3 >= 0);
                         if (in)
                         {
-                            insideBlockLeft = true;
+                            walkedOverNonEmpty = true;
+                            if (report)
+                                std::cout << "fill at " << x << ", " << y << std::endl;
                             f(tg::ipos2(x, y));
                         }
-                        else
+                        else if (walkedOverNonEmpty) // TODO fixes any misses but in general is not desirable as it will prevent skipping empty rows
                             break;
-                        // TODO breaks the algorithm
-                        // else // done in this direction
-                        //    break;
 
                         // increment
                         cx1 += edgeConstants[3 * 0 + 0] * q; // I values
@@ -219,22 +269,19 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, bool bisect 
                     // turn around
                     q = -q;
 
-                    if (left)
+                    if (walkingLeft)
                     {
-                        // p.15: "..the value of the ‘Left bound’ should only be changed if any inside block is found during the left directed traversal.."
-                        // TODO this is however neglected in their pseudo code?
-                        if (insideBlockLeft)
-                            leftPoint = x + 1;
+                        if (walkedOverNonEmpty)
+                            leftBoundX = x + 1;
                     }
                     else // walked right
                     {
                         // update bound, as we started inside the triangle (comp. above)
-                        rightPoint = x - 1;
+                        // if (walkedOverNonEmpty)
+                        rightBoundX = x - 1;
 
-                        // TODO change cx!!
-                        // start at one block to the left, update edge eval
-                        x = midPoint - 1;
-
+                        // left: start at one block to the left, update edge eval
+                        x = centerX - 1;
                         cx1 = cy1 - edgeConstants[3 * 0 + 0];
                         cx2 = cy2 - edgeConstants[3 * 1 + 0];
                         cx3 = cy3 - edgeConstants[3 * 2 + 0];
