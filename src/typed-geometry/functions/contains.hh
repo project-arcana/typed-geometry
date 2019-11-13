@@ -112,27 +112,10 @@ template <int D, class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
 {
-    auto pv0 = t.pos0 - p;
-    auto pv1 = t.pos1 - p;
-    auto pv2 = t.pos2 - p;
-    auto A0 = cross(pv1, pv2);
-    auto A1 = cross(pv2, pv0);
-    auto A2 = cross(pv0, pv1);
+    (void)eps;
 
-    if (eps > ScalarT(0))
-        return ((A0 >= -std::copysign(eps, A0)) == (A1 >= -std::copysign(eps, A0))) && //
-               ((A1 >= -std::copysign(eps, A0)) == (A2 >= -std::copysign(eps, A0)));
-
-    return ((A0 >= -eps) == (A1 >= -eps)) && ((A1 >= -eps) == (A2 >= -eps));
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
-{
-    auto sign = [](pos<3, ScalarT> p1, pos<3, ScalarT> p2, pos<3, ScalarT> p3)
-    {
-        return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
-    };
+    auto sign
+        = [](pos<2, ScalarT> p1, pos<2, ScalarT> p2, pos<2, ScalarT> p3) { return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y); };
 
     ScalarT d1 = sign(p, t.pos0, t.pos1);
     ScalarT d2 = sign(p, t.pos1, t.pos2);
@@ -140,8 +123,50 @@ template <class ScalarT>
 
     bool has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
     bool has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
-
     return !(has_neg && has_pos);
+
+    /*
+        auto pv0 = t.pos0 - p;
+        auto pv1 = t.pos1 - p;
+        auto pv2 = t.pos2 - p;
+        auto A0 = cross(pv1, pv2);
+        auto A1 = cross(pv2, pv0);
+        auto A2 = cross(pv0, pv1);
+
+        if (eps > ScalarT(0))
+            return ((A0 >= -std::copysign(eps, A0)) == (A1 >= -std::copysign(eps, A0))) && //
+                   ((A1 >= -std::copysign(eps, A0)) == (A2 >= -std::copysign(eps, A0)));
+
+        return ((A0 >= -eps) == (A1 >= -eps)) && ((A1 >= -eps) == (A2 >= -eps));*/
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
+{
+    // TODO
+    // use eps?
+    // does this also work for triangles where vertices are not ordered cc? should it?
+
+    auto n = normal(t);
+
+    // checking whether point lies on right side of any edge
+    auto e = t.pos1 - t.pos0;
+    auto C = cross(e, p - t.pos0);
+    if (dot(n, C) < ScalarT(0))
+        return false;
+
+    e = t.pos2 - t.pos1;
+    C = cross(e, p - t.pos1);
+    if (dot(n, C) < ScalarT(0))
+        return false;
+
+    e = t.pos0 - t.pos2;
+    C = cross(e, p - t.pos2);
+    if (dot(n, C) < ScalarT(0))
+        return false;
+
+    // point always on left side
+    return true;
 }
 
 template <class ScalarT>

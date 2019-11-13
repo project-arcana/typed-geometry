@@ -8,11 +8,6 @@
 #include "math.hh"
 #include "perpendicular.hh"
 
-// TODO how to swap in tg?
-#include <algorithm>
-
-#include <iostream>
-
 /**
  * Rasterization of objects
  *
