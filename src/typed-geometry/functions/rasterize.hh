@@ -6,7 +6,6 @@
 #include "aabb.hh"
 #include "coordinates.hh"
 #include "math.hh"
-#include "perpendicular.hh"
 
 /**
  * Rasterization of objects
