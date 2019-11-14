@@ -40,13 +40,12 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, tg::vec<2, S
         edgeConstants[e * 3 + 2] = verts[e].x * verts[next].y - verts[e].y * verts[next].x;
     }
 
-    auto edgeFunction = [edgeConstants, offset](tg::ipos2 pos, int f = 0) {
+    auto edgeFunction = [edgeConstants, offset](tg::ipos2 pos, int f) {
         auto first = min(f * 3, 6);
         return edgeConstants[first + 0] * (pos.x + offset.x) + edgeConstants[first + 1] * (pos.y + offset.y) + edgeConstants[first + 2];
     };
 
-    auto renderBlock = [f, edgeFunction, edgeConstants](int x, int y, int sizeX = 0, int sizeY = 0) {
-        // TODO assert?
+    auto renderBlock = [f, edgeFunction, edgeConstants](int x, int y, int sizeX, int sizeY) {
         if (sizeX * sizeY <= 0)
             return;
 
