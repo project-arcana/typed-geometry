@@ -120,8 +120,11 @@ template <class ScalarT>
     auto A2 = cross(pv0, pv1);
 
     if (eps > ScalarT(0))
-        return ((A0 >= -std::copysign(eps, A0)) == (A1 >= -std::copysign(eps, A0))) && //
-               ((A1 >= -std::copysign(eps, A0)) == (A2 >= -std::copysign(eps, A0)));
+    {
+        auto limit = -std::copysign(eps, A0 != 0 ? A0 : A1 != 0 ? A1 : A2);
+        return ((A0 > limit) == (A1 > limit)) && //
+               ((A1 > limit) == (A2 > limit));
+    }
 
     return ((A0 >= -eps) == (A1 >= -eps)) && ((A1 >= -eps) == (A2 >= -eps));
 }
