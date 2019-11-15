@@ -1,6 +1,7 @@
 #pragma once
 
 #include <typed-geometry/types/scalars/default.hh>
+#include <typed-geometry/types/scalars/fixed_uint.hh>
 
 namespace tg
 {
@@ -95,6 +96,45 @@ struct limits<unsigned long long>
 {
     static constexpr unsigned long long min() { return u64(0); }
     static constexpr unsigned long long max() { return u64(18446744073709551615uLL); }
+};
+template <>
+struct limits<u128>
+{
+    static constexpr u128 min() { return u128{}; }
+    static constexpr u128 max()
+    {
+        u128 res;
+        res.d[0] = 0xFFFFFFFFFFFFFFFF;
+        res.d[1] = 0xFFFFFFFFFFFFFFFF;
+        return res;
+    }
+};
+template <>
+struct limits<u192>
+{
+    static constexpr u192 min() { return u192{}; }
+    static constexpr u192 max()
+    {
+        u192 res;
+        res.d[0] = 0xFFFFFFFFFFFFFFFF;
+        res.d[1] = 0xFFFFFFFFFFFFFFFF;
+        res.d[2] = 0xFFFFFFFFFFFFFFFF;
+        return res;
+    }
+};
+template <>
+struct limits<u256>
+{
+    static constexpr u256 min() { return u256{}; }
+    static constexpr u256 max()
+    {
+        u256 res;
+        res.d[0] = 0xFFFFFFFFFFFFFFFF;
+        res.d[1] = 0xFFFFFFFFFFFFFFFF;
+        res.d[2] = 0xFFFFFFFFFFFFFFFF;
+        res.d[3] = 0xFFFFFFFFFFFFFFFF;
+        return res;
+    }
 };
 
 template <>
