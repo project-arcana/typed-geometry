@@ -25,13 +25,23 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
     // TODO add limits?
 
     // bresenham, see http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
-    // TODO round? or just int?
+    // TODO round? or just int? depending on pos1, pos0 order?
+    /*
+    auto ordered = l.pos0.x < l.pos1.x;
+    auto x0 = ordered ? ifloor(l.pos0.x) : iceil(l.pos0.x);
+    auto x1 = ordered ? iceil(l.pos1.x) : ifloor(l.pos1.x);
+
+    ordered = l.pos0.y < l.pos1.y;
+    auto y0 = ordered ? ifloor(l.pos0.y) : iceil(l.pos0.y);
+    auto y1 = ordered ? iceil(l.pos1.y) : ifloor(l.pos1.y);
+
+    // iround works well so far
+*/
     auto x0 = iround(l.pos0.x);
     auto x1 = iround(l.pos1.x);
+
     auto y0 = iround(l.pos0.y);
     auto y1 = iround(l.pos1.y);
-
-    // TODO call f at x,y or with offset of 0.5f? tolerance in tests is quite high
 
     auto delta_x = x1 - x0;
     // if x1 == x2, then it does not matter what we set here
@@ -132,6 +142,93 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
 
             f(tg::ipos2(x0, y0), min(a, ScalarT(1)));
         }
+    }
+}
+
+// F: (tg::ipos2 p, float a, float b) -> void
+// offset is subpixel offset, e.g. 0.5f means sampling at pixel center
+template <class ScalarT, class F>
+constexpr void rasterize_bresenham(triangle<2, ScalarT> const& t, F&& f, const bool experimental = false)
+{
+    // bresenham 3 sides of a triangle, then fill contour
+    // inspired by https://stackoverflow.com/a/11145708
+    auto const box = aabb_of(t);
+
+    // margin so that we can safely round/clamp to integer coords
+    auto const minPix = ifloor(box.min);
+    auto const maxPix = iceil(box.max);
+
+    // TODO no abs, correct?
+    // auto const width = maxPix.x - minPix.x;
+    auto const height = maxPix.y - minPix.y;
+
+    // stores leftmost and rightmost pixel from bresenham
+    auto contour = new int*[uint(height)];
+
+    for (auto r = 0; r < height; r++)
+    {
+        contour[r] = new int[2];
+
+        // will bresenham to find left and right bounds of row
+        // will scanline only if row[0] <= row[1]
+        contour[r][0] = tg::detail::limits<int>().max();
+        contour[r][1] = tg::detail::limits<int>().min();
+    }
+
+    // rasterize two sides of the triangle
+    auto lines = {tg::segment(t.pos0, t.pos1), tg::segment(t.pos1, t.pos2), tg::segment(t.pos2, t.pos0)};
+    // note that if the triangle is "flat" (that means one side is not slanted with respect to the pixel grid) two edges would be sufficient!
+
+    // rasterize to get triangle contour for each row
+    for (auto l : lines)
+        tg::rasterize(l,
+                      [&](tg::ipos2 p, ScalarT a) {
+                          auto iy = p.y - minPix.y;
+
+                          if (iy < 0 || iy >= height)
+                              // std::cout << "bad y: " << iy << " | height is " << height << std::endl;
+                              return;
+
+
+                          // update contour
+                          if (p.x < contour[iy][0])
+                              contour[iy][0] = p.x;
+                          if (p.x > contour[iy][1])
+                              contour[iy][1] = p.x;
+
+                          // TODO if experimental interpolate line parameters for bary
+                          (void)a;
+                      },
+                      experimental);
+
+
+    for (auto y = 0; y < height; ++y)
+    {
+        // bresenham was here
+        /* if (contour[y][0] <= contour[y][1])
+         {
+             return;*/
+        // TODO note the +1, otherwise tests failed, should check line rasterization for correctness (might be rounding errors)
+        for (auto x = contour[y][0]; x <= contour[y][1] + 1; x++)
+        {
+            auto const pos = tg::ipos2(x, y + minPix.y);
+
+
+            // TODO if experimental: derive bary from line parameters and x / (maxPix.x - minPix.x) instead?
+            // TODO note that calculating barycentrics for pixels may give values outside 0..1 as pixels may be
+            // "touched" by a triangle but e.g. their topleft corner may not actually be contained
+            auto const off = ScalarT(0.5f); // subpixel offset
+
+            auto bary = tg::coordinates(t, tg::pos2(pos.x + off, pos.y + off));
+
+
+            bary[0] = tg::clamp(bary[0], 0, 1);
+            bary[1] = tg::clamp(bary[1], 0, 1);
+
+            f(pos, bary[0], bary[1]);
+            // f(pos, 0, 0);
+        }
+        //}
     }
 }
 
