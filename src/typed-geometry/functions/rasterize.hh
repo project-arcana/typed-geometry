@@ -107,7 +107,7 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
 
         while (y1 != y0)
         {
-            // reduce erl.pos1.x - l.pos0.xror, while taking into account the corner case of error == 0
+            // reduce error, while taking into account the corner case of error == 0
             if ((error > 0) || (!error && (iy > 0)))
             {
                 error -= delta_y;
