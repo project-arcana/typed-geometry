@@ -17,9 +17,13 @@
 namespace tg
 {
 // F: (tg::ipos2 p, float a) -> void
+// experimental further exploits linearity and computes line parameter by accumulation of a stepsize
+// however this *seems* to be more imprecise than t = |(p - v0)| / |(v1 - v0)| ? needs further testing.
 template <class ScalarT, class F>
-constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
+constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental = false)
 {
+    // TODO add limits?
+
     // bresenham, see http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
     // TODO round? or just int?
     auto x0 = iround(l.pos0.x);
@@ -42,19 +46,18 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
     // start
     f(tg::ipos2(x0, y0), 0);
 
-
-    // TODO x equal : tie break with y
-    auto a = ScalarT(0); // l.pos0.x <= l.pos1.x ? ScalarT(0.0) : ScalarT(1.0);
-
+    auto a = ScalarT(0);
+    auto aStep = ScalarT(0);
 
     if (delta_x >= delta_y)
     {
         // done
         if (x0 == x1)
             return;
-        auto aStep = ScalarT(1) / abs(x1 - x0); // round(abs(l.pos0.x - l.pos1.x));
 
-        // aStep = ScalarT(1) / abs(l.pos0.x - l.pos1.x);
+        if (experimental)
+            aStep = ScalarT(1) / abs(x1 - x0); // round(abs(l.pos0.x - l.pos1.x));
+
         // error may go below zero
         int error(delta_y - (delta_x >> 1));
 
@@ -71,13 +74,21 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
             error += delta_y;
             x0 += ix;
 
-            // TODO value "a" might not need to be clipped as it only SLIGHTLY exceeds 1.0 in rare cases
-            // (precision of tg::epsilon<float> * 3 in test cases!)
-            if (x1 == x0)
-                a = 1;
+            if (experimental)
+            {
+                // TODO value "a" might not need to be clipped as it only SLIGHTLY exceeds 1.0 in rare cases
+                // (precision of tg::epsilon<float> * 3 in test cases?)
+                if (x1 == x0)
+                    a = 1;
+                else
+                    a += aStep;
+            }
             else
-                a += aStep;
-            f(tg::ipos2(x0, y0), a);
+            {
+                a = tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0);
+            }
+
+            f(tg::ipos2(x0, y0), min(a, ScalarT(1)));
         }
     }
     else
@@ -85,7 +96,9 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
         // done
         if (y0 == y1)
             return;
-        auto aStep = ScalarT(1) / abs(y1 - y0); // round(abs(l.pos0.x - l.pos1.x));
+
+        if (experimental)
+            aStep = ScalarT(1) / abs(y1 - y0); // round(abs(l.pos0.x - l.pos1.x));
         // error may go below zero
         int error(delta_x - (delta_y >> 1));
 
@@ -102,19 +115,26 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
             error += delta_x;
             y0 += iy;
 
-            if (y1 == y0)
-                a = 1;
+            if (experimental)
+            {
+                if (y1 == y0)
+                    a = 1;
+                else
+                    a += aStep;
+            }
             else
-                a += aStep;
-            f(tg::ipos2(x0, y0), a);
+            {
+                a = tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0);
+            }
+
+            f(tg::ipos2(x0, y0), min(a, ScalarT(1)));
         }
     }
-    // TODO add option to not calculate parametric value?
-    // TODO add limits?
 }
 
-// no barycentric coords returned
+// no barycentric coords returned:
 // F: (tg::ipos2 p) -> void
+// offset is subpixel offset, e.g. 0.5f means sampling at pixel center
 template <class ScalarT, class F>
 constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, tg::vec<2, ScalarT> const& offset = tg::vec<2, ScalarT>(0))
 {
@@ -192,8 +212,9 @@ constexpr void fast_rasterize(triangle<2, ScalarT> const& t, F&& f, tg::vec<2, S
 }
 
 // F: (tg::ipos2 p, float a, float b) -> void
+// offset is subpixel offset, e.g. 0.5f means sampling at pixel center
 template <class ScalarT, class F>
-constexpr void rasterize(triangle<2, ScalarT> const& t, F&& f)
+constexpr void rasterize(triangle<2, ScalarT> const& t, F&& f, tg::vec<2, ScalarT> const& offset = tg::vec<2, ScalarT>(0))
 {
     auto const box = aabb_of(t);
 
@@ -205,7 +226,7 @@ constexpr void rasterize(triangle<2, ScalarT> const& t, F&& f)
     for (auto y = minPix.y; y <= maxPix.y; ++y)
         for (auto x = minPix.x; x <= maxPix.x; ++x)
         {
-            auto const pos = tg::pos<2, ScalarT>(ScalarT(x), ScalarT(y));
+            auto const pos = tg::pos<2, ScalarT>(ScalarT(x), ScalarT(y)) + offset;
             auto const bary = coordinates(t, pos);
             auto const a = bary[0];
             auto const b = bary[1];
