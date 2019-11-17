@@ -43,11 +43,14 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
     signed char const iy((delta_y > 0) - (delta_y < 0));
     delta_y = std::abs(delta_y) << 1;
 
-    // start
-    f(tg::ipos2(x0, y0), 0);
-
     auto a = ScalarT(0);
     auto aStep = ScalarT(0);
+
+    // start
+    // if (!experimental)
+    a = tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0);
+
+    f(tg::ipos2(x0, y0), a);
 
     if (delta_x >= delta_y)
     {
