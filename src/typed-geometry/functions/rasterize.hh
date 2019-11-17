@@ -16,6 +16,105 @@
 
 namespace tg
 {
+// F: (tg::ipos2 p, float a) -> void
+template <class ScalarT, class F>
+constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
+{
+    // bresenham, see http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
+    // TODO round? or just int?    
+    auto x0 = iround(l.pos0.x);
+    auto x1 = iround(l.pos1.x);
+    auto y0 = iround(l.pos0.y);
+    auto y1 = iround(l.pos1.y);
+
+    // TODO call f at x,y or with offset of 0.5f? tolerance in tests is quite high
+
+    auto delta_x = x1 - x0;
+        // if x1 == x2, then it does not matter what we set here
+        signed char const ix((delta_x > 0) - (delta_x < 0));
+        delta_x = std::abs(delta_x) << 1;
+
+        auto delta_y = y1 - y0;
+        // if y1 == y2, then it does not matter what we set here
+        signed char const iy((delta_y > 0) - (delta_y < 0));
+        delta_y = std::abs(delta_y) << 1;
+
+        // start
+       f(tg::ipos2(x0, y0), 0);
+
+
+        // TODO x equal : tie break with y
+        auto a = ScalarT(0);// l.pos0.x <= l.pos1.x ? ScalarT(0.0) : ScalarT(1.0);
+
+
+
+        if (delta_x >= delta_y)
+        {
+
+            // done
+            if(x0 == x1)
+                return;
+             auto aStep = ScalarT(1) / abs(x1-x0);//round(abs(l.pos0.x - l.pos1.x));
+
+             //aStep = ScalarT(1) / abs(l.pos0.x - l.pos1.x);
+            // error may go below zero
+            int error(delta_y - (delta_x >> 1));
+
+            while (x0 != x1)            {
+                // reduce error, while taking into account the corner case of error == 0
+                if ((error > 0) || (!error && (ix > 0)))
+                {
+                    error -= delta_x;
+                    y0 += iy;
+                }
+                // else do nothing
+
+                error += delta_y;
+                x0 += ix;
+
+                // TODO value "a" might not need to be clipped as it only SLIGHTLY exceeds 1.0 in rare cases
+                // (precision of tg::epsilon<float> * 3 in test cases!)
+                if(x1 == x0)
+                    a = 1;
+                else
+                a += aStep;
+                f(tg::ipos2(x0, y0), a);
+            }
+        }
+        else
+        {
+
+            // done
+            if(y0 == y1)
+                return;
+             auto aStep = ScalarT(1) / abs(y1-y0);//round(abs(l.pos0.x - l.pos1.x));
+            // error may go below zero
+            int error(delta_x - (delta_y >> 1));
+
+            while (y1 != y0)
+            {
+                // reduce erl.pos1.x - l.pos0.xror, while taking into account the corner case of error == 0
+                if ((error > 0) || (!error && (iy > 0)))
+                {
+                    error -= delta_y;
+                    x0 += ix;
+                }
+                // else do nothing
+
+                error += delta_x;
+                y0 += iy;
+
+                if(y1 == y0)
+                    a = 1;
+                else
+                a += aStep;
+                f(tg::ipos2(x0, y0), a);
+            }
+        }
+    // TODO add option to not calculate parametric value?
+    // TODO add limits?
+}
+
 // no barycentric coords returned
 // F: (tg::ipos2 p) -> void
 template <class ScalarT, class F>
