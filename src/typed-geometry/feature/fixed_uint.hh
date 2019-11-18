@@ -167,6 +167,13 @@ constexpr fixed_uint<w>& operator&=(fixed_uint<w>& lhs, u64 rhs) noexcept;
 template <int w>
 constexpr fixed_uint<w>& operator^=(fixed_uint<w>& lhs, u64 rhs) noexcept;
 
+template <int w>
+constexpr fixed_uint<w>& operator|=(u64& lhs, fixed_uint<w> const& rhs) noexcept;
+template <int w>
+constexpr fixed_uint<w>& operator&=(u64& lhs, fixed_uint<w> const& rhs) noexcept;
+template <int w>
+constexpr fixed_uint<w>& operator^=(u64& lhs, fixed_uint<w> const& rhs) noexcept;
+
 // shift
 
 template <int w>
@@ -288,6 +295,34 @@ constexpr bool operator==(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) 
     return eq;
 }
 
+template <int w>
+constexpr bool operator==(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    bool eq = true;
+    eq &= lhs == rhs.d[0];
+    if constexpr (w > 1)
+        eq &= rhs.d[1] == 0;
+    if constexpr (w > 2)
+        eq &= rhs.d[2] == 0;
+    if constexpr (w > 3)
+        eq &= rhs.d[3] == 0;
+    return eq;
+}
+
+template <int w>
+constexpr bool operator==(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    bool eq = true;
+    eq &= lhs.d[0] == rhs;
+    if constexpr (w > 1)
+        eq &= lhs.d[1] == 0;
+    if constexpr (w > 2)
+        eq &= lhs.d[2] == 0;
+    if constexpr (w > 3)
+        eq &= lhs.d[3] == 0;
+    return eq;
+}
+
 template <int w0, int w1>
 constexpr bool operator!=(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
@@ -315,6 +350,34 @@ constexpr bool operator!=(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) 
     if constexpr (w0 + 3 <= w1)
         neq |= rhs.d[w0 + 2] != 0;
 
+    return neq;
+}
+
+template <int w>
+constexpr bool operator!=(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    bool neq = false;
+    neq |= lhs != rhs.d[0];
+    if constexpr (w > 1)
+        neq |= rhs.d[1] != 0;
+    if constexpr (w > 2)
+        neq |= rhs.d[2] != 0;
+    if constexpr (w > 3)
+        neq |= rhs.d[3] != 0;
+    return neq;
+}
+
+template <int w>
+constexpr bool operator!=(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    bool neq = false;
+    neq |= lhs.d[0] != rhs;
+    if constexpr (w > 1)
+        neq |= lhs.d[1] != 0;
+    if constexpr (w > 2)
+        neq |= lhs.d[2] != 0;
+    if constexpr (w > 3)
+        neq |= lhs.d[3] != 0;
     return neq;
 }
 
@@ -354,8 +417,46 @@ constexpr bool operator<(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) n
         return true;
 }
 
+template <int w>
+constexpr bool operator<(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    bool lt = lhs < rhs.d[0];
+    if constexpr (w > 1)
+        lt |= rhs.d[1] != 0;
+    if constexpr (w > 2)
+        lt |= rhs.d[2] != 0;
+    if constexpr (w > 3)
+        lt |= rhs.d[3] != 0;
+    return lt;
+}
+
+template <int w>
+constexpr bool operator<(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    bool lt = lhs.d[0] < rhs;
+    if constexpr (w > 1)
+        lt &= lhs.d[1] == 0;
+    if constexpr (w > 2)
+        lt &= lhs.d[2] == 0;
+    if constexpr (w > 3)
+        lt &= lhs.d[3] == 0;
+    return lt;
+}
+
 template <int w0, int w1>
 constexpr bool operator>(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
+{
+    return rhs < lhs;
+}
+
+template <int w>
+constexpr bool operator>(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    return rhs < lhs;
+}
+
+template <int w>
+constexpr bool operator>(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
     return rhs < lhs;
 }
@@ -398,8 +499,46 @@ constexpr bool operator<=(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) 
     return true;
 }
 
+template <int w>
+constexpr bool operator<=(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    bool lte = lhs <= rhs.d[0];
+    if constexpr (w > 1)
+        lte |= rhs.d[1] != 0;
+    if constexpr (w > 2)
+        lte |= rhs.d[2] != 0;
+    if constexpr (w > 3)
+        lte |= rhs.d[3] != 0;
+    return lte;
+}
+
+template <int w>
+constexpr bool operator<=(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    bool lte = lhs.d[0] <= rhs;
+    if constexpr (w > 1)
+        lte &= lhs.d[1] == 0;
+    if constexpr (w > 2)
+        lte &= lhs.d[2] == 0;
+    if constexpr (w > 3)
+        lte &= lhs.d[3] == 0;
+    return lte;
+}
+
 template <int w0, int w1>
 constexpr bool operator>=(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
+{
+    return rhs <= lhs;
+}
+
+template <int w>
+constexpr bool operator>=(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    return rhs <= lhs;
+}
+
+template <int w>
+constexpr bool operator>=(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
     return rhs <= lhs;
 }
@@ -428,6 +567,18 @@ constexpr fixed_uint<max(w0, w1)> operator+(fixed_uint<w0> const& lhs, fixed_uin
     return res;
 }
 
+template <int w>
+constexpr fixed_uint<w> operator+(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    return fixed_uint<w>(lhs) + rhs;
+}
+
+template <int w>
+constexpr fixed_uint<w> operator+(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    return lhs + fixed_uint<w>(rhs);
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<max(w0, w1)> operator-(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
@@ -448,13 +599,37 @@ constexpr fixed_uint<max(w0, w1)> operator-(fixed_uint<w0> const& lhs, fixed_uin
     return res;
 }
 
+template <int w>
+constexpr fixed_uint<w> operator-(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    return fixed_uint<w>(lhs) - rhs;
+}
+
+template <int w>
+constexpr fixed_uint<w> operator-(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    return lhs - fixed_uint<w>(rhs);
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<max(w0, w1)> operator*(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
     constexpr int w_out = max(w0, w1);
     fixed_uint<w_out> l = lhs;
     fixed_uint<w_out> r = rhs;
-    return mul<w_out>(l, r);
+    return detail::mul<w_out>(l, r);
+}
+
+template <int w>
+constexpr fixed_uint<w> operator*(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    return detail::mul<w>(fixed_uint<1>(lhs), rhs);
+}
+
+template <int w>
+constexpr fixed_uint<w> operator*(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    return detail::mul<w>(lhs, fixed_uint<w>(rhs));
 }
 
 template <int w0, int w1>
@@ -484,6 +659,18 @@ constexpr fixed_uint<max(w0, w1)> operator/(fixed_uint<w0> const& lhs, fixed_uin
     return quotient;
 }
 
+template <int w>
+constexpr fixed_uint<w> operator/(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    return fixed_uint<1>(lhs) / rhs;
+}
+
+template <int w>
+constexpr fixed_uint<w> operator/(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    return lhs / fixed_uint<1>(rhs);
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<max(w0, w1)> operator%(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
@@ -510,6 +697,18 @@ constexpr fixed_uint<max(w0, w1)> operator%(fixed_uint<w0> const& lhs, fixed_uin
     return remainder;
 }
 
+template <int w>
+constexpr fixed_uint<w> operator%(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    return fixed_uint<1>(lhs) % rhs;
+}
+
+template <int w>
+constexpr fixed_uint<w> operator%(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    return lhs % fixed_uint<1>(rhs);
+}
+
 // assignment arithmetics
 
 template <int w0, int w1>
@@ -518,26 +717,65 @@ constexpr fixed_uint<w0>& operator+=(fixed_uint<w0>& lhs, fixed_uint<w1> const& 
     lhs = lhs + rhs;
     return lhs;
 }
+
+template <int w>
+constexpr fixed_uint<w>& operator+=(fixed_uint<w>& lhs, u64 rhs) noexcept
+{
+    lhs = lhs + rhs;
+    return lhs;
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<w0>& operator-=(fixed_uint<w0>& lhs, fixed_uint<w1> const& rhs) noexcept
 {
     lhs = lhs - rhs;
     return lhs;
 }
+
+template <int w>
+constexpr fixed_uint<w>& operator-=(fixed_uint<w>& lhs, u64 rhs) noexcept
+{
+    lhs = lhs - rhs;
+    return lhs;
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<w0>& operator*=(fixed_uint<w0>& lhs, fixed_uint<w1> const& rhs) noexcept
 {
     lhs = lhs * rhs;
     return lhs;
 }
+
+template <int w>
+constexpr fixed_uint<w>& operator*=(fixed_uint<w>& lhs, u64 rhs) noexcept
+{
+    lhs = lhs * rhs;
+    return lhs;
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<w0>& operator/=(fixed_uint<w0>& lhs, fixed_uint<w1> const& rhs) noexcept
 {
     lhs = lhs / rhs;
     return lhs;
 }
+
+template <int w>
+constexpr fixed_uint<w>& operator/=(fixed_uint<w>& lhs, u64 rhs) noexcept
+{
+    lhs = lhs / rhs;
+    return lhs;
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<w0>& operator%=(fixed_uint<w0>& lhs, fixed_uint<w1> const& rhs) noexcept
+{
+    lhs = lhs % rhs;
+    return lhs;
+}
+
+template <int w>
+constexpr fixed_uint<w>& operator%=(fixed_uint<w>& lhs, u64 rhs) noexcept
 {
     lhs = lhs % rhs;
     return lhs;
@@ -629,6 +867,23 @@ constexpr fixed_uint<max(w0, w1)> operator|(fixed_uint<w0> const& lhs, fixed_uin
 
     return res;
 }
+
+template <int w>
+constexpr fixed_uint<w> operator|(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    fixed_uint<w> res = rhs;
+    res.d[0] | lhs;
+    return res;
+}
+
+template <int w>
+constexpr fixed_uint<w> operator|(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    fixed_uint<w> res = lhs;
+    res.d[0] | rhs;
+    return res;
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<max(w0, w1)> operator&(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
@@ -646,6 +901,37 @@ constexpr fixed_uint<max(w0, w1)> operator&(fixed_uint<w0> const& lhs, fixed_uin
 
     return res;
 }
+
+template <int w>
+constexpr fixed_uint<w> operator&(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    fixed_uint<w> res = rhs;
+    res.d[0] & lhs;
+    // this works as if lhs is promoted, meaning the uppper bits are 0.
+    if constexpr (w > 1)
+        res.d[1] = 0;
+    if constexpr (w > 2)
+        res.d[2] = 0;
+    if constexpr (w > 3)
+        res.d[3] = 0;
+    return res;
+}
+
+template <int w>
+constexpr fixed_uint<w> operator&(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    fixed_uint<w> res = lhs;
+    res.d[0] & rhs;
+    // this works as if rhs is promoted, meaning the uppper bits are 0.
+    if constexpr (w > 1)
+        res.d[1] = 0;
+    if constexpr (w > 2)
+        res.d[2] = 0;
+    if constexpr (w > 3)
+        res.d[3] = 0;
+    return res;
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<max(w0, w1)> operator^(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
@@ -663,11 +949,27 @@ constexpr fixed_uint<max(w0, w1)> operator^(fixed_uint<w0> const& lhs, fixed_uin
 
     return res;
 }
+
+template <int w>
+constexpr fixed_uint<w> operator^(u64 lhs, fixed_uint<w> const& rhs) noexcept
+{
+    fixed_uint<w> res = rhs;
+    res.d[0] ^ lhs;
+    return res;
+}
+
+template <int w>
+constexpr fixed_uint<w> operator^(fixed_uint<w> const& lhs, u64 rhs) noexcept
+{
+    fixed_uint<w> res = lhs;
+    res.d[0] ^ rhs;
+    return res;
+}
+
 template <int w>
 constexpr fixed_uint<w> operator~(fixed_uint<w> const& lhs) noexcept
 {
     fixed_uint<w> res;
-
     res.d[0] = ~lhs.d[0];
     if constexpr (w > 1)
         res.d[1] = ~lhs.d[1];
@@ -675,7 +977,6 @@ constexpr fixed_uint<w> operator~(fixed_uint<w> const& lhs) noexcept
         res.d[2] = ~lhs.d[2];
     if constexpr (w > 3)
         res.d[3] = ~lhs.d[3];
-
     return res;
 }
 
@@ -696,6 +997,21 @@ constexpr fixed_uint<w0>& operator|=(fixed_uint<w0>& lhs, fixed_uint<w1> const& 
 
     return lhs;
 }
+
+template <int w>
+constexpr fixed_uint<w>& operator|=(fixed_uint<w>& lhs, u64 rhs) noexcept
+{
+    lhs.d[0] |= rhs;
+    return lhs;
+}
+
+template <int w>
+constexpr u64& operator|=(u64& lhs, fixed_uint<w> const& rhs) noexcept
+{
+    lhs |= rhs.d[0];
+    return lhs;
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<w0>& operator&=(fixed_uint<w0>& lhs, fixed_uint<w1> const& rhs) noexcept
 {
@@ -711,6 +1027,28 @@ constexpr fixed_uint<w0>& operator&=(fixed_uint<w0>& lhs, fixed_uint<w1> const& 
 
     return lhs;
 }
+
+template <int w>
+constexpr fixed_uint<w>& operator&=(fixed_uint<w>& lhs, u64 rhs) noexcept
+{
+    lhs.d[0] |= rhs;
+    // this works as if rhs is promoted, meaning the uppper bits are 0.
+    if constexpr (w > 1)
+        lhs.d[1] = 0;
+    if constexpr (w > 2)
+        lhs.d[2] = 0;
+    if constexpr (w > 3)
+        lhs.d[3] = 0;
+    return lhs;
+}
+
+template <int w>
+constexpr u64& operator&=(u64& lhs, fixed_uint<w> const& rhs) noexcept
+{
+    lhs |= rhs.d[0];
+    return lhs;
+}
+
 template <int w0, int w1>
 constexpr fixed_uint<w0>& operator^=(fixed_uint<w0>& lhs, fixed_uint<w1> const& rhs) noexcept
 {
@@ -724,6 +1062,20 @@ constexpr fixed_uint<w0>& operator^=(fixed_uint<w0>& lhs, fixed_uint<w1> const& 
     if constexpr (w0 > 3)
         lhs.d[3] ^= r.d[3];
 
+    return lhs;
+}
+
+template <int w>
+constexpr fixed_uint<w>& operator^=(fixed_uint<w>& lhs, u64 rhs) noexcept
+{
+    lhs.d[0] ^= rhs;
+    return lhs;
+}
+
+template <int w>
+constexpr u64& operator^=(u64& lhs, fixed_uint<w> const& rhs) noexcept
+{
+    lhs ^= rhs.d[0];
     return lhs;
 }
 
