@@ -64,7 +64,7 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
             error += delta_y;
             x0 += ix;
 
-            f(tg::ipos2(x0, y0), min(tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0), ScalarT(1)));
+            f(tg::ipos2(x0, y0), min(length(tg::pos2(x0, y0) - l.pos0) / length(l.pos1 - l.pos0), ScalarT(1)));
         }
     }
     else
@@ -89,7 +89,7 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
             error += delta_x;
             y0 += iy;
 
-            f(tg::ipos2(x0, y0), min(tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0), ScalarT(1)));
+            f(tg::ipos2(x0, y0), min(length(tg::pos2(x0, y0) - l.pos0) / length(l.pos1 - l.pos0), ScalarT(1)));
         }
     }
 }
