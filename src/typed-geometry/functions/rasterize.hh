@@ -17,10 +17,8 @@
 namespace tg
 {
 // F: (tg::ipos2 p, float a) -> void
-// experimental further exploits linearity and computes line parameter by accumulation of a stepsize
-// however this *seems* to be more imprecise than t = |(p - v0)| / |(v1 - v0)| ? needs further testing.
 template <class ScalarT, class F>
-constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental = false)
+constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
 {
     // TODO add limits?
 
@@ -41,23 +39,14 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
     signed char const iy((delta_y > 0) - (delta_y < 0));
     delta_y = std::abs(delta_y) << 1;
 
-    auto a = ScalarT(0);
-    auto aStep = ScalarT(0);
-
     // start
-    // if (!experimental)
-    a = tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0);
-
-    f(tg::ipos2(x0, y0), a);
+    f(tg::ipos2(x0, y0), ScalarT(0));
 
     if (delta_x >= delta_y)
     {
         // done
         if (x0 == x1)
             return;
-
-        if (experimental)
-            aStep = ScalarT(1) / abs(x1 - x0); // round(abs(l.pos0.x - l.pos1.x));
 
         // error may go below zero
         int error(delta_y - (delta_x >> 1));
@@ -75,21 +64,7 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
             error += delta_y;
             x0 += ix;
 
-            if (experimental)
-            {
-                // TODO value "a" might not need to be clipped as it only SLIGHTLY exceeds 1.0 in rare cases
-                // (precision of tg::epsilon<float> * 3 in test cases?)
-                if (x1 == x0)
-                    a = 1;
-                else
-                    a += aStep;
-            }
-            else
-            {
-                a = tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0);
-            }
-
-            f(tg::ipos2(x0, y0), min(a, ScalarT(1)));
+            f(tg::ipos2(x0, y0), min(tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0), ScalarT(1)));
         }
     }
     else
@@ -98,8 +73,6 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
         if (y0 == y1)
             return;
 
-        if (experimental)
-            aStep = ScalarT(1) / abs(y1 - y0); // round(abs(l.pos0.x - l.pos1.x));
         // error may go below zero
         int error(delta_x - (delta_y >> 1));
 
@@ -116,19 +89,7 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
             error += delta_x;
             y0 += iy;
 
-            if (experimental)
-            {
-                if (y1 == y0)
-                    a = 1;
-                else
-                    a += aStep;
-            }
-            else
-            {
-                a = tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0);
-            }
-
-            f(tg::ipos2(x0, y0), min(a, ScalarT(1)));
+            f(tg::ipos2(x0, y0), min(tg::length(tg::pos2(x0, y0) - l.pos0) / tg::length(l.pos1 - l.pos0), ScalarT(1)));
         }
     }
 }
@@ -136,7 +97,7 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
 // F: (tg::ipos2 p, float a, float b) -> void
 // offset is subpixel offset, e.g. 0.5f means sampling at pixel center
 template <class ScalarT, class F>
-constexpr void rasterize_bresenham(triangle<2, ScalarT> const& t, F&& f, const bool experimental = false)
+constexpr void rasterize_bresenham(triangle<2, ScalarT> const& t, F&& f)
 {
     // bresenham 3 sides of a triangle, then fill contour
     // inspired by https://stackoverflow.com/a/11145708
@@ -169,25 +130,23 @@ constexpr void rasterize_bresenham(triangle<2, ScalarT> const& t, F&& f, const b
 
     // rasterize to get triangle contour for each row
     for (auto l : lines)
-        tg::rasterize(l,
-                      [&](tg::ipos2 p, ScalarT a) {
-                          auto iy = p.y - minPix.y;
+        tg::rasterize(l, [&](tg::ipos2 p, ScalarT a) {
+            auto iy = p.y - minPix.y;
 
-                          if (iy < 0 || iy >= height)
-                              // std::cout << "bad y: " << iy << " | height is " << height << std::endl;
-                              return;
+            if (iy < 0 || iy >= height)
+                // std::cout << "bad y: " << iy << " | height is " << height << std::endl;
+                return;
 
 
-                          // update contour
-                          if (p.x < contour[iy][0])
-                              contour[iy][0] = p.x;
-                          if (p.x > contour[iy][1])
-                              contour[iy][1] = p.x;
+            // update contour
+            if (p.x < contour[iy][0])
+                contour[iy][0] = p.x;
+            if (p.x > contour[iy][1])
+                contour[iy][1] = p.x;
 
-                          // TODO if experimental interpolate line parameters for bary
-                          (void)a;
-                      },
-                      experimental);
+            // TODO interpolate line parameters for bary?
+            (void)a;
+        });
 
 
     for (auto y = 0; y < height; ++y)
