@@ -1,6 +1,7 @@
 #pragma once
 
 #include <immintrin.h>
+#include <x86intrin.h>
 
 #include <typed-geometry/types/scalars/fixed_uint.hh>
 
