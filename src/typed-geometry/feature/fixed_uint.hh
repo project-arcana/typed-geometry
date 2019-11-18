@@ -7,10 +7,8 @@
 
 #include "fixed_uint_gen.hh"
 
-// todo: guard from msvc, or alternative implementation there!
 // todo: division and modulo are essentially the same code, put into detail maybe
 // todo: gcc does not seem to produce optimal code gen
-// todo: float conversion is quite limited
 
 namespace tg
 {
@@ -807,6 +805,7 @@ constexpr fixed_uint<w>& operator++(fixed_uint<w>& lhs) noexcept
     }
     return lhs;
 }
+
 template <int w>
 constexpr fixed_uint<w> operator++(fixed_uint<w>& lhs, int) noexcept
 {
@@ -814,6 +813,7 @@ constexpr fixed_uint<w> operator++(fixed_uint<w>& lhs, int) noexcept
     ++lhs;
     return cpy;
 }
+
 template <int w>
 constexpr fixed_uint<w>& operator--(fixed_uint<w>& lhs) noexcept
 {
@@ -839,6 +839,7 @@ constexpr fixed_uint<w>& operator--(fixed_uint<w>& lhs) noexcept
     }
     return lhs;
 }
+
 template <int w>
 constexpr fixed_uint<w> operator--(fixed_uint<w>& lhs, int) noexcept
 {
@@ -1369,6 +1370,7 @@ constexpr fixed_uint<w>& operator>>=(fixed_uint<w>& lhs, int shift) noexcept
     lhs = lhs >> shift;
     return lhs;
 }
+
 template <int w>
 constexpr fixed_uint<w>& operator<<=(fixed_uint<w>& lhs, int shift) noexcept
 {
