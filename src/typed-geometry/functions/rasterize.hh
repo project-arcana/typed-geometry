@@ -25,18 +25,6 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f, bool experimental 
     // TODO add limits?
 
     // bresenham, see http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
-    // TODO round? or just int? depending on pos1, pos0 order?
-    /*
-    auto ordered = l.pos0.x < l.pos1.x;
-    auto x0 = ordered ? ifloor(l.pos0.x) : iceil(l.pos0.x);
-    auto x1 = ordered ? iceil(l.pos1.x) : ifloor(l.pos1.x);
-
-    ordered = l.pos0.y < l.pos1.y;
-    auto y0 = ordered ? ifloor(l.pos0.y) : iceil(l.pos0.y);
-    auto y1 = ordered ? iceil(l.pos1.y) : ifloor(l.pos1.y);
-
-    // iround works well so far
-*/
     auto x0 = iround(l.pos0.x);
     auto x1 = iround(l.pos1.x);
 
@@ -205,30 +193,25 @@ constexpr void rasterize_bresenham(triangle<2, ScalarT> const& t, F&& f, const b
     for (auto y = 0; y < height; ++y)
     {
         // bresenham was here
-        /* if (contour[y][0] <= contour[y][1])
-         {
-             return;*/
-        // TODO note the +1, otherwise tests failed, should check line rasterization for correctness (might be rounding errors)
-        for (auto x = contour[y][0]; x <= contour[y][1] + 1; x++)
+        for (auto x = contour[y][0]; x <= contour[y][1]; x++)
         {
             auto const pos = tg::ipos2(x, y + minPix.y);
-
 
             // TODO if experimental: derive bary from line parameters and x / (maxPix.x - minPix.x) instead?
             // TODO note that calculating barycentrics for pixels may give values outside 0..1 as pixels may be
             // "touched" by a triangle but e.g. their topleft corner may not actually be contained
-            auto const off = ScalarT(0.5f); // subpixel offset
+
+            // TODO offset?
+            auto const off = ScalarT(0.0); // subpixel offset
 
             auto bary = tg::coordinates(t, tg::pos2(pos.x + off, pos.y + off));
 
-
+            // TODO might be slightly outside of triangle, clamp
             bary[0] = tg::clamp(bary[0], 0, 1);
             bary[1] = tg::clamp(bary[1], 0, 1);
 
             f(pos, bary[0], bary[1]);
-            // f(pos, 0, 0);
         }
-        //}
     }
 }
 
