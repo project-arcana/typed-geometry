@@ -32,4 +32,5 @@
 #include "capped_array.hh"
 #include "capped_vector.hh"
 
+#include "scalars/fixed_int.hh"
 #include "scalars/fixed_uint.hh"

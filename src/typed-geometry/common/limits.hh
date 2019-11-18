@@ -1,6 +1,7 @@
 #pragma once
 
 #include <typed-geometry/types/scalars/default.hh>
+#include <typed-geometry/types/scalars/fixed_int.hh>
 #include <typed-geometry/types/scalars/fixed_uint.hh>
 
 namespace tg
@@ -133,6 +134,67 @@ struct limits<u256>
         res.d[1] = 0xFFFFFFFFFFFFFFFF;
         res.d[2] = 0xFFFFFFFFFFFFFFFF;
         res.d[3] = 0xFFFFFFFFFFFFFFFF;
+        return res;
+    }
+};
+
+template <>
+struct limits<i128>
+{
+    static constexpr i128 min()
+    {
+        i128 res;
+        res.d[0] = 0xFFFFFFFFFFFFFFFF;
+        res.d[1] = 0x7FFFFFFFFFFFFFFF;
+        return res;
+    }
+    static constexpr i128 max()
+    {
+        i128 res;
+        res.d[0] = 0x0000000000000000;
+        res.d[1] = 0x8000000000000000;
+        return res;
+    }
+};
+template <>
+struct limits<i192>
+{
+    static constexpr i192 min()
+    {
+        i192 res;
+        res.d[0] = 0xFFFFFFFFFFFFFFFF;
+        res.d[1] = 0xFFFFFFFFFFFFFFFF;
+        res.d[2] = 0x7FFFFFFFFFFFFFFF;
+        return res;
+    }
+    static constexpr i192 max()
+    {
+        i192 res;
+        res.d[0] = 0x0000000000000000;
+        res.d[1] = 0x0000000000000000;
+        res.d[2] = 0x8000000000000000;
+        return res;
+    }
+};
+template <>
+struct limits<i256>
+{
+    static constexpr i256 min()
+    {
+        i256 res;
+        res.d[0] = 0xFFFFFFFFFFFFFFFF;
+        res.d[1] = 0xFFFFFFFFFFFFFFFF;
+        res.d[2] = 0xFFFFFFFFFFFFFFFF;
+        res.d[3] = 0x7FFFFFFFFFFFFFFF;
+        return res;
+    }
+    static constexpr i256 max()
+    {
+        i256 res;
+        res.d[0] = 0x0000000000000000;
+        res.d[1] = 0x0000000000000000;
+        res.d[2] = 0x0000000000000000;
+        res.d[3] = 0x8000000000000000;
         return res;
     }
 };
