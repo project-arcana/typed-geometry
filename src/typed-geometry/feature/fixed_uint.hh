@@ -11,7 +11,6 @@
 // todo: division and modulo are essentially the same code, put into detail maybe
 // todo: gcc does not seem to produce optimal code gen
 // todo: float conversion is quite limited
-// todo: all arithmetic operations with u64: definition done, implementation!
 
 namespace tg
 {
@@ -241,10 +240,10 @@ constexpr fixed_uint<words>::operator float()
     float res = float(d[0]);
     if constexpr (words > 1)
         res += float(d[1]) * 0x1p64f;
-    if constexpr (words > 2)
-        res += float(d[2]) * float(0x1p128);
-    if constexpr (words > 3)
-        res += float(d[3]) * float(0x1p192);
+    if constexpr (words > 2) // if not 0 this is going to be inf anyways, but inf * 0 = nan, which is not what is desired here
+        res += d[2] == 0 ? 0 : float(d[2]) * float(0x1p128);
+    if constexpr (words > 3) // if not 0 this is going to be inf anyways, but inf * 0 = nan, which is not what is desired here
+        res += d[3] == 0 ? 0 : float(d[3]) * float(0x1p128);
     return res;
 }
 
