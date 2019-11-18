@@ -309,15 +309,7 @@ constexpr bool operator==(u64 lhs, fixed_uint<w> const& rhs) noexcept
 template <int w>
 constexpr bool operator==(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
-    bool eq = true;
-    eq &= lhs.d[0] == rhs;
-    if constexpr (w > 1)
-        eq &= lhs.d[1] == 0;
-    if constexpr (w > 2)
-        eq &= lhs.d[2] == 0;
-    if constexpr (w > 3)
-        eq &= lhs.d[3] == 0;
-    return eq;
+    return rhs == lhs;
 }
 
 template <int w0, int w1>
@@ -367,15 +359,7 @@ constexpr bool operator!=(u64 lhs, fixed_uint<w> const& rhs) noexcept
 template <int w>
 constexpr bool operator!=(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
-    bool neq = false;
-    neq |= lhs.d[0] != rhs;
-    if constexpr (w > 1)
-        neq |= lhs.d[1] != 0;
-    if constexpr (w > 2)
-        neq |= lhs.d[2] != 0;
-    if constexpr (w > 3)
-        neq |= lhs.d[3] != 0;
-    return neq;
+    return rhs != lhs;
 }
 
 template <int w0, int w1>
@@ -583,7 +567,7 @@ constexpr fixed_uint<max(w0, w1)> operator-(fixed_uint<w0> const& lhs, fixed_uin
     fixed_uint<w_out> res;
     fixed_uint<w_out> l = lhs;
     fixed_uint<w_out> r = rhs;
-    decltype(_addcarry_u64(0, 0, 0, nullptr)) c = 0;
+    decltype(_subborrow_u64(0, 0, 0, nullptr)) c = 0;
 
     c = _subborrow_u64(c, l.d[0], r.d[0], &res.d[0]);
     if constexpr (w_out > 1)
