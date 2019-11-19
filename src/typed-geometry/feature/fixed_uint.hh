@@ -572,13 +572,13 @@ constexpr fixed_uint<max(w0, w1)> operator*(fixed_uint<w0> const& lhs, fixed_uin
 template <int w>
 constexpr fixed_uint<w> operator*(u64 lhs, fixed_uint<w> const& rhs) noexcept
 {
-    return detail::mul<w>(fixed_uint<1>(lhs), rhs);
+    return detail::mul<w>(lhs, rhs);
 }
 
 template <int w>
 constexpr fixed_uint<w> operator*(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
-    return detail::mul<w>(lhs, fixed_uint<w>(rhs));
+    return detail::mul<w>(lhs, rhs);
 }
 
 template <int w0, int w1>
@@ -1047,6 +1047,33 @@ constexpr fixed_uint<w> operator>>(fixed_uint<w> const& lhs, int shift) noexcept
 
     fixed_uint<w> res;
 
+    if (mod_shift == 0)
+    {
+        if (skip == 1)
+        {
+            if constexpr (w > 1)
+                res.d[0] = lhs.d[1];
+            if constexpr (w > 2)
+                res.d[1] = lhs.d[2];
+            if constexpr (w > 3)
+                res.d[2] = lhs.d[3];
+        }
+        if (skip == 2)
+        {
+            if constexpr (w > 2)
+                res.d[0] = lhs.d[2];
+            if constexpr (w > 3)
+                res.d[1] = lhs.d[3];
+        }
+        if (skip == 3)
+        {
+            if constexpr (w > 3)
+                res.d[0] = lhs.d[3];
+        }
+        return res;
+    }
+
+
 #if 1
     if (skip == 0)
     {
@@ -1186,6 +1213,32 @@ constexpr fixed_uint<w> operator<<(fixed_uint<w> const& lhs, int shift) noexcept
     const int inv_shift = 64 - mod_shift; // inverted shift
 
     fixed_uint<w> res;
+
+    if (mod_shift == 0)
+    {
+        if (skip == 1)
+        {
+            if constexpr (w > 1)
+                res.d[1] = lhs.d[0];
+            if constexpr (w > 2)
+                res.d[2] = lhs.d[1];
+            if constexpr (w > 3)
+                res.d[3] = lhs.d[2];
+        }
+        if (skip == 2)
+        {
+            if constexpr (w > 2)
+                res.d[2] = lhs.d[0];
+            if constexpr (w > 3)
+                res.d[3] = lhs.d[1];
+        }
+        if (skip == 3)
+        {
+            if constexpr (w > 3)
+                res.d[3] = lhs.d[0];
+        }
+        return res;
+    }
 
 #if 1
     if (skip == 0)
