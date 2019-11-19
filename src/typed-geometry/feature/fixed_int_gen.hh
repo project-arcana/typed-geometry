@@ -16,7 +16,7 @@ template <int w_res, class T0, class T1>
 fixed_int<w_res> imul(T0 const& lhs, T1 const& rhs);
 
 template <>
-fixed_int<2> imul(i64 const& lhs, i64 const& rhs)
+inline fixed_int<2> imul(i64 const& lhs, i64 const& rhs)
 {
     fixed_int<2> res;
     i64 l = lhs;
@@ -34,8 +34,8 @@ fixed_int<2> imul(i64 const& lhs, i64 const& rhs)
     u64 h00 = 0;
     l00 = _mulx_u64(u64(l), u64(r), &h00);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -45,7 +45,7 @@ fixed_int<2> imul(i64 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i128 const& lhs, i64 const& rhs)
+inline fixed_int<2> imul(i128 const& lhs, i64 const& rhs)
 {
     fixed_int<2> res;
     i128 l = lhs;
@@ -67,9 +67,8 @@ fixed_int<2> imul(i128 const& lhs, i64 const& rhs)
     l00 = _mulx_u64(u64(l.d[0]), u64(r), &h00);
     l10 = u64(l.d[1]) * u64(r);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -79,7 +78,7 @@ fixed_int<2> imul(i128 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i192 const& lhs, i64 const& rhs)
+inline fixed_int<2> imul(i192 const& lhs, i64 const& rhs)
 {
     fixed_int<2> res;
     i192 l = lhs;
@@ -103,9 +102,8 @@ fixed_int<2> imul(i192 const& lhs, i64 const& rhs)
     l00 = _mulx_u64(u64(l.d[0]), u64(r), &h00);
     l10 = u64(l.d[1]) * u64(r);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -115,7 +113,7 @@ fixed_int<2> imul(i192 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i256 const& lhs, i64 const& rhs)
+inline fixed_int<2> imul(i256 const& lhs, i64 const& rhs)
 {
     fixed_int<2> res;
     i256 l = lhs;
@@ -141,9 +139,8 @@ fixed_int<2> imul(i256 const& lhs, i64 const& rhs)
     l00 = _mulx_u64(u64(l.d[0]), u64(r), &h00);
     l10 = u64(l.d[1]) * u64(r);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -153,7 +150,7 @@ fixed_int<2> imul(i256 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i64 const& lhs, i128 const& rhs)
+inline fixed_int<2> imul(i64 const& lhs, i128 const& rhs)
 {
     fixed_int<2> res;
     i64 l = lhs;
@@ -175,9 +172,8 @@ fixed_int<2> imul(i64 const& lhs, i128 const& rhs)
     l00 = _mulx_u64(u64(l), u64(r.d[0]), &h00);
     l01 = u64(l) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -187,7 +183,7 @@ fixed_int<2> imul(i64 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i128 const& lhs, i128 const& rhs)
+inline fixed_int<2> imul(i128 const& lhs, i128 const& rhs)
 {
     fixed_int<2> res;
     i128 l = lhs;
@@ -213,10 +209,8 @@ fixed_int<2> imul(i128 const& lhs, i128 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -226,7 +220,7 @@ fixed_int<2> imul(i128 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i192 const& lhs, i128 const& rhs)
+inline fixed_int<2> imul(i192 const& lhs, i128 const& rhs)
 {
     fixed_int<2> res;
     i192 l = lhs;
@@ -254,10 +248,8 @@ fixed_int<2> imul(i192 const& lhs, i128 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -267,7 +259,7 @@ fixed_int<2> imul(i192 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i256 const& lhs, i128 const& rhs)
+inline fixed_int<2> imul(i256 const& lhs, i128 const& rhs)
 {
     fixed_int<2> res;
     i256 l = lhs;
@@ -297,10 +289,8 @@ fixed_int<2> imul(i256 const& lhs, i128 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -310,7 +300,7 @@ fixed_int<2> imul(i256 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i64 const& lhs, i192 const& rhs)
+inline fixed_int<2> imul(i64 const& lhs, i192 const& rhs)
 {
     fixed_int<2> res;
     i64 l = lhs;
@@ -334,9 +324,8 @@ fixed_int<2> imul(i64 const& lhs, i192 const& rhs)
     l00 = _mulx_u64(u64(l), u64(r.d[0]), &h00);
     l01 = u64(l) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -346,7 +335,7 @@ fixed_int<2> imul(i64 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i128 const& lhs, i192 const& rhs)
+inline fixed_int<2> imul(i128 const& lhs, i192 const& rhs)
 {
     fixed_int<2> res;
     i128 l = lhs;
@@ -374,10 +363,8 @@ fixed_int<2> imul(i128 const& lhs, i192 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -387,7 +374,7 @@ fixed_int<2> imul(i128 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i192 const& lhs, i192 const& rhs)
+inline fixed_int<2> imul(i192 const& lhs, i192 const& rhs)
 {
     fixed_int<2> res;
     i192 l = lhs;
@@ -417,10 +404,8 @@ fixed_int<2> imul(i192 const& lhs, i192 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -430,7 +415,7 @@ fixed_int<2> imul(i192 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i256 const& lhs, i192 const& rhs)
+inline fixed_int<2> imul(i256 const& lhs, i192 const& rhs)
 {
     fixed_int<2> res;
     i256 l = lhs;
@@ -462,10 +447,8 @@ fixed_int<2> imul(i256 const& lhs, i192 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -475,7 +458,7 @@ fixed_int<2> imul(i256 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i64 const& lhs, i256 const& rhs)
+inline fixed_int<2> imul(i64 const& lhs, i256 const& rhs)
 {
     fixed_int<2> res;
     i64 l = lhs;
@@ -501,9 +484,8 @@ fixed_int<2> imul(i64 const& lhs, i256 const& rhs)
     l00 = _mulx_u64(u64(l), u64(r.d[0]), &h00);
     l01 = u64(l) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -513,7 +495,7 @@ fixed_int<2> imul(i64 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i128 const& lhs, i256 const& rhs)
+inline fixed_int<2> imul(i128 const& lhs, i256 const& rhs)
 {
     fixed_int<2> res;
     i128 l = lhs;
@@ -543,10 +525,8 @@ fixed_int<2> imul(i128 const& lhs, i256 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -556,7 +536,7 @@ fixed_int<2> imul(i128 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i192 const& lhs, i256 const& rhs)
+inline fixed_int<2> imul(i192 const& lhs, i256 const& rhs)
 {
     fixed_int<2> res;
     i192 l = lhs;
@@ -588,10 +568,8 @@ fixed_int<2> imul(i192 const& lhs, i256 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -601,7 +579,7 @@ fixed_int<2> imul(i192 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<2> imul(i256 const& lhs, i256 const& rhs)
+inline fixed_int<2> imul(i256 const& lhs, i256 const& rhs)
 {
     fixed_int<2> res;
     i256 l = lhs;
@@ -635,10 +613,8 @@ fixed_int<2> imul(i256 const& lhs, i256 const& rhs)
     l01 = u64(l.d[0]) * u64(r.d[1]);
     l10 = u64(l.d[1]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -648,7 +624,7 @@ fixed_int<2> imul(i256 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i64 const& lhs, i64 const& rhs)
+inline fixed_int<3> imul(i64 const& lhs, i64 const& rhs)
 {
     fixed_int<3> res;
     i64 l = lhs;
@@ -666,8 +642,11 @@ fixed_int<3> imul(i64 const& lhs, i64 const& rhs)
     u64 h00 = 0;
     l00 = _mulx_u64(u64(l), u64(r), &h00);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    res.d[2] = c;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -679,7 +658,7 @@ fixed_int<3> imul(i64 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i128 const& lhs, i64 const& rhs)
+inline fixed_int<3> imul(i128 const& lhs, i64 const& rhs)
 {
     fixed_int<3> res;
     i128 l = lhs;
@@ -702,10 +681,12 @@ fixed_int<3> imul(i128 const& lhs, i64 const& rhs)
     l00 = _mulx_u64(u64(l.d[0]), u64(r), &h00);
     l10 = _mulx_u64(u64(l.d[1]), u64(r), &h10);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -717,7 +698,7 @@ fixed_int<3> imul(i128 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i192 const& lhs, i64 const& rhs)
+inline fixed_int<3> imul(i192 const& lhs, i64 const& rhs)
 {
     fixed_int<3> res;
     i192 l = lhs;
@@ -744,11 +725,12 @@ fixed_int<3> imul(i192 const& lhs, i64 const& rhs)
     l10 = _mulx_u64(u64(l.d[1]), u64(r), &h10);
     l20 = u64(l.d[2]) * u64(r);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h10 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -760,7 +742,7 @@ fixed_int<3> imul(i192 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i256 const& lhs, i64 const& rhs)
+inline fixed_int<3> imul(i256 const& lhs, i64 const& rhs)
 {
     fixed_int<3> res;
     i256 l = lhs;
@@ -789,11 +771,12 @@ fixed_int<3> imul(i256 const& lhs, i64 const& rhs)
     l10 = _mulx_u64(u64(l.d[1]), u64(r), &h10);
     l20 = u64(l.d[2]) * u64(r);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h10 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -805,7 +788,7 @@ fixed_int<3> imul(i256 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i64 const& lhs, i128 const& rhs)
+inline fixed_int<3> imul(i64 const& lhs, i128 const& rhs)
 {
     fixed_int<3> res;
     i64 l = lhs;
@@ -828,10 +811,12 @@ fixed_int<3> imul(i64 const& lhs, i128 const& rhs)
     l00 = _mulx_u64(u64(l), u64(r.d[0]), &h00);
     l01 = _mulx_u64(u64(l), u64(r.d[1]), &h01);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    res.d[2] = c + h01;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -843,7 +828,7 @@ fixed_int<3> imul(i64 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i128 const& lhs, i128 const& rhs)
+inline fixed_int<3> imul(i128 const& lhs, i128 const& rhs)
 {
     fixed_int<3> res;
     i128 l = lhs;
@@ -873,13 +858,13 @@ fixed_int<3> imul(i128 const& lhs, i128 const& rhs)
     l10 = _mulx_u64(u64(l.d[1]), u64(r.d[0]), &h10);
     l11 = u64(l.d[1]) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + h10 + l11;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -891,7 +876,7 @@ fixed_int<3> imul(i128 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i192 const& lhs, i128 const& rhs)
+inline fixed_int<3> imul(i192 const& lhs, i128 const& rhs)
 {
     fixed_int<3> res;
     i192 l = lhs;
@@ -925,14 +910,13 @@ fixed_int<3> imul(i192 const& lhs, i128 const& rhs)
     l11 = u64(l.d[1]) * u64(r.d[1]);
     l20 = u64(l.d[2]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -944,7 +928,7 @@ fixed_int<3> imul(i192 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i256 const& lhs, i128 const& rhs)
+inline fixed_int<3> imul(i256 const& lhs, i128 const& rhs)
 {
     fixed_int<3> res;
     i256 l = lhs;
@@ -980,14 +964,13 @@ fixed_int<3> imul(i256 const& lhs, i128 const& rhs)
     l11 = u64(l.d[1]) * u64(r.d[1]);
     l20 = u64(l.d[2]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -999,7 +982,7 @@ fixed_int<3> imul(i256 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i64 const& lhs, i192 const& rhs)
+inline fixed_int<3> imul(i64 const& lhs, i192 const& rhs)
 {
     fixed_int<3> res;
     i64 l = lhs;
@@ -1026,11 +1009,12 @@ fixed_int<3> imul(i64 const& lhs, i192 const& rhs)
     l01 = _mulx_u64(u64(l), u64(r.d[1]), &h01);
     l02 = u64(l) * u64(r.d[2]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    res.d[2] = c + h01 + l02;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1042,7 +1026,7 @@ fixed_int<3> imul(i64 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i128 const& lhs, i192 const& rhs)
+inline fixed_int<3> imul(i128 const& lhs, i192 const& rhs)
 {
     fixed_int<3> res;
     i128 l = lhs;
@@ -1076,14 +1060,13 @@ fixed_int<3> imul(i128 const& lhs, i192 const& rhs)
     l02 = u64(l.d[0]) * u64(r.d[2]);
     l11 = u64(l.d[1]) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + l02 + h10 + l11;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1095,7 +1078,7 @@ fixed_int<3> imul(i128 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i192 const& lhs, i192 const& rhs)
+inline fixed_int<3> imul(i192 const& lhs, i192 const& rhs)
 {
     fixed_int<3> res;
     i192 l = lhs;
@@ -1133,15 +1116,13 @@ fixed_int<3> imul(i192 const& lhs, i192 const& rhs)
     l11 = u64(l.d[1]) * u64(r.d[1]);
     l20 = u64(l.d[2]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + l02 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1153,7 +1134,7 @@ fixed_int<3> imul(i192 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i256 const& lhs, i192 const& rhs)
+inline fixed_int<3> imul(i256 const& lhs, i192 const& rhs)
 {
     fixed_int<3> res;
     i256 l = lhs;
@@ -1193,15 +1174,13 @@ fixed_int<3> imul(i256 const& lhs, i192 const& rhs)
     l11 = u64(l.d[1]) * u64(r.d[1]);
     l20 = u64(l.d[2]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + l02 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1213,7 +1192,7 @@ fixed_int<3> imul(i256 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i64 const& lhs, i256 const& rhs)
+inline fixed_int<3> imul(i64 const& lhs, i256 const& rhs)
 {
     fixed_int<3> res;
     i64 l = lhs;
@@ -1242,11 +1221,12 @@ fixed_int<3> imul(i64 const& lhs, i256 const& rhs)
     l01 = _mulx_u64(u64(l), u64(r.d[1]), &h01);
     l02 = u64(l) * u64(r.d[2]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    res.d[2] = c + h01 + l02;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1258,7 +1238,7 @@ fixed_int<3> imul(i64 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i128 const& lhs, i256 const& rhs)
+inline fixed_int<3> imul(i128 const& lhs, i256 const& rhs)
 {
     fixed_int<3> res;
     i128 l = lhs;
@@ -1294,14 +1274,13 @@ fixed_int<3> imul(i128 const& lhs, i256 const& rhs)
     l02 = u64(l.d[0]) * u64(r.d[2]);
     l11 = u64(l.d[1]) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + l02 + h10 + l11;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1313,7 +1292,7 @@ fixed_int<3> imul(i128 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i192 const& lhs, i256 const& rhs)
+inline fixed_int<3> imul(i192 const& lhs, i256 const& rhs)
 {
     fixed_int<3> res;
     i192 l = lhs;
@@ -1353,15 +1332,13 @@ fixed_int<3> imul(i192 const& lhs, i256 const& rhs)
     l11 = u64(l.d[1]) * u64(r.d[1]);
     l20 = u64(l.d[2]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + l02 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1373,7 +1350,7 @@ fixed_int<3> imul(i192 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<3> imul(i256 const& lhs, i256 const& rhs)
+inline fixed_int<3> imul(i256 const& lhs, i256 const& rhs)
 {
     fixed_int<3> res;
     i256 l = lhs;
@@ -1415,15 +1392,13 @@ fixed_int<3> imul(i256 const& lhs, i256 const& rhs)
     l11 = u64(l.d[1]) * u64(r.d[1]);
     l20 = u64(l.d[2]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    res.d[2] = c + h01 + l02 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1435,7 +1410,7 @@ fixed_int<3> imul(i256 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i64 const& lhs, i64 const& rhs)
+inline fixed_int<4> imul(i64 const& lhs, i64 const& rhs)
 {
     fixed_int<4> res;
     i64 l = lhs;
@@ -1453,8 +1428,13 @@ fixed_int<4> imul(i64 const& lhs, i64 const& rhs)
     u64 h00 = 0;
     l00 = _mulx_u64(u64(l), u64(r), &h00);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    res.d[3] = c;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1468,7 +1448,7 @@ fixed_int<4> imul(i64 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i128 const& lhs, i64 const& rhs)
+inline fixed_int<4> imul(i128 const& lhs, i64 const& rhs)
 {
     fixed_int<4> res;
     i128 l = lhs;
@@ -1491,10 +1471,15 @@ fixed_int<4> imul(i128 const& lhs, i64 const& rhs)
     l00 = _mulx_u64(u64(l.d[0]), u64(r), &h00);
     l10 = _mulx_u64(u64(l.d[1]), u64(r), &h10);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    res.d[3] = c;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1508,7 +1493,7 @@ fixed_int<4> imul(i128 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i192 const& lhs, i64 const& rhs)
+inline fixed_int<4> imul(i192 const& lhs, i64 const& rhs)
 {
     fixed_int<4> res;
     i192 l = lhs;
@@ -1536,12 +1521,16 @@ fixed_int<4> imul(i192 const& lhs, i64 const& rhs)
     l10 = _mulx_u64(u64(l.d[1]), u64(r), &h10);
     l20 = _mulx_u64(u64(l.d[2]), u64(r), &h20);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h20, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l20, &res.d[2]);
+    res.d[3] = c + h20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1555,7 +1544,7 @@ fixed_int<4> imul(i192 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i256 const& lhs, i64 const& rhs)
+inline fixed_int<4> imul(i256 const& lhs, i64 const& rhs)
 {
     fixed_int<4> res;
     i256 l = lhs;
@@ -1587,13 +1576,16 @@ fixed_int<4> imul(i256 const& lhs, i64 const& rhs)
     l20 = _mulx_u64(u64(l.d[2]), u64(r), &h20);
     l30 = u64(l.d[3]) * u64(r);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h20, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l30, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l20, &res.d[2]);
+    res.d[3] = c + h20 + l30;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1607,7 +1599,7 @@ fixed_int<4> imul(i256 const& lhs, i64 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i64 const& lhs, i128 const& rhs)
+inline fixed_int<4> imul(i64 const& lhs, i128 const& rhs)
 {
     fixed_int<4> res;
     i64 l = lhs;
@@ -1630,10 +1622,15 @@ fixed_int<4> imul(i64 const& lhs, i128 const& rhs)
     l00 = _mulx_u64(u64(l), u64(r.d[0]), &h00);
     l01 = _mulx_u64(u64(l), u64(r.d[1]), &h01);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    res.d[3] = c;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1647,7 +1644,7 @@ fixed_int<4> imul(i64 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i128 const& lhs, i128 const& rhs)
+inline fixed_int<4> imul(i128 const& lhs, i128 const& rhs)
 {
     fixed_int<4> res;
     i128 l = lhs;
@@ -1678,14 +1675,18 @@ fixed_int<4> imul(i128 const& lhs, i128 const& rhs)
     l10 = _mulx_u64(u64(l.d[1]), u64(r.d[0]), &h10);
     l11 = _mulx_u64(u64(l.d[1]), u64(r.d[1]), &h11);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    res.d[3] = c + h11;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1699,7 +1700,7 @@ fixed_int<4> imul(i128 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i192 const& lhs, i128 const& rhs)
+inline fixed_int<4> imul(i192 const& lhs, i128 const& rhs)
 {
     fixed_int<4> res;
     i192 l = lhs;
@@ -1737,17 +1738,19 @@ fixed_int<4> imul(i192 const& lhs, i128 const& rhs)
     l20 = _mulx_u64(u64(l.d[2]), u64(r.d[0]), &h20);
     l21 = u64(l.d[2]) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h20, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l21, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l20, &res.d[2]);
+    res.d[3] = c + h11 + h20 + l21;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1761,7 +1764,7 @@ fixed_int<4> imul(i192 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i256 const& lhs, i128 const& rhs)
+inline fixed_int<4> imul(i256 const& lhs, i128 const& rhs)
 {
     fixed_int<4> res;
     i256 l = lhs;
@@ -1803,18 +1806,19 @@ fixed_int<4> imul(i256 const& lhs, i128 const& rhs)
     l21 = u64(l.d[2]) * u64(r.d[1]);
     l30 = u64(l.d[3]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h20, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l21, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l30, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l20, &res.d[2]);
+    res.d[3] = c + h11 + h20 + l21 + l30;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1828,7 +1832,7 @@ fixed_int<4> imul(i256 const& lhs, i128 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i64 const& lhs, i192 const& rhs)
+inline fixed_int<4> imul(i64 const& lhs, i192 const& rhs)
 {
     fixed_int<4> res;
     i64 l = lhs;
@@ -1856,12 +1860,16 @@ fixed_int<4> imul(i64 const& lhs, i192 const& rhs)
     l01 = _mulx_u64(u64(l), u64(r.d[1]), &h01);
     l02 = _mulx_u64(u64(l), u64(r.d[2]), &h02);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h02, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l02, &res.d[2]);
+    res.d[3] = c + h02;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1875,7 +1883,7 @@ fixed_int<4> imul(i64 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i128 const& lhs, i192 const& rhs)
+inline fixed_int<4> imul(i128 const& lhs, i192 const& rhs)
 {
     fixed_int<4> res;
     i128 l = lhs;
@@ -1913,17 +1921,19 @@ fixed_int<4> imul(i128 const& lhs, i192 const& rhs)
     l11 = _mulx_u64(u64(l.d[1]), u64(r.d[1]), &h11);
     l12 = u64(l.d[1]) * u64(r.d[2]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h02, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l12, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l02, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    res.d[3] = c + h02 + h11 + l12;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -1937,7 +1947,7 @@ fixed_int<4> imul(i128 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i192 const& lhs, i192 const& rhs)
+inline fixed_int<4> imul(i192 const& lhs, i192 const& rhs)
 {
     fixed_int<4> res;
     i192 l = lhs;
@@ -1982,20 +1992,20 @@ fixed_int<4> imul(i192 const& lhs, i192 const& rhs)
     l12 = u64(l.d[1]) * u64(r.d[2]);
     l21 = u64(l.d[2]) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h02, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l12, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h20, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l21, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l02, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l20, &res.d[2]);
+    res.d[3] = c + h02 + h11 + l12 + h20 + l21;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -2009,7 +2019,7 @@ fixed_int<4> imul(i192 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i256 const& lhs, i192 const& rhs)
+inline fixed_int<4> imul(i256 const& lhs, i192 const& rhs)
 {
     fixed_int<4> res;
     i256 l = lhs;
@@ -2058,21 +2068,20 @@ fixed_int<4> imul(i256 const& lhs, i192 const& rhs)
     l21 = u64(l.d[2]) * u64(r.d[1]);
     l30 = u64(l.d[3]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h02, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l12, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h20, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l21, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l30, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l02, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l20, &res.d[2]);
+    res.d[3] = c + h02 + h11 + l12 + h20 + l21 + l30;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -2086,7 +2095,7 @@ fixed_int<4> imul(i256 const& lhs, i192 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i64 const& lhs, i256 const& rhs)
+inline fixed_int<4> imul(i64 const& lhs, i256 const& rhs)
 {
     fixed_int<4> res;
     i64 l = lhs;
@@ -2118,13 +2127,16 @@ fixed_int<4> imul(i64 const& lhs, i256 const& rhs)
     l02 = _mulx_u64(u64(l), u64(r.d[2]), &h02);
     l03 = u64(l) * u64(r.d[3]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h02, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l03, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l02, &res.d[2]);
+    res.d[3] = c + h02 + l03;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -2138,7 +2150,7 @@ fixed_int<4> imul(i64 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i128 const& lhs, i256 const& rhs)
+inline fixed_int<4> imul(i128 const& lhs, i256 const& rhs)
 {
     fixed_int<4> res;
     i128 l = lhs;
@@ -2180,18 +2192,19 @@ fixed_int<4> imul(i128 const& lhs, i256 const& rhs)
     l03 = u64(l.d[0]) * u64(r.d[3]);
     l12 = u64(l.d[1]) * u64(r.d[2]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h02, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l03, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l12, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l02, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    res.d[3] = c + h02 + l03 + h11 + l12;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -2205,7 +2218,7 @@ fixed_int<4> imul(i128 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i192 const& lhs, i256 const& rhs)
+inline fixed_int<4> imul(i192 const& lhs, i256 const& rhs)
 {
     fixed_int<4> res;
     i192 l = lhs;
@@ -2254,21 +2267,20 @@ fixed_int<4> imul(i192 const& lhs, i256 const& rhs)
     l12 = u64(l.d[1]) * u64(r.d[2]);
     l21 = u64(l.d[2]) * u64(r.d[1]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h02, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l03, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l12, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h20, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l21, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l02, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l20, &res.d[2]);
+    res.d[3] = c + h02 + l03 + h11 + l12 + h20 + l21;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
@@ -2282,7 +2294,7 @@ fixed_int<4> imul(i192 const& lhs, i256 const& rhs)
 }
 
 template <>
-fixed_int<4> imul(i256 const& lhs, i256 const& rhs)
+inline fixed_int<4> imul(i256 const& lhs, i256 const& rhs)
 {
     fixed_int<4> res;
     i256 l = lhs;
@@ -2335,22 +2347,20 @@ fixed_int<4> imul(i256 const& lhs, i256 const& rhs)
     l21 = u64(l.d[2]) * u64(r.d[1]);
     l30 = u64(l.d[3]) * u64(r.d[0]);
     unsigned char c = 0;
-    c = _addcarry_u64(c, res.d[0], l00, &res.d[0]);
-    c = _addcarry_u64(c, res.d[1], h00, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l01, &res.d[1]);
-    c = _addcarry_u64(c, res.d[1], l10, &res.d[1]);
-    c = _addcarry_u64(c, res.d[2], h01, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l02, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], h10, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l11, &res.d[2]);
-    c = _addcarry_u64(c, res.d[2], l20, &res.d[2]);
-    c = _addcarry_u64(c, res.d[3], h02, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l03, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h11, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l12, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], h20, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l21, &res.d[3]);
-    c = _addcarry_u64(c, res.d[3], l30, &res.d[3]);
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
+    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
+    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
+    c = 0;
+    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l02, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l11, &res.d[2]);
+    c += _addcarry_u64(0, res.d[2], l20, &res.d[2]);
+    res.d[3] = c + h02 + l03 + h11 + l12 + h20 + l21 + l30;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
         u64 c0 = (res.d[0] == 0) - s_res;
