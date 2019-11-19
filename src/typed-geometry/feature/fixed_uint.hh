@@ -406,7 +406,7 @@ constexpr bool operator<(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) n
         if (lhs.d[1] < rhs.d[1])
             return true;
     }
-    if (lhs.d[1] < rhs.d[1])
+    if (lhs.d[0] < rhs.d[0])
         return true;
 
     return false; // equal
@@ -598,11 +598,11 @@ constexpr fixed_uint<max(w0, w1)> operator/(fixed_uint<w0> const& lhs, fixed_uin
         remainder <<= 1;
         auto const word = i / 64;
         auto const idx = i % 64;
-        remainder.d[0] |= (l.d[word] & (1 << idx)) >> idx;
+        remainder.d[0] |= (l.d[word] & (u64(1) << idx)) >> idx;
         if (remainder >= r)
         {
             remainder -= r;
-            quotient = 1;
+            quotient.d[word] |= u64(1) << idx;
         }
     }
     return quotient;
@@ -636,11 +636,11 @@ constexpr fixed_uint<max(w0, w1)> operator%(fixed_uint<w0> const& lhs, fixed_uin
         remainder <<= 1;
         auto const word = i / 64;
         auto const idx = i % 64;
-        remainder.d[0] |= (l.d[word] & (1 << idx)) >> idx;
+        remainder.d[0] |= (l.d[word] & (u64(1) << idx)) >> idx;
         if (remainder >= r)
         {
             remainder -= r;
-            quotient = 1;
+            quotient.d[word] |= u64(1) << idx;
         }
     }
     return remainder;
