@@ -776,17 +776,17 @@ constexpr fixed_uint<w>& operator--(fixed_uint<w>& lhs) noexcept
     --lhs.d[0];
     if constexpr (w > 1)
     {
-        c0 = lhs.d[0] == -1;
+        c0 = lhs.d[0] == u64(-1);
         lhs.d[1] -= c0;
     }
     if constexpr (w > 2)
     {
-        c1 = lhs.d[1] == -1 & c0;
+        c1 = lhs.d[1] == u64(-1) & c0;
         lhs.d[2] -= c1;
     }
     if constexpr (w > 3)
     {
-        c2 = lhs.d[2] == -1 & c1;
+        c2 = lhs.d[2] == u64(-1) & c1;
         lhs.d[3] -= c2;
     }
     return lhs;
@@ -824,7 +824,7 @@ template <int w>
 constexpr fixed_uint<w> operator|(u64 lhs, fixed_uint<w> const& rhs) noexcept
 {
     fixed_uint<w> res = rhs;
-    res.d[0] | lhs;
+    res.d[0] |= lhs;
     return res;
 }
 
@@ -832,7 +832,7 @@ template <int w>
 constexpr fixed_uint<w> operator|(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
     fixed_uint<w> res = lhs;
-    res.d[0] | rhs;
+    res.d[0] |= rhs;
     return res;
 }
 
@@ -858,7 +858,7 @@ template <int w>
 constexpr fixed_uint<w> operator&(u64 lhs, fixed_uint<w> const& rhs) noexcept
 {
     fixed_uint<w> res = rhs;
-    res.d[0] & lhs;
+    res.d[0] &= lhs;
     // this works as if lhs is promoted, meaning the uppper bits are 0.
     if constexpr (w > 1)
         res.d[1] = 0;
@@ -873,7 +873,7 @@ template <int w>
 constexpr fixed_uint<w> operator&(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
     fixed_uint<w> res = lhs;
-    res.d[0] & rhs;
+    res.d[0] &= rhs;
     // this works as if rhs is promoted, meaning the uppper bits are 0.
     if constexpr (w > 1)
         res.d[1] = 0;
@@ -906,7 +906,7 @@ template <int w>
 constexpr fixed_uint<w> operator^(u64 lhs, fixed_uint<w> const& rhs) noexcept
 {
     fixed_uint<w> res = rhs;
-    res.d[0] ^ lhs;
+    res.d[0] ^= lhs;
     return res;
 }
 
@@ -914,7 +914,7 @@ template <int w>
 constexpr fixed_uint<w> operator^(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
     fixed_uint<w> res = lhs;
-    res.d[0] ^ rhs;
+    res.d[0] ^= rhs;
     return res;
 }
 
