@@ -2,10 +2,13 @@
 
 #include <typed-geometry/detail/utility.hh>
 #include <typed-geometry/types/scalars/default.hh>
+#include <typed-geometry/types/scalars/fixed_uint.hh>
 
 namespace tg
 {
 // fwd
+template <int words>
+struct fixed_uint;
 template <int words>
 struct fixed_int;
 using i128 = fixed_int<2>;
@@ -35,6 +38,18 @@ struct fixed_int
             d[2] = rhs < 0 ? u64(-1) : 0;
         if constexpr (words > 3)
             d[3] = rhs < 0 ? u64(-1) : 0;
+    }
+
+    template <int rhs_words>
+    explicit constexpr fixed_int(fixed_uint<rhs_words> const& rhs)
+    {
+        d[0] = rhs.d[0];
+        if constexpr (rhs_words > 1 && words > 1)
+            d[1] = rhs.d[1];
+        if constexpr (rhs_words > 2 && words > 2)
+            d[2] = rhs.d[2];
+        if constexpr (rhs_words > 3 && words > 3)
+            d[3] = rhs.d[3];
     }
 
     // explicit down cast
