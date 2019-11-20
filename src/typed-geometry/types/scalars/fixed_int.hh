@@ -69,4 +69,87 @@ struct fixed_int
 static_assert(sizeof(i128) == 128 / 8, "i128 is not 128 bit!");
 static_assert(sizeof(i192) == 192 / 8, "i192 is not 192 bit!");
 static_assert(sizeof(i256) == 256 / 8, "i256 is not 256 bit!");
+
+template <int w0, int w1>
+constexpr bool operator==(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+{
+    constexpr int w = w0 > w1 ? w0 : w1;
+    fixed_int<w> l = lhs;
+    fixed_int<w> r = rhs;
+
+    bool eq = true;
+
+    eq &= lhs.d[0] == rhs.d[0];
+    if constexpr (w > 1)
+        eq &= l.d[1] == r.d[1];
+    if constexpr (w > 2)
+        eq &= l.d[2] == r.d[2];
+    if constexpr (w > 3)
+        eq &= l.d[3] == r.d[3];
+
+    return eq;
+}
+
+template <int w>
+constexpr bool operator==(i64 lhs, fixed_int<w> const& rhs) noexcept
+{
+    bool eq = true;
+    eq &= u64(lhs) == rhs.d[0];
+
+    if (lhs < 0)
+    {
+        if constexpr (w > 1)
+            eq &= rhs.d[1] == u64(-1);
+        if constexpr (w > 2)
+            eq &= rhs.d[2] == u64(-1);
+        if constexpr (w > 3)
+            eq &= rhs.d[3] == u64(-1);
+    }
+    else
+    {
+        if constexpr (w > 1)
+            eq &= rhs.d[1] == 0;
+        if constexpr (w > 2)
+            eq &= rhs.d[2] == 0;
+        if constexpr (w > 3)
+            eq &= rhs.d[3] == 0;
+    }
+
+    return eq;
+}
+
+template <int w>
+constexpr bool operator==(fixed_int<w> const& lhs, i64 rhs) noexcept
+{
+    return rhs == lhs;
+}
+
+template <int w0, int w1>
+constexpr bool operator!=(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+{
+    constexpr int w = w0 > w1 ? w0 : w1;
+    fixed_int<w> l = lhs;
+    fixed_int<w> r = rhs;
+    bool neq = false;
+    neq |= l.d[0] != r.d[0];
+    if constexpr (w > 1)
+        neq |= l.d[1] != r.d[1];
+    if constexpr (w > 2)
+        neq |= l.d[2] != r.d[2];
+    if constexpr (w > 3)
+        neq |= l.d[3] != r.d[3];
+    return neq;
+}
+
+template <int w>
+constexpr bool operator!=(i64 lhs, fixed_int<w> const& rhs) noexcept
+{
+    return fixed_int<w>(lhs) != rhs;
+}
+
+template <int w>
+constexpr bool operator!=(fixed_int<w> const& lhs, i64 rhs) noexcept
+{
+    return fixed_int<w>(rhs) != lhs;
+}
 }

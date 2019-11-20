@@ -13,11 +13,6 @@
 namespace tg
 {
 // comparison
-
-template <int w0, int w1>
-constexpr bool operator==(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept;
-template <int w0, int w1>
-constexpr bool operator!=(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept;
 template <int w0, int w1>
 constexpr bool operator<(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept;
 template <int w0, int w1>
@@ -28,10 +23,6 @@ template <int w0, int w1>
 constexpr bool operator>=(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept;
 
 template <int w>
-constexpr bool operator==(u64 lhs, fixed_uint<w> const& rhs) noexcept;
-template <int w>
-constexpr bool operator!=(u64 lhs, fixed_uint<w> const& rhs) noexcept;
-template <int w>
 constexpr bool operator<(u64 lhs, fixed_uint<w> const& rhs) noexcept;
 template <int w>
 constexpr bool operator>(u64 lhs, fixed_uint<w> const& rhs) noexcept;
@@ -40,10 +31,6 @@ constexpr bool operator<=(u64 lhs, fixed_uint<w> const& rhs) noexcept;
 template <int w>
 constexpr bool operator>=(u64 lhs, fixed_uint<w> const& rhs) noexcept;
 
-template <int w>
-constexpr bool operator==(fixed_uint<w> const& lhs, u64 rhs) noexcept;
-template <int w>
-constexpr bool operator!=(fixed_uint<w> const& lhs, u64 rhs) noexcept;
 template <int w>
 constexpr bool operator<(fixed_uint<w> const& lhs, u64 rhs) noexcept;
 template <int w>
@@ -269,106 +256,6 @@ constexpr fixed_uint<words>::operator double()
 //
 // comparison
 //
-
-template <int w0, int w1>
-constexpr bool operator==(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
-{
-    bool eq = true;
-
-    eq &= lhs.d[0] == rhs.d[0];
-    if constexpr (w0 > 1 && w1 > 1)
-        eq &= lhs.d[1] == rhs.d[1];
-    if constexpr (w0 > 2 && w1 > 2)
-        eq &= lhs.d[2] == rhs.d[2];
-    if constexpr (w0 > 3 && w1 > 3)
-        eq &= lhs.d[3] == rhs.d[3];
-
-    if constexpr (w0 >= w1 + 1)
-        eq &= lhs.d[w1 + 0] == 0;
-    if constexpr (w0 >= w1 + 2)
-        eq &= lhs.d[w1 + 1] == 0;
-    if constexpr (w0 >= w1 + 3)
-        eq &= lhs.d[w1 + 2] == 0;
-
-    if constexpr (w0 + 1 <= w1)
-        eq &= rhs.d[w0 + 0] == 0;
-    if constexpr (w0 + 2 <= w1)
-        eq &= rhs.d[w0 + 1] == 0;
-    if constexpr (w0 + 3 <= w1)
-        eq &= rhs.d[w0 + 2] == 0;
-
-    return eq;
-}
-
-template <int w>
-constexpr bool operator==(u64 lhs, fixed_uint<w> const& rhs) noexcept
-{
-    bool eq = true;
-    eq &= lhs == rhs.d[0];
-    if constexpr (w > 1)
-        eq &= rhs.d[1] == 0;
-    if constexpr (w > 2)
-        eq &= rhs.d[2] == 0;
-    if constexpr (w > 3)
-        eq &= rhs.d[3] == 0;
-    return eq;
-}
-
-template <int w>
-constexpr bool operator==(fixed_uint<w> const& lhs, u64 rhs) noexcept
-{
-    return rhs == lhs;
-}
-
-template <int w0, int w1>
-constexpr bool operator!=(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
-{
-    bool neq = false;
-
-    neq |= lhs.d[0] != rhs.d[0];
-    if constexpr (w0 > 1 && w1 > 1)
-        neq |= lhs.d[1] != rhs.d[1];
-    if constexpr (w0 > 2 && w1 > 2)
-        neq |= lhs.d[2] != rhs.d[2];
-    if constexpr (w0 > 3 && w1 > 3)
-        neq |= lhs.d[3] != rhs.d[3];
-
-    if constexpr (w0 >= w1 + 1)
-        neq |= lhs.d[w1 + 0] != 0;
-    if constexpr (w0 >= w1 + 2)
-        neq |= lhs.d[w1 + 1] != 0;
-    if constexpr (w0 >= w1 + 3)
-        neq |= lhs.d[w1 + 2] != 0;
-
-    if constexpr (w0 + 1 <= w1)
-        neq |= rhs.d[w0 + 0] != 0;
-    if constexpr (w0 + 2 <= w1)
-        neq |= rhs.d[w0 + 1] != 0;
-    if constexpr (w0 + 3 <= w1)
-        neq |= rhs.d[w0 + 2] != 0;
-
-    return neq;
-}
-
-template <int w>
-constexpr bool operator!=(u64 lhs, fixed_uint<w> const& rhs) noexcept
-{
-    bool neq = false;
-    neq |= lhs != rhs.d[0];
-    if constexpr (w > 1)
-        neq |= rhs.d[1] != 0;
-    if constexpr (w > 2)
-        neq |= rhs.d[2] != 0;
-    if constexpr (w > 3)
-        neq |= rhs.d[3] != 0;
-    return neq;
-}
-
-template <int w>
-constexpr bool operator!=(fixed_uint<w> const& lhs, u64 rhs) noexcept
-{
-    return rhs != lhs;
-}
 
 template <int w0, int w1>
 constexpr bool operator<(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
