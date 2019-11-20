@@ -195,6 +195,14 @@ template <int w_res, class T0, class T1>
 fixed_int<w_res> imul(T0 const& lhs, T1 const& rhs);
 }
 
+// utility
+
+template <int w>
+constexpr u64 leading_zeros_count(fixed_int<w> const& v);
+
+template <int w>
+constexpr u64 leading_ones_count(fixed_int<w> const& v);
+
 //#############################################################################
 //#                             implemenation                                 #
 //#############################################################################
@@ -295,7 +303,7 @@ namespace detail
 template <int w>
 constexpr bool less_than_zero(fixed_int<w> const& v)
 {
-    return v.d[w - 1] < 0;
+    return i64(v.d[w - 1]) < 0;
 }
 }
 
@@ -313,7 +321,7 @@ constexpr bool operator==(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) no
         eq &= l.d[1] == r.d[1];
     if constexpr (w > 2)
         eq &= l.d[2] == r.d[2];
-    if constexpr (w > 1)
+    if constexpr (w > 3)
         eq &= l.d[3] == r.d[3];
 
     return eq;
@@ -323,16 +331,16 @@ template <int w>
 constexpr bool operator==(i64 lhs, fixed_int<w> const& rhs) noexcept
 {
     bool eq = true;
-    eq &= lhs == rhs.d[0];
+    eq &= u64(lhs) == rhs.d[0];
 
     if (lhs < 0)
     {
         if constexpr (w > 1)
-            eq &= rhs.d[1] == -1;
+            eq &= rhs.d[1] == u64(-1);
         if constexpr (w > 2)
-            eq &= rhs.d[2] == -1;
+            eq &= rhs.d[2] == u64(-1);
         if constexpr (w > 3)
-            eq &= rhs.d[3] == -1;
+            eq &= rhs.d[3] == u64(-1);
     }
     else
     {
@@ -365,7 +373,7 @@ constexpr bool operator!=(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) no
         neq |= l.d[1] != r.d[1];
     if constexpr (w > 2)
         neq |= l.d[2] != r.d[2];
-    if constexpr (w > 1)
+    if constexpr (w > 3)
         neq |= l.d[3] != r.d[3];
     return neq;
 }
@@ -373,13 +381,13 @@ constexpr bool operator!=(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) no
 template <int w>
 constexpr bool operator!=(i64 lhs, fixed_int<w> const& rhs) noexcept
 {
-    return fixed_int<w>(lhs) == rhs;
+    return fixed_int<w>(lhs) != rhs;
 }
 
 template <int w>
 constexpr bool operator!=(fixed_int<w> const& lhs, i64 rhs) noexcept
 {
-    return fixed_int<w>(rhs) == lhs;
+    return fixed_int<w>(rhs) != lhs;
 }
 
 template <int w0, int w1>
@@ -556,13 +564,13 @@ constexpr fixed_int<max(w0, w1)> operator*(fixed_int<w0> const& lhs, fixed_int<w
 template <int w>
 constexpr fixed_int<w> operator*(i64 lhs, fixed_int<w> const& rhs) noexcept
 {
-    return detail::imul<w>(fixed_int<1>(lhs), rhs);
+    return detail::imul<w>(lhs, rhs);
 }
 
 template <int w>
 constexpr fixed_int<w> operator*(fixed_int<w> const& lhs, i64 rhs) noexcept
 {
-    return detail::imul<w>(lhs, fixed_int<w>(rhs));
+    return detail::imul<w>(lhs, rhs);
 }
 
 template <int w0, int w1>
@@ -586,11 +594,11 @@ constexpr fixed_int<max(w0, w1)> operator/(fixed_int<w0> const& lhs, fixed_int<w
         remainder <<= 1;
         auto const word = i / 64;
         auto const idx = i % 64;
-        remainder.d[0] |= (l.d[word] & (1 << idx)) >> idx;
+        remainder.d[0] |= (l.d[word] & (u64(1) << idx)) >> idx;
         if (remainder >= r)
         {
             remainder -= r;
-            quotient = 1;
+            quotient.d[word] |= u64(1) << idx;
         }
     }
     return is_neg_res ? -quotient : quotient;
@@ -632,11 +640,11 @@ constexpr fixed_int<max(w0, w1)> operator%(fixed_int<w0> const& lhs, fixed_int<w
         remainder <<= 1;
         auto const word = i / 64;
         auto const idx = i % 64;
-        remainder.d[0] |= (l.d[word] & (1 << idx)) >> idx;
+        remainder.d[0] |= (l.d[word] & (u64(1) << idx)) >> idx;
         if (remainder >= r)
         {
             remainder -= r;
-            quotient = 1;
+            quotient.d[word] |= u64(1) << idx;
         }
     }
     return is_neg_lhs ? -remainder : remainder;
@@ -731,9 +739,9 @@ constexpr fixed_int<w>& operator%=(fixed_int<w>& lhs, i64 rhs) noexcept
 template <int w>
 constexpr fixed_int<w>& operator++(fixed_int<w>& lhs) noexcept
 {
-    i64 c0 = 0;
-    i64 c1 = 0;
-    i64 c2 = 0;
+    u64 c0 = 0;
+    u64 c1 = 0;
+    u64 c2 = 0;
 
     ++lhs.d[0];
     if constexpr (w > 1)
@@ -765,24 +773,24 @@ constexpr fixed_int<w> operator++(fixed_int<w>& lhs, int) noexcept
 template <int w>
 constexpr fixed_int<w>& operator--(fixed_int<w>& lhs) noexcept
 {
-    i64 c0 = 0;
-    i64 c1 = 0;
-    i64 c2 = 0;
+    u64 c0 = 0;
+    u64 c1 = 0;
+    u64 c2 = 0;
 
     --lhs.d[0];
     if constexpr (w > 1)
     {
-        c0 = lhs.d[0] == -1;
+        c0 = lhs.d[0] == u64(-1);
         lhs.d[1] -= c0;
     }
     if constexpr (w > 2)
     {
-        c1 = lhs.d[1] == -1 & c0;
+        c1 = lhs.d[1] == u64(-1) & c0;
         lhs.d[2] -= c1;
     }
     if constexpr (w > 3)
     {
-        c2 = lhs.d[2] == -1 & c1;
+        c2 = lhs.d[2] == u64(-1) & c1;
         lhs.d[3] -= c2;
     }
     return lhs;
@@ -820,7 +828,7 @@ template <int w>
 constexpr fixed_int<w> operator|(i64 lhs, fixed_int<w> const& rhs) noexcept
 {
     fixed_int<w> res = rhs;
-    res.d[0] | lhs;
+    res.d[0] |= u64(lhs);
     return res;
 }
 
@@ -828,7 +836,7 @@ template <int w>
 constexpr fixed_int<w> operator|(fixed_int<w> const& lhs, i64 rhs) noexcept
 {
     fixed_int<w> res = lhs;
-    res.d[0] | rhs;
+    res.d[0] |= u64(rhs);
     return res;
 }
 
@@ -854,7 +862,7 @@ template <int w>
 constexpr fixed_int<w> operator&(i64 lhs, fixed_int<w> const& rhs) noexcept
 {
     fixed_int<w> res = rhs;
-    res.d[0] & lhs;
+    res.d[0] &= u64(lhs);
     // this works as if lhs is promoted, meaning the uppper bits are 0.
     if constexpr (w > 1)
         res.d[1] = 0;
@@ -869,7 +877,7 @@ template <int w>
 constexpr fixed_int<w> operator&(fixed_int<w> const& lhs, i64 rhs) noexcept
 {
     fixed_int<w> res = lhs;
-    res.d[0] & rhs;
+    res.d[0] &= u64(rhs);
     // this works as if rhs is promoted, meaning the uppper bits are 0.
     if constexpr (w > 1)
         res.d[1] = 0;
@@ -902,7 +910,7 @@ template <int w>
 constexpr fixed_int<w> operator^(i64 lhs, fixed_int<w> const& rhs) noexcept
 {
     fixed_int<w> res = rhs;
-    res.d[0] ^ lhs;
+    res.d[0] ^= u64(lhs);
     return res;
 }
 
@@ -910,7 +918,7 @@ template <int w>
 constexpr fixed_int<w> operator^(fixed_int<w> const& lhs, i64 rhs) noexcept
 {
     fixed_int<w> res = lhs;
-    res.d[0] ^ rhs;
+    res.d[0] ^= u64(rhs);
     return res;
 }
 
@@ -1043,6 +1051,48 @@ constexpr fixed_int<w> operator>>(fixed_int<w> const& lhs, int shift) noexcept
 
     fixed_int<w> res;
 
+    if (mod_shift == 0)
+    {
+        if (skip == 1)
+        {
+            if (detail::less_than_zero(lhs))
+                res.d[w - 1] = u64(-1);
+            if constexpr (w > 1)
+                res.d[0] = lhs.d[1];
+            if constexpr (w > 2)
+                res.d[1] = lhs.d[2];
+            if constexpr (w > 3)
+                res.d[2] = lhs.d[3];
+        }
+        if (skip == 2)
+        {
+            if (detail::less_than_zero(lhs))
+                res.d[w - 1] = u64(-1);
+            if constexpr (w > 2)
+            {
+                res.d[0] = lhs.d[2];
+                if (detail::less_than_zero(lhs))
+                    res.d[w - 2] = u64(-1);
+            }
+            if constexpr (w > 3)
+                res.d[1] = lhs.d[3];
+        }
+        if (skip == 3)
+        {
+            if constexpr (w > 3)
+            {
+                res.d[0] = lhs.d[3];
+                if (detail::less_than_zero(lhs))
+                    res.d[w - 1] = u64(-1);
+                if (detail::less_than_zero(lhs))
+                    res.d[w - 2] = u64(-1);
+                if (detail::less_than_zero(lhs))
+                    res.d[w - 3] = u64(-1);
+            }
+        }
+        return res;
+    }
+
 #if 0
     // WARNING: NOT CORRECTLY IMPLEMENTED!
     if (skip == 0)
@@ -1111,12 +1161,12 @@ constexpr fixed_int<w> operator>>(fixed_int<w> const& lhs, int shift) noexcept
         {
             res.d[0] = lhs.d[0] >> mod_shift;
             res.d[0] |= lhs.d[1] << inv_shift;
-            res.d[1] = i64(lhs.d[1]) >> mod_shift;
+            res.d[1] = u64(i64(lhs.d[1]) >> mod_shift);
         }
         else // if (skip >= 1)
         {
-            res.d[0] = i64(lhs.d[1]) >> mod_shift;
-            res.d[1] = detail::less_than_zero(lhs) ? -1 : 0;
+            res.d[0] = u64(i64(lhs.d[1]) >> mod_shift);
+            res.d[1] = detail::less_than_zero(lhs) ? u64(-1) : 0;
         }
     }
     if constexpr (w == 3)
@@ -1127,20 +1177,20 @@ constexpr fixed_int<w> operator>>(fixed_int<w> const& lhs, int shift) noexcept
             res.d[0] |= lhs.d[1] << inv_shift;
             res.d[1] = lhs.d[1] >> mod_shift;
             res.d[1] |= lhs.d[2] << inv_shift;
-            res.d[2] = i64(lhs.d[2]) >> mod_shift;
+            res.d[2] = u64(i64(lhs.d[2]) >> mod_shift);
         }
-        if (skip == 1)
+        else if (skip == 1)
         {
             res.d[0] = lhs.d[1] >> mod_shift;
             res.d[0] |= lhs.d[2] << inv_shift;
-            res.d[1] = i64(lhs.d[2]) >> mod_shift;
-            res.d[2] = detail::less_than_zero(lhs) ? -1 : 0;
+            res.d[1] = u64(i64(lhs.d[2]) >> mod_shift);
+            res.d[2] = detail::less_than_zero(lhs) ? u64(-1) : 0;
         }
         else // if (skip == 2)
         {
-            res.d[0] = i64(lhs.d[2]) >> mod_shift;
-            res.d[1] = detail::less_than_zero(lhs) ? -1 : 0;
-            res.d[2] = detail::less_than_zero(lhs) ? -1 : 0;
+            res.d[0] = u64(i64(lhs.d[2]) >> mod_shift);
+            res.d[1] = detail::less_than_zero(lhs) ? u64(-1) : 0;
+            res.d[2] = detail::less_than_zero(lhs) ? u64(-1) : 0;
         }
     }
     if constexpr (w == 4)
@@ -1153,31 +1203,31 @@ constexpr fixed_int<w> operator>>(fixed_int<w> const& lhs, int shift) noexcept
             res.d[1] |= lhs.d[2] << inv_shift;
             res.d[2] = lhs.d[2] >> mod_shift;
             res.d[2] |= lhs.d[3] << inv_shift;
-            res.d[3] = i64(lhs.d[3]) >> mod_shift;
+            res.d[3] = u64(i64(lhs.d[3]) >> mod_shift);
         }
-        if (skip == 1)
+        else if (skip == 1)
         {
             res.d[0] = lhs.d[1] >> mod_shift;
             res.d[0] |= lhs.d[2] << inv_shift;
             res.d[1] = lhs.d[2] >> mod_shift;
             res.d[1] |= lhs.d[3] << inv_shift;
-            res.d[2] = i64(lhs.d[3]) >> mod_shift;
-            res.d[3] = detail::less_than_zero(lhs) ? -1 : 0;
+            res.d[2] = u64(i64(lhs.d[3]) >> mod_shift);
+            res.d[3] = detail::less_than_zero(lhs) ? u64(-1) : 0;
         }
         else if (skip == 2)
         {
             res.d[0] = lhs.d[2] >> mod_shift;
             res.d[0] |= lhs.d[3] << inv_shift;
-            res.d[1] = i64(lhs.d[3]) >> mod_shift;
-            res.d[2] = detail::less_than_zero(lhs) ? -1 : 0;
-            res.d[3] = detail::less_than_zero(lhs) ? -1 : 0;
+            res.d[1] = u64(i64(lhs.d[3]) >> mod_shift);
+            res.d[2] = detail::less_than_zero(lhs) ? u64(-1) : 0;
+            res.d[3] = detail::less_than_zero(lhs) ? u64(-1) : 0;
         }
         else // if (skip == 3)
         {
-            res.d[0] = i64(lhs.d[3]) >> mod_shift;
-            res.d[1] = detail::less_than_zero(lhs) ? -1 : 0;
-            res.d[2] = detail::less_than_zero(lhs) ? -1 : 0;
-            res.d[3] = detail::less_than_zero(lhs) ? -1 : 0;
+            res.d[0] = u64(i64(lhs.d[3]) >> mod_shift);
+            res.d[1] = detail::less_than_zero(lhs) ? u64(-1) : 0;
+            res.d[2] = detail::less_than_zero(lhs) ? u64(-1) : 0;
+            res.d[3] = detail::less_than_zero(lhs) ? u64(-1) : 0;
         }
     }
 #endif
@@ -1197,6 +1247,32 @@ constexpr fixed_int<w> operator<<(fixed_int<w> const& lhs, int shift) noexcept
     const int inv_shift = 64 - mod_shift; // inverted shift
 
     fixed_int<w> res;
+
+    if (mod_shift == 0)
+    {
+        if (skip == 1)
+        {
+            if constexpr (w > 1)
+                res.d[1] = lhs.d[0];
+            if constexpr (w > 2)
+                res.d[2] = lhs.d[1];
+            if constexpr (w > 3)
+                res.d[3] = lhs.d[2];
+        }
+        if (skip == 2)
+        {
+            if constexpr (w > 2)
+                res.d[2] = lhs.d[0];
+            if constexpr (w > 3)
+                res.d[3] = lhs.d[1];
+        }
+        if (skip == 3)
+        {
+            if constexpr (w > 3)
+                res.d[3] = lhs.d[0];
+        }
+        return res;
+    }
 
 #if 1
     if (skip == 0)
@@ -1340,5 +1416,58 @@ constexpr fixed_int<w>& operator<<=(fixed_int<w>& lhs, int shift) noexcept
     lhs = lhs << shift;
     return lhs;
 }
+
+// utility
+
+template <int w>
+constexpr u64 leading_zeros_count(fixed_int<w> const& v)
+{
+    u64 zeros = 0;
+    if constexpr (w > 3)
+    {
+        zeros += _lzcnt_u64(v.d[3]);
+        if (zeros < 64)
+            return zeros;
+    }
+    if constexpr (w > 2)
+    {
+        zeros += _lzcnt_u64(v.d[2]);
+        if (zeros < ((w - 2) * 64))
+            return zeros;
+    }
+    if constexpr (w > 1)
+    {
+        zeros += _lzcnt_u64(v.d[1]);
+        if (zeros < ((w - 1) * 64))
+            return zeros;
+    }
+    return zeros + _lzcnt_u64(v.d[0]);
+}
+
+template <int w>
+constexpr u64 leading_ones_count(fixed_int<w> const& v)
+{
+    u64 ones = 0;
+    if constexpr (w > 3)
+    {
+        ones += _l_u64(~v.d[3]);
+        if (ones < 64)
+            return ones;
+    }
+    if constexpr (w > 2)
+    {
+        ones += _lzcnt_u64(~v.d[2]);
+        if (ones < ((w - 2) * 64))
+            return ones;
+    }
+    if constexpr (w > 1)
+    {
+        ones += _lzcnt_u64(~v.d[1]);
+        if (ones < ((w - 1) * 64))
+            return ones;
+    }
+    return ones + _lzcnt_u64(~v.d[0]);
+}
+
 
 } // namespace tg
