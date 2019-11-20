@@ -368,7 +368,7 @@ constexpr bool operator!=(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) no
     fixed_int<w> l = lhs;
     fixed_int<w> r = rhs;
     bool neq = false;
-    neq |= lhs.d[0] != rhs.d[0];
+    neq |= l.d[0] != r.d[0];
     if constexpr (w > 1)
         neq |= l.d[1] != r.d[1];
     if constexpr (w > 2)
@@ -470,9 +470,9 @@ template <int w>
 constexpr fixed_int<w> operator-(fixed_int<w> const& lhs) noexcept
 {
     fixed_int<w> res;
-    u64 c0 = 0;
-    u64 c1 = 0;
-    u64 c2 = 0;
+    [[maybe_unused]] u64 c0 = 0;
+    [[maybe_unused]] u64 c1 = 0;
+    [[maybe_unused]] u64 c2 = 0;
     res.d[0] = ~lhs.d[0] + 1;
     if constexpr (w > 1)
     {
@@ -739,9 +739,9 @@ constexpr fixed_int<w>& operator%=(fixed_int<w>& lhs, i64 rhs) noexcept
 template <int w>
 constexpr fixed_int<w>& operator++(fixed_int<w>& lhs) noexcept
 {
-    u64 c0 = 0;
-    u64 c1 = 0;
-    u64 c2 = 0;
+    [[maybe_unused]] u64 c0 = 0;
+    [[maybe_unused]] u64 c1 = 0;
+    [[maybe_unused]] u64 c2 = 0;
 
     ++lhs.d[0];
     if constexpr (w > 1)
@@ -751,12 +751,12 @@ constexpr fixed_int<w>& operator++(fixed_int<w>& lhs) noexcept
     }
     if constexpr (w > 2)
     {
-        c1 = lhs.d[1] == 0 & c0;
+        c1 = (lhs.d[1] == 0) & c0;
         lhs.d[2] += c1;
     }
     if constexpr (w > 3)
     {
-        c2 = lhs.d[2] == 0 & c1;
+        c2 = (lhs.d[2] == 0) & c1;
         lhs.d[3] += c2;
     }
     return lhs;
@@ -773,9 +773,9 @@ constexpr fixed_int<w> operator++(fixed_int<w>& lhs, int) noexcept
 template <int w>
 constexpr fixed_int<w>& operator--(fixed_int<w>& lhs) noexcept
 {
-    u64 c0 = 0;
-    u64 c1 = 0;
-    u64 c2 = 0;
+    [[maybe_unused]] u64 c0 = 0;
+    [[maybe_unused]] u64 c1 = 0;
+    [[maybe_unused]] u64 c2 = 0;
 
     --lhs.d[0];
     if constexpr (w > 1)
@@ -785,12 +785,12 @@ constexpr fixed_int<w>& operator--(fixed_int<w>& lhs) noexcept
     }
     if constexpr (w > 2)
     {
-        c1 = lhs.d[1] == u64(-1) & c0;
+        c1 = (lhs.d[1] == u64(-1)) & c0;
         lhs.d[2] -= c1;
     }
     if constexpr (w > 3)
     {
-        c2 = lhs.d[2] == u64(-1) & c1;
+        c2 = (lhs.d[2] == u64(-1)) & c1;
         lhs.d[3] -= c2;
     }
     return lhs;

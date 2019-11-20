@@ -743,9 +743,9 @@ constexpr fixed_uint<w>& operator%=(fixed_uint<w>& lhs, u64 rhs) noexcept
 template <int w>
 constexpr fixed_uint<w>& operator++(fixed_uint<w>& lhs) noexcept
 {
-    u64 c0 = 0;
-    u64 c1 = 0;
-    u64 c2 = 0;
+    [[maybe_unused]] u64 c0 = 0;
+    [[maybe_unused]] u64 c1 = 0;
+    [[maybe_unused]] u64 c2 = 0;
 
     ++lhs.d[0];
     if constexpr (w > 1)
@@ -755,12 +755,12 @@ constexpr fixed_uint<w>& operator++(fixed_uint<w>& lhs) noexcept
     }
     if constexpr (w > 2)
     {
-        c1 = lhs.d[1] == 0 & c0;
+        c1 = (lhs.d[1] == 0) & c0;
         lhs.d[2] += c1;
     }
     if constexpr (w > 3)
     {
-        c2 = lhs.d[2] == 0 & c1;
+        c2 = (lhs.d[2] == 0) & c1;
         lhs.d[3] += c2;
     }
     return lhs;
@@ -777,9 +777,9 @@ constexpr fixed_uint<w> operator++(fixed_uint<w>& lhs, int) noexcept
 template <int w>
 constexpr fixed_uint<w>& operator--(fixed_uint<w>& lhs) noexcept
 {
-    u64 c0 = 0;
-    u64 c1 = 0;
-    u64 c2 = 0;
+    [[maybe_unused]] u64 c0 = 0;
+    [[maybe_unused]] u64 c1 = 0;
+    [[maybe_unused]] u64 c2 = 0;
 
     --lhs.d[0];
     if constexpr (w > 1)
@@ -789,12 +789,12 @@ constexpr fixed_uint<w>& operator--(fixed_uint<w>& lhs) noexcept
     }
     if constexpr (w > 2)
     {
-        c1 = lhs.d[1] == u64(-1) & c0;
+        c1 = (lhs.d[1] == u64(-1)) & c0;
         lhs.d[2] -= c1;
     }
     if constexpr (w > 3)
     {
-        c2 = lhs.d[2] == u64(-1) & c1;
+        c2 = (lhs.d[2] == u64(-1)) & c1;
         lhs.d[3] -= c2;
     }
     return lhs;
