@@ -15,7 +15,7 @@ namespace tg::detail
 template <int w_res, class T0, class T1>
 fixed_int<w_res> imul(T0 const& lhs, T1 const& rhs);
 
-template <>
+template<>
 inline fixed_int<2> imul(i64 const& lhs, i64 const& rhs)
 {
     fixed_int<2> res;
@@ -38,24 +38,24 @@ inline fixed_int<2> imul(i64 const& lhs, i64 const& rhs)
     res.d[1] = c + h00;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i128 const& lhs, i64 const& rhs)
 {
     fixed_int<2> res;
     i128 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[1]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
@@ -71,26 +71,26 @@ inline fixed_int<2> imul(i128 const& lhs, i64 const& rhs)
     res.d[1] = c + h00 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i192 const& lhs, i64 const& rhs)
 {
     fixed_int<2> res;
     i192 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[2]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
@@ -106,28 +106,28 @@ inline fixed_int<2> imul(i192 const& lhs, i64 const& rhs)
     res.d[1] = c + h00 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i256 const& lhs, i64 const& rhs)
 {
     fixed_int<2> res;
     i256 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[3]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
@@ -143,19 +143,19 @@ inline fixed_int<2> imul(i256 const& lhs, i64 const& rhs)
     res.d[1] = c + h00 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i64 const& lhs, i128 const& rhs)
 {
     fixed_int<2> res;
     i64 l = lhs;
     i128 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -163,7 +163,7 @@ inline fixed_int<2> imul(i64 const& lhs, i128 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -176,13 +176,13 @@ inline fixed_int<2> imul(i64 const& lhs, i128 const& rhs)
     res.d[1] = c + h00 + l01;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i128 const& lhs, i128 const& rhs)
 {
     fixed_int<2> res;
@@ -193,12 +193,12 @@ inline fixed_int<2> imul(i128 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -213,13 +213,13 @@ inline fixed_int<2> imul(i128 const& lhs, i128 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i192 const& lhs, i128 const& rhs)
 {
     fixed_int<2> res;
@@ -230,14 +230,14 @@ inline fixed_int<2> imul(i192 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -252,13 +252,13 @@ inline fixed_int<2> imul(i192 const& lhs, i128 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i256 const& lhs, i128 const& rhs)
 {
     fixed_int<2> res;
@@ -269,16 +269,16 @@ inline fixed_int<2> imul(i256 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -293,19 +293,19 @@ inline fixed_int<2> imul(i256 const& lhs, i128 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i64 const& lhs, i192 const& rhs)
 {
     fixed_int<2> res;
     i64 l = lhs;
     i192 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -313,9 +313,9 @@ inline fixed_int<2> imul(i64 const& lhs, i192 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -328,13 +328,13 @@ inline fixed_int<2> imul(i64 const& lhs, i192 const& rhs)
     res.d[1] = c + h00 + l01;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i128 const& lhs, i192 const& rhs)
 {
     fixed_int<2> res;
@@ -345,14 +345,14 @@ inline fixed_int<2> imul(i128 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -367,13 +367,13 @@ inline fixed_int<2> imul(i128 const& lhs, i192 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i192 const& lhs, i192 const& rhs)
 {
     fixed_int<2> res;
@@ -384,16 +384,16 @@ inline fixed_int<2> imul(i192 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -408,13 +408,13 @@ inline fixed_int<2> imul(i192 const& lhs, i192 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i256 const& lhs, i192 const& rhs)
 {
     fixed_int<2> res;
@@ -425,18 +425,18 @@ inline fixed_int<2> imul(i256 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -451,19 +451,19 @@ inline fixed_int<2> imul(i256 const& lhs, i192 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i64 const& lhs, i256 const& rhs)
 {
     fixed_int<2> res;
     i64 l = lhs;
     i256 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -471,11 +471,11 @@ inline fixed_int<2> imul(i64 const& lhs, i256 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -488,13 +488,13 @@ inline fixed_int<2> imul(i64 const& lhs, i256 const& rhs)
     res.d[1] = c + h00 + l01;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i128 const& lhs, i256 const& rhs)
 {
     fixed_int<2> res;
@@ -505,16 +505,16 @@ inline fixed_int<2> imul(i128 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -529,13 +529,13 @@ inline fixed_int<2> imul(i128 const& lhs, i256 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i192 const& lhs, i256 const& rhs)
 {
     fixed_int<2> res;
@@ -546,18 +546,18 @@ inline fixed_int<2> imul(i192 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -572,13 +572,13 @@ inline fixed_int<2> imul(i192 const& lhs, i256 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<2> imul(i256 const& lhs, i256 const& rhs)
 {
     fixed_int<2> res;
@@ -589,20 +589,20 @@ inline fixed_int<2> imul(i256 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -617,13 +617,13 @@ inline fixed_int<2> imul(i256 const& lhs, i256 const& rhs)
     res.d[1] = c + h00 + l01 + l10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i64 const& lhs, i64 const& rhs)
 {
     fixed_int<3> res;
@@ -649,26 +649,26 @@ inline fixed_int<3> imul(i64 const& lhs, i64 const& rhs)
     res.d[2] = c;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i128 const& lhs, i64 const& rhs)
 {
     fixed_int<3> res;
     i128 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[1]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
@@ -689,28 +689,28 @@ inline fixed_int<3> imul(i128 const& lhs, i64 const& rhs)
     res.d[2] = c + h10;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i192 const& lhs, i64 const& rhs)
 {
     fixed_int<3> res;
     i192 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[2]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
@@ -733,30 +733,30 @@ inline fixed_int<3> imul(i192 const& lhs, i64 const& rhs)
     res.d[2] = c + h10 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i256 const& lhs, i64 const& rhs)
 {
     fixed_int<3> res;
     i256 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[3]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
@@ -779,21 +779,21 @@ inline fixed_int<3> imul(i256 const& lhs, i64 const& rhs)
     res.d[2] = c + h10 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i64 const& lhs, i128 const& rhs)
 {
     fixed_int<3> res;
     i64 l = lhs;
     i128 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -801,7 +801,7 @@ inline fixed_int<3> imul(i64 const& lhs, i128 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -819,15 +819,15 @@ inline fixed_int<3> imul(i64 const& lhs, i128 const& rhs)
     res.d[2] = c + h01;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i128 const& lhs, i128 const& rhs)
 {
     fixed_int<3> res;
@@ -838,12 +838,12 @@ inline fixed_int<3> imul(i128 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -867,15 +867,15 @@ inline fixed_int<3> imul(i128 const& lhs, i128 const& rhs)
     res.d[2] = c + h01 + h10 + l11;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i192 const& lhs, i128 const& rhs)
 {
     fixed_int<3> res;
@@ -886,14 +886,14 @@ inline fixed_int<3> imul(i192 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -919,15 +919,15 @@ inline fixed_int<3> imul(i192 const& lhs, i128 const& rhs)
     res.d[2] = c + h01 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i256 const& lhs, i128 const& rhs)
 {
     fixed_int<3> res;
@@ -938,16 +938,16 @@ inline fixed_int<3> imul(i256 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -973,21 +973,21 @@ inline fixed_int<3> imul(i256 const& lhs, i128 const& rhs)
     res.d[2] = c + h01 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i64 const& lhs, i192 const& rhs)
 {
     fixed_int<3> res;
     i64 l = lhs;
     i192 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -995,9 +995,9 @@ inline fixed_int<3> imul(i64 const& lhs, i192 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -1017,15 +1017,15 @@ inline fixed_int<3> imul(i64 const& lhs, i192 const& rhs)
     res.d[2] = c + h01 + l02;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i128 const& lhs, i192 const& rhs)
 {
     fixed_int<3> res;
@@ -1036,14 +1036,14 @@ inline fixed_int<3> imul(i128 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -1069,15 +1069,15 @@ inline fixed_int<3> imul(i128 const& lhs, i192 const& rhs)
     res.d[2] = c + h01 + l02 + h10 + l11;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i192 const& lhs, i192 const& rhs)
 {
     fixed_int<3> res;
@@ -1088,16 +1088,16 @@ inline fixed_int<3> imul(i192 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -1125,15 +1125,15 @@ inline fixed_int<3> imul(i192 const& lhs, i192 const& rhs)
     res.d[2] = c + h01 + l02 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i256 const& lhs, i192 const& rhs)
 {
     fixed_int<3> res;
@@ -1144,18 +1144,18 @@ inline fixed_int<3> imul(i256 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -1183,21 +1183,21 @@ inline fixed_int<3> imul(i256 const& lhs, i192 const& rhs)
     res.d[2] = c + h01 + l02 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i64 const& lhs, i256 const& rhs)
 {
     fixed_int<3> res;
     i64 l = lhs;
     i256 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -1205,11 +1205,11 @@ inline fixed_int<3> imul(i64 const& lhs, i256 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -1229,15 +1229,15 @@ inline fixed_int<3> imul(i64 const& lhs, i256 const& rhs)
     res.d[2] = c + h01 + l02;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i128 const& lhs, i256 const& rhs)
 {
     fixed_int<3> res;
@@ -1248,16 +1248,16 @@ inline fixed_int<3> imul(i128 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -1283,15 +1283,15 @@ inline fixed_int<3> imul(i128 const& lhs, i256 const& rhs)
     res.d[2] = c + h01 + l02 + h10 + l11;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i192 const& lhs, i256 const& rhs)
 {
     fixed_int<3> res;
@@ -1302,18 +1302,18 @@ inline fixed_int<3> imul(i192 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -1341,15 +1341,15 @@ inline fixed_int<3> imul(i192 const& lhs, i256 const& rhs)
     res.d[2] = c + h01 + l02 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<3> imul(i256 const& lhs, i256 const& rhs)
 {
     fixed_int<3> res;
@@ -1360,20 +1360,20 @@ inline fixed_int<3> imul(i256 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -1401,15 +1401,15 @@ inline fixed_int<3> imul(i256 const& lhs, i256 const& rhs)
     res.d[2] = c + h01 + l02 + h10 + l11 + l20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i64 const& lhs, i64 const& rhs)
 {
     fixed_int<4> res;
@@ -1437,28 +1437,28 @@ inline fixed_int<4> imul(i64 const& lhs, i64 const& rhs)
     res.d[3] = c;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i128 const& lhs, i64 const& rhs)
 {
     fixed_int<4> res;
     i128 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[1]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
@@ -1482,30 +1482,30 @@ inline fixed_int<4> imul(i128 const& lhs, i64 const& rhs)
     res.d[3] = c;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i192 const& lhs, i64 const& rhs)
 {
     fixed_int<4> res;
     i192 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[2]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
@@ -1533,32 +1533,32 @@ inline fixed_int<4> imul(i192 const& lhs, i64 const& rhs)
     res.d[3] = c + h20;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i256 const& lhs, i64 const& rhs)
 {
     fixed_int<4> res;
     i256 l = lhs;
     i64 r = rhs;
     u64 s_l = u64(i64(l.d[3]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(r) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(r) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
@@ -1588,23 +1588,23 @@ inline fixed_int<4> imul(i256 const& lhs, i64 const& rhs)
     res.d[3] = c + h20 + l30;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i64 const& lhs, i128 const& rhs)
 {
     fixed_int<4> res;
     i64 l = lhs;
     i128 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -1612,7 +1612,7 @@ inline fixed_int<4> imul(i64 const& lhs, i128 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -1633,17 +1633,17 @@ inline fixed_int<4> imul(i64 const& lhs, i128 const& rhs)
     res.d[3] = c;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i128 const& lhs, i128 const& rhs)
 {
     fixed_int<4> res;
@@ -1654,12 +1654,12 @@ inline fixed_int<4> imul(i128 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -1689,17 +1689,17 @@ inline fixed_int<4> imul(i128 const& lhs, i128 const& rhs)
     res.d[3] = c + h11;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i192 const& lhs, i128 const& rhs)
 {
     fixed_int<4> res;
@@ -1710,14 +1710,14 @@ inline fixed_int<4> imul(i192 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -1753,17 +1753,17 @@ inline fixed_int<4> imul(i192 const& lhs, i128 const& rhs)
     res.d[3] = c + h11 + h20 + l21;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i256 const& lhs, i128 const& rhs)
 {
     fixed_int<4> res;
@@ -1774,16 +1774,16 @@ inline fixed_int<4> imul(i256 const& lhs, i128 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
     }
     u64 l00 = 0;
@@ -1821,23 +1821,23 @@ inline fixed_int<4> imul(i256 const& lhs, i128 const& rhs)
     res.d[3] = c + h11 + h20 + l21 + l30;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i64 const& lhs, i192 const& rhs)
 {
     fixed_int<4> res;
     i64 l = lhs;
     i192 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -1845,9 +1845,9 @@ inline fixed_int<4> imul(i64 const& lhs, i192 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -1872,17 +1872,17 @@ inline fixed_int<4> imul(i64 const& lhs, i192 const& rhs)
     res.d[3] = c + h02;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i128 const& lhs, i192 const& rhs)
 {
     fixed_int<4> res;
@@ -1893,14 +1893,14 @@ inline fixed_int<4> imul(i128 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -1936,17 +1936,17 @@ inline fixed_int<4> imul(i128 const& lhs, i192 const& rhs)
     res.d[3] = c + h02 + h11 + l12;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i192 const& lhs, i192 const& rhs)
 {
     fixed_int<4> res;
@@ -1957,16 +1957,16 @@ inline fixed_int<4> imul(i192 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -2008,17 +2008,17 @@ inline fixed_int<4> imul(i192 const& lhs, i192 const& rhs)
     res.d[3] = c + h02 + h11 + l12 + h20 + l21;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i256 const& lhs, i192 const& rhs)
 {
     fixed_int<4> res;
@@ -2029,18 +2029,18 @@ inline fixed_int<4> imul(i256 const& lhs, i192 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
     }
     u64 l00 = 0;
@@ -2084,23 +2084,23 @@ inline fixed_int<4> imul(i256 const& lhs, i192 const& rhs)
     res.d[3] = c + h02 + h11 + l12 + h20 + l21 + l30;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i64 const& lhs, i256 const& rhs)
 {
     fixed_int<4> res;
     i64 l = lhs;
     i256 r = rhs;
-    u64 s_l = u64(i64(l) >> 63);      // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(l) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(r.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -2108,11 +2108,11 @@ inline fixed_int<4> imul(i64 const& lhs, i256 const& rhs)
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -2139,17 +2139,17 @@ inline fixed_int<4> imul(i64 const& lhs, i256 const& rhs)
     res.d[3] = c + h02 + l03;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i128 const& lhs, i256 const& rhs)
 {
     fixed_int<4> res;
@@ -2160,16 +2160,16 @@ inline fixed_int<4> imul(i128 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -2207,17 +2207,17 @@ inline fixed_int<4> imul(i128 const& lhs, i256 const& rhs)
     res.d[3] = c + h02 + l03 + h11 + l12;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i192 const& lhs, i256 const& rhs)
 {
     fixed_int<4> res;
@@ -2228,18 +2228,18 @@ inline fixed_int<4> imul(i192 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -2283,17 +2283,17 @@ inline fixed_int<4> imul(i192 const& lhs, i256 const& rhs)
     res.d[3] = c + h02 + l03 + h11 + l12 + h20 + l21;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
 }
 
-template <>
+template<>
 inline fixed_int<4> imul(i256 const& lhs, i256 const& rhs)
 {
     fixed_int<4> res;
@@ -2304,20 +2304,20 @@ inline fixed_int<4> imul(i256 const& lhs, i256 const& rhs)
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         l.d[0] = ((u64(l.d[0]) ^ s_l) - s_l);
-        u64 c0 = (l.d[0] == 0) - s_l;
+        u64 c0 = (l.d[0] == 0) & s_l;
         l.d[1] = (u64(l.d[1]) ^ s_l) + c0;
-        u64 c1 = (l.d[1] == 0) - s_l;
+        u64 c1 = (l.d[1] == 0) & s_l & c0;
         l.d[2] = (u64(l.d[2]) ^ s_l) + c1;
-        u64 c2 = (l.d[2] == 0) - s_l;
+        u64 c2 = (l.d[2] == 0) & s_l & c1;
         l.d[3] = (u64(l.d[3]) ^ s_l) + c2;
     }
     { // conditional inversion
         r.d[0] = ((u64(r.d[0]) ^ s_r) - s_r);
-        u64 c0 = (r.d[0] == 0) - s_r;
+        u64 c0 = (r.d[0] == 0) & s_r;
         r.d[1] = (u64(r.d[1]) ^ s_r) + c0;
-        u64 c1 = (r.d[1] == 0) - s_r;
+        u64 c1 = (r.d[1] == 0) & s_r & c0;
         r.d[2] = (u64(r.d[2]) ^ s_r) + c1;
-        u64 c2 = (r.d[2] == 0) - s_r;
+        u64 c2 = (r.d[2] == 0) & s_r & c1;
         r.d[3] = (u64(r.d[3]) ^ s_r) + c2;
     }
     u64 l00 = 0;
@@ -2363,11 +2363,11 @@ inline fixed_int<4> imul(i256 const& lhs, i256 const& rhs)
     res.d[3] = c + h02 + l03 + h11 + l12 + h20 + l21 + l30;
     { // conditional inversion
         res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) - s_res;
+        u64 c0 = (res.d[0] == 0) & s_res;
         res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-        u64 c1 = (res.d[1] == 0) - s_res;
+        u64 c1 = (res.d[1] == 0) & s_res & c0;
         res.d[2] = (u64(res.d[2]) ^ s_res) + c1;
-        u64 c2 = (res.d[2] == 0) - s_res;
+        u64 c2 = (res.d[2] == 0) & s_res & c1;
         res.d[3] = (u64(res.d[3]) ^ s_res) + c2;
     }
     return res;
