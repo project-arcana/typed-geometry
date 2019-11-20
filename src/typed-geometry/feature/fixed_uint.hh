@@ -193,6 +193,14 @@ template <int w_res, class T0, class T1>
 fixed_uint<w_res> mul(T0 const& lhs, T1 const& rhs);
 }
 
+// utility
+
+template <int w>
+constexpr u64 leading_zeros_count(fixed_uint<w> const& v);
+
+template <int w>
+constexpr u64 leading_ones_count(fixed_uint<w> const& v);
+
 //#############################################################################
 //#                             implemenation                                 #
 //#############################################################################
@@ -1381,6 +1389,58 @@ constexpr fixed_uint<w>& operator<<=(fixed_uint<w>& lhs, int shift) noexcept
 {
     lhs = lhs << shift;
     return lhs;
+}
+
+// utility
+
+template <int w>
+constexpr u64 leading_zeros_count(fixed_uint<w> const& v)
+{
+    u64 zeros = 0;
+    if constexpr (w > 3)
+    {
+        zeros += _lzcnt_u64(v.d[3]);
+        if (zeros < 64)
+            return zeros;
+    }
+    if constexpr (w > 2)
+    {
+        zeros += _lzcnt_u64(v.d[2]);
+        if (zeros < ((w - 2) * 64))
+            return zeros;
+    }
+    if constexpr (w > 1)
+    {
+        zeros += _lzcnt_u64(v.d[1]);
+        if (zeros < ((w - 1) * 64))
+            return zeros;
+    }
+    return zeros + _lzcnt_u64(v.d[0]);
+}
+
+template <int w>
+constexpr u64 leading_ones_count(fixed_uint<w> const& v)
+{
+    u64 ones = 0;
+    if constexpr (w > 3)
+    {
+        ones += _l_u64(~v.d[3]);
+        if (ones < 64)
+            return ones;
+    }
+    if constexpr (w > 2)
+    {
+        ones += _lzcnt_u64(~v.d[2]);
+        if (ones < ((w - 2) * 64))
+            return ones;
+    }
+    if constexpr (w > 1)
+    {
+        ones += _lzcnt_u64(~v.d[1]);
+        if (ones < ((w - 1) * 64))
+            return ones;
+    }
+    return ones + _lzcnt_u64(~v.d[0]);
 }
 
 } // namespace tg
