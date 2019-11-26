@@ -144,31 +144,61 @@ template <int D, class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h)
 {
-    auto dir_to_p = tg::normalize_safe(p - h.center);
-
-    if (is_zero_vector(dir_to_p))
-        return h.center + h.normal * h.radius;
-
-    if (dot(dir_to_p, h.normal) >= ScalarT(0))
-        return h.center + dir_to_p * h.radius;
-
+    auto toP = p - h.center;
+    if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
+    {
+        if (length_sqr(toP) <= h.radius * h.radius)
+            return p;
+        else
+            return h.center + normalize(toP) * h.radius;
+    }
+    // On the flat side of the hemisphere
     return project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
 }
 template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
 {
-    auto dir_to_p = tg::normalize_safe(p - h.center);
+    auto closestOnFlat = project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
 
-    if (is_zero_vector(dir_to_p))
-        return h.center + h.normal * h.radius;
+    auto dirToP = tg::normalize_safe(p - h.center);
+    if (dot(dirToP, h.normal) >= ScalarT(0))
+    {
+        auto closestOnRound = h.center + dirToP * h.radius;
+        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
+    }
+    return closestOnFlat;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h)
+{
+    auto toP = p - h.center;
+    if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
+    {
+        if (length_sqr(toP) <= h.radius * h.radius)
+            return p;
+        else
+            return h.center + normalize(toP) * h.radius;
+    }
 
-    if (dot(dir_to_p, h.normal) >= ScalarT(0))
-        return h.center + dir_to_p * h.radius;
-
+    // On the flat side of the hemisphere
     auto v = perpendicular(h.normal) * h.radius;
     return project(p, segment<2, ScalarT>(h.center - v, h.center + v));
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project_boundary(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h) // boundary, including caps
+{
+    auto v = perpendicular(h.normal) * h.radius;
+    auto closestOnFlat = project(p, segment<2, ScalarT>(h.center - v, h.center + v));
+
+    auto dirToP = tg::normalize_safe(p - h.center);
+    if (dot(dirToP, h.normal) >= ScalarT(0))
+    {
+        auto closestOnRound = h.center + dirToP * h.radius;
+        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
+    }
+    return closestOnFlat;
 }
 
 template <int D, class ScalarT>

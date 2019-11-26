@@ -261,7 +261,7 @@ template <class ScalarT, class Rng>
     capHemi.radius = c.radius;
     capHemi.center = part < sideArea + capArea ? c.axis.pos0 : c.axis.pos1;
     capHemi.normal = part < sideArea + capArea ? -normalize(x) : normalize(x);
-    return uniform(rng, capHemi);
+    return uniform_boundary(rng, capHemi);
 }
 
 template <int D, class ScalarT, class Rng>
@@ -309,7 +309,17 @@ template <class ScalarT, class Rng>
 }
 
 template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> const& h) // boundary, no_caps (not on base)
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> const& h)
+{
+    auto p = uniform(rng, ball<D, ScalarT>(h.center, h.radius));
+    auto v = p - h.center;
+    if (dot(v, h.normal) >= ScalarT(0))
+        return p;
+    else
+        return h.center - v;
+}
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform_boundary(Rng& rng, hemisphere<D, ScalarT> const& h) // no_caps (not on base)
 {
     auto p = uniform(rng, sphere<D, ScalarT>(h.center, h.radius));
     auto v = p - h.center;
