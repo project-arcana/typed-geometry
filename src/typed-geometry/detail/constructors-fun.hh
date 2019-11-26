@@ -55,6 +55,6 @@ constexpr inf_cone<D, ScalarT>::inf_cone(cone<D, ScalarT> c)
 {
     apex = c.base.center + c.height * c.base.normal;
     opening_dir = -c.base.normal;
-    opening_angle = ScalarT(2) * angle_between(normalize(pos<D, ScalarT>(any_normal(c.base.normal) * c.base.radius) - apex), opening_dir);
+    opening_angle = ScalarT(2) * angle_between(normalize(c.base.center + any_normal(c.base.normal) * c.base.radius - apex), opening_dir);
 }
 }

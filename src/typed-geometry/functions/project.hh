@@ -292,10 +292,12 @@ template <class ScalarT>
 {
     auto closestOnBase = project(p, c.base);
     auto apex = c.base.center + c.height * c.base.normal;
-    if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0) || length_sqr(p - closestOnBase) < epsilon<ScalarT>)
+    if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
         return closestOnBase;
 
-    return project(p, inf_cone(c));
+    // Return closer projection
+    auto closestOnCone = project(p, inf_cone(c));
+    return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
 }
 
 template <class ScalarT>
