@@ -27,6 +27,11 @@ private:
 public:
     constexpr angle_t() = default;
 
+    template <class U>
+    constexpr explicit angle_t(angle_t<U> const& other) : angle_in_radians(T(other.radians()))
+    {
+    }
+
     constexpr static angle_t from_radians(T a) { return {a}; }
     constexpr static angle_t from_degree(T a) { return {a * T(0.01745329251)}; } // * pi / 180
 
