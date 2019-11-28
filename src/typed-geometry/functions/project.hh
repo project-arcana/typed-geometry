@@ -211,7 +211,7 @@ template <int D, class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t) // same as project(cylinder) for the internal case
 {
     auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
     auto sp = project(lp, t.axis);
@@ -283,11 +283,23 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // same as project(tube) for the internal case
+{
+    auto lp = project(p, line<3, ScalarT>(c.axis.pos0, normalize(c.axis.pos1 - c.axis.pos0)));
+    auto sp = project(lp, c.axis);
+    auto dir = p - lp;
+    auto l = length(dir);
+    if (l > c.radius)
+        dir *= c.radius / l;
+
+    return sp + dir;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // boundary, including caps
 {
     auto dir = direction(c);
 
-    auto p0 = project(p, tube<3, ScalarT>(c.axis, c.radius));
+    auto p0 = project_boundary(p, tube<3, ScalarT>(c.axis, c.radius));
     auto p1 = project(p, disk<3, ScalarT>(c.axis.pos0, c.radius, dir));
     auto p2 = project(p, disk<3, ScalarT>(c.axis.pos1, c.radius, dir));
 
@@ -304,7 +316,20 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // including caps
+{
+    auto t = coordinates(c.axis, p);
+
+    if (t < ScalarT(0))
+        return project(p, ball<3, ScalarT>(c.axis.pos0, c.radius));
+
+    if (t > ScalarT(1))
+        return project(p, ball<3, ScalarT>(c.axis.pos1, c.radius));
+
+    return project(p, tube<3, ScalarT>(c.axis, c.radius));
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // boundary, including caps
 {
     auto t = coordinates(c.axis, p);
 
@@ -314,7 +339,7 @@ template <class ScalarT>
     if (t > ScalarT(1))
         return project(p, sphere<3, ScalarT>(c.axis.pos1, c.radius));
 
-    return project(p, tube<3, ScalarT>(c.axis, c.radius));
+    return project_boundary(p, tube<3, ScalarT>(c.axis, c.radius));
 }
 
 template <class ScalarT>
