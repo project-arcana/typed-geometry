@@ -54,6 +54,8 @@ public:
     constexpr bool operator==(splitmix const& rhs) const { return m_seed == rhs.m_seed; }
     constexpr bool operator!=(splitmix const& rhs) const { return m_seed != rhs.m_seed; }
 
+    constexpr u64 state() const { return m_seed; }
+
 private:
     u64 m_seed;
 };
@@ -96,6 +98,8 @@ public:
 
     constexpr bool operator==(xorshift const& rhs) const { return m_seed == rhs.m_seed; }
     constexpr bool operator!=(xorshift const& rhs) const { return m_seed != rhs.m_seed; }
+
+    constexpr u64 state() const { return m_seed; }
 
 private:
     u64 m_seed;
