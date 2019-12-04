@@ -195,6 +195,40 @@ struct hash<tg::mat<4, R, ScalarT>>
     std::size_t operator()(tg::mat<4, R, ScalarT> const& v) const noexcept { return tg::detail::hash(v[0], v[1], v[2], v[3]); }
 };
 
+// -- fixed_uint
+template <>
+struct hash<tg::fixed_uint<2>>
+{
+    std::size_t operator()(tg::fixed_uint<2> const& v) const noexcept { return tg::detail::hash(v.d[0], v.d[1]); }
+};
+template <>
+struct hash<tg::fixed_uint<3>>
+{
+    std::size_t operator()(tg::fixed_uint<3> const& v) const noexcept { return tg::detail::hash(v.d[0], v.d[1], v.d[2]); }
+};
+template <>
+struct hash<tg::fixed_uint<4>>
+{
+    std::size_t operator()(tg::fixed_uint<4> const& v) const noexcept { return tg::detail::hash(v.d[0], v.d[1], v.d[2], v.d[3]); }
+};
+
+// -- fixed_int
+template <>
+struct hash<tg::fixed_int<2>>
+{
+    std::size_t operator()(tg::fixed_int<2> const& v) const noexcept { return tg::detail::hash(v.d[0], v.d[1]); }
+};
+template <>
+struct hash<tg::fixed_int<3>>
+{
+    std::size_t operator()(tg::fixed_int<3> const& v) const noexcept { return tg::detail::hash(v.d[0], v.d[1], v.d[2]); }
+};
+template <>
+struct hash<tg::fixed_int<4>>
+{
+    std::size_t operator()(tg::fixed_int<4> const& v) const noexcept { return tg::detail::hash(v.d[0], v.d[1], v.d[2], v.d[3]); }
+};
+
 // TODO: f8 and f16
 
 // -- objects

@@ -42,6 +42,8 @@ template <int C, class ScalarT>
 template <int R, class ScalarT>
 [[nodiscard]] constexpr mat<R, 1, ScalarT> transpose(vec<R, ScalarT> const& v)
 {
-    return mat<R, 1, ScalarT>(v);
+    mat<R, 1, ScalarT> m;
+    m.set_row(0, v);
+    return m;
 }
 } // namespace tg

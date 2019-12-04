@@ -1,10 +1,7 @@
 #pragma once
 
-#include <typed-geometry/types/random.hh>
+#include <typed-geometry/common/limits.hh>
 #include <typed-geometry/types/scalars/default.hh>
-
-#include <typed-geometry/detail/special_values.hh>
-#include <typed-geometry/functions/minmax.hh>
 
 /**
  * Provides random generators:
@@ -24,7 +21,7 @@ struct splitmix
 public:
     using result_type = u32;
     static constexpr result_type(min)() { return 0; }
-    static constexpr result_type(max)() { return tg::max<u32>(); }
+    static constexpr result_type(max)() { return detail::limits<u32>::max(); }
 
     constexpr splitmix() : m_seed(1) {}
     template <class SeedT>
@@ -57,6 +54,8 @@ public:
     constexpr bool operator==(splitmix const& rhs) const { return m_seed == rhs.m_seed; }
     constexpr bool operator!=(splitmix const& rhs) const { return m_seed != rhs.m_seed; }
 
+    constexpr u64 state() const { return m_seed; }
+
 private:
     u64 m_seed;
 };
@@ -66,7 +65,7 @@ struct xorshift
 public:
     using result_type = u32;
     static constexpr result_type(min)() { return 0; }
-    static constexpr result_type(max)() { return tg::max<u32>(); }
+    static constexpr result_type(max)() { return detail::limits<u32>::max(); }
 
     constexpr xorshift() : m_seed(0xc1f651c67c62c6e0ull) {}
     template <class SeedT>
@@ -100,6 +99,8 @@ public:
     constexpr bool operator==(xorshift const& rhs) const { return m_seed == rhs.m_seed; }
     constexpr bool operator!=(xorshift const& rhs) const { return m_seed != rhs.m_seed; }
 
+    constexpr u64 state() const { return m_seed; }
+
 private:
     u64 m_seed;
 };
@@ -109,7 +110,7 @@ struct pcg
 public:
     using result_type = u32;
     static constexpr result_type(min)() { return 0; }
-    static constexpr result_type(max)() { return tg::max<u32>(); }
+    static constexpr result_type(max)() { return detail::limits<u32>::max(); }
 
     constexpr pcg() : m_state(0x853c49e6748fea9bULL), m_inc(0xda3e39cb94b95bdbULL) {}
     template <class SeedT>

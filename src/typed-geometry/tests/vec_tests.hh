@@ -29,13 +29,13 @@ template <int D, class ScalarT, class = enable_if<is_floating_point<ScalarT>>>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool are_orthogonal(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool are_orthogonal(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT eps = 100 * D * tg::epsilon<ScalarT>)
 {
     return abs(dot(a, b)) < eps;
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool are_orthonormal(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT eps = 50 * D * tg::epsilon<ScalarT>)
+[[nodiscard]] constexpr bool are_orthonormal(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT eps = 100 * D * tg::epsilon<ScalarT>)
 {
     return is_normalized(a, eps) && is_normalized(b, eps) && are_orthogonal(a, b, eps);
 }

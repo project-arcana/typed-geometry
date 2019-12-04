@@ -26,3 +26,11 @@
 #include "objects/objects.hh"
 
 #include "scalars/scalars.hh"
+
+#include "bezier.hh"
+
+#include "capped_array.hh"
+#include "capped_vector.hh"
+
+#include "scalars/fixed_int.hh"
+#include "scalars/fixed_uint.hh"
