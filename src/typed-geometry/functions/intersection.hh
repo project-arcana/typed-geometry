@@ -14,6 +14,7 @@
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/objects/tube.hh>
 
+#include "aabb.hh"
 #include "contains.hh"
 #include "cross.hh"
 #include "direction.hh"
@@ -636,6 +637,65 @@ template <int D, class ScalarT>
 }
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
+{
+    return intersects(b, a);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<2, ScalarT> const& a, aabb<2, ScalarT> const& b)
+{
+    auto p0 = a.pos0;
+    auto p1 = a.pos1;
+    auto p2 = a.pos2;
+
+    auto bb_t = aabb_of(p0, p1, p2);
+    if (!intersects(bb_t, b))
+        return false;
+
+    if (contains(b, p0) || contains(b, p1) || contains(b, p2))
+        return true;
+
+    pos<2, ScalarT> aabb_pts[] = {
+        {b.min.x, b.min.y}, //
+        {b.min.x, b.max.y}, //
+        {b.max.x, b.min.y}, //
+        {b.max.x, b.max.y}, //
+    };
+
+    auto const is_separate = [&](pos<2, ScalarT> pa, vec<2, ScalarT> n, pos<2, ScalarT> pb) {
+        auto da = dot(n, pa);
+        auto db = dot(n, pb);
+
+        // TODO: faster
+        auto a_min = min(da, db);
+        auto a_max = max(da, db);
+
+        auto b_min = dot(n, aabb_pts[0]);
+        auto b_max = b_min;
+        for (auto i = 1; i < 4; ++i)
+        {
+            auto d = dot(n, aabb_pts[i]);
+            b_min = min(b_min, d);
+            b_max = max(b_max, d);
+        }
+
+        if (b_max < a_min || b_min > a_max)
+            return true;
+
+        return false;
+    };
+
+    if (is_separate(p0, perpendicular(p1 - p0), p2))
+        return false;
+    if (is_separate(p1, perpendicular(p2 - p1), p0))
+        return false;
+    if (is_separate(p2, perpendicular(p0 - p2), p1))
+        return false;
+
+    return true;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(aabb<2, ScalarT> const& a, triangle<2, ScalarT> const& b)
 {
     return intersects(b, a);
 }
