@@ -19,6 +19,7 @@
 #include "contains.hh"
 #include "coordinates.hh"
 #include "normal.hh"
+#include "inverse.hh"
 
 namespace tg
 {
@@ -75,6 +76,13 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D, ScalarT> const& s)
 {
     return clamp(p, s.min, s.max);
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, box<D, ScalarT> const& b)
+{
+    auto pLocal = pos<D, ScalarT>(inverse(b.half_extents) * (p - b.center));
+    return b.center + b.half_extents * vec<D, ScalarT>(project(pLocal, aabb<D, ScalarT>::minus_one_to_one));
 }
 
 template <int D, class ScalarT>
