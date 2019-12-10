@@ -15,6 +15,7 @@
 #include <typed-geometry/functions/direction.hh>
 #include <typed-geometry/functions/distance.hh>
 #include <typed-geometry/functions/dot.hh>
+#include <typed-geometry/functions/eigenvalues.hh>
 #include <typed-geometry/functions/gaussian.hh>
 #include <typed-geometry/functions/interpolate.hh>
 #include <typed-geometry/functions/intersection.hh>
