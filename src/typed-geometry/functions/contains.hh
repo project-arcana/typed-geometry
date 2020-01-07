@@ -204,4 +204,11 @@ template <class ScalarT>
     return dot(-c.base.normal, normalize(p - apex)) > dot(-c.base.normal, normalize(pRing - apex));
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, ScalarT eps = ScalarT(0))
+{
+    auto apex = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
+    return angle_between(p - apex, c.opening_dir) <= c.opening_angle;
+}
+
 } // namespace tg
