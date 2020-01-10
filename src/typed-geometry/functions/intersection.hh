@@ -161,7 +161,7 @@ template <int D, class ScalarT>
 {
     // if plane normal and ray direction are parallel there is no intersection
     auto dotND = dot(p.normal, r.dir);
-    if (dotND == 0)
+    if (dotND == ScalarT(0))
         return {};
 
     // plane: <x, p.normal> = p.dis
@@ -453,6 +453,30 @@ template <class ScalarT>
     return {p, dir};
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr optional<tg::pos<2, ScalarT>> intersection(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
+{
+    /// https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+    auto const denominator
+        = (seg_0.pos0.x - seg_0.pos1.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_0.pos1.y) * (seg_1.pos0.x - seg_1.pos1.x);
+
+    // todo: might want to check == 0 with an epsilon corridor
+    // todo: colinear line segments can still intersect in a point or a line segment.
+    //       This might require api changes, as either a point or a line segment can be returned!
+    //       Possible solution: return a segment where pos0 == pos1
+    if (denominator == ScalarT(0))
+        return {}; // colinear
+
+    auto const numerator = (seg_0.pos0.x - seg_1.pos0.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_1.pos0.y) * (seg_1.pos0.x - seg_1.pos1.x);
+    auto const t = numerator / denominator;
+    if (ScalarT(0) <= t && t <= ScalarT(1))
+    {
+        // intersection
+        return seg_0.pos0 + t * (seg_0.pos1 - seg_0.pos0);
+    }
+    return {};
+}
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<aabb<D, ScalarT>> intersection(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
 {
@@ -493,7 +517,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> intersection_parameter(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
 {
     auto denom = dot(p.normal, a.pos1 - a.pos0);
-    if (denom == 0)
+    if (denom == ScalarT(0))
         return {};
 
     auto t = (p.dis - dot(p.normal, a.pos0 - tg::pos<D, ScalarT>::zero)) / denom;
