@@ -161,7 +161,7 @@ template <int D, class ScalarT>
 {
     // if plane normal and ray direction are parallel there is no intersection
     auto dotND = dot(p.normal, r.dir);
-    if (dotND == 0)
+    if (dotND == ScalarT(0))
         return {};
 
     // plane: <x, p.normal> = p.dis
@@ -464,7 +464,7 @@ template <class ScalarT>
     // todo: colinear line segments can still intersect in a point or a line segment.
     //       This might require api changes, as either a point or a line segment can be returned!
     //       Possible solution: return a segment where pos0 == pos1
-    if (denominator == 0)
+    if (denominator == ScalarT(0))
         return {}; // colinear
 
     auto const numerator = (seg_0.pos0.x - seg_1.pos0.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_1.pos0.y) * (seg_1.pos0.x - seg_1.pos1.x);
@@ -517,7 +517,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> intersection_parameter(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
 {
     auto denom = dot(p.normal, a.pos1 - a.pos0);
-    if (denom == 0)
+    if (denom == ScalarT(0))
         return {};
 
     auto t = (p.dis - dot(p.normal, a.pos0 - tg::pos<D, ScalarT>::zero)) / denom;
