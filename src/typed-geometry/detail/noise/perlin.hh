@@ -8,10 +8,13 @@
 
 namespace tg
 {
-// classic 2D perlin noise (https://github.com/ashima/webgl-noise/blob/master/src/classicnoise2D.glsl)
-// (and https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83)
+// classic perlin noise
+// (see https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83)
+// (and https://github.com/ashima/webgl-noise/blob/master/src/classicnoise2D.glsl)
+
+// 2D
 template <class ScalarT>
-ScalarT perlin_noise(pos<2, ScalarT> P) // TODO allow overloading with ScalarT x, ScalarT y too AND seeding, perlin_noise_seed()!
+ScalarT perlin_noise(const pos<2, ScalarT>& P) // TODO allow seeding, perlin_noise_seed()!
 {
     auto Pi = floor(pos<4, ScalarT>(P.x, P.y, P.x, P.y)) + vec<4, ScalarT>(ScalarT(0.0), ScalarT(0.0), ScalarT(1.0), ScalarT(1.0));
     auto Pf = fract(pos<4, ScalarT>(P.x, P.y, P.x, P.y)) - pos<4, ScalarT>(ScalarT(0.0), ScalarT(0.0), ScalarT(1.0), ScalarT(1.0));
@@ -51,4 +54,11 @@ ScalarT perlin_noise(pos<2, ScalarT> P) // TODO allow overloading with ScalarT x
     auto n_xy = mix(n_x.x, n_x.y, fade_xy.y);
     return ScalarT(2.3) * n_xy;
 }
+
+template <class ScalarT>
+ScalarT perlin_noise(const ScalarT x, const ScalarT y) // TODO allow seeding, perlin_noise_seed()!
+{
+    return perlin_noise(pos2(x, y));
+}
+
 } // namespace tg
