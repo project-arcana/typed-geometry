@@ -9,6 +9,7 @@
 namespace tg
 {
 // classic 2D perlin noise (https://github.com/ashima/webgl-noise/blob/master/src/classicnoise2D.glsl)
+// (and https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83)
 template <class ScalarT>
 ScalarT perlin_noise(pos<2, ScalarT> P) // TODO allow overloading with ScalarT x, ScalarT y too AND seeding, perlin_noise_seed()!
 {
@@ -24,7 +25,7 @@ ScalarT perlin_noise(pos<2, ScalarT> P) // TODO allow overloading with ScalarT x
 
     auto i = noise::permute(iy + vec<4, ScalarT>(noise::permute(ix)));
 
-    auto gx = fract(i * (ScalarT(1.0) / ScalarT(41.0))) * ScalarT(2.0) - ScalarT(1.0);
+    auto gx = fract(i * ScalarT(0.0243902439)) * ScalarT(2.0) - ScalarT(1.0); // 1/41 = 0.024...
     auto gy = abs(gx) - ScalarT(0.5);
     auto tx = floor(vec<4, ScalarT>(gx) + ScalarT(0.5));
     gx = gx - tx;
