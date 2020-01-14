@@ -88,17 +88,14 @@ ScalarT perlin_noise(const pos<3, ScalarT>& P)
     auto gz0 = vec<4, ScalarT>(ScalarT(0.5)) - abs(gx0) - abs(gy0);
     auto sz0 = step(gz0, vec<4, ScalarT>(ScalarT(0.0)));
 
-    // workaround for vec * vec operation
-    auto subtract = sz0;
-    auto stepped = step(vec<4, ScalarT>::zero, gx0) - ScalarT(0.5);
-    for (auto i = 0; i < 4; i++)
-        subtract[i] *= stepped[i];
+    auto subtract = comp<4, ScalarT>(sz0);
+    auto stepped = comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gx0) - ScalarT(0.5));
+    subtract *= stepped;
     gx0 -= subtract;
-    // workaround for vec * vec operation
-    subtract = sz0;
-    stepped = step(vec<4, ScalarT>::zero, gy0) - ScalarT(0.5);
-    for (auto i = 0; i < 4; i++)
-        subtract[i] *= stepped[i];
+
+    subtract = comp<4, ScalarT>(sz0);
+    stepped = comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gy0) - ScalarT(0.5));
+    subtract *= stepped;
     gy0 -= subtract;
 
     auto gx1 = vec<4, ScalarT>(ixy1 / ScalarT(7.0));
@@ -106,17 +103,15 @@ ScalarT perlin_noise(const pos<3, ScalarT>& P)
     gx1 = fract(gx1);
     auto gz1 = vec<4, ScalarT>(pos<4, ScalarT>(ScalarT(0.5) - abs(gx1)) - abs(gy1));
     auto sz1 = step(gz1, vec<4, ScalarT>(ScalarT(0.0)));
-    // workaround for vec * vec operation
-    stepped = step(vec<4, ScalarT>::zero, gx1) - ScalarT(0.5);
-    subtract = sz1;
-    for (auto i = 0; i < 4; i++)
-        subtract[i] *= stepped[i];
+
+    stepped = comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gx1) - ScalarT(0.5));
+    subtract = comp<4, ScalarT>(sz1);
+    subtract *= stepped;
     gx1 -= subtract;
-    // workaround for vec * vec operation
-    stepped = step(vec<4, ScalarT>::zero, gy1) - ScalarT(0.5);
-    subtract = sz1;
-    for (auto i = 0; i < 4; i++)
-        subtract[i] *= stepped[i];
+
+    stepped = comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gy1) - ScalarT(0.5));
+    subtract = comp<4, ScalarT>(sz1);
+    subtract *= stepped;
     gy1 -= subtract;
 
     auto g000 = vec<3, ScalarT>(gx0.x, gy0.x, gz0.x);
@@ -169,8 +164,8 @@ ScalarT perlin_noise(const pos<4, ScalarT>& P)
     auto Pi1 = Pi0 + ScalarT(1.0); // integer part + 1
     Pi0 = mod289(Pi0);
     Pi1 = mod289(Pi1);
-    auto Pf0 = vec<4, ScalarT>(fract(P));           // fractional part for interpolation
-    auto Pf1 = Pf0 - ScalarT(1.0); // fractional part - 1.0
+    auto Pf0 = vec<4, ScalarT>(fract(P)); // fractional part for interpolation
+    auto Pf1 = Pf0 - ScalarT(1.0);        // fractional part - 1.0
     auto ix = pos<4, ScalarT>(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
     auto iy = vec<4, ScalarT>(Pi0.y, Pi0.y, Pi1.y, Pi1.y);
     auto iz0 = vec<4, ScalarT>(Pi0.z);
