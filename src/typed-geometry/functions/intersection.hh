@@ -14,6 +14,7 @@
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/objects/tube.hh>
 
+#include "closest_points.hh"
 #include "contains.hh"
 #include "cross.hh"
 #include "direction.hh"
@@ -88,6 +89,7 @@ private:
     HitT _hit[MaxHits];
 };
 
+
 // ====================================== Default Implementations ======================================
 
 // returns whether two objects intersect
@@ -151,6 +153,25 @@ template <int D, class ScalarT, class Obj>
         return hits[0];
     return {};
 }
+
+// intersection between point and obj is same as contains
+template <int D, class ScalarT, class Obj, class = void_t<decltype(contains(std::declval<pos<D, ScalarT>>(), std::declval<Obj>()))>>
+constexpr optional<pos<D, ScalarT>> intersection(pos<D, ScalarT> const& p, Obj const& obj)
+{
+    if (contains(obj, p))
+        return p;
+    return {};
+}
+
+// intersection between point and obj is same as contains
+template <int D, class ScalarT, class Obj, class = void_t<decltype(contains(std::declval<pos<D, ScalarT>>(), std::declval<Obj>()))>>
+constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT> const& p)
+{
+    if (contains(obj, p))
+        return p;
+    return {};
+}
+
 
 // ====================================== Ray - Object Intersections ======================================
 
@@ -638,6 +659,20 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
 {
     return intersects(b, a);
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(segment<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
+{
+    static_assert(always_false<ScalarT>, "not implemented");
+    (void)a;
+    (void)b;
+    return {}; // TODO
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(sphere<D, ScalarT> const& b, segment<D, ScalarT> const& a)
+{
+    return intersection(b, a);
 }
 
 } // namespace tg
