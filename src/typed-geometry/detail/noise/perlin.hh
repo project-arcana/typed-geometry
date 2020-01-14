@@ -10,7 +10,7 @@ namespace tg
 {
 namespace noise
 {
-// classic perlin noise
+// classic perlin noise (returns ScalarT in [-1, 1] (?) )
 // (see https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83)
 // (and https://github.com/ashima/webgl-noise/blob/master/src/classicnoise2D.glsl)
 
@@ -63,6 +63,7 @@ ScalarT perlin_noise(const ScalarT x, const ScalarT y) // TODO allow seeding, pe
     return perlin_noise(pos<2, ScalarT>(x, y));
 }
 
+// 3D
 template <class ScalarT>
 ScalarT perlin_noise(const pos<3, ScalarT>& P)
 {
@@ -70,7 +71,7 @@ ScalarT perlin_noise(const pos<3, ScalarT>& P)
     auto Pi1 = Pi0 + vec<3, ScalarT>(ScalarT(1.0)); // integer part + 1
     Pi0 = mod289(Pi0);
     Pi1 = mod289(Pi1);
-    auto Pf0 = vec<3, ScalarT>(fract(P));                            // fractional part for interpolation
+    auto Pf0 = vec<3, ScalarT>(fract(P));           // fractional part for interpolation
     auto Pf1 = Pf0 - vec<3, ScalarT>(ScalarT(1.0)); // fractional part - 1.0
     auto ix = pos<4, ScalarT>(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
     auto iy = vec<4, ScalarT>(Pi0.y, Pi0.y, Pi1.y, Pi1.y);
@@ -158,6 +159,148 @@ template <class ScalarT>
 ScalarT perlin_noise(const ScalarT x, const ScalarT y, const ScalarT z) // TODO allow seeding, perlin_noise_seed()!
 {
     return perlin_noise(pos<3, ScalarT>(x, y, z));
+}
+
+// 4D
+template <class ScalarT>
+ScalarT perlin_noise(const pos<4, ScalarT>& P)
+{
+    auto Pi0 = floor(P);           // integer part for indexing
+    auto Pi1 = Pi0 + ScalarT(1.0); // integer part + 1
+    Pi0 = mod289(Pi0);
+    Pi1 = mod289(Pi1);
+    auto Pf0 = vec<4, ScalarT>(fract(P));           // fractional part for interpolation
+    auto Pf1 = Pf0 - ScalarT(1.0); // fractional part - 1.0
+    auto ix = pos<4, ScalarT>(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
+    auto iy = vec<4, ScalarT>(Pi0.y, Pi0.y, Pi1.y, Pi1.y);
+    auto iz0 = vec<4, ScalarT>(Pi0.z);
+    auto iz1 = vec<4, ScalarT>(Pi1.z);
+    auto iw0 = vec<4, ScalarT>(Pi0.w);
+    auto iw1 = vec<4, ScalarT>(Pi1.w);
+
+    auto ixy = permute(permute(ix) + iy);
+    auto ixy0 = permute(ixy + iz0);
+    auto ixy1 = permute(ixy + iz1);
+    auto ixy00 = permute(ixy0 + iw0);
+    auto ixy01 = permute(ixy0 + iw1);
+    auto ixy10 = permute(ixy1 + iw0);
+    auto ixy11 = permute(ixy1 + iw1);
+
+    auto gx00 = vec<4, ScalarT>(ixy00 / ScalarT(7.0));
+    auto gy00 = floor(gx00) / ScalarT(7.0);
+    auto gz00 = floor(gy00) / ScalarT(6.0);
+    gx00 = fract(gx00) - ScalarT(0.5);
+    gy00 = fract(gy00) - ScalarT(0.5);
+    gz00 = fract(gz00) - ScalarT(0.5);
+    auto gw00 = vec<4, ScalarT>(pos<4, ScalarT>(0.75) - abs(gx00) - abs(gy00) - abs(gz00));
+    auto sw00 = step(gw00, vec<4, ScalarT>::zero);
+    gx00 -= comp<4, ScalarT>(sw00) * comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gx00) - ScalarT(0.5));
+    gy00 -= comp<4, ScalarT>(sw00) * comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gy00) - ScalarT(0.5));
+
+    auto gx01 = vec<4, ScalarT>(ixy01 / ScalarT(7.0));
+    auto gy01 = floor(gx01) / ScalarT(7.0);
+    auto gz01 = floor(gy01) / ScalarT(6.0);
+    gx01 = fract(gx01) - ScalarT(0.5);
+    gy01 = fract(gy01) - ScalarT(0.5);
+    gz01 = fract(gz01) - ScalarT(0.5);
+    auto gw01 = vec<4, ScalarT>(0.75) - abs(gx01) - abs(gy01) - abs(gz01);
+    auto sw01 = step(gw01, vec<4, ScalarT>::zero);
+    gx01 -= comp<4, ScalarT>(sw01) * comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gx01) - ScalarT(0.5));
+    gy01 -= comp<4, ScalarT>(sw01) * comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gy01) - ScalarT(0.5));
+
+    auto gx10 = vec<4, ScalarT>(ixy10 / ScalarT(7.0));
+    auto gy10 = floor(gx10) / ScalarT(7.0);
+    auto gz10 = floor(gy10) / ScalarT(6.0);
+    gx10 = fract(gx10) - ScalarT(0.5);
+    gy10 = fract(gy10) - ScalarT(0.5);
+    gz10 = fract(gz10) - ScalarT(0.5);
+    auto gw10 = vec<4, ScalarT>(0.75) - abs(gx10) - abs(gy10) - abs(gz10);
+    auto sw10 = step(gw10, vec<4, ScalarT>::zero);
+    gx10 -= comp<4, ScalarT>(sw10) * comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gx10) - ScalarT(0.5));
+    gy10 -= comp<4, ScalarT>(sw10) * comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gy10) - ScalarT(0.5));
+
+    auto gx11 = vec<4, ScalarT>(ixy11 / ScalarT(7.0));
+    auto gy11 = floor(gx11) / ScalarT(7.0);
+    auto gz11 = floor(gy11) / ScalarT(6.0);
+    gx11 = fract(gx11) - ScalarT(0.5);
+    gy11 = fract(gy11) - ScalarT(0.5);
+    gz11 = fract(gz11) - ScalarT(0.5);
+    auto gw11 = vec<4, ScalarT>(0.75) - abs(gx11) - abs(gy11) - abs(gz11);
+    auto sw11 = step(gw11, vec<4, ScalarT>::zero);
+    gx11 -= comp<4, ScalarT>(sw11) * comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gx11) - ScalarT(0.5));
+    gy11 -= comp<4, ScalarT>(sw11) * comp<4, ScalarT>(step(vec<4, ScalarT>::zero, gy11) - ScalarT(0.5));
+
+    auto g0000 = vec<4, ScalarT>(gx00.x, gy00.x, gz00.x, gw00.x);
+    auto g1000 = vec<4, ScalarT>(gx00.y, gy00.y, gz00.y, gw00.y);
+    auto g0100 = vec<4, ScalarT>(gx00.z, gy00.z, gz00.z, gw00.z);
+    auto g1100 = vec<4, ScalarT>(gx00.w, gy00.w, gz00.w, gw00.w);
+    auto g0010 = vec<4, ScalarT>(gx10.x, gy10.x, gz10.x, gw10.x);
+    auto g1010 = vec<4, ScalarT>(gx10.y, gy10.y, gz10.y, gw10.y);
+    auto g0110 = vec<4, ScalarT>(gx10.z, gy10.z, gz10.z, gw10.z);
+    auto g1110 = vec<4, ScalarT>(gx10.w, gy10.w, gz10.w, gw10.w);
+    auto g0001 = vec<4, ScalarT>(gx01.x, gy01.x, gz01.x, gw01.x);
+    auto g1001 = vec<4, ScalarT>(gx01.y, gy01.y, gz01.y, gw01.y);
+    auto g0101 = vec<4, ScalarT>(gx01.z, gy01.z, gz01.z, gw01.z);
+    auto g1101 = vec<4, ScalarT>(gx01.w, gy01.w, gz01.w, gw01.w);
+    auto g0011 = vec<4, ScalarT>(gx11.x, gy11.x, gz11.x, gw11.x);
+    auto g1011 = vec<4, ScalarT>(gx11.y, gy11.y, gz11.y, gw11.y);
+    auto g0111 = vec<4, ScalarT>(gx11.z, gy11.z, gz11.z, gw11.z);
+    auto g1111 = vec<4, ScalarT>(gx11.w, gy11.w, gz11.w, gw11.w);
+
+    auto norm00 = taylorInvSqrt(pos<4, ScalarT>(dot(g0000, g0000), dot(g0100, g0100), dot(g1000, g1000), dot(g1100, g1100)));
+    g0000 *= norm00.x;
+    g0100 *= norm00.y;
+    g1000 *= norm00.z;
+    g1100 *= norm00.w;
+
+    auto norm01 = taylorInvSqrt(pos<4, ScalarT>(dot(g0001, g0001), dot(g0101, g0101), dot(g1001, g1001), dot(g1101, g1101)));
+    g0001 *= norm01.x;
+    g0101 *= norm01.y;
+    g1001 *= norm01.z;
+    g1101 *= norm01.w;
+
+    auto norm10 = taylorInvSqrt(pos<4, ScalarT>(dot(g0010, g0010), dot(g0110, g0110), dot(g1010, g1010), dot(g1110, g1110)));
+    g0010 *= norm10.x;
+    g0110 *= norm10.y;
+    g1010 *= norm10.z;
+    g1110 *= norm10.w;
+
+    auto norm11 = taylorInvSqrt(pos<4, ScalarT>(dot(g0011, g0011), dot(g0111, g0111), dot(g1011, g1011), dot(g1111, g1111)));
+    g0011 *= norm11.x;
+    g0111 *= norm11.y;
+    g1011 *= norm11.z;
+    g1111 *= norm11.w;
+
+    auto n0000 = dot(g0000, Pf0);
+    auto n1000 = dot(g1000, vec<4, ScalarT>(Pf1.x, Pf0.y, Pf0.z, Pf0.w));
+    auto n0100 = dot(g0100, vec<4, ScalarT>(Pf0.x, Pf1.y, Pf0.z, Pf0.w));
+    auto n1100 = dot(g1100, vec<4, ScalarT>(Pf1.x, Pf1.y, Pf0.z, Pf0.w));
+    auto n0010 = dot(g0010, vec<4, ScalarT>(Pf0.x, Pf0.y, Pf1.z, Pf0.w));
+    auto n1010 = dot(g1010, vec<4, ScalarT>(Pf1.x, Pf0.y, Pf1.z, Pf0.w));
+    auto n0110 = dot(g0110, vec<4, ScalarT>(Pf0.x, Pf1.y, Pf1.z, Pf0.w));
+    auto n1110 = dot(g1110, vec<4, ScalarT>(Pf1.x, Pf1.y, Pf1.z, Pf0.w));
+    auto n0001 = dot(g0001, vec<4, ScalarT>(Pf0.x, Pf0.y, Pf0.z, Pf1.w));
+    auto n1001 = dot(g1001, vec<4, ScalarT>(Pf1.x, Pf0.y, Pf0.z, Pf1.w));
+    auto n0101 = dot(g0101, vec<4, ScalarT>(Pf0.x, Pf1.y, Pf0.z, Pf1.w));
+    auto n1101 = dot(g1101, vec<4, ScalarT>(Pf1.x, Pf1.y, Pf0.z, Pf1.w));
+    auto n0011 = dot(g0011, vec<4, ScalarT>(Pf0.x, Pf0.y, Pf1.z, Pf1.w));
+    auto n1011 = dot(g1011, vec<4, ScalarT>(Pf1.x, Pf0.y, Pf1.z, Pf1.w));
+    auto n0111 = dot(g0111, vec<4, ScalarT>(Pf0.x, Pf1.y, Pf1.z, Pf1.w));
+    auto n1111 = dot(g1111, Pf1);
+
+    auto fade_xyzw = fade(Pf0);
+    auto n_0w = mix(vec<4, ScalarT>(n0000, n1000, n0100, n1100), vec<4, ScalarT>(n0001, n1001, n0101, n1101), fade_xyzw.w);
+    auto n_1w = mix(vec<4, ScalarT>(n0010, n1010, n0110, n1110), vec<4, ScalarT>(n0011, n1011, n0111, n1111), fade_xyzw.w);
+    auto n_zw = mix(n_0w, n_1w, fade_xyzw.z);
+    auto n_yzw = mix(vec<2, ScalarT>(n_zw), vec<2, ScalarT>(n_zw.z, n_zw.w), fade_xyzw.y);
+    auto n_xyzw = mix(n_yzw.x, n_yzw.y, fade_xyzw.x);
+    return ScalarT(2.2) * n_xyzw;
+}
+
+template <class ScalarT>
+ScalarT perlin_noise(ScalarT const x, ScalarT const y, ScalarT const z, ScalarT const w)
+{
+    return perlin_noise(pos<4, ScalarT>(x, y, z, w));
 }
 
 } // namespace noise
