@@ -16,10 +16,8 @@ pos<D, ScalarT> mod289(const pos<D, ScalarT>& x)
 template <class ScalarT>
 pos<4, ScalarT> permute(const pos<4, ScalarT>& x)
 {
-    auto ret = x;
-    for (auto i = 0; i < 4; i++)
-        ret[i] = ret[i] * ((ret[i] * ScalarT(34.0)) + ScalarT(1.0));
-    return mod289(ret);
+    auto ret = comp<4, ScalarT>(x) * ((comp<4, ScalarT>(x) * ScalarT(34.0)) + ScalarT(1.0));
+    return mod289(pos<4, ScalarT>(ret));
 }
 
 template <int D, class ScalarT>
@@ -31,10 +29,8 @@ pos<D, ScalarT> taylorInvSqrt(const pos<D, ScalarT>& r)
 template <int D, class ScalarT>
 pos<D, ScalarT> fade(const vec<D, ScalarT>& t)
 {
-    auto ret = pos<D, ScalarT>::zero;
-    for (auto i = 0; i < D; i++)
-        ret[i] = t[i] * t[i] * t[i] * (t[i] * (t[i] * ScalarT(6.0) - ScalarT(15.0)) + ScalarT(10.0));
-    return ret;
+    auto ret = comp<D, ScalarT>(t);
+    return pos<D, ScalarT>(ret * ret * ret * (ret * (ret * ScalarT(6.0) - ScalarT(15.0)) + ScalarT(10.0)));
 }
 
 template <class ScalarT>
