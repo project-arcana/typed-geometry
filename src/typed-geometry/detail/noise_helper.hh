@@ -13,11 +13,11 @@ pos<D, ScalarT> mod289(const pos<D, ScalarT>& x)
     return pos<D, ScalarT>(x - floor(x * (ScalarT(1.0) / ScalarT(289.0))) * ScalarT(289.0));
 }
 
-template <class ScalarT>
-pos<4, ScalarT> permute(const pos<4, ScalarT>& x)
+template <int D, class ScalarT>
+pos<D, ScalarT> permute(const pos<D, ScalarT>& x)
 {
-    auto ret = comp<4, ScalarT>(x) * ((comp<4, ScalarT>(x) * ScalarT(34.0)) + ScalarT(1.0));
-    return mod289(pos<4, ScalarT>(ret));
+    auto ret = comp<D, ScalarT>(x) * ((comp<D, ScalarT>(x) * ScalarT(34.0)) + ScalarT(1.0));
+    return mod289(pos<D, ScalarT>(ret));
 }
 
 template <int D, class ScalarT>

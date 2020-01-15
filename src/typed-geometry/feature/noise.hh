@@ -1,3 +1,4 @@
 #pragma once
+
 #include <typed-geometry/detail/noise/perlin.hh>
-// TODO simplex, ..
+#include <typed-geometry/detail/noise/simplex.hh>
