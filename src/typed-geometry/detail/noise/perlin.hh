@@ -1,7 +1,5 @@
 #pragma once
 
-//#include <typed-geometry/common/random.hh>
-//#include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/detail/noise_helper.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
