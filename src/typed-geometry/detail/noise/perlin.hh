@@ -1,9 +1,6 @@
 #pragma once
 
 #include <typed-geometry/detail/noise_helper.hh>
-#include <typed-geometry/types/pos.hh>
-#include <typed-geometry/types/vec.hh>
-
 namespace tg
 {
 namespace noise
