@@ -73,7 +73,7 @@ ScalarT perlin_noise(const ScalarT x) // TODO allow seeding, perlin_noise_seed()
     // TODO is 0 possible or does that make gcc buster fail in ci?
     return perlin_noise(pos<2, ScalarT>(x, ScalarT(1)));
 }
-/*
+
 // 3D
 template <class ScalarT>
 ScalarT perlin_noise(const pos<3, ScalarT>& P)
@@ -308,6 +308,5 @@ ScalarT perlin_noise(ScalarT const x, ScalarT const y, ScalarT const z, ScalarT 
 {
     return perlin_noise(pos<4, ScalarT>(x, y, z, w));
 }
-*/
 } // namespace noise
 } // namespace tg
