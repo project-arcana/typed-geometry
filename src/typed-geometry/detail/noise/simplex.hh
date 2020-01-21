@@ -142,7 +142,7 @@ ScalarT simplex_noise(pos<3, ScalarT> const& v)
     p3 *= norm.w;
 
     // mix final noise value
-    auto m = comp<4, ScalarT>(0.6) - comp<4, ScalarT>(ScalarT(dot(x0, x0)), ScalarT(dot(x1, x1)), ScalarT(dot(x2, x2)), ScalarT(dot(x3, x3)));
+    auto m = comp<4, ScalarT>(ScalarT(0.6)) - comp<4, ScalarT>(ScalarT(dot(x0, x0)), ScalarT(dot(x1, x1)), ScalarT(dot(x2, x2)), ScalarT(dot(x3, x3)));
     for (auto i = 0; i < 4; i++)
     {
         m[i] = max(m[i], ScalarT(0));
