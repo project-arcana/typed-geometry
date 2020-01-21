@@ -74,7 +74,7 @@ ScalarT simplex_noise(pos<1, ScalarT> const& p)
 template <class ScalarT>
 ScalarT simplex_noise(pos<3, ScalarT> const& v)
 {
-    const auto C = vec<2, ScalarT>(1.0 / 6.0, 1.0 / 3.0);
+    const auto C = vec<2, ScalarT>(ScalarT(1.0 / 6.0), ScalarT(1.0 / 3.0));
     const auto D = vec<4, ScalarT>(0.0, 0.5, 1.0, 2.0);
 
     // first corner
@@ -142,7 +142,7 @@ ScalarT simplex_noise(pos<3, ScalarT> const& v)
     p3 *= norm.w;
 
     // mix final noise value
-    auto m = comp<4, ScalarT>(0.6) - comp<4, ScalarT>(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3));
+    auto m = comp<4, ScalarT>(0.6) - comp<4, ScalarT>(ScalarT(dot(x0, x0)), ScalarT(dot(x1, x1)), ScalarT(dot(x2, x2)), ScalarT(dot(x3, x3)));
     for (auto i = 0; i < 4; i++)
     {
         m[i] = max(m[i], ScalarT(0));
