@@ -32,12 +32,12 @@ pos<D, ScalarT> fade(const vec<D, ScalarT>& t)
     return pos<D, ScalarT>(ret * ret * ret * (ret * (ret * ScalarT(6) - ScalarT(15)) + ScalarT(10)));
 }
 
-template <class ScalarT>
-vec<4, ScalarT> step(const vec<4, ScalarT>& edge, const vec<4, ScalarT>& x)
+template <int D, class ScalarT>
+vec<D, ScalarT> step(const vec<D, ScalarT>& edge, const vec<D, ScalarT>& x)
 {
     // see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/step.xhtml
-    auto ret = vec<4, ScalarT>::zero;
-    for (auto i = 0; i < 4; i++)
+    auto ret = vec<D, ScalarT>::zero;
+    for (auto i = 0; i < D; i++)
     {
         if (x[i] >= edge[i])
             ret[i] = ScalarT(1);
