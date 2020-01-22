@@ -368,7 +368,7 @@ ScalarT simplex_noise(ScalarT const x, ScalarT const y, ScalarT const z)
 
 // 4D simplex noise
 // https://github.com/ashima/webgl-noise/blob/master/src/noise4D.glsl
-
+// NOTE: compared with 1D-3D simplex above, this function is slow!
 template <class ScalarT>
 ScalarT simplex_noise(pos<4, ScalarT> const& p)
 {
@@ -379,43 +379,54 @@ ScalarT simplex_noise(pos<4, ScalarT> const& p)
 
     // First corner
     auto i = floor(p + dot(p, vec<4, ScalarT>(ScalarT(0.309016994374947451)))); // (sqrt(5) - 1)/4 = 0.30901..
-    auto x0 = p - i + dot(i, C.xxxx);
+    auto x0 = p - i + dot(i, vec<4, ScalarT>(C.x));
 
     // Other corners
 
     // Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)
     vec<4, ScalarT> i0;
     auto isX = step(vec<3, ScalarT>(x0.y, x0.z, x0.w), vec<3, ScalarT>(x0.x));
-    auto isYZ = step(x0.zww, x0.yyz);
+    auto isYZ = step(vec<3, ScalarT>(x0.z, x0.w, x0.w), vec<3, ScalarT>(x0.y, x0.y, x0.z));
     //  i0.x = dot( isX, vec3( 1.0 ) );
     i0.x = isX.x + isX.y + isX.z;
-    i0.yzw = 1.0 - isX;
-    //  i0.y += dot( isYZ.xy, vec2( 1.0 ) );
-    i0.y += isYZ.x + isYZ.y;
-    i0.zw += 1.0 - isYZ.xy;
-    i0.z += isYZ.z;
-    i0.w += 1.0 - isYZ.z;
+    {
+        auto subtraction = vec<3, ScalarT>(1) - isX;
+        i0.y = subtraction.x;
+        i0.z = subtraction.y;
+        i0.w = subtraction.z;
+        //  i0.y += dot( isYZ.xy, vec2( 1.0 ) );
+        i0.y += isYZ.x + isYZ.y;
+    }
+
+    {
+        auto subtraction = vec<2, ScalarT>(1) - vec<2, ScalarT>(isYZ.x, isYZ.y);
+        i0.z += subtraction.x;
+        i0.w += subtraction.y;
+        i0.z += isYZ.z;
+        i0.w += ScalarT(1) - isYZ.z;
+    }
 
     // i0 now contains the unique values 0,1,2,3 in each channel
-    auto i3 = clamp(i0, 0.0, 1.0);
-    auto i2 = clamp(i0 - 1.0, 0.0, 1.0);
-    auto i1 = clamp(i0 - 2.0, 0.0, 1.0);
+    auto i3 = clamp(i0, ScalarT(0), ScalarT(1));
+    auto i2 = clamp(i0 - ScalarT(1), ScalarT(0), ScalarT(1));
+    auto i1 = clamp(i0 - ScalarT(2), ScalarT(0), ScalarT(1));
 
     //  x0 = x0 - 0.0 + 0.0 * C.xxxx
     //  x1 = x0 - i1  + 1.0 * C.xxxx
     //  x2 = x0 - i2  + 2.0 * C.xxxx
     //  x3 = x0 - i3  + 3.0 * C.xxxx
     //  x4 = x0 - 1.0 + 4.0 * C.xxxx
-    auto x1 = x0 - i1 + C.xxxx;
-    auto x2 = x0 - i2 + C.yyyy;
-    auto x3 = x0 - i3 + C.zzzz;
-    auto x4 = x0 + C.wwww;
+    auto x1 = x0 - i1 + vec<4, ScalarT>(C.x);
+    auto x2 = x0 - i2 + vec<4, ScalarT>(C.y);
+    auto x3 = x0 - i3 + vec<4, ScalarT>(C.z);
+    auto x4 = x0 + vec<4, ScalarT>(C.w);
 
     // Permutations
     i = mod289(i);
-    float j0 = permute(permute(permute(permute(i.w) + i.z) + i.y) + i.x);
-    vec4 j1 = permute(permute(permute(permute(i.w + vec4(i1.w, i2.w, i3.w, 1.0)) + i.z + vec4(i1.z, i2.z, i3.z, 1.0)) + i.y + vec4(i1.y, i2.y, i3.y, 1.0))
-                      + i.x + vec4(i1.x, i2.x, i3.x, 1.0));
+    auto j0 = permute(permute(permute(permute(i.w) + i.z) + i.y) + i.x);
+    auto j1 = permute(permute(permute(permute(i.w + pos<4, ScalarT>(i1.w, i2.w, i3.w, 1)) + i.z + vec<4, ScalarT>(i1.z, i2.z, i3.z, 1.0)) + i.y
+                              + vec<4, ScalarT>(i1.y, i2.y, i3.y, 1))
+                      + i.x + vec<4, ScalarT>(i1.x, i2.x, i3.x, 1));
 
     // Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope
     // 7*7*6 = 294, which is close to the ring size 17*17 = 289.
@@ -436,12 +447,15 @@ ScalarT simplex_noise(pos<4, ScalarT> const& p)
     p4 *= taylorInvSqrt(dot(p4, p4));
 
     // Mix contributions from the five corners
-    // TODO is this okay? arithmetic operations like this for vec and scalarT??
-    auto m0 = max(ScalarT(0.6) - vec<3, ScalarT>(dot(x0, x0), dot(x1, x1), dot(x2, x2)), ScalarT(0));
-    auto m1 = max(ScalarT(0.6) - vec<2, ScalarT>(dot(x3, x3), dot(x4, x4)), ScalarT(0));
-    m0 = m0 * m0;
-    m1 = m1 * m1;
-    return ScalarT(49) * (dot(m0 * m0, vec3(dot(p0, x0), dot(p1, x1), dot(p2, x2))) + dot(m1 * m1, vec2(dot(p3, x3), dot(p4, x4))));
+    auto m0 = max(vec<3, ScalarT>(ScalarT(0.6)) - vec<3, ScalarT>(dot(x0, x0), dot(x1, x1), dot(x2, x2)), vec<3, ScalarT>::zero);
+    auto m1 = max(vec<2, ScalarT>(ScalarT(0.6)) - vec<2, ScalarT>(dot(x3, x3), dot(x4, x4)), vec<2, ScalarT>::zero);
+    auto cm0 = comp<3, ScalarT>(m0);
+    cm0 = cm0 * cm0;
+    auto cm1 = comp<2, ScalarT>(m1);
+    cm1 = cm1 * cm1;
+
+    auto a1 = dot(vec<3, ScalarT>(cm0 * cm0), vec<3, ScalarT>(dot(p0, x0), dot(p1, x1), dot(p2, x2)));
+    return ScalarT(49) * (a1 + dot(vec<2, ScalarT>(cm1 * cm1), vec<2, ScalarT>(dot(p3, x3), dot(p4, x4))));
 }
 
 template <class ScalarT>

@@ -6,10 +6,22 @@ namespace tg
 {
 namespace noise
 {
+template <class ScalarT>
+ScalarT mod289(ScalarT const x)
+{
+    return x - floor(x * (ScalarT(1) / ScalarT(289))) * ScalarT(289);
+}
+
 template <int D, class ScalarT>
-pos<D, ScalarT> mod289(const pos<D, ScalarT>& x)
+pos<D, ScalarT> mod289(pos<D, ScalarT> const& x)
 {
     return pos<D, ScalarT>(x - floor(x * (ScalarT(1) / ScalarT(289))) * ScalarT(289));
+}
+
+template <class ScalarT>
+ScalarT permute(ScalarT const x)
+{
+    return mod289(((x * ScalarT(34)) + ScalarT(1)) * x);
 }
 
 template <int D, class ScalarT>
@@ -19,8 +31,14 @@ pos<D, ScalarT> permute(const pos<D, ScalarT>& x)
     return mod289(pos<D, ScalarT>(ret));
 }
 
+template <class ScalarT>
+ScalarT taylorInvSqrt(ScalarT const r)
+{
+    return ScalarT(1.79284291400159) - ScalarT(0.85373472095314) * r;
+}
+
 template <int D, class ScalarT>
-pos<D, ScalarT> taylorInvSqrt(const pos<D, ScalarT>& r)
+pos<D, ScalarT> taylorInvSqrt(pos<D, ScalarT> const& r)
 {
     return ScalarT(1.79284291400159) - ScalarT(0.85373472095314) * r;
 }
@@ -46,6 +64,50 @@ vec<D, ScalarT> step(const vec<D, ScalarT>& edge, const vec<D, ScalarT>& x)
     return ret;
 }
 
+// see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/lessThan.xhtml
+template <class ScalarT>
+vec<4, ScalarT> lessThan(vec<4, ScalarT> const& x, vec<4, ScalarT> const& y)
+{
+    vec<4, ScalarT> ret;
+    for (auto i = 0; i < 4; i++)
+    {
+        ret[i] = x[i] < y[i] ? ScalarT(1) : ScalarT(0);
+    }
+    return ret;
+}
+
+template <class ScalarT>
+vec<4, ScalarT> grad4(ScalarT j, vec<4, ScalarT> ip)
+{
+    auto ones = vec<4, ScalarT>::one;
+    ones.w = -1;
+    vec<4, ScalarT> p, s;
+
+    auto res = floor(fract(vec<3, ScalarT>(comp<3, ScalarT>(j) * comp<3, ScalarT>(ip.x, ip.y, ip.z))) * ScalarT(7)) * ip.z - ScalarT(1);
+    p.x = res.x;
+    p.y = res.y;
+    p.z = res.z;
+    p.w = ScalarT(1.5) - dot(abs(vec<3, ScalarT>(p.x, p.y, p.z)), vec<3, ScalarT>(ones.x, ones.y, ones.z));
+    s = vec<4, ScalarT>(lessThan(p, vec<4, ScalarT>::zero));
+
+    auto xyz = comp<3, ScalarT>(p.x, p.y, p.z) + (comp<3, ScalarT>(s.x, s.y, s.z) * ScalarT(2) - comp<3, ScalarT>(1)) * comp<3, ScalarT>(s.w);
+    p.x = xyz[0];
+    p.y = xyz[1];
+    p.z = xyz[2];
+
+    return p;
+}
+
+template <int D, class ScalarT>
+vec<D, ScalarT> clamp(vec<D, ScalarT> const& v, const ScalarT minval, const ScalarT maxval)
+{
+    vec<D, ScalarT> ret;
+    for (auto i = 0; i < D; i++)
+    {
+        ret[i] = max(min(v[i], maxval), minval);
+    }
+    return ret;
+}
 // helper functions for simplex noise https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
 /**
  * Permutation table. This is just a random jumble of all numbers 0-255.
