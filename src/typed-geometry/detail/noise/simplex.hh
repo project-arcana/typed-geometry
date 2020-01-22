@@ -67,88 +67,168 @@ ScalarT simplex_noise(pos<1, ScalarT> const& p)
     return simplex_noise(p.x);
 }
 
-//	3D
-// TODO sometimes returns values slightly above 1.0? e.g. 1.02...
-// TODO note that passing the same value for all three variables results in jumps!
-// TODO compare with other simplex3d? vec<3, ScalarT>(1) - .. casting issues?
+/**
+ * 3D Perlin simplex noise
+ *
+ * @param[in] x ScalarT coordinate
+ * @param[in] y ScalarT coordinate
+ * @param[in] z ScalarT coordinate
+ *
+ * @return Noise value in the range[-1; 1], value of 0 on all integer coordinates.
+ */
+
+// See https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
 template <class ScalarT>
-ScalarT simplex_noise(pos<3, ScalarT> const& v)
+ScalarT simplex_noise(pos<3, ScalarT> const& p)
 {
-    const auto C = vec<2, ScalarT>(ScalarT(1.0 / 6.0), ScalarT(1.0 / 3.0));
-    const auto D = vec<4, ScalarT>(0.0, 0.5, 1.0, 2.0);
+    ScalarT n0, n1, n2, n3; // Noise contributions from the four corners
 
-    // first corner
-    auto i = floor(v + dot(v, vec<3, ScalarT>(C.y)));
-    auto x0 = v - i + dot(i, vec<3, ScalarT>(C.x));
+    // Skewing/Unskewing factors for 3D
+    static auto const F3 = ScalarT(1.0 / 3.0);
+    static auto const G3 = ScalarT(1.0 / 6.0);
 
-    // other corners
-    auto g = step(vec<3, ScalarT>(x0.y, x0.z, x0.x), vec<3, ScalarT>(x0.x, x0.y, x0.z));
-    auto l = vec<3, ScalarT>(1) - g;
-    vec<3, ScalarT> i1;
-    i1.x = min(g.x, l.z);
-    i1.y = min(g.y, l.x);
-    i1.z = min(g.z, l.y);
+    // Skew the input space to determine which simplex cell we're in
+    auto s = (p.x + p.y + p.z) * F3; // Very nice and simple skew factor for 3D
+    auto i = tg::i32(fastfloor(p.x + s));
+    auto j = tg::i32(fastfloor(p.y + s));
+    auto k = tg::i32(fastfloor(p.z + s));
+    auto t = (i + j + k) * G3;
+    auto X0 = i - t; // Unskew the cell origin back to (x,y,z) space
+    auto Y0 = j - t;
+    auto Z0 = k - t;
+    ScalarT x0 = p.x - X0; // The x,y,z distances from the cell origin
+    ScalarT y0 = p.y - Y0;
+    ScalarT z0 = p.z - Z0;
 
-    vec<3, ScalarT> i2;
-    i2.x = max(g.x, l.z);
-    i2.y = max(g.y, l.x);
-    i2.z = max(g.z, l.y);
-
-    //  x0 = x0 - 0. + 0.0 * C
-    vec<3, ScalarT> x1 = x0 - i1 + vec<3, ScalarT>(C.x);
-    vec<3, ScalarT> x2 = x0 - i2 + vec<3, ScalarT>(C.y);
-    vec<3, ScalarT> x3 = x0 - vec<3, ScalarT>(D.y);
-
-    // permutations
-    i = mod289(i);
-    auto p = permute(permute(permute(i.z + pos<4, ScalarT>(0, i1.z, i2.z, 1)) + i.y + vec<4, ScalarT>(ScalarT(0), i1.y, i2.y, ScalarT(1))) + i.x
-                     + vec<4, ScalarT>(0, i1.x, i2.x, 1));
-
-    // gradients
-    // Gradients: 7x7 points over a square, mapped onto an octahedron.
-    // The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
-    auto n_ = ScalarT(0.142857142857); // 1.0/7.0
-    auto ns = n_ * vec<3, ScalarT>(D.w, D.y, D.z) - vec<3, ScalarT>(D.x, D.z, D.x);
-
-    auto j = p - ScalarT(49) * floor(p * ns.z * ns.z); //  mod(p,N*N)
-
-    auto x_ = floor(j * ns.z);
-    auto y_ = floor(j - ScalarT(7) * x_); // mod(j,N)
-
-    auto x = x_ * ns.x + vec<4, ScalarT>(ns.y);
-    auto y = y_ * ns.x + vec<4, ScalarT>(ns.y);
-    auto h = vec<4, ScalarT>::one - abs(x) - abs(y);
-
-    auto b0 = vec<4, ScalarT>(x.x, x.y, y.x, y.y);
-    auto b1 = vec<4, ScalarT>(x.z, x.w, y.z, y.w);
-
-    auto s0 = floor(b0) * ScalarT(2) + ScalarT(1);
-    auto s1 = floor(b1) * ScalarT(2) + ScalarT(1);
-    auto sh = -step(h, vec<4, ScalarT>::zero);
-
-    auto a0 = vec<4, ScalarT>(b0.x, b0.z, b0.y, b0.w) + comp<4, ScalarT>(s0.x, s0.z, s0.y, s0.w) * comp<4, ScalarT>(sh.x, sh.x, sh.y, sh.y);
-    auto a1 = vec<4, ScalarT>(b1.x, b1.z, b1.y, b1.w) + comp<4, ScalarT>(s1.x, s1.z, s1.y, s1.w) * comp<4, ScalarT>(sh.z, sh.z, sh.w, sh.w);
-
-    auto p0 = vec<3, ScalarT>(a0.x, a0.y, h.x);
-    auto p1 = vec<3, ScalarT>(a0.z, a0.w, h.y);
-    auto p2 = vec<3, ScalarT>(a1.x, a1.y, h.z);
-    auto p3 = vec<3, ScalarT>(a1.z, a1.w, h.w);
-
-    // normalize gradients
-    auto norm = taylorInvSqrt(pos<4, ScalarT>(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
-    p0 *= norm.x;
-    p1 *= norm.y;
-    p2 *= norm.z;
-    p3 *= norm.w;
-
-    // mix final noise value
-    auto m = comp<4, ScalarT>(ScalarT(0.6)) - comp<4, ScalarT>(ScalarT(dot(x0, x0)), ScalarT(dot(x1, x1)), ScalarT(dot(x2, x2)), ScalarT(dot(x3, x3)));
-    for (auto i = 0; i < 4; i++)
+    // For the 3D case, the simplex shape is a slightly irregular tetrahedron.
+    // Determine which simplex we are in.
+    tg::i32 i1, j1, k1; // Offsets for second corner of simplex in (i,j,k) coords
+    tg::i32 i2, j2, k2; // Offsets for third corner of simplex in (i,j,k) coords
+    if (x0 >= y0)
     {
-        m[i] = max(m[i], ScalarT(0));
+        if (y0 >= z0)
+        {
+            i1 = 1;
+            j1 = 0;
+            k1 = 0;
+            i2 = 1;
+            j2 = 1;
+            k2 = 0; // X Y Z order
+        }
+        else if (x0 >= z0)
+        {
+            i1 = 1;
+            j1 = 0;
+            k1 = 0;
+            i2 = 1;
+            j2 = 0;
+            k2 = 1; // X Z Y order
+        }
+        else
+        {
+            i1 = 0;
+            j1 = 0;
+            k1 = 1;
+            i2 = 1;
+            j2 = 0;
+            k2 = 1; // Z X Y order
+        }
     }
-    m = m * m;
-    return ScalarT(42) * dot(vec<4, ScalarT>(m * m), vec<4, ScalarT>(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
+    else
+    { // x0<y0
+        if (y0 < z0)
+        {
+            i1 = 0;
+            j1 = 0;
+            k1 = 1;
+            i2 = 0;
+            j2 = 1;
+            k2 = 1; // Z Y X order
+        }
+        else if (x0 < z0)
+        {
+            i1 = 0;
+            j1 = 1;
+            k1 = 0;
+            i2 = 0;
+            j2 = 1;
+            k2 = 1; // Y Z X order
+        }
+        else
+        {
+            i1 = 0;
+            j1 = 1;
+            k1 = 0;
+            i2 = 1;
+            j2 = 1;
+            k2 = 0; // Y X Z order
+        }
+    }
+
+    // A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z),
+    // a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (x,y,z), and
+    // a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where
+    // c = 1/6.
+    ScalarT x1 = x0 - i1 + G3; // Offsets for second corner in (x,y,z) coords
+    ScalarT y1 = y0 - j1 + G3;
+    ScalarT z1 = z0 - k1 + G3;
+    ScalarT x2 = x0 - i2 + ScalarT(2) * G3; // Offsets for third corner in (x,y,z) coords
+    ScalarT y2 = y0 - j2 + ScalarT(2) * G3;
+    ScalarT z2 = z0 - k2 + ScalarT(2) * G3;
+    ScalarT x3 = x0 - ScalarT(1) + ScalarT(3) * G3; // Offsets for last corner in (x,y,z) coords
+    ScalarT y3 = y0 - ScalarT(1) + ScalarT(3) * G3;
+    ScalarT z3 = z0 - ScalarT(1) + ScalarT(3) * G3;
+
+    // Work out the hashed gradient indices of the four simplex corners
+    auto gi0 = hash(i + hash(j + hash(k)));
+    auto gi1 = hash(i + i1 + hash(j + j1 + hash(k + k1)));
+    auto gi2 = hash(i + i2 + hash(j + j2 + hash(k + k2)));
+    auto gi3 = hash(i + 1 + hash(j + 1 + hash(k + 1)));
+
+    // Calculate the contribution from the four corners
+    auto t0 = ScalarT(0.6) - x0 * x0 - y0 * y0 - z0 * z0;
+    if (t0 < 0)
+    {
+        n0 = ScalarT(0);
+    }
+    else
+    {
+        t0 *= t0;
+        n0 = t0 * t0 * grad(gi0, x0, y0, z0);
+    }
+    auto t1 = ScalarT(0.6) - x1 * x1 - y1 * y1 - z1 * z1;
+    if (t1 < 0)
+    {
+        n1 = ScalarT(0);
+    }
+    else
+    {
+        t1 *= t1;
+        n1 = t1 * t1 * grad(gi1, x1, y1, z1);
+    }
+    auto t2 = ScalarT(0.6) - x2 * x2 - y2 * y2 - z2 * z2;
+    if (t2 < 0)
+    {
+        n2 = ScalarT(0);
+    }
+    else
+    {
+        t2 *= t2;
+        n2 = t2 * t2 * grad(gi2, x2, y2, z2);
+    }
+    auto t3 = ScalarT(0.6) - x3 * x3 - y3 * y3 - z3 * z3;
+    if (t3 < 0)
+    {
+        n3 = ScalarT(0);
+    }
+    else
+    {
+        t3 *= t3;
+        n3 = t3 * t3 * grad(gi3, x3, y3, z3);
+    }
+    // Add contributions from each corner to get the final noise value.
+    // The result is scaled to stay just inside [-1,1]
+    return ScalarT(32) * (n0 + n1 + n2 + n3);
 }
 
 template <class ScalarT>
@@ -159,78 +239,3 @@ ScalarT simplex_noise(ScalarT const x, ScalarT const y, ScalarT const z)
 
 } // namespace noise
 } // namespace tg
-
-/*float snoise(vec3 v)
-  {
-  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
-  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-
-// First corner
-  vec3 i  = floor(v + dot(v, C.yyy) );
-  vec3 x0 =   v - i + dot(i, C.xxx) ;
-
-// Other corners
-  vec3 g = step(x0.yzx, x0.xyz);
-  vec3 l = 1.0 - g;
-  vec3 i1 = min( g.xyz, l.zxy );
-  vec3 i2 = max( g.xyz, l.zxy );
-
-  //   x0 = x0 - 0.0 + 0.0 * C.xxx;
-  //   x1 = x0 - i1  + 1.0 * C.xxx;
-  //   x2 = x0 - i2  + 2.0 * C.xxx;
-  //   x3 = x0 - 1.0 + 3.0 * C.xxx;
-  vec3 x1 = x0 - i1 + C.xxx;
-  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y
-  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
-
-// Permutations
-  i = mod289(i);
-  vec4 p = permute( permute( permute(
-             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
-           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
-           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
-
-// Gradients: 7x7 points over a square, mapped onto an octahedron.
-// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
-  float n_ = 0.142857142857; // 1.0/7.0
-  vec3  ns = n_ * D.wyz - D.xzx;
-
-  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)
-
-  vec4 x_ = floor(j * ns.z);
-  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)
-
-  vec4 x = x_ *ns.x + ns.yyyy;
-  vec4 y = y_ *ns.x + ns.yyyy;
-  vec4 h = 1.0 - abs(x) - abs(y);
-
-  vec4 b0 = vec4( x.xy, y.xy );
-  vec4 b1 = vec4( x.zw, y.zw );
-
-  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;
-  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;
-  vec4 s0 = floor(b0)*2.0 + 1.0;
-  vec4 s1 = floor(b1)*2.0 + 1.0;
-  vec4 sh = -step(h, vec4(0.0));
-
-  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
-  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
-
-  vec3 p0 = vec3(a0.xy,h.x);
-  vec3 p1 = vec3(a0.zw,h.y);
-  vec3 p2 = vec3(a1.xy,h.z);
-  vec3 p3 = vec3(a1.zw,h.w);
-
-//Normalise gradients
-  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-  p0 *= norm.x;
-  p1 *= norm.y;
-  p2 *= norm.z;
-  p3 *= norm.w;
-
-// Mix final noise value
-  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-  m = m * m;
-  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
-                                dot(p2,x2), dot(p3,x3) ) );
-  }*/
