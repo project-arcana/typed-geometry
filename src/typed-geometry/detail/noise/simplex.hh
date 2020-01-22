@@ -366,5 +366,90 @@ ScalarT simplex_noise(ScalarT const x, ScalarT const y, ScalarT const z)
     return simplex_noise(pos<3, ScalarT>(x, y, z));
 }
 
+// 4D simplex noise
+// https://github.com/ashima/webgl-noise/blob/master/src/noise4D.glsl
+
+template <class ScalarT>
+ScalarT simplex_noise(pos<4, ScalarT> const& p)
+{
+    const auto C = vec<4, ScalarT>(ScalarT(0.138196601125011),   // (5 - sqrt(5))/20  G4
+                                   ScalarT(0.276393202250021),   // 2 * G4
+                                   ScalarT(0.414589803375032),   // 3 * G4
+                                   ScalarT(-0.447213595499958)); // -1 + 4 * G4
+
+    // First corner
+    auto i = floor(p + dot(p, vec<4, ScalarT>(ScalarT(0.309016994374947451)))); // (sqrt(5) - 1)/4 = 0.30901..
+    auto x0 = p - i + dot(i, C.xxxx);
+
+    // Other corners
+
+    // Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)
+    vec<4, ScalarT> i0;
+    auto isX = step(vec<3, ScalarT>(x0.y, x0.z, x0.w), vec<3, ScalarT>(x0.x));
+    auto isYZ = step(x0.zww, x0.yyz);
+    //  i0.x = dot( isX, vec3( 1.0 ) );
+    i0.x = isX.x + isX.y + isX.z;
+    i0.yzw = 1.0 - isX;
+    //  i0.y += dot( isYZ.xy, vec2( 1.0 ) );
+    i0.y += isYZ.x + isYZ.y;
+    i0.zw += 1.0 - isYZ.xy;
+    i0.z += isYZ.z;
+    i0.w += 1.0 - isYZ.z;
+
+    // i0 now contains the unique values 0,1,2,3 in each channel
+    auto i3 = clamp(i0, 0.0, 1.0);
+    auto i2 = clamp(i0 - 1.0, 0.0, 1.0);
+    auto i1 = clamp(i0 - 2.0, 0.0, 1.0);
+
+    //  x0 = x0 - 0.0 + 0.0 * C.xxxx
+    //  x1 = x0 - i1  + 1.0 * C.xxxx
+    //  x2 = x0 - i2  + 2.0 * C.xxxx
+    //  x3 = x0 - i3  + 3.0 * C.xxxx
+    //  x4 = x0 - 1.0 + 4.0 * C.xxxx
+    auto x1 = x0 - i1 + C.xxxx;
+    auto x2 = x0 - i2 + C.yyyy;
+    auto x3 = x0 - i3 + C.zzzz;
+    auto x4 = x0 + C.wwww;
+
+    // Permutations
+    i = mod289(i);
+    float j0 = permute(permute(permute(permute(i.w) + i.z) + i.y) + i.x);
+    vec4 j1 = permute(permute(permute(permute(i.w + vec4(i1.w, i2.w, i3.w, 1.0)) + i.z + vec4(i1.z, i2.z, i3.z, 1.0)) + i.y + vec4(i1.y, i2.y, i3.y, 1.0))
+                      + i.x + vec4(i1.x, i2.x, i3.x, 1.0));
+
+    // Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope
+    // 7*7*6 = 294, which is close to the ring size 17*17 = 289.
+    auto ip = vec<4, ScalarT>(ScalarT(1.0 / 294.0), ScalarT(1.0 / 49.0), ScalarT(1.0 / 7.0), 0);
+
+    auto p0 = grad4(j0, ip);
+    auto p1 = grad4(j1.x, ip);
+    auto p2 = grad4(j1.y, ip);
+    auto p3 = grad4(j1.z, ip);
+    auto p4 = grad4(j1.w, ip);
+
+    // Normalise gradients
+    auto norm = taylorInvSqrt(pos<4, ScalarT>(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
+    p0 *= norm.x;
+    p1 *= norm.y;
+    p2 *= norm.z;
+    p3 *= norm.w;
+    p4 *= taylorInvSqrt(dot(p4, p4));
+
+    // Mix contributions from the five corners
+    // TODO is this okay? arithmetic operations like this for vec and scalarT??
+    auto m0 = max(ScalarT(0.6) - vec<3, ScalarT>(dot(x0, x0), dot(x1, x1), dot(x2, x2)), ScalarT(0));
+    auto m1 = max(ScalarT(0.6) - vec<2, ScalarT>(dot(x3, x3), dot(x4, x4)), ScalarT(0));
+    m0 = m0 * m0;
+    m1 = m1 * m1;
+    return ScalarT(49) * (dot(m0 * m0, vec3(dot(p0, x0), dot(p1, x1), dot(p2, x2))) + dot(m1 * m1, vec2(dot(p3, x3), dot(p4, x4))));
+}
+
+template <class ScalarT>
+ScalarT simplex_noise(ScalarT const x, ScalarT const y, ScalarT const z, ScalarT const w)
+{
+    return simplex_noise(pos<4, ScalarT>(x, y, z, w));
+}
+
+
 } // namespace noise
 } // namespace tg
