@@ -9,14 +9,55 @@ namespace tg
 {
 namespace noise
 {
-// simplex noise 2D-4D
-// https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
-
-// 2D
+// simplex noise 1D-3D
+// https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
+/**
+ * 1D Perlin simplex noise
+ *
+ *  Takes around 74ns on an AMD APU.
+ *
+ * @param[in] x ScalarT coordinate
+ *
+ * @return Noise value in the range[-1; 1], value of 0 on all integer coordinates.
+ */
 template <class ScalarT>
-ScalarT simplex_noise(const pos<2, ScalarT>& v) // TODO allow seeding, perlin_noise_seed()!
+ScalarT simplex_noise(pos<1, ScalarT> const& p)
 {
-    const vec<4, ScalarT> C = vec<4, ScalarT>(ScalarT(0.211324865405187), ScalarT(0.366025403784439), ScalarT(-0.577350269189626), ScalarT(0.024390243902439));
+    ScalarT n0, n1; // Noise contributions from the two "corners"
+
+    // No need to skew the input space in 1D
+
+    // Corners coordinates (nearest integer values):
+    auto i0 = fastfloor(p.x);
+    auto i1 = i0 + 1;
+    // Distances to corners (between 0 and 1):
+    auto x0 = p.x - i0;
+    auto x1 = x0 - ScalarT(1);
+
+    // Calculate the contribution from the first corner
+    auto t0 = ScalarT(1) - x0 * x0;
+    //  if(t0 < 0.0f) t0 = 0.0f; // not possible
+    t0 *= t0;
+    n0 = t0 * t0 * grad(hash(i0), x0);
+
+    // Calculate the contribution from the second corner
+    auto t1 = ScalarT(1) - x1 * x1;
+    //  if(t1 < 0.0f) t1 = 0.0f; // not possible
+    t1 *= t1;
+    n1 = t1 * t1 * grad(hash(i1), x1);
+
+    // The maximum value of this noise is 8*(3/4)^4 = 2.53125
+    // A factor of 0.395 scales to fit exactly within [-1,1]
+    return ScalarT(0.395) * (n0 + n1);
+}
+
+/*
+// 2D
+// https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl
+template <class ScalarT>
+ScalarT simplex_noise(pos<2, ScalarT> const& v) // TODO allow seeding, perlin_noise_seed()!
+{
+    auto const C = vec<4, ScalarT>(ScalarT(0.211324865405187), ScalarT(0.366025403784439), ScalarT(-0.577350269189626), ScalarT(0.024390243902439));
     auto i = floor(v + dot(v, vec<2, ScalarT>(C.y)));
     auto x0 = v - i + dot(i, vec<2, ScalarT>(C.x));
     auto i1 = (x0.x > x0.y) ? vec<2, ScalarT>(1, 0) : vec<2, ScalarT>(0, 1);
@@ -47,6 +88,100 @@ ScalarT simplex_noise(const pos<2, ScalarT>& v) // TODO allow seeding, perlin_no
     g.y = a0[1] * x12[0] + h[1] * x12[1];
     g.z = a0[2] * x12[2] + h[2] * x12[3];
     return 130 * dot(vec<3, ScalarT>(m), vec<3, ScalarT>(g));
+}*/
+
+// 2D simplex_noise
+// // https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
+template <class ScalarT>
+ScalarT simplex_noise(pos<2, ScalarT> const& p)
+{
+    ScalarT n0, n1, n2; // Noise contributions from the three corners
+
+    // Skewing/Unskewing factors for 2D
+    static ScalarT const F2 = ScalarT(0.366025403); // F2 = (sqrt(3) - 1) / 2
+    static ScalarT const G2 = ScalarT(0.211324865); // G2 = (3 - sqrt(3)) / 6   = F2 / (1 + 2 * K)
+
+    // Skew the input space to determine which simplex cell we're in
+    auto const s = (p.x + p.y) * F2; // Hairy factor for 2D
+    auto const xs = p.x + s;
+    auto const ys = p.y + s;
+    auto const i = fastfloor(xs);
+    auto const j = fastfloor(ys);
+
+    // Unskew the cell origin back to (x,y) space
+    auto const t = static_cast<ScalarT>(i + j) * G2;
+    auto const X0 = i - t;
+    auto const Y0 = j - t;
+    auto const x0 = p.x - X0; // The x,y distances from the cell origin
+    auto const y0 = p.y - Y0;
+
+    // For the 2D case, the simplex shape is an equilateral triangle.
+    // Determine which simplex we are in.
+    tg::i32 i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
+    if (x0 > y0)
+    { // lower triangle, XY order: (0,0)->(1,0)->(1,1)
+        i1 = 1;
+        j1 = 0;
+    }
+    else
+    { // upper triangle, YX order: (0,0)->(0,1)->(1,1)
+        i1 = 0;
+        j1 = 1;
+    }
+
+    // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
+    // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
+    // c = (3-sqrt(3))/6
+
+    auto const x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
+    auto const y1 = y0 - j1 + G2;
+    auto const x2 = x0 - ScalarT(1) + ScalarT(2) * G2; // Offsets for last corner in (x,y) unskewed coords
+    auto const y2 = y0 - ScalarT(1) + ScalarT(2) * G2;
+
+    // Work out the hashed gradient indices of the three simplex corners
+    auto const gi0 = hash(i + hash(j));
+    auto const gi1 = hash(i + i1 + hash(j + j1));
+    auto const gi2 = hash(i + 1 + hash(j + 1));
+
+    // Calculate the contribution from the first corner
+    ScalarT t0 = ScalarT(0.5) - x0 * x0 - y0 * y0;
+    if (t0 < 0)
+    {
+        n0 = ScalarT(0);
+    }
+    else
+    {
+        t0 *= t0;
+        n0 = t0 * t0 * grad(gi0, x0, y0);
+    }
+
+    // Calculate the contribution from the second corner
+    ScalarT t1 = ScalarT(0.5) - x1 * x1 - y1 * y1;
+    if (t1 < 0)
+    {
+        n1 = ScalarT(0);
+    }
+    else
+    {
+        t1 *= t1;
+        n1 = t1 * t1 * grad(gi1, x1, y1);
+    }
+
+    // Calculate the contribution from the third corner
+    ScalarT t2 = ScalarT(0.5) - x2 * x2 - y2 * y2;
+    if (t2 < 0)
+    {
+        n2 = ScalarT(0);
+    }
+    else
+    {
+        t2 *= t2;
+        n2 = t2 * t2 * grad(gi2, x2, y2);
+    }
+
+    // Add contributions from each corner to get the final noise value.
+    // The result is scaled to return values in the interval [-1,1].
+    return ScalarT(45.23065) * (n0 + n1 + n2);
 }
 
 template <class ScalarT>
@@ -58,13 +193,7 @@ ScalarT simplex_noise(const ScalarT x, const ScalarT y)
 template <class ScalarT>
 ScalarT simplex_noise(const ScalarT x)
 {
-    return simplex_noise(pos<2, ScalarT>(x, ScalarT(0)));
-}
-
-template <class ScalarT>
-ScalarT simplex_noise(pos<1, ScalarT> const& p)
-{
-    return simplex_noise(p.x);
+    return simplex_noise(pos<1, ScalarT>(x));
 }
 
 /**
