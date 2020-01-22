@@ -455,7 +455,10 @@ ScalarT simplex_noise(pos<4, ScalarT> const& p)
     cm1 = cm1 * cm1;
 
     auto a1 = dot(vec<3, ScalarT>(cm0 * cm0), vec<3, ScalarT>(dot(p0, x0), dot(p1, x1), dot(p2, x2)));
-    return ScalarT(49) * (a1 + dot(vec<2, ScalarT>(cm1 * cm1), vec<2, ScalarT>(dot(p3, x3), dot(p4, x4))));
+    auto ret =  ScalarT(49) * (a1 + dot(vec<2, ScalarT>(cm1 * cm1), vec<2, ScalarT>(dot(p3, x3), dot(p4, x4))));
+
+    // TODO this should not be necessary, but in some rare cases currently is (slightly above/below 1.0: +/- 0.03..)
+    return tg::clamp(ret, ScalarT(-1), ScalarT(1));
 }
 
 template <class ScalarT>
