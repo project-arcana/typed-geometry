@@ -1,22 +1,18 @@
 #pragma once
 
 #include <typed-geometry/detail/noise_helper.hh>
-#include <typed-geometry/functions/minmax.hh>
-#include <typed-geometry/types/pos.hh>
-#include <typed-geometry/types/vec.hh>
+#include <typed-geometry/common/scalar_math.hh> // clamp(ScalarT, ..)
 
 namespace tg
 {
 namespace noise
 {
-// simplex noise 1D-3D
-// https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
+// Simplex noise 1D-4D
 /**
+ * https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
  * 1D Perlin simplex noise
  *
- *  Takes around 74ns on an AMD APU.
- *
- * @param[in] x ScalarT coordinate
+ * @param[in] p     position to compute the noise at
  *
  * @return Noise value in the range[-1; 1], value of 0 on all integer coordinates.
  */
@@ -51,47 +47,14 @@ ScalarT simplex_noise(pos<1, ScalarT> const& p)
     return ScalarT(0.395) * (n0 + n1);
 }
 
-/*
-// 2D
-// https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl
-template <class ScalarT>
-ScalarT simplex_noise(pos<2, ScalarT> const& v) // TODO allow seeding, perlin_noise_seed()!
-{
-    auto const C = vec<4, ScalarT>(ScalarT(0.211324865405187), ScalarT(0.366025403784439), ScalarT(-0.577350269189626), ScalarT(0.024390243902439));
-    auto i = floor(v + dot(v, vec<2, ScalarT>(C.y)));
-    auto x0 = v - i + dot(i, vec<2, ScalarT>(C.x));
-    auto i1 = (x0.x > x0.y) ? vec<2, ScalarT>(1, 0) : vec<2, ScalarT>(0, 1);
-    auto x12 = vec<4, ScalarT>(x0.x, x0.y, x0.x, x0.y) + vec<4, ScalarT>(C.x, C.x, C.z, C.z);
-    x12.x -= i1.x;
-    x12.y -= i1.y;
-    i = mod289(i);
-    auto p = permute(permute(i.y + pos<3, ScalarT>(0, i1.y, 1)) + i.x + vec<3, ScalarT>(0, i1.x, 1));
-
-    // TODO unsure from source whether this is correct
-    // i believe its just supposed to be clamped to 0 element wise
-    auto m = comp<3, ScalarT>(ScalarT(0.5))
-             - comp<3, ScalarT>(dot(x0, x0), dot(vec<2, ScalarT>(x12), vec<2, ScalarT>(x12)),
-                                dot(vec<2, ScalarT>(x12.z, x12.w), vec<2, ScalarT>(x12.z, x12.w)));
-    for (auto i = 0; i < 3; i++)
-        m[i] = max(m[i], 0);
-    m = m * m;
-    m = m * m;
-
-    auto x = 2 * fract(p * comp<3, ScalarT>(C.w)) - 1;
-    auto h = comp<3, ScalarT>(abs(x) - ScalarT(0.5));
-    auto ox = floor(x + ScalarT(0.5));
-    auto a0 = comp<3, ScalarT>(x - ox);
-    m *= ScalarT(1.79284291400159) - ScalarT(0.85373472095314) * (a0 * a0 + h * h);
-    auto g = vec<3, ScalarT>::zero;
-    g.x = a0[0] * x0[0] + h[0] * x0[1];
-    // g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-    g.y = a0[1] * x12[0] + h[1] * x12[1];
-    g.z = a0[2] * x12[2] + h[2] * x12[3];
-    return 130 * dot(vec<3, ScalarT>(m), vec<3, ScalarT>(g));
-}*/
-
-// 2D simplex_noise
-// // https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
+/**
+ * https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
+ * 2D Perlin simplex noise
+ *
+ * @param[in] p     position to compute the noise at
+ *
+ * @return Noise value in the range[-1; 1], value of 0 on all integer coordinates.
+ */
 template <class ScalarT>
 ScalarT simplex_noise(pos<2, ScalarT> const& p)
 {
@@ -197,16 +160,13 @@ ScalarT simplex_noise(const ScalarT x)
 }
 
 /**
+ * https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
  * 3D Perlin simplex noise
  *
- * @param[in] x ScalarT coordinate
- * @param[in] y ScalarT coordinate
- * @param[in] z ScalarT coordinate
+ * @param[in] p     position to compute the noise at
  *
  * @return Noise value in the range[-1; 1], value of 0 on all integer coordinates.
  */
-
-// See https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
 template <class ScalarT>
 ScalarT simplex_noise(pos<3, ScalarT> const& p)
 {
@@ -366,9 +326,15 @@ ScalarT simplex_noise(ScalarT const x, ScalarT const y, ScalarT const z)
     return simplex_noise(pos<3, ScalarT>(x, y, z));
 }
 
-// 4D simplex noise
-// https://github.com/ashima/webgl-noise/blob/master/src/noise4D.glsl
-// NOTE: compared with 1D-3D simplex above, this function is slow!
+/**
+ * https://github.com/ashima/webgl-noise/blob/master/src/noise4D.glsl
+ * NOTE: compared with 1D-3D simplex, this function is rather slow
+ * 4D Perlin simplex noise
+ *
+ * @param[in] p     position to compute the noise at
+ *
+ * @return Noise value in the range[-1; 1]
+ */
 template <class ScalarT>
 ScalarT simplex_noise(pos<4, ScalarT> const& p)
 {
@@ -455,9 +421,9 @@ ScalarT simplex_noise(pos<4, ScalarT> const& p)
     cm1 = cm1 * cm1;
 
     auto a1 = dot(vec<3, ScalarT>(cm0 * cm0), vec<3, ScalarT>(dot(p0, x0), dot(p1, x1), dot(p2, x2)));
-    auto ret =  ScalarT(49) * (a1 + dot(vec<2, ScalarT>(cm1 * cm1), vec<2, ScalarT>(dot(p3, x3), dot(p4, x4))));
+    auto ret = ScalarT(49) * (a1 + dot(vec<2, ScalarT>(cm1 * cm1), vec<2, ScalarT>(dot(p3, x3), dot(p4, x4))));
 
-    // TODO this should not be necessary, but in some rare cases currently is (slightly above/below 1.0: +/- 0.03..)
+    // TODO This should not be necessary, but in some rare cases currently is (slightly above/below 1.0: +/- 0.03..) (?)
     return tg::clamp(ret, ScalarT(-1), ScalarT(1));
 }
 
@@ -466,7 +432,6 @@ ScalarT simplex_noise(ScalarT const x, ScalarT const y, ScalarT const z, ScalarT
 {
     return simplex_noise(pos<4, ScalarT>(x, y, z, w));
 }
-
 
 } // namespace noise
 } // namespace tg

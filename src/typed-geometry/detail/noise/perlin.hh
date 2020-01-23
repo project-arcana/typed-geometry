@@ -7,16 +7,21 @@ namespace tg
 {
 namespace noise
 {
-// classic perlin noise (returns ScalarT in [-1, 1] (?) )
-// (see https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83)
-// (and https://github.com/ashima/webgl-noise/blob/master/src/classicnoise2D.glsl)
+// Classic perlin noise 1D-4D
 
-// 2D
+/**
+ * https://github.com/ashima/webgl-noise/blob/master/src/classicnoise2D.glsl
+ * 2D Perlin noise
+ *
+ * @param[in] p     position to compute the noise at
+ *
+ * @return Noise value in the range[-1; 1]
+ */
 template <class ScalarT>
-ScalarT perlin_noise(const pos<2, ScalarT>& P) // TODO allow seeding, perlin_noise_seed()!
+ScalarT perlin_noise(const pos<2, ScalarT>& p) // TODO allow seeding, perlin_noise_seed()!
 {
-    auto Pi = floor(pos<4, ScalarT>(P.x, P.y, P.x, P.y)) + vec<4, ScalarT>(ScalarT(0.0), ScalarT(0.0), ScalarT(1.0), ScalarT(1.0));
-    auto Pf = fract(pos<4, ScalarT>(P.x, P.y, P.x, P.y)) - pos<4, ScalarT>(ScalarT(0.0), ScalarT(0.0), ScalarT(1.0), ScalarT(1.0));
+    auto Pi = floor(pos<4, ScalarT>(p.x, p.y, p.x, p.y)) + vec<4, ScalarT>(ScalarT(0.0), ScalarT(0.0), ScalarT(1.0), ScalarT(1.0));
+    auto Pf = fract(pos<4, ScalarT>(p.x, p.y, p.x, p.y)) - pos<4, ScalarT>(ScalarT(0.0), ScalarT(0.0), ScalarT(1.0), ScalarT(1.0));
 
     Pi = mod289(Pi); // to avoid truncation effects in permutation
 
@@ -60,6 +65,7 @@ ScalarT perlin_noise(const ScalarT x, const ScalarT y) // TODO allow seeding, pe
     return perlin_noise(pos<2, ScalarT>(x, y));
 }
 
+// 1D perlin: calls 2D perlin noise with 0 as default 2nd coordinate
 template <class ScalarT>
 ScalarT perlin_noise(const pos<1, ScalarT>& p) // TODO allow seeding, perlin_noise_seed()!
 {
@@ -74,15 +80,22 @@ ScalarT perlin_noise(const ScalarT x) // TODO allow seeding, perlin_noise_seed()
     return perlin_noise(pos<2, ScalarT>(x, ScalarT(0)));
 }
 
-// 3D
+/**
+ * https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
+ * 3D Perlin noise
+ *
+ * @param[in] p     position to compute the noise at
+ *
+ * @return Noise value in the range[-1; 1]
+ */
 template <class ScalarT>
-ScalarT perlin_noise(const pos<3, ScalarT>& P)
+ScalarT perlin_noise(const pos<3, ScalarT>& p)
 {
-    auto Pi0 = floor(P);                            // integer part for indexing
+    auto Pi0 = floor(p);                            // integer part for indexing
     auto Pi1 = Pi0 + vec<3, ScalarT>(ScalarT(1.0)); // integer part + 1
     Pi0 = mod289(Pi0);
     Pi1 = mod289(Pi1);
-    auto Pf0 = vec<3, ScalarT>(fract(P));           // fractional part for interpolation
+    auto Pf0 = vec<3, ScalarT>(fract(p));           // fractional part for interpolation
     auto Pf1 = Pf0 - vec<3, ScalarT>(ScalarT(1.0)); // fractional part - 1.0
     auto ix = pos<4, ScalarT>(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
     auto iy = vec<4, ScalarT>(Pi0.y, Pi0.y, Pi1.y, Pi1.y);
@@ -167,15 +180,22 @@ ScalarT perlin_noise(const ScalarT x, const ScalarT y, const ScalarT z) // TODO 
     return perlin_noise(pos<3, ScalarT>(x, y, z));
 }
 
-// 4D
+/**
+ * https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
+ * 4D Perlin noise
+ *
+ * @param[in] p     position to compute the noise at
+ *
+ * @return Noise value in the range[-1; 1]
+ */
 template <class ScalarT>
-ScalarT perlin_noise(const pos<4, ScalarT>& P)
+ScalarT perlin_noise(const pos<4, ScalarT>& p)
 {
-    auto Pi0 = floor(P);           // integer part for indexing
+    auto Pi0 = floor(p);           // integer part for indexing
     auto Pi1 = Pi0 + ScalarT(1.0); // integer part + 1
     Pi0 = mod289(Pi0);
     Pi1 = mod289(Pi1);
-    auto Pf0 = vec<4, ScalarT>(fract(P)); // fractional part for interpolation
+    auto Pf0 = vec<4, ScalarT>(fract(p)); // fractional part for interpolation
     auto Pf1 = Pf0 - ScalarT(1.0);        // fractional part - 1.0
     auto ix = pos<4, ScalarT>(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
     auto iy = vec<4, ScalarT>(Pi0.y, Pi0.y, Pi1.y, Pi1.y);

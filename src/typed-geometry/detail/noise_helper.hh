@@ -6,6 +6,8 @@ namespace tg
 {
 namespace noise
 {
+// Helper functions for simplex.hh and perlin.hh
+
 template <class ScalarT>
 ScalarT mod289(ScalarT const x)
 {
@@ -50,10 +52,10 @@ pos<D, ScalarT> fade(const vec<D, ScalarT>& t)
     return pos<D, ScalarT>(ret * ret * ret * (ret * (ret * ScalarT(6) - ScalarT(15)) + ScalarT(10)));
 }
 
+// See https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/step.xhtml
 template <int D, class ScalarT>
 vec<D, ScalarT> step(const vec<D, ScalarT>& edge, const vec<D, ScalarT>& x)
 {
-    // see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/step.xhtml
     auto ret = vec<D, ScalarT>::zero;
     for (auto i = 0; i < D; i++)
     {
@@ -64,7 +66,7 @@ vec<D, ScalarT> step(const vec<D, ScalarT>& edge, const vec<D, ScalarT>& x)
     return ret;
 }
 
-// see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/lessThan.xhtml
+// See https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/lessThan.xhtml
 template <class ScalarT>
 vec<4, ScalarT> lessThan(vec<4, ScalarT> const& x, vec<4, ScalarT> const& y)
 {
@@ -108,7 +110,8 @@ vec<D, ScalarT> clamp(vec<D, ScalarT> const& v, const ScalarT minval, const Scal
     }
     return ret;
 }
-// helper functions for simplex noise https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
+
+// Helper functions (and data) for simplex noise https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
 /**
  * Permutation table. This is just a random jumble of all numbers 0-255.
  *
