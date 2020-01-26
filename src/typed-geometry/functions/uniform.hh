@@ -185,7 +185,7 @@ template <class Rng, class T>
 }
 
 template <class Rng, class Container>
-[[nodiscard]] constexpr auto uniform(Rng& rng, Container const& c) -> decltype(c[c.size()])
+[[nodiscard]] constexpr auto uniform(Rng& rng, Container& c) -> decltype(c[c.size()])
 {
     TG_CONTRACT(c.size() > 0 && "cannot pick from an empty container");
     return c[uniform(rng, u64(0), u64(c.size() - 1))];
@@ -304,7 +304,7 @@ template <class ScalarT, class Rng>
     auto x = c.axis.pos1 - c.axis.pos0;
     auto h = length(x);
     auto sideArea = ScalarT(2) * c.radius * h; // * Pi, but that does not matter here
-    auto capArea = c.radius * c.radius; // * Pi
+    auto capArea = c.radius * c.radius;        // * Pi
     auto totalArea = ScalarT(2) * capArea + sideArea;
     auto part = detail::uniform01<ScalarT>(rng) * totalArea;
     if (part < sideArea) // Uniform sampling on cylinder side
@@ -320,7 +320,7 @@ template <class ScalarT, class Rng>
 {
     auto x = c.axis.pos1 - c.axis.pos0;
     auto h = length(x);
-    auto tubeVolume = c.radius * c.radius * h; // * Pi, but that does not matter here
+    auto tubeVolume = c.radius * c.radius * h;                                 // * Pi, but that does not matter here
     auto capVolume = ScalarT(2) / ScalarT(3) * c.radius * c.radius * c.radius; // * Pi
     auto totalVolume = ScalarT(2) * capVolume + tubeVolume;
     auto part = detail::uniform01<ScalarT>(rng) * totalVolume;
@@ -340,7 +340,7 @@ template <class ScalarT, class Rng>
     auto x = c.axis.pos1 - c.axis.pos0;
     auto h = length(x);
     auto sideArea = ScalarT(2) * c.radius * h; // * Pi, but that does not matter here
-    auto capArea = c.radius * c.radius; // * Pi
+    auto capArea = c.radius * c.radius;        // * Pi
     auto totalArea = ScalarT(2) * capArea + sideArea;
     auto part = detail::uniform01<ScalarT>(rng) * totalArea;
     if (part < sideArea) // Uniform sampling on capsule side
