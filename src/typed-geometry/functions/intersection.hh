@@ -299,29 +299,26 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, quadric<3, ScalarT> const& q)
 {
-    optional<pair<float, float>> constexpr solve_quadratic_equation = [](float a, float b, float c)
-    {
-        const auto discriminant = b * b - 4 * a * c;
-        if (discriminant < 0)
-            return {}; // No solution
-
-        const auto sqrtD = sqrtf(discriminant);
-        return std::pair<float, float>{(-b - sqrtD) / (2 * a), (-b + sqrtD) / (2 * a)};
-    };
-
-
     const auto Ad = q.A() * r.dir;
     const auto p = r.origin;
 
     // Substituting x in Quadric equation x^TAx + 2b^Tx + c = 0 by ray equation x = t * dir + p yields
     // d^TAd t^2 + (2p^TAd + 2bd) t + p^TAp + 2bp + c = 0
-    const auto t = solve_quadratic_equation(dot(r.dir, Ad), 2 * (dot(p, Ad) + dot(q.b(), r.dir)), dot(p, q.A() * vec3(p)) + 2 * dot(q.b(), p) + q.c());
+    const auto a = dot(r.dir, Ad);
+    const auto b = 2 * (dot(p, Ad) + dot(q.b(), r.dir));
+    const auto c = dot(p, q.A() * vec3(p)) + 2 * dot(q.b(), p) + q.c;
 
-    if (!t.has_value())
-        return {};
+    // Solve the quadratic equation ax^2 + bx + c = 0
+    const auto discriminant = b * b - 4 * a * c;
+    if (discriminant < 0)
+        return {}; // No solution
 
-    auto tMin = tg::min(t->first, t->second);
-    auto tMax = tg::max(t->first, t->second);
+    const auto sqrtD = sqrtf(discriminant);
+    const auto t1 = (-b - sqrtD) / (2 * a);
+    const auto t2 = (-b + sqrtD) / (2 * a);
+
+    auto tMin = tg::min(t1, t2);
+    auto tMax = tg::max(t2, t2);
 
     ScalarT hits[2];
 
