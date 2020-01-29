@@ -318,7 +318,7 @@ template <class ScalarT>
     const auto t2 = (-b + sqrtD) / (ScalarT(2) * a);
 
     auto tMin = min(t1, t2);
-    auto tMax = max(t2, t2);
+    auto tMax = max(t1, t2);
 
     ScalarT hits[2];
 
