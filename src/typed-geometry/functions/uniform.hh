@@ -238,6 +238,49 @@ template <class ScalarT, class Rng>
             uniform(rng, b.min.z, b.max.z), //
             uniform(rng, b.min.w, b.max.w)};
 }
+// uniform_boundary(aabb1) == uniform(aabb1)
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<2, ScalarT> uniform_boundary(Rng& rng, aabb<2, ScalarT> const& b)
+{
+    auto extends = b.max - b.min;
+    if (uniform(rng, ScalarT(0), extends.x + extends.y) < extends.x)
+        return {uniform(rng, b.min.x, b.max.x), //
+                uniform(rng) ? b.min.y : b.max.y};
+
+    return {uniform(rng) ? b.min.x : b.max.x, //
+            uniform(rng, b.min.y, b.max.y)};
+}
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<3, ScalarT> uniform_boundary(Rng& rng, aabb<3, ScalarT> const& b)
+{
+    auto extends = b.max - b.min;
+    auto areaX = extends.y * extends.z;
+    auto areaY = extends.x * extends.z;
+    auto areaZ = extends.x * extends.y;
+
+    auto res = uniform(rng, b); // Sample a random point inside the aabb
+    // Project to one of the sides, proportional to their area
+    auto part = uniform(rng, ScalarT(0), areaX + areaY + areaZ);
+    int i = part < areaX ? 0 : part < areaX + areaY ? 1 : 2;
+    res[i] = uniform<bool>(rng) ? b.min[i] : b.max[i];
+    return res;
+}
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<4, ScalarT> uniform_boundary(Rng& rng, aabb<4, ScalarT> const& b)
+{
+    auto extends = b.max - b.min;
+    auto volX = extends.y * extends.z * extends.w;
+    auto volY = extends.x * extends.z * extends.w;
+    auto volZ = extends.x * extends.y * extends.w;
+    auto volW = extends.x * extends.y * extends.z;
+
+    auto res = uniform(rng, b); // Sample a random point inside the aabb
+    // Project to one of the borders, proportional to their volume
+    auto part = uniform(rng, ScalarT(0), volX + volY + volZ + volW);
+    int i = part < volX + volY ? (part < volX ? 0 : 1) : (part < volX + volY + volZ ? 2 : 3);
+    res[i] = uniform<bool>(rng) ? b.min[i] : b.max[i];
+    return res;
+}
 
 template <int D, class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, segment<D, ScalarT> const& s)
@@ -249,6 +292,11 @@ template <int D, class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
 {
     return b.center + b.half_extents * uniform_vec(rng, aabb<D, ScalarT>::minus_one_to_one);
+}
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform_boundary(Rng& rng, box<D, ScalarT> const& b)
+{
+    return b.center + b.half_extents * (uniform_boundary(rng, aabb<D, ScalarT>::minus_one_to_one) - pos<D, ScalarT>::zero);
 }
 
 template <class ScalarT, class Rng>
