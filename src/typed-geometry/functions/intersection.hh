@@ -305,31 +305,31 @@ template <class ScalarT>
     // Substituting x in Quadric equation x^TAx + 2b^Tx + c = 0 by ray equation x = t * dir + p yields
     // d^TAd t^2 + (2p^TAd + 2bd) t + p^TAp + 2bp + c = 0
     const auto a = dot(r.dir, Ad);
-    const auto b = 2 * (dot(p, Ad) + dot(q.b(), r.dir));
-    const auto c = dot(p, q.A() * vec3(p)) + 2 * dot(q.b(), p) + q.c;
+    const auto b = ScalarT(2) * (dot(p, Ad) + dot(q.b(), r.dir));
+    const auto c = dot(p, q.A() * vec3(p)) + ScalarT(2) * dot(q.b(), p) + q.c;
 
     // Solve the quadratic equation ax^2 + bx + c = 0
-    const auto discriminant = b * b - 4 * a * c;
-    if (discriminant < 0)
+    const auto discriminant = b * b - ScalarT(4) * a * c;
+    if (discriminant < ScalarT(0))
         return {}; // No solution
 
-    const auto sqrtD = sqrtf(discriminant);
-    const auto t1 = (-b - sqrtD) / (2 * a);
-    const auto t2 = (-b + sqrtD) / (2 * a);
+    const auto sqrtD = sqrt(discriminant);
+    const auto t1 = (-b - sqrtD) / (ScalarT(2) * a);
+    const auto t2 = (-b + sqrtD) / (ScalarT(2) * a);
 
-    auto tMin = tg::min(t1, t2);
-    auto tMax = tg::max(t2, t2);
+    auto tMin = min(t1, t2);
+    auto tMax = max(t2, t2);
 
     ScalarT hits[2];
 
-    if (tMin >= 0)
+    if (tMin >= ScalarT(0))
     {
         hits[0] = tMin;
         hits[1] = tMax;
         return {hits, 2};
     }
 
-    if (tMax >= 0)
+    if (tMax >= ScalarT(0))
     {
         hits[0] = tMax;
         return {hits, 1};
