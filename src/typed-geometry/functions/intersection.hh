@@ -404,7 +404,7 @@ template <class ScalarT>
     auto p_between = a.center + t / d * (b.center - a.center);
 
     auto a_to_b = b.center - a.center;
-    auto a_to_b_swap = tg::vec2(a_to_b.y, -a_to_b.x);
+    auto a_to_b_swap = tg::vec2(-a_to_b.y, a_to_b.x);
 
     // imagining circle a on the left side of circle b...
     auto p_above = p_between + h_by_d * a_to_b_swap;
