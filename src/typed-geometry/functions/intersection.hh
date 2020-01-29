@@ -295,6 +295,52 @@ template <class ScalarT>
     return t;
 }
 
+// ray - quadric (as an isosurface, not error quadric)
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, quadric<3, ScalarT> const& q)
+{
+    optional<pair<float, float>> constexpr solve_quadratic_equation = [](float a, float b, float c)
+    {
+        const auto discriminant = b * b - 4 * a * c;
+        if (discriminant < 0)
+            return {}; // No solution
+
+        const auto sqrtD = sqrtf(discriminant);
+        return std::pair<float, float>{(-b - sqrtD) / (2 * a), (-b + sqrtD) / (2 * a)};
+    };
+
+
+    const auto Ad = q.A() * r.dir;
+    const auto p = r.origin;
+
+    // Substituting x in Quadric equation x^TAx + 2b^Tx + c = 0 by ray equation x = t * dir + p yields
+    // d^TAd t^2 + (2p^TAd + 2bd) t + p^TAp + 2bp + c = 0
+    const auto t = solve_quadratic_equation(dot(r.dir, Ad), 2 * (dot(p, Ad) + dot(q.b(), r.dir)), dot(p, q.A() * vec3(p)) + 2 * dot(q.b(), p) + q.c());
+
+    if (!t.has_value())
+        return {};
+
+    auto tMin = tg::min(t->first, t->second);
+    auto tMax = tg::max(t->first, t->second);
+
+    ScalarT hits[2];
+
+    if (tMin >= 0)
+    {
+        hits[0] = tMin;
+        hits[1] = tMax;
+        return {hits, 2};
+    }
+
+    if (tMax >= 0)
+    {
+        hits[0] = tMax;
+        return {hits, 1};
+    }
+
+    return {};
+}
+
 // ray - cylinder
 template <class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
