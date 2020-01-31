@@ -9,6 +9,9 @@
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
+#include <typed-geometry/detail/operators/ops_pos.hh>
+#include <typed-geometry/detail/operators/ops_vec.hh>
+
 // returns the arithmetic mean of all points contained in an object
 // has variadic versions
 
@@ -18,6 +21,12 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> centroid(pos<D, ScalarT> const& p)
 {
     return p;
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> centroid(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
+{
+    return a + 0.5f * (b - a);
 }
 
 template <int D, class ScalarT>

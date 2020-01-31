@@ -15,6 +15,8 @@
 #include <typed-geometry/functions/direction.hh>
 #include <typed-geometry/functions/distance.hh>
 #include <typed-geometry/functions/dot.hh>
+#include <typed-geometry/functions/edges.hh>
+#include <typed-geometry/functions/eigenvalues.hh>
 #include <typed-geometry/functions/gaussian.hh>
 #include <typed-geometry/functions/interpolate.hh>
 #include <typed-geometry/functions/intersection.hh>
@@ -49,4 +51,5 @@
 #include <typed-geometry/functions/tangent.hh>
 #include <typed-geometry/functions/translation.hh>
 #include <typed-geometry/functions/uniform.hh>
+#include <typed-geometry/functions/vertices.hh>
 #include <typed-geometry/functions/volume.hh>

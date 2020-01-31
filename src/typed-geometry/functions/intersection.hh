@@ -15,6 +15,7 @@
 #include <typed-geometry/types/objects/tube.hh>
 
 #include "closest_points.hh"
+#include "aabb.hh"
 #include "contains.hh"
 #include "cross.hh"
 #include "direction.hh"
@@ -181,7 +182,7 @@ template <int D, class ScalarT>
 {
     // if plane normal and ray direction are parallel there is no intersection
     auto dotND = dot(p.normal, r.dir);
-    if (dotND == 0)
+    if (dotND == ScalarT(0))
         return {};
 
     // plane: <x, p.normal> = p.dis
@@ -316,6 +317,49 @@ template <class ScalarT>
     return t;
 }
 
+// ray - quadric (as an isosurface, not error quadric)
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, quadric<3, ScalarT> const& q)
+{
+    const auto Ad = q.A() * r.dir;
+    const auto p = r.origin;
+
+    // Substituting x in Quadric equation x^TAx + 2b^Tx + c = 0 by ray equation x = t * dir + p yields
+    // d^TAd t^2 + (2p^TAd + 2bd) t + p^TAp + 2bp + c = 0
+    const auto a = dot(r.dir, Ad);
+    const auto b = ScalarT(2) * (dot(p, Ad) + dot(q.b(), r.dir));
+    const auto c = dot(p, q.A() * vec3(p)) + ScalarT(2) * dot(q.b(), p) + q.c;
+
+    // Solve the quadratic equation ax^2 + bx + c = 0
+    const auto discriminant = b * b - ScalarT(4) * a * c;
+    if (discriminant < ScalarT(0))
+        return {}; // No solution
+
+    const auto sqrtD = sqrt(discriminant);
+    const auto t1 = (-b - sqrtD) / (ScalarT(2) * a);
+    const auto t2 = (-b + sqrtD) / (ScalarT(2) * a);
+
+    auto tMin = min(t1, t2);
+    auto tMax = max(t1, t2);
+
+    ScalarT hits[2];
+
+    if (tMin >= ScalarT(0))
+    {
+        hits[0] = tMin;
+        hits[1] = tMax;
+        return {hits, 2};
+    }
+
+    if (tMax >= ScalarT(0))
+    {
+        hits[0] = tMax;
+        return {hits, 1};
+    }
+
+    return {};
+}
+
 // ray - cylinder
 template <class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
@@ -425,9 +469,9 @@ template <class ScalarT>
     auto p_between = a.center + t / d * (b.center - a.center);
 
     auto a_to_b = b.center - a.center;
-    auto a_to_b_swap = tg::vec2(a_to_b.y, a_to_b.x);
+    auto a_to_b_swap = tg::vec2(-a_to_b.y, a_to_b.x);
 
-    // imagining cirlce a on the left side of circle b...
+    // imagining circle a on the left side of circle b...
     auto p_above = p_between + h_by_d * a_to_b_swap;
     auto p_below = p_between - h_by_d * a_to_b_swap;
 
@@ -473,6 +517,30 @@ template <class ScalarT>
     return {p, dir};
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr optional<tg::pos<2, ScalarT>> intersection(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
+{
+    /// https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+    auto const denominator
+        = (seg_0.pos0.x - seg_0.pos1.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_0.pos1.y) * (seg_1.pos0.x - seg_1.pos1.x);
+
+    // todo: might want to check == 0 with an epsilon corridor
+    // todo: colinear line segments can still intersect in a point or a line segment.
+    //       This might require api changes, as either a point or a line segment can be returned!
+    //       Possible solution: return a segment where pos0 == pos1
+    if (denominator == ScalarT(0))
+        return {}; // colinear
+
+    auto const numerator = (seg_0.pos0.x - seg_1.pos0.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_1.pos0.y) * (seg_1.pos0.x - seg_1.pos1.x);
+    auto const t = numerator / denominator;
+    if (ScalarT(0) <= t && t <= ScalarT(1))
+    {
+        // intersection
+        return seg_0.pos0 + t * (seg_0.pos1 - seg_0.pos0);
+    }
+    return {};
+}
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<aabb<D, ScalarT>> intersection(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
 {
@@ -513,7 +581,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> intersection_parameter(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
 {
     auto denom = dot(p.normal, a.pos1 - a.pos0);
-    if (denom == 0)
+    if (denom == ScalarT(0))
         return {};
 
     auto t = (p.dis - dot(p.normal, a.pos0 - tg::pos<D, ScalarT>::zero)) / denom;
@@ -669,10 +737,70 @@ template <int D, class ScalarT>
     (void)b;
     return {}; // TODO
 }
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(sphere<D, ScalarT> const& b, segment<D, ScalarT> const& a)
 {
     return intersection(b, a);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<2, ScalarT> const& a, aabb<2, ScalarT> const& b)
+{
+    auto p0 = a.pos0;
+    auto p1 = a.pos1;
+    auto p2 = a.pos2;
+
+    auto bb_t = aabb_of(p0, p1, p2);
+    if (!intersects(bb_t, b))
+        return false;
+
+    if (contains(b, p0) || contains(b, p1) || contains(b, p2))
+        return true;
+
+    pos<2, ScalarT> aabb_pts[] = {
+        {b.min.x, b.min.y}, //
+        {b.min.x, b.max.y}, //
+        {b.max.x, b.min.y}, //
+        {b.max.x, b.max.y}, //
+    };
+
+    auto const is_separate = [&](pos<2, ScalarT> pa, vec<2, ScalarT> n, pos<2, ScalarT> pb) {
+        auto da = dot(n, pa);
+        auto db = dot(n, pb);
+
+        // TODO: faster
+        auto a_min = min(da, db);
+        auto a_max = max(da, db);
+
+        auto b_min = dot(n, aabb_pts[0]);
+        auto b_max = b_min;
+        for (auto i = 1; i < 4; ++i)
+        {
+            auto d = dot(n, aabb_pts[i]);
+            b_min = min(b_min, d);
+            b_max = max(b_max, d);
+        }
+
+        if (b_max < a_min || b_min > a_max)
+            return true;
+
+        return false;
+    };
+
+    if (is_separate(p0, perpendicular(p1 - p0), p2))
+        return false;
+    if (is_separate(p1, perpendicular(p2 - p1), p0))
+        return false;
+    if (is_separate(p2, perpendicular(p0 - p2), p1))
+        return false;
+
+    return true;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(aabb<2, ScalarT> const& a, triangle<2, ScalarT> const& b)
+{
+    return intersects(b, a);
 }
 
 } // namespace tg
