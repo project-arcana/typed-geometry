@@ -56,7 +56,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr dir<3, ScalarT> any_normal(vec<3, ScalarT> const& v)
 {
-    auto b = vec3::zero;
+    auto b = vec<3, ScalarT>::zero;
     if (abs(v.x) > abs(v.y))
         b[1] = ScalarT(1);
     else
