@@ -11,7 +11,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 
-#include <typed-geometry/common/limits.hh>
+#include <typed-geometry/functions/basic/limits.hh>
 
 /*
  * Special values of certain types:

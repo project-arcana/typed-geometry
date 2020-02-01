@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typed-geometry/common/assert.hh>
-#include <typed-geometry/common/constants.hh>
+#include <typed-geometry/feature/assert.hh>
+#include <typed-geometry/functions/basic/constants.hh>
 #include <typed-geometry/detail/macros.hh>
 
 namespace tg

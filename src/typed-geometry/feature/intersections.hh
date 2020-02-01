@@ -1,3 +1,3 @@
 #pragma once
 
-#include <typed-geometry/functions/intersection.hh>
+#include <typed-geometry/functions/objects/intersection.hh>

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <typed-geometry/common/constants.hh>
-#include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/detail/utility.hh>
-#include <typed-geometry/functions/minmax.hh>
+#include <typed-geometry/functions/basic/constants.hh>
+#include <typed-geometry/functions/basic/minmax.hh>
+#include <typed-geometry/functions/basic/scalar_math.hh>
 #include <typed-geometry/types/scalars/interval.hh>
 
 namespace tg

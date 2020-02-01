@@ -7,8 +7,7 @@
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
-#include <typed-geometry/functions/interpolate.hh>
-#include <typed-geometry/functions/mix.hh>
+#include <typed-geometry/functions/vector/interpolate.hh>
 
 // defines operator[] for several object types
 // obj[coord] indexes into objects that are "coordinate addressable" like triangle or segment

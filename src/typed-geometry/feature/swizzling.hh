@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/common/swizzling.hh>
+#include <typed-geometry/functions/swizzling/swizzling-basic.hh>
 
 // usage:
 // using namespace tg::swizzling;

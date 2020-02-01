@@ -1,9 +1,9 @@
 #pragma once
 
-#include <typed-geometry/common/scalar_math.hh>
 #include <typed-geometry/detail/operators/ops_mat.hh>
-#include <typed-geometry/functions/mix.hh>
-#include <typed-geometry/functions/normalize.hh>
+#include <typed-geometry/functions/basic/mix.hh>
+#include <typed-geometry/functions/basic/scalar_math.hh>
+#include <typed-geometry/functions/vector/normalize.hh>
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/quat.hh>

@@ -4,6 +4,8 @@
 #include "../dir.hh"
 #include "../pos.hh"
 
+#include "cone.hh"
+
 namespace tg
 {
 /**

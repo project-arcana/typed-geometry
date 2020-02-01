@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/common/assert.hh>
+#include <typed-geometry/feature/assert.hh>
 
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/pos.hh>
@@ -15,7 +15,7 @@
 #include <typed-geometry/types/objects/inf_cone.hh>
 
 #include <typed-geometry/detail/operators/ops_pos.hh>
-#include <typed-geometry/functions/dot.hh>
+#include <typed-geometry/functions/vector/dot.hh>
 
 // Header for all constructors that depend on functions
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/common/assert.hh>
+#include <typed-geometry/feature/assert.hh>
 
 #include <typed-geometry/types/scalars/default.hh>
 

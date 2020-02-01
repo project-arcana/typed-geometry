@@ -3,7 +3,7 @@
 #include <typed-geometry/types/scalars/default.hh>
 #include "vec.hh"
 
-#include <typed-geometry/common/assert.hh>
+#include <typed-geometry/feature/assert.hh>
 
 namespace tg
 {

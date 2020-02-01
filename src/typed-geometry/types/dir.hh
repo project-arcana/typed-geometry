@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/common/assert.hh>
+#include <typed-geometry/feature/assert.hh>
 
 #include "../detail/comp_traits.hh"
 #include "../detail/macros.hh"
