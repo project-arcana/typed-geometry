@@ -5,7 +5,7 @@
 
 #include <typed-geometry/types/types.hh>
 
-#include "../detail/tg_traits.hh"
+#include <typed-geometry/detail/tg_traits.hh>
 
 namespace tg
 {

@@ -2,10 +2,8 @@
 
 #include <immintrin.h>
 
-#include <typed-geometry/functions/minmax.hh>
+#include <typed-geometry/functions/basic/minmax.hh>
 #include <typed-geometry/types/scalars/fixed_uint.hh>
-
-#include "fixed_uint_gen.hh"
 
 // todo: division and modulo are essentially the same code, put into detail maybe
 // todo: gcc does not seem to produce optimal code gen

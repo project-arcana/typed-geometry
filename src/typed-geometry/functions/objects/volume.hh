@@ -1,9 +1,10 @@
 #pragma once
 
-#include <typed-geometry/functions/basic/constants.hh>
-#include <typed-geometry/functions/basic/scalar_math.hh>
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
+#include <typed-geometry/functions/basic/constants.hh>
+#include <typed-geometry/functions/basic/scalar_math.hh>
+#include <typed-geometry/functions/vector/length.hh>
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
@@ -11,8 +12,6 @@
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/size.hh>
-
-#include "length.hh"
 
 namespace tg
 {

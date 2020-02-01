@@ -1,11 +1,11 @@
 #pragma once
 
-#include <typed-geometry/common/limits.hh>
+#include <typed-geometry/functions/basic/limits.hh>
+#include <typed-geometry/functions/vector/math.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
 #include "aabb.hh"
 #include "coordinates.hh"
-#include "math.hh"
 
 /**
  * Rasterization of objects

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <typed-geometry/functions/interpolate.hh>
-#include <typed-geometry/tests/triangle_tests.hh>
+#include <typed-geometry/functions/vector/interpolate.hh>
+#include <typed-geometry/functions/vector/distance.hh>
+#include <typed-geometry/functions/tests/triangle_tests.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 

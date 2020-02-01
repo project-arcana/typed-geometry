@@ -3,7 +3,8 @@
 #include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
-#include "cross.hh"
+#include <typed-geometry/functions/vector/cross.hh>
+
 #include "normal.hh"
 
 namespace tg

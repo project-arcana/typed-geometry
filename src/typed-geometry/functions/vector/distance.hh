@@ -16,4 +16,11 @@ template <int D, class ScalarA, class ScalarB>
 {
     return length_sqr(a - b);
 }
+
+// Default implementation of distance as sqrt(distance_sqr)
+template <class A, class B>
+[[nodiscard]] constexpr auto distance(A const& a, B const& b) -> decltype(sqrt(distance_sqr(a, b)))
+{
+    return sqrt(distance_sqr(a, b));
+}
 }

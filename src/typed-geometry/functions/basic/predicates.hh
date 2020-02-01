@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/functions/math.hh>
+#include <typed-geometry/types/comp.hh>
 
 namespace tg
 {

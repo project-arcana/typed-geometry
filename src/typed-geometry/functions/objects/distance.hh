@@ -17,13 +17,6 @@
 
 namespace tg
 {
-// Default implementation of distance as sqrt(distance_sqr)
-template <class A, class B>
-[[nodiscard]] constexpr auto distance(A const& a, B const& b) -> decltype(sqrt(distance_sqr(a, b)))
-{
-    return sqrt(distance_sqr(a, b));
-}
-
 // Default implementation of distance as abs(signed_distance)
 // TODO: FIXME via priority_tag<>
 // template <class A, class B>

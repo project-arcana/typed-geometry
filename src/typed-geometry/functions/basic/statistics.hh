@@ -1,8 +1,8 @@
 #pragma once
 
-#include <typed-geometry/feature/assert.hh>
 #include <typed-geometry/detail/utility.hh>
-#include <typed-geometry/functions/minmax.hh>
+#include <typed-geometry/feature/assert.hh>
+#include <typed-geometry/functions/basic/minmax.hh>
 #include <typed-geometry/types/span.hh>
 
 /*

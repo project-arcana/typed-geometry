@@ -7,8 +7,9 @@
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/tube.hh>
 
+#include <typed-geometry/functions/vector/normalize.hh>
+
 #include "closest_points.hh"
-#include "normalize.hh"
 
 namespace tg
 {

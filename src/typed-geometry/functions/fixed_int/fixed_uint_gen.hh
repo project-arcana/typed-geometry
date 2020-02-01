@@ -8,7 +8,7 @@
 #include <x86intrin.h>
 #endif
 
-#include <typed-geometry/feature/fixed_int.hh>
+#include <typed-geometry/functions/fixed_int/fixed_uint.hh>
 
 namespace tg::detail
 {
