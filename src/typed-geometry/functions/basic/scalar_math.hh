@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-#include <typed-geometry/functions/basic/constants.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/detail/utility.hh>
+#include <typed-geometry/functions/basic/constants.hh>
 #include <typed-geometry/types/angle.hh>
 #include <typed-geometry/types/scalars/default.hh>
 
@@ -123,6 +123,13 @@ template <class T>
 [[nodiscard]] inline i32 iround(f32 v) { return v >= 0 ? i32(v + 0.5f) : i32(v - 0.5f); }
 [[nodiscard]] inline i64 iround(f64 v) { return v >= 0 ? i64(v + 0.5) : i64(v - 0.5); }
 
+[[nodiscard]] inline i32 mod(i32 a, i32 b) { return a % b; }
+[[nodiscard]] inline i64 mod(i64 a, i64 b) { return a % b; }
+[[nodiscard]] inline u32 mod(u32 a, u32 b) { return a % b; }
+[[nodiscard]] inline u64 mod(u64 a, u64 b) { return a % b; }
+[[nodiscard]] inline f32 mod(f32 a, f32 b) { return std::fmod(a, b); }
+[[nodiscard]] inline f64 mod(f64 a, f64 b) { return std::fmod(a, b); }
+
 [[nodiscard]] inline f32 fract(f32 v) { return v - floor(v); }
 [[nodiscard]] inline f64 fract(f64 v) { return v - floor(v); }
 
@@ -147,6 +154,14 @@ template <class T>
 [[nodiscard]] constexpr T saturate(T const& a)
 {
     return clamp(a, T(0), T(1));
+}
+
+template <class T>
+[[nodiscard]] constexpr T wrap(T const& v, T const& min_value, T const& max_value)
+{
+    auto range = max_value - min_value;
+    auto offs = mod(v - min_value, range);
+    return (offs < T(0) ? max_value : min_value) + offs;
 }
 
 template <class T, class = enable_if<is_scalar<T>>>
