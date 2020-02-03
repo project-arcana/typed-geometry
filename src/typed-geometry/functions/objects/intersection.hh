@@ -7,7 +7,7 @@
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/circle.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
-#include <typed-geometry/types/objects/hyperplane.hh>
+#include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -177,9 +177,9 @@ constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT>
 
 // ====================================== Ray - Object Intersections ======================================
 
-// ray - hyperplane
+// ray - plane
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<D, ScalarT> const& r, hyperplane<D, ScalarT> const& p)
+[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<D, ScalarT> const& r, plane<D, ScalarT> const& p)
 {
     // if plane normal and ray direction are parallel there is no intersection
     auto dotND = dot(p.normal, r.dir);
@@ -307,7 +307,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, disk<3, ScalarT> const& d)
 {
-    auto const t = intersection_parameter(r, hyperplane<3, ScalarT>(d.normal, d.center));
+    auto const t = intersection_parameter(r, plane<3, ScalarT>(d.normal, d.center));
     if (!t.has_value())
         return {};
 
@@ -481,7 +481,7 @@ template <class ScalarT>
 
 
 template <class ScalarT>
-[[nodiscard]] constexpr line<3, ScalarT> intersection(hyperplane<3, ScalarT> const& a, hyperplane<3, ScalarT> const& b)
+[[nodiscard]] constexpr line<3, ScalarT> intersection(plane<3, ScalarT> const& a, plane<3, ScalarT> const& b)
 {
     // see http://mathworld.wolfram.com/Plane-PlaneIntersection.html
     auto dir = normalize(cross(a.normal, b.normal));
@@ -567,19 +567,19 @@ template <int D, class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr ScalarT intersection_parameter(line<3, ScalarT> const& l, hyperplane<3, ScalarT> const& p)
+[[nodiscard]] constexpr ScalarT intersection_parameter(line<3, ScalarT> const& l, plane<3, ScalarT> const& p)
 {
     return (p.dis - dot(l.pos - pos<3, ScalarT>::zero, p.normal)) / dot(l.dir, p.normal);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> intersection(hyperplane<3, ScalarT> const& a, hyperplane<3, ScalarT> const& b, hyperplane<3, ScalarT> const& c)
+[[nodiscard]] constexpr pos<3, ScalarT> intersection(plane<3, ScalarT> const& a, plane<3, ScalarT> const& b, plane<3, ScalarT> const& c)
 {
     return intersection(intersection(a, b), c);
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(segment<D, ScalarT> const& a, hyperplane<D, ScalarT> const& p)
+[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(segment<D, ScalarT> const& a, plane<D, ScalarT> const& p)
 {
     auto denom = dot(p.normal, a.pos1 - a.pos0);
     if (denom == ScalarT(0))

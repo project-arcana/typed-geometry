@@ -3,7 +3,6 @@
 #include <typed-geometry/feature/assert.hh>
 
 #include <typed-geometry/types/objects/aabb.hh>
-#include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
@@ -20,12 +19,6 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(aabb<D, ScalarT> const& b)
 {
     return b;
-}
-
-template <int D, class ScalarT>
-[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(ball<D, ScalarT> const& s)
-{
-    return {s.center - s.radius, s.center + s.radius};
 }
 
 template <int D, class ScalarT>

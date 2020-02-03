@@ -3,39 +3,43 @@
 #include "../dir.hh"
 #include "../pos.hh"
 
-#include "rect.hh"
+#include "box.hh"
+#include "quad.hh"
+#include "sphere.hh"
+#include "triangle.hh"
 
 namespace tg
 {
 /**
- * 3D rect based right pyramids
+ * 3D pyramid
  *
- * pyramid is constructed from a rect (base) and height
+ * supported base types:
+ * - box2in3
+ * - sphere2in3
+ * - triangle
+ * - quad (must be planar)
  */
-template <int D, class ScalarT>
+template <class BaseT>
 struct pyramid;
 
 // Common pyramid types
-using pyramid3 = pyramid<3, f32>;
-using fpyramid3 = pyramid<3, f32>;
-using dpyramid3 = pyramid<3, f64>;
-using ipyramid3 = pyramid<3, i32>;
-using upyramid3 = pyramid<3, u32>;
+using box_pyramid3 = pyramid<box2in3>;
+using sphere_pyramid3 = pyramid<sphere2in3>;
+using triangle_pyramid3 = pyramid<triangle3>;
+using quad_pyramid3 = pyramid<quad3>;
 
 // ======== IMPLEMENTATION ========
-template <class ScalarT>
-struct pyramid<3, ScalarT>
+template <class BaseT>
+struct pyramid
 {
-    using scalar_t = ScalarT;
-    using pos_t = pos<3, ScalarT>;
-    using dir_t = dir<3, ScalarT>;
-    using rect_t = rect<3, ScalarT>;
+    using scalar_t = typename BaseT::scalar_t;
+    using base_t = BaseT;
 
-    rect_t base;
+    base_t base;
     scalar_t height = 0;
 
     constexpr pyramid() = default;
-    constexpr pyramid(rect_t const& base, scalar_t height) : base(base), height(height) {}
+    constexpr pyramid(base_t const& base, scalar_t height) : base(base), height(height) {}
 
     [[nodiscard]] bool operator==(pyramid const& rhs) const { return base == rhs.base && height == rhs.height; }
     [[nodiscard]] bool operator!=(pyramid const& rhs) const { return !operator==(rhs); }

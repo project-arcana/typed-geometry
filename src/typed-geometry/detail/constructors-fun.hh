@@ -9,7 +9,7 @@
 
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
-#include <typed-geometry/types/objects/hyperplane.hh>
+#include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
@@ -36,7 +36,7 @@ constexpr box<D, ScalarT>::box(aabb<D, ScalarT> const& b)
 }
 
 template <int D, class ScalarT>
-constexpr hyperplane<D, ScalarT>::hyperplane(dir_t n, pos_t p) : normal(n), dis(dot(vec<D, ScalarT>(p), n))
+constexpr plane<D, ScalarT>::plane(dir_t n, pos_t p) : normal(n), dis(dot(vec<D, ScalarT>(p), n))
 {
 }
 template <int D, class ScalarT>

@@ -36,7 +36,6 @@ TG_IMPL_ADD_OBJECT_TYPE(line);
 TG_IMPL_ADD_OBJECT_TYPE(segment);
 TG_IMPL_ADD_OBJECT_TYPE(ray);
 TG_IMPL_ADD_OBJECT_TYPE(sphere);
-TG_IMPL_ADD_OBJECT_TYPE(ball);
 // TODO: more
 
 // special types

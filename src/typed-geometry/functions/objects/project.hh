@@ -4,15 +4,12 @@
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/functions/tests/vec_tests.hh>
 #include <typed-geometry/types/objects/capsule.hh>
-#include <typed-geometry/types/objects/circle.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
-#include <typed-geometry/types/objects/disk.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
-#include <typed-geometry/types/objects/inf_tube.hh>
+#include <typed-geometry/types/objects/inf_cylinder.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/segment.hh>
-#include <typed-geometry/types/objects/tube.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
 
@@ -39,13 +36,13 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& v, plane<D, ScalarT> const& pl)
 {
     return v - pl.normal * dot(v, pl.normal);
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr vec<D, ScalarT> project(dir<D, ScalarT> const& v, hyperplane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr vec<D, ScalarT> project(dir<D, ScalarT> const& v, plane<D, ScalarT> const& pl)
 {
     return v - pl.normal * dot(v, pl.normal);
 }
@@ -87,7 +84,7 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, plane<D, ScalarT> const& pl)
 {
     return p - pl.normal * (dot(p, pl.normal) - pl.dis);
 }
@@ -101,7 +98,7 @@ template <int D, class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangle<3, ScalarT> const& t)
 {
-    auto pPlane = project(p, hyperplane<3, ScalarT>(normal(t), t.pos0));
+    auto pPlane = project(p, plane<3, ScalarT>(normal(t), t.pos0));
 
     if (contains(t, pPlane))
         return pPlane;
@@ -164,12 +161,12 @@ template <class ScalarT>
             return h.center + normalize(toP) * h.radius;
     }
     // On the flat side of the hemisphere
-    return project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
+    return project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
 }
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
 {
-    auto closestOnFlat = project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
+    auto closestOnFlat = project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
 
     auto dirToP = tg::normalize_safe(p - h.center);
     if (dot(dirToP, h.normal) >= ScalarT(0))
@@ -244,9 +241,9 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, disk<3, ScalarT> const& d)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, sphere<2, ScalarT, 3> const& d)
 {
-    auto hp = project(p, hyperplane<3, ScalarT>(d.normal, d.center));
+    auto hp = project(p, plane<3, ScalarT>(d.normal, d.center));
 
     if (distance_sqr(hp, d.center) <= d.radius * d.radius)
         return hp;
@@ -273,7 +270,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<3, ScalarT> const& c)
 {
-    auto hp = project(p, hyperplane<3, ScalarT>(c.normal, c.center));
+    auto hp = project(p, plane<3, ScalarT>(c.normal, c.center));
 
     auto dir = normalize_safe(hp - c.center);
     if (is_zero_vector(dir))
@@ -309,8 +306,8 @@ template <class ScalarT>
     auto dir = direction(c);
 
     auto p0 = project_boundary(p, tube<3, ScalarT>(c.axis, c.radius));
-    auto p1 = project(p, disk<3, ScalarT>(c.axis.pos0, c.radius, dir));
-    auto p2 = project(p, disk<3, ScalarT>(c.axis.pos1, c.radius, dir));
+    auto p1 = project(p, sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, dir));
+    auto p2 = project(p, sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, dir));
 
     auto d0 = distance_sqr(p0, p);
     auto d1 = distance_sqr(p1, p);
@@ -425,7 +422,7 @@ template <class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_tube<D, ScalarT> const& itube)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder<D, ScalarT> const& itube)
 {
     auto vec = p - itube.axis.pos;
     auto h = dot(vec, itube.axis.dir);

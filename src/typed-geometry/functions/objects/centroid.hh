@@ -12,6 +12,8 @@
 #include <typed-geometry/detail/operators/ops_pos.hh>
 #include <typed-geometry/detail/operators/ops_vec.hh>
 
+#include <typed-geometry/functions/basic/mix.hh>
+
 // returns the arithmetic mean of all points contained in an object
 // has variadic versions
 
@@ -26,7 +28,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> centroid(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
-    return a + 0.5f * (b - a);
+    return mix(a, b, ScalarT(0.5));
 }
 
 template <int D, class ScalarT>
@@ -38,8 +40,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(aabb<D, ScalarT> const& p)
 {
-    auto z = tg::zero<pos<D, ScalarT>>();
-    return z + ((p.min - z) + (p.max - z)) / ScalarT(2);
+    return mix(p.min, p.max, ScalarT(0.5));
 }
 
 template <int D, class ScalarT>
@@ -57,12 +58,6 @@ template <int D, class ScalarT>
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> centroid(sphere<D, ScalarT> const& p)
-{
-    return p.center;
-}
-
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> centroid(ball<D, ScalarT> const& p)
 {
     return p.center;
 }

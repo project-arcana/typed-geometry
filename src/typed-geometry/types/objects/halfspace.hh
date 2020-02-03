@@ -7,8 +7,8 @@
 // A halfspace has a distance to the origin and a normal direction
 // In dimension n, the distance is 1-dimensional and the normal direction is n-dimensional
 
-// Note that there is a semantic difference between hyperplane and halfspace in nD:
-//  - the hyperplane describes all points lying on an (n-1)-dimensional plane
+// Note that there is a semantic difference between plane and halfspace in nD:
+//  - the plane describes all points lying on an (n-1)-dimensional plane
 //  - the halfspace describes all points lying inside this n-dimensional subspace
 namespace tg
 {

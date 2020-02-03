@@ -50,13 +50,13 @@ template <class Obj>
 
 // signed distance is positive if p lies above pl, 0 if it lies on the plane and negative if below pl
 template <int D, class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, plane<D, ScalarT> const& pl)
 {
     return dot(p - pos<D, ScalarT>::zero, pl.normal) - pl.dis;
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const& p, hyperplane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const& p, plane<D, ScalarT> const& pl)
 {
     return abs(signed_distance(p, pl));
 }

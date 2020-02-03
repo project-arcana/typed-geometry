@@ -311,10 +311,10 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 }
 
 template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, hyperplane<D, ScalarT> const& val)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, plane<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << (D == 3 ? "plane" : "hyperplane") << char('0' + D);
+    ss << type_name_prefix<ScalarT> << (D == 3 ? "plane" : "plane") << char('0' + D);
     ss << "(" << val.normal << ", " << val.dis << ")";
     return out << ss.str();
 }
@@ -329,10 +329,10 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 }
 
 template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, inf_tube<D, ScalarT> const& val)
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, inf_cylinder<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "inf_tube" << char('0' + D);
+    ss << type_name_prefix<ScalarT> << "inf_cylinder" << char('0' + D);
     ss << "(" << val.axis << ", " << val.radius << ")";
     return out << ss.str();
 }

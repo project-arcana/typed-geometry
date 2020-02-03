@@ -1,8 +1,8 @@
 #pragma once
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "../mat.hh"
 #include "../pos.hh"
-#include <typed-geometry/types/scalars/default.hh>
 #include "../vec.hh"
 
 #include "aabb.hh"
@@ -14,7 +14,7 @@
 
 namespace tg
 {
-template <int D, class ScalarT>
+template <int ObjectD, class ScalarT, int DomainD = ObjectD>
 struct box;
 
 // Common box types
@@ -44,11 +44,16 @@ using ubox2 = box<2, u32>;
 using ubox3 = box<3, u32>;
 using ubox4 = box<4, u32>;
 
+using box2in3 = box<2, f32, 3>;
+using fbox2in3 = box<2, f32, 3>;
+using dbox2in3 = box<2, f64, 3>;
+using ibox2in3 = box<2, i32, 3>;
+using ubox2in3 = box<2, u32, 3>;
 
 // ======== IMPLEMENTATION ========
 
 template <int D, class ScalarT>
-struct box
+struct box<D, ScalarT, D>
 {
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
@@ -66,6 +71,25 @@ struct box
     constexpr box(aabb<D, ScalarT> const& b); // requires tg.hh
 
     [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
+    [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
+};
+
+template <class ScalarT>
+struct box<2, ScalarT, 3>
+{
+    using vec_t = vec<3, ScalarT>;
+    using dir_t = dir<3, ScalarT>;
+    using pos_t = pos<3, ScalarT>;
+    using mat_t = mat<2, 3, ScalarT>;
+
+    pos_t center;
+    mat_t half_extents;
+    dir_t normal;
+
+    constexpr box() = default;
+    constexpr box(pos_t center, mat_t const& half_extents, dir_t normal) : center(center), half_extents(half_extents), normal(normal) {}
+
+    [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents && normal == rhs.normal; }
     [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
 };
 } // namespace tg

@@ -7,7 +7,6 @@
 #include <typed-geometry/types/vec.hh>
 
 #include <typed-geometry/types/objects/aabb.hh>
-#include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 
@@ -338,8 +337,5 @@ const box<D, ScalarT> box<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>::zer
 
 template <int D, class ScalarT>
 const sphere<D, ScalarT> sphere<D, ScalarT>::unit = {pos<D, ScalarT>::zero, ScalarT(1)};
-
-template <int D, class ScalarT>
-const ball<D, ScalarT> ball<D, ScalarT>::unit = {pos<D, ScalarT>::zero, ScalarT(1)};
 
 } // namespace tg

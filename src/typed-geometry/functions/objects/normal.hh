@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typed-geometry/types/objects/halfspace.hh>
-#include <typed-geometry/types/objects/hyperplane.hh>
+#include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
@@ -18,7 +18,7 @@
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] constexpr dir<D, ScalarT> normal(hyperplane<D, ScalarT> const& p)
+[[nodiscard]] constexpr dir<D, ScalarT> normal(plane<D, ScalarT> const& p)
 {
     return p.normal;
 }
