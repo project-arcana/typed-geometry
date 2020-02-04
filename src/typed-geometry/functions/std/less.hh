@@ -207,10 +207,10 @@ struct less<tg::triangle<D, ScalarT>>
         return std::tie(a.pos0, a.pos1, a.pos2) < std::tie(b.pos0, b.pos1, b.pos2);
     }
 };
-template <int D, class ScalarT>
-struct less<tg::aabb<D, ScalarT>>
+template <int D, class ScalarT, class TraitsT>
+struct less<tg::aabb<D, ScalarT, TraitsT>>
 {
-    typedef tg::aabb<D, ScalarT> arg_t;
+    typedef tg::aabb<D, ScalarT, TraitsT> arg_t;
     constexpr bool operator()(arg_t const& a, arg_t const& b) const noexcept { return std::tie(a.min, a.max) < std::tie(b.min, b.max); }
 };
 } // namespace std

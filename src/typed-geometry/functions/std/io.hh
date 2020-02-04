@@ -19,10 +19,10 @@ std::string to_string(T const& v)
 
 namespace detail
 {
-template <class CharT, class Traits>
-std::basic_ostringstream<CharT, Traits> temp_sstream(std::basic_ostream<CharT, Traits> const& out)
+template <class CharT, class StreamTraits>
+std::basic_ostringstream<CharT, StreamTraits> temp_sstream(std::basic_ostream<CharT, StreamTraits> const& out)
 {
-    std::basic_ostringstream<CharT, Traits> ss;
+    std::basic_ostringstream<CharT, StreamTraits> ss;
     ss.flags(out.flags());
     ss.imbue(out.getloc());
     ss.precision(out.precision());
@@ -34,8 +34,8 @@ std::basic_ostringstream<CharT, Traits> temp_sstream(std::basic_ostream<CharT, T
 // =============================== Random ===============================
 //
 
-template <class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, xorshift const& val)
+template <class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, xorshift const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << "rng(" << std::hex << val.state() << ")";
@@ -46,32 +46,32 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 // =============================== Scalars ===============================
 //
 
-template <class T, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, angle_t<T> const& val)
+template <class T, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, angle_t<T> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << val.degree() << "°";
     return out << ss.str();
 }
 
-template <class T, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, fwd_diff<T> const& val)
+template <class T, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, fwd_diff<T> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << "<" << val.value << ", " << val.derivative << ">";
     return out << ss.str();
 }
 
-template <class T, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, interval<T> const& val)
+template <class T, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, interval<T> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << "[" << val.min << ".." << val.max << "]";
     return out << ss.str();
 }
 
-template <int w, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, fixed_uint<w> const& val)
+template <int w, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, fixed_uint<w> const& val)
 {
     constexpr const char* hex_map = "0123456789ABCDEF";
 
@@ -88,8 +88,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     return out << ss.str();
 }
 
-template <int w, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, fixed_int<w> const& val)
+template <int w, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, fixed_int<w> const& val)
 {
     constexpr const char* hex_map = "0123456789ABCDEF";
 
@@ -110,8 +110,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 // =============================== Comps ===============================
 //
 
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, comp<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, comp<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "comp" << char('0' + D);
@@ -121,8 +121,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     ss << ")";
     return out << ss.str();
 }
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, vec<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, vec<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "vec" << char('0' + D);
@@ -132,8 +132,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     ss << ")";
     return out << ss.str();
 }
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, dir<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, dir<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "dir" << char('0' + D);
@@ -143,8 +143,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     ss << ")";
     return out << ss.str();
 }
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, pos<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, pos<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "pos" << char('0' + D);
@@ -154,8 +154,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     ss << ")";
     return out << ss.str();
 }
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, size<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, size<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "size" << char('0' + D);
@@ -165,22 +165,22 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     ss << ")";
     return out << ss.str();
 }
-template <class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, color3 const& val)
+template <class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, color3 const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << "color3(" << val.r << ", " << val.g << ", " << val.b << ")";
     return out << ss.str();
 }
-template <class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, color4 const& val)
+template <class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, color4 const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << "color4(" << val.r << ", " << val.g << ", " << val.b << ", " << val.a << ")";
     return out << ss.str();
 }
-template <class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, quaternion<ScalarT> const& val)
+template <class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, quaternion<ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "quat";
@@ -192,8 +192,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 // =============================== Transformations ===============================
 //
 
-template <int C, int R, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, mat<C, R, ScalarT> const& val)
+template <int C, int R, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, mat<C, R, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "mat";
@@ -212,133 +212,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 // =============================== Objects ===============================
 //
 
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, aabb<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "aabb" << char('0' + D);
-    ss << "(" << val.min << ", " << val.max << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, ball<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "ball" << char('0' + D);
-    ss << "(" << val.center << ", " << val.radius << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, box<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "box" << char('0' + D);
-    ss << "(" << val.center << ", " << val.half_extents << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, capsule<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "capsule" << char('0' + D);
-    ss << "(" << val.axis << ", " << val.radius << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, circle<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "circle" << char('0' + D);
-    static_assert(D == 2 || D == 3);
-    if constexpr (D == 2)
-        ss << "(" << val.center << ", " << val.radius << ")";
-    else
-        ss << "(" << val.center << ", " << val.radius << ", " << val.normal << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, cone<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "cone" << char('0' + D);
-    ss << "(" << val.base << ", " << val.height << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, cylinder<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "cylinder" << char('0' + D);
-    ss << "(" << val.axis << ", " << val.radius << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, disk<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "disk" << char('0' + D);
-    static_assert(D == 2 || D == 3);
-    if constexpr (D == 2)
-        ss << "(" << val.center << ", " << val.radius << ")";
-    else
-        ss << "(" << val.center << ", " << val.radius << ", " << val.normal << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, halfspace<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "halfspace" << char('0' + D);
-    ss << "(" << val.normal << ", " << val.dis << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, hemisphere<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "hemisphere" << char('0' + D);
-    ss << "(" << val.center << ", " << val.radius << ", " << val.normal << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, plane<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << (D == 3 ? "plane" : "plane") << char('0' + D);
-    ss << "(" << val.normal << ", " << val.dis << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, inf_cone<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "inf_cone" << char('0' + D);
-    ss << "(" << val.apex << ", " << val.opening_dir << ", " << val.opening_angle << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, inf_cylinder<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "inf_cylinder" << char('0' + D);
-    ss << "(" << val.axis << ", " << val.radius << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, line<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, line<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "line" << char('0' + D);
@@ -346,17 +221,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     return out << ss.str();
 }
 
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, pyramid<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "pyramid" << char('0' + D);
-    ss << "(" << val.base << ", " << val.height << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, ray<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, ray<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "ray" << char('0' + D);
@@ -364,21 +230,8 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     return out << ss.str();
 }
 
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, rect<D, ScalarT> const& val)
-{
-    auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "rect" << char('0' + D);
-    static_assert(D == 2 || D == 3);
-    if constexpr (D == 2)
-        ss << "(" << val.center << ", " << val.length << ", " << val.rotation << ")";
-    else
-        ss << "(" << val.center << ", " << val.length << ", " << val.normal << ", " << val.rotation << ")";
-    return out << ss.str();
-}
-
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, segment<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, segment<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "segment" << char('0' + D);
@@ -386,17 +239,27 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     return out << ss.str();
 }
 
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, sphere<D, ScalarT> const& val)
+
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, halfspace<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "sphere" << char('0' + D);
-    ss << "(" << val.center << ", " << val.radius << ")";
+    ss << type_name_prefix<ScalarT> << "halfspace" << char('0' + D);
+    ss << "(" << val.normal << ", " << val.dis << ")";
     return out << ss.str();
 }
 
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, triangle<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, plane<D, ScalarT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << (D == 3 ? "plane" : "plane") << char('0' + D);
+    ss << "(" << val.normal << ", " << val.dis << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, triangle<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << type_name_prefix<ScalarT> << "triangle" << char('0' + D);
@@ -404,21 +267,117 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
     return out << ss.str();
 }
 
-template <int D, class ScalarT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, tube<D, ScalarT> const& val)
+template <int D, class ScalarT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, quad<D, ScalarT> const& val)
 {
     auto ss = detail::temp_sstream(out);
-    ss << type_name_prefix<ScalarT> << "tube" << char('0' + D);
+    ss << type_name_prefix<ScalarT> << "quad" << char('0' + D);
+    ss << "(" << val.pos00 << ", " << val.pos10 << ", " << val.pos11 << ", " << val.pos01 << ")";
+    return out << ss.str();
+}
+
+
+template <int D, class ScalarT, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, aabb<D, ScalarT, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "aabb" << TraitsT::suffix << char('0' + D);
+    ss << "(" << val.min << ", " << val.max << ")";
+    return out << ss.str();
+}
+
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, box<ObjectD, ScalarT, DomainD, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "box" << TraitsT::suffix << char('0' + ObjectD);
+    if constexpr (ObjectD != DomainD)
+        ss << "in" << char('0' + DomainD);
+
+    if constexpr (ObjectD == 2 && DomainD == 3)
+        ss << "(" << val.center << ", " << val.half_extents << ", " << val.normal << ")";
+    else
+        ss << "(" << val.center << ", " << val.half_extents << ")";
+    return out << ss.str();
+}
+
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, sphere<ObjectD, ScalarT, DomainD, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "sphere" << TraitsT::suffix << char('0' + ObjectD);
+    if constexpr (ObjectD != DomainD)
+        ss << "in" << char('0' + DomainD);
+
+    if constexpr (ObjectD == 2 && DomainD == 3)
+        ss << "(" << val.center << ", " << val.radius << ", " << val.normal << ")";
+    else
+        ss << "(" << val.center << ", " << val.radius << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, capsule<D, ScalarT, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "capsule" << TraitsT::suffix << char('0' + D);
     ss << "(" << val.axis << ", " << val.radius << ")";
     return out << ss.str();
 }
+
+template <int D, class ScalarT, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, cylinder<D, ScalarT, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "cylinder" << TraitsT::suffix << char('0' + D);
+    ss << "(" << val.axis << ", " << val.radius << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, hemisphere<D, ScalarT, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "hemisphere" << TraitsT::suffix << char('0' + D);
+    ss << "(" << val.center << ", " << val.radius << ", " << val.normal << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, inf_cone<D, ScalarT, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "inf_cone" << TraitsT::suffix << char('0' + D);
+    ss << "(" << val.apex << ", " << val.opening_dir << ", " << val.opening_angle << ")";
+    return out << ss.str();
+}
+
+template <int D, class ScalarT, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, inf_cylinder<D, ScalarT, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "inf_cylinder" << TraitsT::suffix << char('0' + D);
+    ss << "(" << val.axis << ", " << val.radius << ")";
+    return out << ss.str();
+}
+
+template <class BaseT, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, pyramid<BaseT, TraitsT> const& val)
+{
+    using ScalarT = typename BaseT::scalar_t;
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "pyramid" << TraitsT::suffix;
+    ss << "(" << val.base << ", " << val.height << ")";
+    return out << ss.str();
+}
+
 
 //
 // =============================== Bezier ===============================
 //
 
-template <int D, class ControlPointT, class CharT, class Traits>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, bezier<D, ControlPointT> const& val)
+template <int D, class ControlPointT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, bezier<D, ControlPointT> const& val)
 {
     auto ss = detail::temp_sstream(out);
     ss << "bezier" << char('0' + D);

@@ -2,6 +2,7 @@
 
 #include "../dir.hh"
 #include "../pos.hh"
+#include "traits.hh"
 
 #include "segment.hh"
 
@@ -12,7 +13,7 @@ namespace tg
  *
  * A cylinder is defined by a segment and a radius
  */
-template <int D, class ScalarT>
+template <int D, class ScalarT, class TraitsT = default_object_tag>
 struct cylinder;
 
 // Common cylinder types
@@ -22,9 +23,14 @@ using dcylinder3 = cylinder<3, f64>;
 using icylinder3 = cylinder<3, i32>;
 using ucylinder3 = cylinder<3, u32>;
 
+template <int D, class ScalarT>
+using cylinder_boundary = cylinder<D, ScalarT, boundary_tag>;
+template <int D, class ScalarT>
+using cylinder_boundary_no_caps = cylinder<D, ScalarT, boundary_no_caps_tag>;
+
 // ======== IMPLEMENTATION ========
-template <class ScalarT>
-struct cylinder<3, ScalarT>
+template <class ScalarT, class TraitsT>
+struct cylinder<3, ScalarT, TraitsT>
 {
     using scalar_t = ScalarT;
     using pos_t = pos<3, ScalarT>;

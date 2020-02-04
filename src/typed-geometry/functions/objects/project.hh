@@ -14,6 +14,7 @@
 #include <typed-geometry/types/vec.hh>
 
 #include <typed-geometry/functions/matrix/inverse.hh>
+#include <typed-geometry/functions/vector/project.hh>
 
 #include "contains.hh"
 #include "coordinates.hh"
@@ -21,19 +22,7 @@
 
 namespace tg
 {
-// ============================== Vec Projections ==============================
-
-template <int D, class ScalarT>
-[[nodiscard]] constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b)
-{
-    return b * dot(a, b) / dot(b, b);
-}
-
-template <int D, class ScalarT>
-[[nodiscard]] constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& a, dir<D, ScalarT> const& b)
-{
-    return b * dot(a, b);
-}
+// ============== project to plane ==============
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr vec<D, ScalarT> project(vec<D, ScalarT> const& v, plane<D, ScalarT> const& pl)
@@ -47,7 +36,23 @@ template <int D, class ScalarT>
     return v - pl.normal * dot(v, pl.normal);
 }
 
-// ============================== Pos Projections ==============================
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, plane<D, ScalarT> const& pl)
+{
+    return p - pl.normal * (dot(p, pl.normal) - pl.dis);
+}
+
+
+// ============== project to halfspace ==============
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, halfspace<D, ScalarT> const& pl)
+{
+    return p - pl.normal * tg::max(ScalarT(0), dot(p, pl.normal) - pl.dis);
+}
+
+
+// ============== project to line / ray / segment ==============
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, line<D, ScalarT> const& l)
@@ -70,11 +75,17 @@ template <int D, class ScalarT>
     return s[t];
 }
 
+
+// ============== project to aabb ==============
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D, ScalarT> const& s)
 {
     return clamp(p, s.min, s.max);
 }
+
+
+// ============== project to box ==============
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, box<D, ScalarT> const& b)
@@ -83,17 +94,8 @@ template <int D, class ScalarT>
     return b.center + b.half_extents * vec<D, ScalarT>(project(pLocal, aabb<D, ScalarT>::minus_one_to_one));
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, plane<D, ScalarT> const& pl)
-{
-    return p - pl.normal * (dot(p, pl.normal) - pl.dis);
-}
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, halfspace<D, ScalarT> const& pl)
-{
-    return p - pl.normal * tg::max(ScalarT(0), dot(p, pl.normal) - pl.dis);
-}
+// ============== project to triangle ==============
 
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangle<3, ScalarT> const& t)
@@ -140,104 +142,25 @@ template <class ScalarT>
         return p2;
 }
 
+
+// ============== project to sphere ==============
+
 template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& s)
+{
+    if (contains(s, p))
+        return p;
+
+    return project_to_boundary(p, s);
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project_to_boundary(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
 {
     auto dir_to_p = tg::normalize_safe(p - sp.center);
     if (is_zero_vector(dir_to_p))
         dir_to_p = vec<D, ScalarT>::unit_x;
     return sp.center + dir_to_p * sp.radius;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h)
-{
-    auto toP = p - h.center;
-    if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
-    {
-        if (length_sqr(toP) <= h.radius * h.radius)
-            return p;
-        else
-            return h.center + normalize(toP) * h.radius;
-    }
-    // On the flat side of the hemisphere
-    return project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
-{
-    auto closestOnFlat = project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
-
-    auto dirToP = tg::normalize_safe(p - h.center);
-    if (dot(dirToP, h.normal) >= ScalarT(0))
-    {
-        auto closestOnRound = h.center + dirToP * h.radius;
-        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
-    }
-    return closestOnFlat;
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h)
-{
-    auto toP = p - h.center;
-    if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
-    {
-        if (length_sqr(toP) <= h.radius * h.radius)
-            return p;
-        else
-            return h.center + normalize(toP) * h.radius;
-    }
-
-    // On the flat side of the hemisphere
-    auto v = perpendicular(h.normal) * h.radius;
-    return project(p, segment<2, ScalarT>(h.center - v, h.center + v));
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project_boundary(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h) // boundary, including caps
-{
-    auto v = perpendicular(h.normal) * h.radius;
-    auto closestOnFlat = project(p, segment<2, ScalarT>(h.center - v, h.center + v));
-
-    auto dirToP = tg::normalize_safe(p - h.center);
-    if (dot(dirToP, h.normal) >= ScalarT(0))
-    {
-        auto closestOnRound = h.center + dirToP * h.radius;
-        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
-    }
-    return closestOnFlat;
-}
-
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, ball<D, ScalarT> const& b)
-{
-    if (contains(b, p))
-        return p;
-
-    return project(p, sphere<D, ScalarT>(b.center, b.radius));
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t) // same as project(cylinder) for the internal case
-{
-    auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
-    auto sp = project(lp, t.axis);
-    auto dir = p - lp;
-    auto l = length(dir);
-    if (l > t.radius)
-        dir *= t.radius / l;
-
-    return sp + dir;
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, tube<3, ScalarT> const& t)
-{
-    auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
-    auto sp = project(lp, t.axis);
-    auto dir = normalize_safe(p - lp);
-    if (is_zero_vector(dir))
-        dir = any_normal(t.axis.pos1 - t.axis.pos0);
-
-    return sp + dir * t.radius;
 }
 
 template <class ScalarT>
@@ -254,21 +177,9 @@ template <class ScalarT>
 
     return d.center + dir * d.radius;
 }
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, disk<2, ScalarT> const& d)
-{
-    if (distance_sqr(p, d.center) <= d.radius * d.radius)
-        return p;
-
-    auto dir = normalize_safe(p - d.center);
-    if (is_zero_vector(dir))
-        dir = tg::dir<2, ScalarT>::pos_x;
-
-    return d.center + dir * d.radius;
-}
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, circle<3, ScalarT> const& c)
+[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary(pos<3, ScalarT> const& p, sphere<2, ScalarT, 3> const& c)
 {
     auto hp = project(p, plane<3, ScalarT>(c.normal, c.center));
 
@@ -278,15 +189,73 @@ template <class ScalarT>
 
     return c.center + dir * c.radius;
 }
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, circle<2, ScalarT> const& c)
-{
-    auto dir = normalize_safe(p - c.center);
-    if (is_zero_vector(dir))
-        dir = tg::dir<2, ScalarT>::pos_x;
 
-    return c.center + dir * c.radius;
+
+// ============== project to hemisphere ==============
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h)
+{
+    auto toP = p - h.center;
+    if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
+    {
+        if (length_sqr(toP) <= h.radius * h.radius)
+            return p;
+        else
+            return h.center + normalize(toP) * h.radius;
+    }
+    // On the flat side of the hemisphere
+    return project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
 }
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
+{
+    auto closestOnFlat = project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
+
+    auto dirToP = tg::normalize_safe(p - h.center);
+    if (dot(dirToP, h.normal) >= ScalarT(0))
+    {
+        auto closestOnRound = h.center + dirToP * h.radius;
+        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
+    }
+    return closestOnFlat;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h)
+{
+    auto toP = p - h.center;
+    if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
+    {
+        if (length_sqr(toP) <= h.radius * h.radius)
+            return p;
+        else
+            return h.center + normalize(toP) * h.radius;
+    }
+
+    // On the flat side of the hemisphere
+    auto v = perpendicular(h.normal) * h.radius;
+    return project(p, segment<2, ScalarT>(h.center - v, h.center + v));
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project_to_boundary(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h) // boundary, including caps
+{
+    auto v = perpendicular(h.normal) * h.radius;
+    auto closestOnFlat = project(p, segment<2, ScalarT>(h.center - v, h.center + v));
+
+    auto dirToP = tg::normalize_safe(p - h.center);
+    if (dot(dirToP, h.normal) >= ScalarT(0))
+    {
+        auto closestOnRound = h.center + dirToP * h.radius;
+        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
+    }
+    return closestOnFlat;
+}
+
+
+// ============== project to cylinder ==============
 
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // same as project(tube) for the internal case
@@ -300,12 +269,38 @@ template <class ScalarT>
 
     return sp + dir;
 }
+
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project_no_caps(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& t) // same as project(cylinder) for the internal case
+{
+    auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
+    auto sp = project(lp, t.axis);
+    auto dir = p - lp;
+    auto l = length(dir);
+    if (l > t.radius)
+        dir *= t.radius / l;
+
+    return sp + dir;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary_no_caps(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& t)
+{
+    auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
+    auto sp = project(lp, t.axis);
+    auto dir = normalize_safe(p - lp);
+    if (is_zero_vector(dir))
+        dir = any_normal(t.axis.pos1 - t.axis.pos0);
+
+    return sp + dir * t.radius;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // boundary, including caps
 {
     auto dir = direction(c);
 
-    auto p0 = project_boundary(p, tube<3, ScalarT>(c.axis, c.radius));
+    auto p0 = project_to_boundary(p, c);
     auto p1 = project(p, sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, dir));
     auto p2 = project(p, sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, dir));
 
@@ -321,21 +316,23 @@ template <class ScalarT>
         return p2;
 }
 
+
+// ============== project to inf_cylinder ==============
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder<D, ScalarT> const& itube)
+{
+    auto vec = p - itube.axis.pos;
+    auto h = dot(vec, itube.axis.dir);
+    auto point_on_axis = itube.axis[h];
+    return point_on_axis + tg::normalize_safe(p - point_on_axis) * itube.radius;
+}
+
+
+// ============== project to capsule ==============
+
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // including caps
-{
-    auto t = coordinates(c.axis, p);
-
-    if (t < ScalarT(0))
-        return project(p, ball<3, ScalarT>(c.axis.pos0, c.radius));
-
-    if (t > ScalarT(1))
-        return project(p, ball<3, ScalarT>(c.axis.pos1, c.radius));
-
-    return project(p, tube<3, ScalarT>(c.axis, c.radius));
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_boundary(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // boundary, including caps
 {
     auto t = coordinates(c.axis, p);
 
@@ -345,8 +342,24 @@ template <class ScalarT>
     if (t > ScalarT(1))
         return project(p, sphere<3, ScalarT>(c.axis.pos1, c.radius));
 
-    return project_boundary(p, tube<3, ScalarT>(c.axis, c.radius));
+    return project(p, cylinder<3, ScalarT>(c.axis, c.radius));
 }
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // boundary, including caps
+{
+    auto t = coordinates(c.axis, p);
+
+    if (t < ScalarT(0))
+        return project_to_boundary(p, sphere<3, ScalarT>(c.axis.pos0, c.radius));
+
+    if (t > ScalarT(1))
+        return project_to_boundary(p, sphere<3, ScalarT>(c.axis.pos1, c.radius));
+
+    return project_to_boundary(p, cylinder<3, ScalarT>(c.axis, c.radius));
+}
+
+
+// ============== project to cone ==============
 
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT> const& c)
@@ -360,6 +373,9 @@ template <class ScalarT>
     auto closestOnCone = project(p, inf_cone(c));
     return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
 }
+
+
+// ============== project to inf_cone ==============
 
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
@@ -419,14 +435,5 @@ template <class ScalarT>
     }
     else
         return icone.apex;
-}
-
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder<D, ScalarT> const& itube)
-{
-    auto vec = p - itube.axis.pos;
-    auto h = dot(vec, itube.axis.dir);
-    auto point_on_axis = itube.axis[h];
-    return point_on_axis + tg::normalize_safe(p - point_on_axis) * itube.radius;
 }
 } // namespace tg

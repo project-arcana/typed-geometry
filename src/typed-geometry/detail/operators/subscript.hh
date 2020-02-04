@@ -33,8 +33,8 @@ template <int D, class ScalarT>
     return this->pos + this->dir * t;
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> aabb<D, ScalarT>::operator[](comp<D, ScalarT> const& c) const
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, ScalarT> aabb<D, ScalarT, TraitsT>::operator[](comp<D, ScalarT> const& c) const
 {
     return this->min + (this->max - this->min) * size(c);
 }

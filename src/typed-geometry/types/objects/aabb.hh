@@ -5,10 +5,11 @@
 #include <typed-geometry/types/scalars/default.hh>
 #include "../pos.hh"
 #include "../vec.hh"
+#include "traits.hh"
 
 namespace tg
 {
-template <int D, class ScalarT>
+template <int D, class ScalarT, class TraitsT = default_object_tag>
 struct aabb;
 
 // Common aabb types
@@ -38,10 +39,13 @@ using uaabb2 = aabb<2, u32>;
 using uaabb3 = aabb<3, u32>;
 using uaabb4 = aabb<4, u32>;
 
+template <int D, class ScalarT>
+using aabb_boundary = aabb<D, ScalarT, boundary_tag>;
+
 
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
+template <int D, class ScalarT, class TraitsT>
 struct aabb
 {
     using vec_t = vec<D, ScalarT>;

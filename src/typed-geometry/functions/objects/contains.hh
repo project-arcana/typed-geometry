@@ -3,7 +3,6 @@
 #include <cmath>
 
 #include <typed-geometry/types/objects/aabb.hh>
-#include <typed-geometry/types/objects/ball.hh>
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -29,13 +28,13 @@ namespace tg
 {
 // default implementation if distance(a, pos) is available
 template <class A, int D, class ScalarT>
-[[nodiscard]] constexpr auto contains(A const& a, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0)) -> decltype(ScalarT(distance(a, p)), false)
+[[nodiscard]] constexpr auto contains(A const& a, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0)) -> decltype(ScalarT(distance(a, p)), false)
 {
     return distance(a, p) <= eps;
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     if (eps > ScalarT(0))
         return distance_sqr(b, o) < eps * eps;
@@ -43,30 +42,30 @@ template <int D, class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(aabb<1, ScalarT> const& b, ScalarT const& o, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(aabb<1, ScalarT> const& b, ScalarT const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     return b.min.x - eps <= o && o <= b.max.x + eps;
 }
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(aabb<1, ScalarT> const& b, pos<1, ScalarT> const& o, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(aabb<1, ScalarT> const& b, pos<1, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps;
 }
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(aabb<2, ScalarT> const& b, pos<2, ScalarT> const& o, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(aabb<2, ScalarT> const& b, pos<2, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps;
 }
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(aabb<3, ScalarT> const& b, pos<3, ScalarT> const& o, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(aabb<3, ScalarT> const& b, pos<3, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps && //
            b.min.z - eps <= o.z && o.z <= b.max.z + eps;
 }
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(aabb<4, ScalarT> const& b, pos<4, ScalarT> const& o, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(aabb<4, ScalarT> const& b, pos<4, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     return b.min.x - eps <= o.x && o.x <= b.max.x + eps && //
            b.min.y - eps <= o.y && o.y <= b.max.y + eps && //
@@ -75,7 +74,7 @@ template <class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto r = o - b.center;
     // TODO: unroll
@@ -86,30 +85,21 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(aabb<D, ScalarT> const& b, aabb<D, ScalarT> const& o, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(aabb<D, ScalarT> const& b, aabb<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     return contains(b, o.min, eps) && contains(b, o.max, eps);
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(ball<D, ScalarT> const& s, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto r = s.radius + eps;
     return distance_sqr(s.center, p) <= r * r;
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, ScalarT eps = ScalarT(0))
-{
-    auto const d2 = distance_sqr(s.center, p);
-    auto const s2 = s.radius * s.radius;
-    auto const e2 = eps * eps;
-    return d2 - e2 <= s2 && s2 <= d2 + e2;
-}
-
 // Note that eps is used to compare 2D areas, not 1D lengths
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto pv0 = t.pos0 - p;
     auto pv1 = t.pos1 - p;
@@ -177,19 +167,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(circle<2, ScalarT> const& c, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
-{
-    return abs(distance_sqr(c.center, p) - c.radius * c.radius) <= eps * eps;
-}
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(disk<2, ScalarT> const& d, pos<2, ScalarT> const& p, ScalarT eps = ScalarT(0))
-{
-    auto r = d.radius + eps;
-    return distance_sqr(d.center, p) <= r * r;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto center = c.base.center - eps * c.base.normal;
 
@@ -204,7 +182,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(inf_cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, ScalarT eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(inf_cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apex = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
     return angle_between(p - apex, c.opening_dir) <= c.opening_angle;

@@ -3,6 +3,7 @@
 #include "../dir.hh"
 #include "../pos.hh"
 #include "line.hh"
+#include "traits.hh"
 
 namespace tg
 {
@@ -11,7 +12,7 @@ namespace tg
  *
  * An infinite tube is defined by a position and an axis
  */
-template <int D, class ScalarT>
+template <int D, class ScalarT, class TraitsT = default_object_tag>
 struct inf_cylinder;
 
 // Common infinte tube types
@@ -21,8 +22,11 @@ using dinf_cylinder3 = inf_cylinder<3, f64>;
 using iinf_cylinder3 = inf_cylinder<3, i32>;
 using uinf_cylinder3 = inf_cylinder<3, u32>;
 
-// ======== IMPLEMENTATION ========
 template <int D, class ScalarT>
+using inf_cylinder_boundary = inf_cylinder<D, ScalarT, boundary_tag>;
+
+// ======== IMPLEMENTATION ========
+template <int D, class ScalarT, class TraitsT>
 struct inf_cylinder
 {
     using pos_t = pos<D, ScalarT>;

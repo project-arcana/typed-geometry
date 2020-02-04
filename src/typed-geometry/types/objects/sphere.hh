@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../pos.hh"
+#include "traits.hh"
 
 #include <typed-geometry/types/scalars/default.hh>
 
@@ -9,7 +10,7 @@ namespace tg
 /**
  * A ObjectD-dimensional sphere embedded in a DomainD space
  */
-template <int ObjectD, class ScalarT, int DomainD = ObjectD>
+template <int ObjectD, class ScalarT, int DomainD = ObjectD, class TraitsT = default_object_tag>
 struct sphere;
 
 // Common sphere types
@@ -46,11 +47,14 @@ using dsphere2in3 = sphere<2, f64, 3>;
 using isphere2in3 = sphere<2, i32, 3>;
 using usphere2in3 = sphere<2, u32, 3>;
 
+// boundary
+template <int ObjectD, class ScalarT, int DomainD = ObjectD>
+using sphere_boundary = sphere<ObjectD, ScalarT, DomainD, boundary_tag>;
 
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
-struct sphere<D, ScalarT, D>
+template <int D, class ScalarT, class TraitsT>
+struct sphere<D, ScalarT, D, TraitsT>
 {
     using scalar_t = ScalarT;
     using pos_t = pos<D, ScalarT>;
@@ -67,8 +71,8 @@ struct sphere<D, ScalarT, D>
     [[nodiscard]] bool operator!=(sphere const& rhs) const { return !operator==(rhs); }
 };
 
-template <class ScalarT>
-struct sphere<2, ScalarT, 3>
+template <class ScalarT, class TraitsT>
+struct sphere<2, ScalarT, 3, TraitsT>
 {
     using scalar_t = ScalarT;
     using pos_t = pos<3, ScalarT>;

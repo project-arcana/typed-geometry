@@ -4,6 +4,7 @@
 #include "../mat.hh"
 #include "../pos.hh"
 #include "../vec.hh"
+#include "traits.hh"
 
 #include "aabb.hh"
 
@@ -14,7 +15,7 @@
 
 namespace tg
 {
-template <int ObjectD, class ScalarT, int DomainD = ObjectD>
+template <int ObjectD, class ScalarT, int DomainD = ObjectD, class TraitsT = default_object_tag>
 struct box;
 
 // Common box types
@@ -50,10 +51,14 @@ using dbox2in3 = box<2, f64, 3>;
 using ibox2in3 = box<2, i32, 3>;
 using ubox2in3 = box<2, u32, 3>;
 
+template <int ObjectD, class ScalarT, int DomainD = ObjectD>
+using box_boundary = box<ObjectD, ScalarT, DomainD, boundary_tag>;
+
+
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
-struct box<D, ScalarT, D>
+template <int D, class ScalarT, class TraitsT>
+struct box<D, ScalarT, D, TraitsT>
 {
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
@@ -68,14 +73,14 @@ struct box<D, ScalarT, D>
 
     constexpr box() = default;
     constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
-    constexpr box(aabb<D, ScalarT> const& b); // requires tg.hh
+    constexpr box(aabb<D, ScalarT, TraitsT> const& b); // requires tg.hh
 
     [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
     [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
 };
 
-template <class ScalarT>
-struct box<2, ScalarT, 3>
+template <class ScalarT, class TraitsT>
+struct box<2, ScalarT, 3, TraitsT>
 {
     using vec_t = vec<3, ScalarT>;
     using dir_t = dir<3, ScalarT>;

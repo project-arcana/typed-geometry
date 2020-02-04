@@ -1,25 +1,23 @@
 #pragma once
 
+#include <typed-geometry/detail/optional.hh>
 #include <typed-geometry/feature/assert.hh>
 #include <typed-geometry/functions/basic/scalar_math.hh>
-#include <typed-geometry/detail/optional.hh>
 
 #include <typed-geometry/types/objects/capsule.hh>
-#include <typed-geometry/types/objects/circle.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
-#include <typed-geometry/types/objects/tube.hh>
 
 #include <typed-geometry/functions/vector/cross.hh>
 #include <typed-geometry/functions/vector/dot.hh>
 #include <typed-geometry/functions/vector/length.hh>
 
-#include "closest_points.hh"
 #include "aabb.hh"
+#include "closest_points.hh"
 #include "contains.hh"
 #include "direction.hh"
 #include "normal.hh"
@@ -255,7 +253,7 @@ template <int D, class ScalarT>
 
 // ray - tube
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, tube<3, ScalarT> const& c)
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter_no_caps(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
 {
     auto cdir = direction(c);
     auto cosA = dot(cdir, r.dir);
@@ -305,7 +303,7 @@ template <class ScalarT>
 
 // ray - disk
 template <class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, disk<3, ScalarT> const& d)
+[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, sphere<2, ScalarT, 3> const& d)
 {
     auto const t = intersection_parameter(r, plane<3, ScalarT>(d.normal, d.center));
     if (!t.has_value())
@@ -366,9 +364,9 @@ template <class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
 {
     auto const dir = direction(c);
-    auto const t_cyl = closest_intersection_parameter(r, tube<3, ScalarT>(c.axis, c.radius));
-    auto const t_cap0 = intersection_parameter(r, disk<3, ScalarT>(c.axis.pos0, c.radius, dir));
-    auto const t_cap1 = intersection_parameter(r, disk<3, ScalarT>(c.axis.pos1, c.radius, dir));
+    auto const t_cyl = closest_intersection_parameter_no_caps(r, cylinder<3, ScalarT>(c.axis, c.radius));
+    auto const t_cap0 = intersection_parameter(r, sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, dir));
+    auto const t_cap1 = intersection_parameter(r, sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, dir));
 
     optional<ScalarT> t;
 
@@ -390,7 +388,7 @@ template <class ScalarT>
 // returns intersection circle of sphere and sphere (normal points from a to b)
 // for now does not work if spheres are identical (result would be a sphere3 again)
 template <class ScalarT>
-[[nodiscard]] constexpr optional<circle<3, ScalarT>> intersection(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+[[nodiscard]] constexpr optional<sphere_boundary<2, ScalarT, 3>> intersection(sphere_boundary<3, ScalarT> const& a, sphere_boundary<3, ScalarT> const& b)
 {
     auto d2 = distance_sqr(a.center, b.center);
 
@@ -437,13 +435,13 @@ template <class ScalarT>
     auto irad = sqrt(ar2 - t * t * d2);
 
     // non-empty intersection (circle)
-    return tg::circle3{ipos, irad, dir<3, ScalarT>((b.center - a.center) / d)};
+    return sphere_boundary<2, ScalarT, 3>{ipos, irad, dir<3, ScalarT>((b.center - a.center) / d)};
 }
 
 // returns intersection points of two circles in 2D
 // for now does not work if circles are identical (result would be a circle2 again)
 template <class ScalarT>
-[[nodiscard]] constexpr optional<pair<pos<2, ScalarT>, pos<2, ScalarT>>> intersection(circle<2, ScalarT> const& a, circle<2, ScalarT> const& b)
+[[nodiscard]] constexpr optional<array<pos<2, ScalarT>, 2>> intersection(sphere_boundary<2, ScalarT> const& a, sphere_boundary<2, ScalarT> const& b)
 {
     if (a.center == b.center && a.radius == b.radius)
         return {}; // degenerate case
@@ -476,7 +474,7 @@ template <class ScalarT>
     auto p_above = p_between + h_by_d * a_to_b_swap;
     auto p_below = p_between - h_by_d * a_to_b_swap;
 
-    return tg::pair{p_above, p_below};
+    return array<pos<2, ScalarT>, 2>{p_above, p_below};
 }
 
 

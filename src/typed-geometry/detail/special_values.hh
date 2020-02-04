@@ -321,21 +321,22 @@ constexpr mat<C, R, ScalarT> mat<C, R, ScalarT>::diag(vec<detail::min(C, R), Sca
 // Objects
 
 
-template <int D, class ScalarT>
-const aabb<D, ScalarT> aabb<D, ScalarT>::minus_one_to_one = {tg::pos<D, ScalarT>(ScalarT(-1)), tg::pos<D, ScalarT>(ScalarT(1))};
-template <int D, class ScalarT>
-const aabb<D, ScalarT> aabb<D, ScalarT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0)), tg::pos<D, ScalarT>(ScalarT(1))};
-template <int D, class ScalarT>
-const aabb<D, ScalarT> aabb<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>(ScalarT(-0.5)), tg::pos<D, ScalarT>(ScalarT(0.5))};
+template <int D, class ScalarT, class TraitsT>
+const aabb<D, ScalarT, TraitsT> aabb<D, ScalarT, TraitsT>::minus_one_to_one = {tg::pos<D, ScalarT>(ScalarT(-1)), tg::pos<D, ScalarT>(ScalarT(1))};
+template <int D, class ScalarT, class TraitsT>
+const aabb<D, ScalarT, TraitsT> aabb<D, ScalarT, TraitsT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0)), tg::pos<D, ScalarT>(ScalarT(1))};
+template <int D, class ScalarT, class TraitsT>
+const aabb<D, ScalarT, TraitsT> aabb<D, ScalarT, TraitsT>::unit_centered = {tg::pos<D, ScalarT>(ScalarT(-0.5)), tg::pos<D, ScalarT>(ScalarT(0.5))};
 
-template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::minus_one_to_one = {tg::pos<D, ScalarT>::zero, tg::mat<D, D, ScalarT>::identity};
-template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::unit_from_zero = {tg::pos<D, ScalarT>(ScalarT(0.5)), tg::mat<D, D, ScalarT>::diag(ScalarT(0.5))};
-template <int D, class ScalarT>
-const box<D, ScalarT> box<D, ScalarT>::unit_centered = {tg::pos<D, ScalarT>::zero, tg::mat<D, D, ScalarT>::diag(ScalarT(0.5))};
+template <int D, class ScalarT, class TraitsT>
+const box<D, ScalarT, D, TraitsT> box<D, ScalarT, D, TraitsT>::minus_one_to_one = {tg::pos<D, ScalarT>::zero, tg::mat<D, D, ScalarT>::identity};
+template <int D, class ScalarT, class TraitsT>
+const box<D, ScalarT, D, TraitsT> box<D, ScalarT, D, TraitsT>::unit_from_zero
+    = {tg::pos<D, ScalarT>(ScalarT(0.5)), tg::mat<D, D, ScalarT>::diag(ScalarT(0.5))};
+template <int D, class ScalarT, class TraitsT>
+const box<D, ScalarT, D, TraitsT> box<D, ScalarT, D, TraitsT>::unit_centered = {tg::pos<D, ScalarT>::zero, tg::mat<D, D, ScalarT>::diag(ScalarT(0.5))};
 
-template <int D, class ScalarT>
-const sphere<D, ScalarT> sphere<D, ScalarT>::unit = {pos<D, ScalarT>::zero, ScalarT(1)};
+template <int D, class ScalarT, class TraitsT>
+const sphere<D, ScalarT, D, TraitsT> sphere<D, ScalarT, D, TraitsT>::unit = {pos<D, ScalarT>::zero, ScalarT(1)};
 
 } // namespace tg

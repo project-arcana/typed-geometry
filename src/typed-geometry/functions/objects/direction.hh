@@ -5,7 +5,6 @@
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
-#include <typed-geometry/types/objects/tube.hh>
 
 #include <typed-geometry/functions/vector/normalize.hh>
 
@@ -38,11 +37,6 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr dir<D, ScalarT> direction(segment<D, ScalarT> const& s)
 {
     return normalize(s.pos1 - s.pos0);
-}
-template <int D, class ScalarT>
-[[nodiscard]] constexpr dir<D, ScalarT> direction(tube<D, ScalarT> const& c)
-{
-    return direction(c.axis);
 }
 template <int D, class ScalarT>
 [[nodiscard]] constexpr dir<D, ScalarT> direction(cylinder<D, ScalarT> const& c)

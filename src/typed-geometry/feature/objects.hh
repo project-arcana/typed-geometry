@@ -4,6 +4,7 @@
 
 #include <typed-geometry/functions/objects/aabb.hh>
 #include <typed-geometry/functions/objects/area.hh>
+#include <typed-geometry/functions/objects/boundary.hh>
 #include <typed-geometry/functions/objects/bounds.hh>
 #include <typed-geometry/functions/objects/centroid.hh>
 #include <typed-geometry/functions/objects/closest_points.hh>

@@ -2,10 +2,10 @@
 
 #include "../dir.hh"
 #include "../pos.hh"
-
 #include "box.hh"
 #include "quad.hh"
 #include "sphere.hh"
+#include "traits.hh"
 #include "triangle.hh"
 
 namespace tg
@@ -19,7 +19,7 @@ namespace tg
  * - triangle
  * - quad (must be planar)
  */
-template <class BaseT>
+template <class BaseT, class TraitsT = default_object_tag>
 struct pyramid;
 
 // Common pyramid types
@@ -28,8 +28,13 @@ using sphere_pyramid3 = pyramid<sphere2in3>;
 using triangle_pyramid3 = pyramid<triangle3>;
 using quad_pyramid3 = pyramid<quad3>;
 
-// ======== IMPLEMENTATION ========
 template <class BaseT>
+using pyramid_boundary = pyramid<BaseT, boundary_tag>;
+template <class BaseT>
+using pyramid_boundary_no_caps = pyramid<BaseT, boundary_no_caps_tag>;
+
+// ======== IMPLEMENTATION ========
+template <class BaseT, class TraitsT>
 struct pyramid
 {
     using scalar_t = typename BaseT::scalar_t;

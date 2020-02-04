@@ -250,25 +250,36 @@ struct hash<tg::fixed_int<4>>
     {                                                                                                                      \
         std::size_t operator()(tg::obj<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.m0, v.m1, v.m2); } \
     } // force ;
+#define TG_IMPL_OBJECT_HASH4(obj, m0, m1, m2, m3)                                                                                \
+    template <int D, class ScalarT>                                                                                              \
+    struct hash<tg::obj<D, ScalarT>>                                                                                             \
+    {                                                                                                                            \
+        std::size_t operator()(tg::obj<D, ScalarT> const& v) const noexcept { return tg::detail::hash(v.m0, v.m1, v.m2, v.m3); } \
+    } // force ;
+
+TG_IMPL_OBJECT_HASH2(line, pos, dir);
+TG_IMPL_OBJECT_HASH2(ray, origin, dir);
+TG_IMPL_OBJECT_HASH2(segment, pos0, pos1);
+
+TG_IMPL_OBJECT_HASH3(triangle, pos0, pos1, pos2);
+TG_IMPL_OBJECT_HASH4(quad, pos00, pos10, pos11, pos01);
 
 TG_IMPL_OBJECT_HASH2(aabb, min, max);
-TG_IMPL_OBJECT_HASH2(ball, center, radius);
 TG_IMPL_OBJECT_HASH2(box, center, half_extents);
 TG_IMPL_OBJECT_HASH2(capsule, axis, radius);
-TG_IMPL_OBJECT_HASH2(cone, base, height);
 TG_IMPL_OBJECT_HASH2(cylinder, axis, radius);
 TG_IMPL_OBJECT_HASH2(halfspace, normal, dis);
 TG_IMPL_OBJECT_HASH3(hemisphere, center, radius, normal);
 TG_IMPL_OBJECT_HASH2(plane, normal, dis);
 TG_IMPL_OBJECT_HASH3(inf_cone, apex, opening_dir, opening_angle);
 TG_IMPL_OBJECT_HASH2(inf_cylinder, axis, radius);
-TG_IMPL_OBJECT_HASH2(line, pos, dir);
-TG_IMPL_OBJECT_HASH2(pyramid, base, height);
-TG_IMPL_OBJECT_HASH2(ray, origin, dir);
-TG_IMPL_OBJECT_HASH2(segment, pos0, pos1);
 TG_IMPL_OBJECT_HASH2(sphere, center, radius);
-TG_IMPL_OBJECT_HASH3(triangle, pos0, pos1, pos2);
-TG_IMPL_OBJECT_HASH2(tube, axis, radius);
+
+template <class BaseT, class TraitsT>
+struct hash<tg::pyramid<BaseT, TraitsT>>
+{
+    std::size_t operator()(tg::pyramid<BaseT, TraitsT> const& v) const noexcept { return tg::detail::hash(v.base, v.height); }
+};
 
 template <class ScalarT>
 struct hash<tg::circle<2, ScalarT>>
