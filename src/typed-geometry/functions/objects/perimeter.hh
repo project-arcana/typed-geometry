@@ -16,14 +16,14 @@
 
 namespace tg
 {
-template <class ScalarT>
-[[nodiscard]] constexpr ScalarT perimeter(sphere<2, ScalarT> const& v)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT perimeter(sphere<2, ScalarT, 2, TraitsT> const& v)
 {
     return ScalarT(2) * tg::pi<ScalarT>.radians() * v.radius;
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr ScalarT perimeter(sphere<2, ScalarT, 3> const& v)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT perimeter(sphere<2, ScalarT, 3, TraitsT> const& v)
 {
     return ScalarT(2) * tg::pi<ScalarT>.radians() * v.radius;
 }
@@ -40,14 +40,14 @@ template <int D, class ScalarT>
     return distance(v.pos00, v.pos10) + distance(v.pos10, v.pos11) + distance(v.pos11, v.pos01) + distance(v.pos01, v.pos00);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr ScalarT perimeter(box<2, ScalarT> const& v)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT perimeter(box<2, ScalarT, 2, TraitsT> const& v)
 {
     return (length(v.half_extents[0]) + length(v.half_extents[1])) * ScalarT(4);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr ScalarT perimeter(box<2, ScalarT, 3> const& v)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT perimeter(box<2, ScalarT, 3, TraitsT> const& v)
 {
     return (length(v.half_extents[0]) + length(v.half_extents[1])) * ScalarT(4);
 }

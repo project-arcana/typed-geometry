@@ -60,6 +60,7 @@ using box_boundary = box<ObjectD, ScalarT, DomainD, boundary_tag>;
 template <int D, class ScalarT, class TraitsT>
 struct box<D, ScalarT, D, TraitsT>
 {
+    using scalar_t = ScalarT;
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
     using mat_t = mat<D, D, ScalarT>;
@@ -82,6 +83,7 @@ struct box<D, ScalarT, D, TraitsT>
 template <class ScalarT, class TraitsT>
 struct box<2, ScalarT, 3, TraitsT>
 {
+    using scalar_t = ScalarT;
     using vec_t = vec<3, ScalarT>;
     using dir_t = dir<3, ScalarT>;
     using pos_t = pos<3, ScalarT>;
@@ -89,28 +91,18 @@ struct box<2, ScalarT, 3, TraitsT>
 
     pos_t center;
     mat_t half_extents;
-    dir_t normal;
 
     constexpr box() = default;
-    constexpr box(pos_t center, mat_t const& half_extents, dir_t normal) : center(center), half_extents(half_extents), normal(normal) {}
+    constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
 
-    [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents && normal == rhs.normal; }
+    [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
     [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
 };
 
 template <class I, int ObjectD, class ScalarT, int DomainD, class TraitsT>
 constexpr void introspect(I&& i, box<ObjectD, ScalarT, DomainD, TraitsT>& v)
 {
-    if constexpr (ObjectD == DomainD)
-    {
-        i(v.center, "center");
-        i(v.half_extents, "half_extents");
-    }
-    else
-    {
-        i(v.center, "center");
-        i(v.half_extents, "half_extents");
-        i(v.normal, "normal");
-    }
+    i(v.center, "center");
+    i(v.half_extents, "half_extents");
 }
 } // namespace tg

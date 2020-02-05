@@ -8,7 +8,6 @@
 #include "frustum.hh"
 #include "halfspace.hh"
 #include "hemisphere.hh"
-#include "plane.hh"
 #include "inf_cone.hh"
 #include "inf_cylinder.hh"
 #include "line.hh"
@@ -21,3 +20,4 @@
 #include "segment.hh"
 #include "sphere.hh"
 #include "triangle.hh"
+#include "tube.hh"

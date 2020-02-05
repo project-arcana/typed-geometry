@@ -19,6 +19,7 @@
 #include "contains.hh"
 #include "coordinates.hh"
 #include "normal.hh"
+#include "boundary.hh"
 
 namespace tg
 {
@@ -151,7 +152,7 @@ template <int D, class ScalarT>
     if (contains(s, p))
         return p;
 
-    return project_to_boundary(p, s);
+    return project(p, boundary_of(s));
 }
 
 template <int D, class ScalarT>
