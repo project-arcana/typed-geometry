@@ -1,8 +1,8 @@
 #pragma once
 
-#include <immintrin.h>
-
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+#include <intrin.h>
+#else
 #include <x86intrin.h>
 #endif
 
