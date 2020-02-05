@@ -44,10 +44,10 @@ namespace tg
     auto abs_b = abs(b);
 
     // close to eps
-    if (abs_a < 1e-14f)
-        return abs_b < 1e-14f;
-    if (abs_b < 1e-14f)
-        return abs_a < 1e-14f;
+    if (abs_a < 1e-14)
+        return abs_b < 1e-14;
+    if (abs_b < 1e-14)
+        return abs_a < 1e-14;
 
     // otherwise, different signs => unequal
     if ((a < 0) != (b < 0))
@@ -55,9 +55,9 @@ namespace tg
 
     // otherwise have 1e-14f relative margin
     if (abs_a < abs_b)
-        return abs_a > 0.9999999999999f * abs_b;
+        return abs_a > 0.9999999999999 * abs_b;
     else
-        return abs_b > 0.9999999999999f * abs_a;
+        return abs_b > 0.9999999999999 * abs_a;
 }
 
 template <class T>

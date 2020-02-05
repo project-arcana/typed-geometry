@@ -2,6 +2,10 @@
 
 #include <immintrin.h>
 
+#ifndef _MSC_VER
+#include <x86intrin.h>
+#endif
+
 #include <typed-geometry/functions/basic/minmax.hh>
 #include <typed-geometry/types/scalars/fixed_int.hh>
 
