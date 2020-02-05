@@ -40,7 +40,7 @@ struct range
     constexpr range(int max_excl) : min(0), max(max_excl) {}
     constexpr range(int min, int max_excl) : min(min), max(max_excl) {}
 
-	// (explicitly comp_t because int overload for range<1>)
+    // (explicitly comp_t because int overload for range<1>)
     constexpr range(comp<D, int> max_excl) : min(0), max(max_excl) {}
     constexpr range(comp<D, int> min, comp<D, int> max_excl) : min(min), max(max_excl) {}
 
@@ -62,4 +62,12 @@ range(comp2)->range<2>;
 range(comp2, comp2)->range<2>;
 range(comp3)->range<3>;
 range(comp3, comp3)->range<3>;
+
+// reflection
+template <class I, int D>
+constexpr void introspect(I&& i, range<D>& v)
+{
+    i(v.min, "min");
+    i(v.max, "max");
+}
 }

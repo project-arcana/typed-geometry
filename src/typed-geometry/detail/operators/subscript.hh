@@ -7,8 +7,7 @@
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
-#include <typed-geometry/functions/interpolate.hh>
-#include <typed-geometry/functions/mix.hh>
+#include <typed-geometry/functions/vector/interpolate.hh>
 
 // defines operator[] for several object types
 // obj[coord] indexes into objects that are "coordinate addressable" like triangle or segment
@@ -34,8 +33,8 @@ template <int D, class ScalarT>
     return this->pos + this->dir * t;
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> aabb<D, ScalarT>::operator[](comp<D, ScalarT> const& c) const
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, ScalarT> aabb<D, ScalarT, TraitsT>::operator[](comp<D, ScalarT> const& c) const
 {
     return this->min + (this->max - this->min) * size(c);
 }

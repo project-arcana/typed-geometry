@@ -2,7 +2,6 @@
 
 #include <typed-geometry/detail/utility.hh>
 #include <typed-geometry/types/scalars/default.hh>
-#include <typed-geometry/types/scalars/fixed_int.hh>
 
 namespace tg
 {
@@ -32,16 +31,7 @@ struct fixed_uint
     constexpr fixed_uint(u64 rhs) { d[0] = rhs; }
 
     template <int rhs_words>
-    explicit constexpr fixed_uint(fixed_int<rhs_words> const& rhs)
-    {
-        d[0] = rhs.d[0];
-        if constexpr (rhs_words > 1 && words > 1)
-            d[1] = rhs.d[1];
-        if constexpr (rhs_words > 2 && words > 2)
-            d[2] = rhs.d[2];
-        if constexpr (rhs_words > 3 && words > 3)
-            d[3] = rhs.d[3];
-    }
+    explicit constexpr fixed_uint(fixed_int<rhs_words> const& rhs);
 
     // explicit down cast
     template <int rhs_words, class = enable_if<(rhs_words > words)>, class = void>
@@ -160,6 +150,19 @@ template <int w>
 constexpr bool operator!=(fixed_uint<w> const& lhs, u64 rhs) noexcept
 {
     return rhs != lhs;
+}
+
+template <class I, int w>
+constexpr void introspect(I&& i, fixed_uint<w>& v)
+{
+    i(v.d[0], "w0");
+    if constexpr (w >= 2)
+        i(v.d[1], "w1");
+    if constexpr (w >= 3)
+        i(v.d[2], "w2");
+    if constexpr (w >= 4)
+        i(v.d[3], "w3");
+    static_assert(w <= 4, "not supported");
 }
 
 } // namespace tg

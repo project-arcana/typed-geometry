@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typed-geometry/common/assert.hh>
-#include <typed-geometry/common/constants.hh>
+#include <typed-geometry/feature/assert.hh>
+#include <typed-geometry/functions/basic/constants.hh>
 #include <typed-geometry/detail/macros.hh>
 
 namespace tg
@@ -33,4 +33,11 @@ struct interval
 
 template <class T>
 const interval<T> interval<T>::complete = {-tg::inf<T>, tg::inf<T>};
+
+template <class I, class T>
+constexpr void introspect(I&& i, interval<T>& v)
+{
+    i(v.min, "min");
+    i(v.max, "max");
+}
 }

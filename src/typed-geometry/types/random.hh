@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/common/random.hh>
+#include <typed-geometry/functions/random/random.hh>
 
 namespace tg
 {

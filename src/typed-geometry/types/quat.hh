@@ -46,4 +46,14 @@ template <class T>
 const quaternion<T> quaternion<T>::zero = {T(0), T(0), T(0), T(0)};
 template <class T>
 const quaternion<T> quaternion<T>::identity = {T(0), T(0), T(0), T(1)};
+
+// reflection
+template <class I, class ScalarT>
+constexpr void introspect(I&& i, quaternion<ScalarT>& v)
+{
+    i(v.x, "x");
+    i(v.y, "y");
+    i(v.z, "z");
+    i(v.w, "w");
+}
 }
