@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../pos.hh"
 #include <typed-geometry/types/scalars/default.hh>
 #include "../dir.hh"
+#include "../pos.hh"
 
 // A halfspace has a distance to the origin and a normal direction
 // In dimension n, the distance is 1-dimensional and the normal direction is n-dimensional
@@ -62,4 +62,11 @@ struct halfspace
     [[nodiscard]] bool operator==(halfspace const& rhs) const { return normal == rhs.normal && dis == rhs.dis; }
     [[nodiscard]] bool operator!=(halfspace const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, halfspace<D, ScalarT>& v)
+{
+    i(v.normal, "normal");
+    i(v.dis, "dis");
+}
 } // namespace tg

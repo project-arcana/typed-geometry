@@ -8,6 +8,7 @@
 
 #include <typed-geometry/functions/basic/constants.hh>
 #include <typed-geometry/functions/basic/data_ptr.hh>
+#include <typed-geometry/functions/basic/hash.hh>
 #include <typed-geometry/functions/basic/limits.hh>
 #include <typed-geometry/functions/basic/minmax.hh>
 #include <typed-geometry/functions/basic/mix.hh>

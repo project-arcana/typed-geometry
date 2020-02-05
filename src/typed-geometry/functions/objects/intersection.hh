@@ -253,7 +253,7 @@ template <int D, class ScalarT>
 
 // ray - tube
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter_no_caps(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, cylinder_boundary_no_caps<3, ScalarT> const& c)
 {
     auto cdir = direction(c);
     auto cosA = dot(cdir, r.dir);
@@ -364,7 +364,7 @@ template <class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
 {
     auto const dir = direction(c);
-    auto const t_cyl = closest_intersection_parameter_no_caps(r, cylinder<3, ScalarT>(c.axis, c.radius));
+    auto const t_cyl = closest_intersection_parameter(r, cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
     auto const t_cap0 = intersection_parameter(r, sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, dir));
     auto const t_cap1 = intersection_parameter(r, sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, dir));
 
@@ -441,7 +441,7 @@ template <class ScalarT>
 // returns intersection points of two circles in 2D
 // for now does not work if circles are identical (result would be a circle2 again)
 template <class ScalarT>
-[[nodiscard]] constexpr optional<array<pos<2, ScalarT>, 2>> intersection(sphere_boundary<2, ScalarT> const& a, sphere_boundary<2, ScalarT> const& b)
+[[nodiscard]] constexpr optional<pair<pos<2, ScalarT>, pos<2, ScalarT>>> intersection(sphere_boundary<2, ScalarT> const& a, sphere_boundary<2, ScalarT> const& b)
 {
     if (a.center == b.center && a.radius == b.radius)
         return {}; // degenerate case
@@ -474,7 +474,7 @@ template <class ScalarT>
     auto p_above = p_between + h_by_d * a_to_b_swap;
     auto p_below = p_between - h_by_d * a_to_b_swap;
 
-    return array<pos<2, ScalarT>, 2>{p_above, p_below};
+    return pair{p_above, p_below};
 }
 
 

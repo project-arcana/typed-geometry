@@ -88,4 +88,20 @@ struct sphere<2, ScalarT, 3, TraitsT>
     [[nodiscard]] bool operator==(sphere const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
     [[nodiscard]] bool operator!=(sphere const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int ObjectD, class ScalarT, int DomainD, class TraitsT>
+constexpr void introspect(I&& i, sphere<ObjectD, ScalarT, DomainD, TraitsT>& v)
+{
+    if constexpr (ObjectD == DomainD)
+    {
+        i(v.center, "center");
+        i(v.radius, "radius");
+    }
+    else
+    {
+        i(v.center, "center");
+        i(v.radius, "radius");
+        i(v.normal, "normal");
+    }
+}
 } // namespace tg

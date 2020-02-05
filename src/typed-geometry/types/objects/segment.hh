@@ -56,4 +56,11 @@ struct segment
     [[nodiscard]] bool operator==(segment const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1; }
     [[nodiscard]] bool operator!=(segment const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, segment<D, ScalarT>& v)
+{
+    i(v.pos0, "pos0");
+    i(v.pos1, "pos1");
+}
 } // namespace tg

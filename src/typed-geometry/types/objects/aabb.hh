@@ -76,4 +76,11 @@ struct aabb
     [[nodiscard]] bool operator==(aabb const& rhs) const { return min == rhs.min && max == rhs.max; }
     [[nodiscard]] bool operator!=(aabb const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT, class TraitsT>
+constexpr void introspect(I&& i, aabb<D, ScalarT, TraitsT>& v)
+{
+    i(v.min, "min");
+    i(v.max, "max");
+}
 } // namespace tg

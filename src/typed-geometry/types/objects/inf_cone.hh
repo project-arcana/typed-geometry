@@ -50,4 +50,12 @@ struct inf_cone
     }
     [[nodiscard]] bool operator!=(inf_cone const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT, class TraitsT>
+constexpr void introspect(I&& i, inf_cone<D, ScalarT, TraitsT>& v)
+{
+    i(v.apex, "apex");
+    i(v.opening_dir, "opening_dir");
+    i(v.opening_angle, "opening_angle");
+}
 } // namespace tg

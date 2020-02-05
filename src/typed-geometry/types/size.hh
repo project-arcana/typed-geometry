@@ -104,4 +104,7 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(size, size, bool, operator!=, ||, !=);
 // deduction guides
 TG_IMPL_COMP_DEDUCTION_GUIDES(size);
 
+// reflection
+TG_IMPL_COMP_INTROSPECT(size);
+
 } // namespace tg

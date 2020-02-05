@@ -49,4 +49,11 @@ struct pyramid
     [[nodiscard]] bool operator==(pyramid const& rhs) const { return base == rhs.base && height == rhs.height; }
     [[nodiscard]] bool operator!=(pyramid const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, class BaseT, class TraitsT>
+constexpr void introspect(I&& i, pyramid<BaseT, TraitsT>& v)
+{
+    i(v.base, "base");
+    i(v.height, "height");
+}
 } // namespace tg

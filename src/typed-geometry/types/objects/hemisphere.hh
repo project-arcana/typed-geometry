@@ -66,4 +66,12 @@ struct hemisphere
     [[nodiscard]] bool operator==(hemisphere const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
     [[nodiscard]] bool operator!=(hemisphere const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT, class TraitsT>
+constexpr void introspect(I&& i, hemisphere<D, ScalarT, TraitsT>& v)
+{
+    i(v.center, "center");
+    i(v.radius, "radius");
+    i(v.normal, "normal");
+}
 } // namespace tg

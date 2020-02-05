@@ -45,4 +45,11 @@ struct capsule<3, ScalarT, TraitsT>
     [[nodiscard]] bool operator==(capsule const& rhs) const { return axis == rhs.axis && radius == rhs.radius; }
     [[nodiscard]] bool operator!=(capsule const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT, class TraitsT>
+constexpr void introspect(I&& i, capsule<D, ScalarT, TraitsT>& v)
+{
+    i(v.axis, "axis");
+    i(v.radius, "radius");
+}
 } // namespace tg

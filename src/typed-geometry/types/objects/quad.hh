@@ -67,7 +67,19 @@ struct quad
 
     [[nodiscard]] constexpr pos_t operator[](comp<2, ScalarT> const& barycoords) const;
 
-    [[nodiscard]] bool operator==(quad const& rhs) const { return pos00 == rhs.pos00 && pos10 == rhs.pos10 && pos11 == rhs.pos11 && pos01 == rhs.pos01; }
+    [[nodiscard]] bool operator==(quad const& rhs) const
+    {
+        return pos00 == rhs.pos00 && pos10 == rhs.pos10 && pos11 == rhs.pos11 && pos01 == rhs.pos01;
+    }
     [[nodiscard]] bool operator!=(quad const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, quad<D, ScalarT>& v)
+{
+    i(v.pos00, "pos00");
+    i(v.pos10, "pos10");
+    i(v.pos11, "pos11");
+    i(v.pos01, "pos01");
+}
 } // namespace tg

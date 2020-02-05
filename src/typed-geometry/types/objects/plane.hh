@@ -65,4 +65,11 @@ struct plane
     [[nodiscard]] bool operator==(plane const& rhs) const { return normal == rhs.normal && dis == rhs.dis; }
     [[nodiscard]] bool operator!=(plane const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, plane<D, ScalarT>& v)
+{
+    i(v.normal, "normal");
+    i(v.dis, "dis");
+}
 } // namespace tg

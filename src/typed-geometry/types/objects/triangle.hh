@@ -68,4 +68,12 @@ struct triangle
     [[nodiscard]] bool operator==(triangle const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1 && pos2 == rhs.pos2; }
     [[nodiscard]] bool operator!=(triangle const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, triangle<D, ScalarT>& v)
+{
+    i(v.pos0, "pos0");
+    i(v.pos1, "pos1");
+    i(v.pos2, "pos2");
+}
 } // namespace tg

@@ -97,4 +97,20 @@ struct box<2, ScalarT, 3, TraitsT>
     [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents && normal == rhs.normal; }
     [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int ObjectD, class ScalarT, int DomainD, class TraitsT>
+constexpr void introspect(I&& i, box<ObjectD, ScalarT, DomainD, TraitsT>& v)
+{
+    if constexpr (ObjectD == DomainD)
+    {
+        i(v.center, "center");
+        i(v.half_extents, "half_extents");
+    }
+    else
+    {
+        i(v.center, "center");
+        i(v.half_extents, "half_extents");
+        i(v.normal, "normal");
+    }
+}
 } // namespace tg

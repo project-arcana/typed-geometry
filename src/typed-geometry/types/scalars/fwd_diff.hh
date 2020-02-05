@@ -37,4 +37,11 @@ template <class T>
 {
     return fwd_diff<T>::input(value);
 }
+
+template <class I, class T>
+constexpr void introspect(I&& i, fwd_diff<T>& v)
+{
+    i(v.value, "value");
+    i(v.derivative, "derivative");
+}
 }

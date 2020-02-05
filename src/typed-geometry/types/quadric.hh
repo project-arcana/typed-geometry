@@ -269,4 +269,34 @@ public:
     template <class T>
     friend constexpr pos<3, T> closest_point(quadric<3, T> const& q);
 };
+
+// reflection
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, quadric<D, ScalarT>& v)
+{
+    if constexpr (D == 2)
+    {
+        i(v.A00, "A00");
+        i(v.A01, "A01");
+        i(v.A11, "A11");
+        i(v.b0, "b0");
+        i(v.b1, "b1");
+        i(v.c, "c");
+    }
+    else if constexpr (D == 3)
+    {
+        i(v.A00, "A00");
+        i(v.A01, "A01");
+        i(v.A02, "A02");
+        i(v.A11, "A11");
+        i(v.A12, "A12");
+        i(v.A22, "A22");
+        i(v.b0, "b0");
+        i(v.b1, "b1");
+        i(v.b2, "b2");
+        i(v.c, "c");
+    }
+    else
+        static_assert(always_false<D>, "quadrics are only defined for 2D and 3D");
+}
 }

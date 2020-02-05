@@ -38,13 +38,13 @@ template <int D, class ScalarT>
 {
     return normalize(s.pos1 - s.pos0);
 }
-template <int D, class ScalarT>
-[[nodiscard]] constexpr dir<D, ScalarT> direction(cylinder<D, ScalarT> const& c)
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr dir<D, ScalarT> direction(cylinder<D, ScalarT, TraitsT> const& c)
 {
     return direction(c.axis);
 }
-template <int D, class ScalarT>
-[[nodiscard]] constexpr dir<D, ScalarT> direction(capsule<D, ScalarT> const& c)
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr dir<D, ScalarT> direction(capsule<D, ScalarT, TraitsT> const& c)
 {
     return direction(c.axis);
 }

@@ -29,26 +29,26 @@ template <class ScalarT>
     return s.width * s.height;
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr ScalarT area(aabb<2, ScalarT> const& b)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT area(aabb<2, ScalarT, TraitsT> const& b)
 {
     return area(size<2, ScalarT>(b.max - b.min));
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr ScalarT area(aabb<3, ScalarT> const& b)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT area(aabb<3, ScalarT, TraitsT> const& b)
 {
     auto s = size<3, ScalarT>(b.max - b.min);
     return 2 * (s.width * s.height + s.width * s.depth + s.height * s.depth);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr ScalarT area(box<2, ScalarT> const& b)
+template <class ScalarT, int D, class TraitsT>
+[[nodiscard]] constexpr ScalarT area(box<2, ScalarT, D, TraitsT> const& b)
 {
     return 4 * sqrt(length_sqr(b.half_extents[0]) * length_sqr(b.half_extents[1]));
 }
-template <class ScalarT>
-[[nodiscard]] constexpr ScalarT area(box<3, ScalarT> const& b)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT area(box<3, ScalarT, 3, TraitsT> const& b)
 {
     auto w = length(b.half_extents[0]);
     auto h = length(b.half_extents[1]);
@@ -74,14 +74,14 @@ template <class ScalarT>
     return length(cross(b.pos1 - b.pos0, b.pos2 - b.pos0)) * fractional_result<ScalarT>(0.5);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> area(sphere<2, ScalarT> const& b)
+template <class ScalarT, int D, class TraitsT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area(sphere<2, ScalarT, D, TraitsT> const& b)
 {
     return tg::pi_scalar<fractional_result<ScalarT>> * tg::pow2(b.radius);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> area(sphere<3, ScalarT> const& b)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area(sphere<3, ScalarT, 3, TraitsT> const& b)
 {
     return (4 * tg::pi_scalar<fractional_result<ScalarT>>)*tg::pow2(b.radius);
 }

@@ -155,7 +155,7 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project_to_boundary(pos<D, ScalarT> const& p, sphere<D, ScalarT> const& sp)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, sphere_boundary<D, ScalarT> const& sp)
 {
     auto dir_to_p = tg::normalize_safe(p - sp.center);
     if (is_zero_vector(dir_to_p))
@@ -179,7 +179,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary(pos<3, ScalarT> const& p, sphere<2, ScalarT, 3> const& c)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, sphere_boundary<2, ScalarT, 3> const& c)
 {
     auto hp = project(p, plane<3, ScalarT>(c.normal, c.center));
 
@@ -209,7 +209,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere_boundary<3, ScalarT> const& h)
 {
     auto closestOnFlat = project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
 
@@ -240,7 +240,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project_to_boundary(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h) // boundary, including caps
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere_boundary<2, ScalarT> const& h) // boundary, including caps
 {
     auto v = perpendicular(h.normal) * h.radius;
     auto closestOnFlat = project(p, segment<2, ScalarT>(h.center - v, h.center + v));
@@ -271,20 +271,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_no_caps(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& t) // same as project(cylinder) for the internal case
-{
-    auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
-    auto sp = project(lp, t.axis);
-    auto dir = p - lp;
-    auto l = length(dir);
-    if (l > t.radius)
-        dir *= t.radius / l;
-
-    return sp + dir;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary_no_caps(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& t)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder_boundary_no_caps<3, ScalarT> const& t)
 {
     auto lp = project(p, line<3, ScalarT>(t.axis.pos0, normalize(t.axis.pos1 - t.axis.pos0)));
     auto sp = project(lp, t.axis);
@@ -296,7 +283,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary(pos<3, ScalarT> const& p, cylinder<3, ScalarT> const& c) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cylinder_boundary<3, ScalarT> const& c) // boundary, including caps
 {
     auto dir = direction(c);
 
@@ -345,7 +332,7 @@ template <class ScalarT>
     return project(p, cylinder<3, ScalarT>(c.axis, c.radius));
 }
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project_to_boundary(pos<3, ScalarT> const& p, capsule<3, ScalarT> const& c) // boundary, including caps
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule_boundary<3, ScalarT> const& c) // boundary, including caps
 {
     auto t = coordinates(c.axis, p);
 

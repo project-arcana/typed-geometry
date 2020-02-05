@@ -55,6 +55,8 @@
 
 #define TG_FORCE_SEMICOLON static_assert(true)
 
+#define TG_IMPL_STRINGIFY(expr) #expr
+#define TG_STRINGIFY(expr) TG_IMPL_STRINGIFY(expr)
 
 // =========
 // operations and classes
@@ -121,22 +123,22 @@
     constexpr ScalarT const& operator[](int i) const { return (&TG_IMPL_MEMBER(TYPE, 0))[i]; } \
     TG_FORCE_SEMICOLON
 
-#define TG_DECLARE_SELF_SWIZZLE(TYPE)                                                                                    \
-    template <int... Indices>                                                                                            \
+#define TG_DECLARE_SELF_SWIZZLE(TYPE)                                                                                     \
+    template <int... Indices>                                                                                             \
     [[nodiscard]] constexpr auto operator[](swizzler<Indices...> const& swizzle)                                          \
-    {                                                                                                                    \
-        return swizzle[*this];                                                                                           \
-    }                                                                                                                    \
-    template <int... Indices>                                                                                            \
+    {                                                                                                                     \
+        return swizzle[*this];                                                                                            \
+    }                                                                                                                     \
+    template <int... Indices>                                                                                             \
     [[nodiscard]] constexpr auto operator[](swizzler<Indices...> const& swizzle) const                                    \
-    {                                                                                                                    \
-        return swizzle[*this];                                                                                           \
-    }                                                                                                                    \
-    template <int... Indices>                                                                                            \
+    {                                                                                                                     \
+        return swizzle[*this];                                                                                            \
+    }                                                                                                                     \
+    template <int... Indices>                                                                                             \
     [[nodiscard]] constexpr TYPE<sizeof...(Indices), ScalarT> const operator()(swizzler<Indices...> const& swizzle) const \
-    {                                                                                                                    \
-        return swizzle(*this);                                                                                           \
-    }                                                                                                                    \
+    {                                                                                                                     \
+        return swizzle(*this);                                                                                            \
+    }                                                                                                                     \
     TG_FORCE_SEMICOLON
 
 #define TG_DECLARE_COMP_TYPE_1(TYPE)                                                                                                 \
@@ -239,7 +241,7 @@
 
 #define TG_IMPL_DEFINE_UNARY_OP(TYPE, OP)                                                                                                    \
     template <int D, class ScalarT>                                                                                                          \
-    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a)                                                           \
+    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a)                                                          \
     {                                                                                                                                        \
         if constexpr (D == 1)                                                                                                                \
             return {OP a.TG_IMPL_MEMBER(TYPE, 0)};                                                                                           \
@@ -256,7 +258,7 @@
 
 #define TG_IMPL_DEFINE_BINARY_OP(TYPE_A, TYPE_B, TYPE_R, OP)                                                                                 \
     template <int D, class ScalarT>                                                                                                          \
-    [[nodiscard]] constexpr TYPE_R<D, ScalarT> operator OP(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                          \
+    [[nodiscard]] constexpr TYPE_R<D, ScalarT> operator OP(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                         \
     {                                                                                                                                        \
         if constexpr (D == 1)                                                                                                                \
             return {a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0)};                                                             \
@@ -279,7 +281,7 @@
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)                                                                                              \
     template <int D, class ScalarT>                                                                                                                  \
-    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                    \
+    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                   \
     {                                                                                                                                                \
         if constexpr (D == 1)                                                                                                                        \
             return {a.TG_IMPL_MEMBER(TYPE, 0) OP b};                                                                                                 \
@@ -296,7 +298,7 @@
 
 #define TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP)                                                                                               \
     template <int D, class ScalarT>                                                                                                                  \
-    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(dont_deduce<ScalarT> const& a, TYPE<D, ScalarT> const& b)                                    \
+    [[nodiscard]] constexpr TYPE<D, ScalarT> operator OP(dont_deduce<ScalarT> const& a, TYPE<D, ScalarT> const& b)                                   \
     {                                                                                                                                                \
         if constexpr (D == 1)                                                                                                                        \
             return {a OP b.TG_IMPL_MEMBER(TYPE, 0)};                                                                                                 \
@@ -315,7 +317,7 @@
     /* scalar / type */                                                                                                                          \
     TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, /);                                                                                               \
     template <int D, class ScalarT>                                                                                                              \
-    [[nodiscard]] constexpr TYPE<D, ScalarT> operator/(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                  \
+    [[nodiscard]] constexpr TYPE<D, ScalarT> operator/(TYPE<D, ScalarT> const& a, dont_deduce<ScalarT> const& b)                                 \
     {                                                                                                                                            \
         if constexpr (is_floating_point<ScalarT>)                                                                                                \
             return a * ScalarT(1 / b);                                                                                                           \
@@ -336,9 +338,9 @@
     TG_IMPL_DEFINE_BINARY_OP_SCALAR_LEFT(TYPE, OP); \
     TG_IMPL_DEFINE_BINARY_OP_SCALAR_RIGHT(TYPE, OP)
 
-#define TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(TYPE, FUN)                                                                                                          \
+#define TG_IMPL_DEFINE_COMPWISE_UNARY_TO_COMP(TYPE, FUN)                                                                                                       \
     template <int D, class ScalarT>                                                                                                                            \
-    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                 \
+    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                \
     {                                                                                                                                                          \
         using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0)))>;                                                                                  \
                                                                                                                                                                \
@@ -361,7 +363,7 @@
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_UNARY(TYPE, FUN)                                                                                                          \
     template <int D, class ScalarT>                                                                                                                            \
-    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                 \
+    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a)                                                                                                \
     {                                                                                                                                                          \
         using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0)))>;                                                                                  \
                                                                                                                                                                \
@@ -384,7 +386,7 @@
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_BINARY(TYPE, FUN)                                                                                               \
     template <int D, class ScalarT>                                                                                                                  \
-    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b)                                                            \
+    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b)                                                           \
     {                                                                                                                                                \
         using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0)))>;                                             \
                                                                                                                                                      \
@@ -409,7 +411,7 @@
 
 #define TG_IMPL_DEFINE_COMPWISE_FUNC_TERNARY(TYPE, FUN)                                                                             \
     template <int D, class ScalarT>                                                                                                 \
-    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b, TYPE<D, ScalarT> const& c)                \
+    [[nodiscard]] constexpr auto FUN(TYPE<D, ScalarT> const& a, TYPE<D, ScalarT> const& b, TYPE<D, ScalarT> const& c)               \
     {                                                                                                                               \
         using R = remove_const_ref<decltype(FUN(a.TG_IMPL_MEMBER(TYPE, 0), b.TG_IMPL_MEMBER(TYPE, 0), c.TG_IMPL_MEMBER(TYPE, 0)))>; \
                                                                                                                                     \
@@ -438,7 +440,7 @@
 
 #define TG_IMPL_DEFINE_REDUCTION_OP_BINARY(TYPE_A, TYPE_B, RESULT_T, NAME, REDUCE, OP)                                                                     \
     template <int D, class ScalarT>                                                                                                                        \
-    [[nodiscard]] constexpr RESULT_T NAME(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                                                         \
+    [[nodiscard]] constexpr RESULT_T NAME(TYPE_A<D, ScalarT> const& a, TYPE_B<D, ScalarT> const& b)                                                        \
     {                                                                                                                                                      \
         if constexpr (D == 1)                                                                                                                              \
             return a.TG_IMPL_MEMBER(TYPE_A, 0) OP b.TG_IMPL_MEMBER(TYPE_B, 0);                                                                             \
@@ -492,6 +494,20 @@
     type(size<D, T> const&)->type<D, T>;                                                    \
     template <int D, class T>                                                               \
     type(dir<D, T> const&)->type<D, T> // enforce ;
+
+#define TG_IMPL_COMP_INTROSPECT(type)                                            \
+    template <class I, int D, class ScalarT>                                     \
+    constexpr void introspect(I&& i, type<D, ScalarT>& v)                        \
+    {                                                                            \
+        i(v.TG_IMPL_MEMBER(type, 0), TG_STRINGIFY(TG_IMPL_MEMBER(type, 0)));     \
+        if constexpr (D >= 2)                                                    \
+            i(v.TG_IMPL_MEMBER(type, 1), TG_STRINGIFY(TG_IMPL_MEMBER(type, 1))); \
+        if constexpr (D >= 3)                                                    \
+            i(v.TG_IMPL_MEMBER(type, 2), TG_STRINGIFY(TG_IMPL_MEMBER(type, 2))); \
+        if constexpr (D >= 4)                                                    \
+            i(v.TG_IMPL_MEMBER(type, 3), TG_STRINGIFY(TG_IMPL_MEMBER(type, 3))); \
+    }                                                                            \
+    TG_FORCE_SEMICOLON
 
 
 #define TG_IMPL_DEFINE_TRAIT(trait, result_type, default_val) \

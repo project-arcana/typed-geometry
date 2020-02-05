@@ -420,4 +420,17 @@ constexpr bool operator!=(mat<C, R, ScalarT> const& a, mat<C, R, ScalarT> const&
     return !(a == b);
 }
 
+// reflection
+template <class I, int C, int R, class ScalarT>
+constexpr void introspect(I&& i, mat<C, R, ScalarT>& v)
+{
+    i(v[0], "col0");
+    if constexpr (C >= 2)
+        i(v[1], "col1");
+    if constexpr (C >= 3)
+        i(v[2], "col2");
+    if constexpr (C >= 4)
+        i(v[3], "col3");
+}
+
 } // namespace tg

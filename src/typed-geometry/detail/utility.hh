@@ -298,5 +298,28 @@ using size_t_for = decltype(helper_size_t<N, Alignment>());
 /// Bug report: https://developercommunity.visualstudio.com/content/problem/800899/false-positive-for-c2975-on-alias-template-fixed-w.html
 template <class T, size_t N>
 using compact_size_t_typed = size_t_for<N, alignof(T)>;
+
+// adapted from https://stackoverflow.com/questions/23999573/convert-a-number-to-a-string-literal-with-constexpr
+template <unsigned... digits>
+struct digits_to_string_literal
+{
+    static const char value[];
+};
+
+template <unsigned... digits>
+constexpr char digits_to_string_literal<digits...>::value[] = {('0' + digits)..., 0};
+
+template <unsigned rem, unsigned... digits>
+struct number_to_string_literal_t : number_to_string_literal_t<rem / 10, rem % 10, digits...>
+{
+};
+
+template <unsigned... digits>
+struct number_to_string_literal_t<0, digits...> : digits_to_string_literal<digits...>
+{
+};
+
+template <unsigned num>
+inline constexpr char const* number_to_string_literal = number_to_string_literal_t<num>::value;
 }
 } // namespace tg
