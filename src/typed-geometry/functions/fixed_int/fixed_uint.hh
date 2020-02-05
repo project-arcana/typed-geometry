@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef _MSV_VER
+#ifdef _MSC_VER
 #include <intrin.h>
 #else
 #include <x86intrin.h>
