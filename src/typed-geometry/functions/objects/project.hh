@@ -361,12 +361,26 @@ template <class ScalarT>
     auto closestOnCone = project(p, inf_cone(c));
     return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
 }
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone_boundary_no_caps<3, ScalarT> const& c)
+{
+    auto baseCircle = sphere_boundary<2, ScalarT, 3>(c.base.center, c.base.radius, c.base.normal);
+    auto closestOnBase = project(p, baseCircle);
+    auto apex = c.base.center + c.height * c.base.normal;
+    if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
+        return closestOnBase;
+
+    // Return closer projection
+    auto infCone = inf_cone<3, ScalarT, boundary_tag>(cone<3, ScalarT, boundary_tag>(c.base, c.height));
+    auto closestOnCone = project(p, infCone);
+    return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
+}
 
 
 // ============== project to inf_cone ==============
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone_boundary<3, ScalarT> const& icone)
 {
     using dir_t = dir<3, ScalarT>;
     using vec2_t = vec<2, ScalarT>;
