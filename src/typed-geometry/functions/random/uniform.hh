@@ -342,7 +342,7 @@ template <class ScalarT, class Rng>
     auto totalArea = ScalarT(2) * capArea + sideArea;
     auto part = detail::uniform01<ScalarT>(rng) * totalArea;
     if (part < sideArea) // Uniform sampling on cylinder side
-        return uniform(rng, cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
+        return uniform(rng, boundary_no_caps_of(c));
 
     // Otherwise sampling on one of the caps
     auto capDisk = sphere<2, ScalarT, 3>(part < sideArea + capArea ? c.axis.pos0 : c.axis.pos1, c.radius, normalize(x));
@@ -379,7 +379,7 @@ template <class ScalarT, class Rng>
     auto totalArea = ScalarT(2) * capArea + sideArea;
     auto part = detail::uniform01<ScalarT>(rng) * totalArea;
     if (part < sideArea) // Uniform sampling on capsule side
-        return uniform(rng, cylinder_boundary<3, ScalarT>(c.axis, c.radius));
+        return uniform(rng, cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
 
     // Otherwise sampling on one of the caps
     auto capHemi = hemisphere_boundary_no_caps<3, ScalarT>();
