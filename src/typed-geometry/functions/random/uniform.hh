@@ -237,6 +237,11 @@ template <class ScalarT, class Rng>
 }
 // uniform_boundary(aabb1) == uniform(aabb1)
 template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, aabb_boundary<1, ScalarT> const& b)
+{
+    return {uniform(rng, b.min.x, b.max.x)};
+}
+template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, aabb_boundary<2, ScalarT> const& b)
 {
     auto extends = b.max - b.min;
