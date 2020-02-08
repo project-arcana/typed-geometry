@@ -1,11 +1,11 @@
 #pragma once
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "../detail/comp_traits.hh"
 #include "../detail/macros.hh"
 #include "../detail/scalar_traits.hh"
 #include "../detail/utility.hh"
 #include "fwd.hh"
-#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {
@@ -171,5 +171,8 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(vec, vec, bool, operator!=, ||, !=);
 
 // deduction guides
 TG_IMPL_COMP_DEDUCTION_GUIDES(vec);
+
+// reflection
+TG_IMPL_COMP_INTROSPECT(vec);
 
 } // namespace tg

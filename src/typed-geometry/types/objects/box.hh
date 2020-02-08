@@ -1,9 +1,10 @@
 #pragma once
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "../mat.hh"
 #include "../pos.hh"
-#include <typed-geometry/types/scalars/default.hh>
 #include "../vec.hh"
+#include "traits.hh"
 
 #include "aabb.hh"
 
@@ -14,7 +15,7 @@
 
 namespace tg
 {
-template <int D, class ScalarT>
+template <int ObjectD, class ScalarT, int DomainD = ObjectD, class TraitsT = default_object_tag>
 struct box;
 
 // Common box types
@@ -44,12 +45,22 @@ using ubox2 = box<2, u32>;
 using ubox3 = box<3, u32>;
 using ubox4 = box<4, u32>;
 
+using box2in3 = box<2, f32, 3>;
+using fbox2in3 = box<2, f32, 3>;
+using dbox2in3 = box<2, f64, 3>;
+using ibox2in3 = box<2, i32, 3>;
+using ubox2in3 = box<2, u32, 3>;
+
+template <int ObjectD, class ScalarT, int DomainD = ObjectD>
+using box_boundary = box<ObjectD, ScalarT, DomainD, boundary_tag>;
+
 
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
-struct box
+template <int D, class ScalarT, class TraitsT>
+struct box<D, ScalarT, D, TraitsT>
 {
+    using scalar_t = ScalarT;
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
     using mat_t = mat<D, D, ScalarT>;
@@ -63,9 +74,35 @@ struct box
 
     constexpr box() = default;
     constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
-    constexpr box(aabb<D, ScalarT> const& b); // requires tg.hh
+    constexpr box(aabb<D, ScalarT, TraitsT> const& b); // requires tg.hh
 
     [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
     [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
 };
+
+template <class ScalarT, class TraitsT>
+struct box<2, ScalarT, 3, TraitsT>
+{
+    using scalar_t = ScalarT;
+    using vec_t = vec<3, ScalarT>;
+    using dir_t = dir<3, ScalarT>;
+    using pos_t = pos<3, ScalarT>;
+    using mat_t = mat<2, 3, ScalarT>;
+
+    pos_t center;
+    mat_t half_extents;
+
+    constexpr box() = default;
+    constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
+
+    [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
+    [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
+};
+
+template <class I, int ObjectD, class ScalarT, int DomainD, class TraitsT>
+constexpr void introspect(I&& i, box<ObjectD, ScalarT, DomainD, TraitsT>& v)
+{
+    i(v.center, "center");
+    i(v.half_extents, "half_extents");
+}
 } // namespace tg

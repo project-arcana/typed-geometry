@@ -1,8 +1,9 @@
 #pragma once
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "../dir.hh"
 #include "../pos.hh"
-#include <typed-geometry/types/scalars/default.hh>
+#include "traits.hh"
 
 namespace tg
 {
@@ -10,7 +11,7 @@ namespace tg
  * Half of the surface of a completely round ball
  * (which half is given by direction vector)
  */
-template <int D, class ScalarT>
+template <int D, class ScalarT, class TraitsT = default_object_tag>
 struct hemisphere;
 
 // Common hemisphere types
@@ -40,10 +41,15 @@ using uhemisphere2 = hemisphere<2, u32>;
 using uhemisphere3 = hemisphere<3, u32>;
 using uhemisphere4 = hemisphere<4, u32>;
 
+template <int D, class ScalarT>
+using hemisphere_boundary = hemisphere<D, ScalarT, boundary_tag>;
+template <int D, class ScalarT>
+using hemisphere_boundary_no_caps = hemisphere<D, ScalarT, boundary_no_caps_tag>;
+
 
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
+template <int D, class ScalarT, class TraitsT>
 struct hemisphere
 {
     using scalar_t = ScalarT;
@@ -60,4 +66,12 @@ struct hemisphere
     [[nodiscard]] bool operator==(hemisphere const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
     [[nodiscard]] bool operator!=(hemisphere const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT, class TraitsT>
+constexpr void introspect(I&& i, hemisphere<D, ScalarT, TraitsT>& v)
+{
+    i(v.center, "center");
+    i(v.radius, "radius");
+    i(v.normal, "normal");
+}
 } // namespace tg

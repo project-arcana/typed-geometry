@@ -61,4 +61,11 @@ struct line
     [[nodiscard]] bool operator==(line const& rhs) const { return pos == rhs.pos && dir == rhs.dir; }
     [[nodiscard]] bool operator!=(line const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, line<D, ScalarT>& v)
+{
+    i(v.pos, "pos");
+    i(v.dir, "dir");
+}
 } // namespace tg

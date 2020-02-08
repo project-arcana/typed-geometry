@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../pos.hh"
 #include <typed-geometry/types/scalars/default.hh>
-#include "../size.hh"
 #include "../dir.hh"
+#include "../pos.hh"
+#include "../size.hh"
 
 namespace tg
 {
@@ -57,4 +57,11 @@ struct ray
     [[nodiscard]] bool operator==(ray const& rhs) const { return origin == rhs.origin && dir == rhs.dir; }
     [[nodiscard]] bool operator!=(ray const& rhs) const { return !operator==(rhs); }
 };
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, ray<D, ScalarT>& v)
+{
+    i(v.origin, "origin");
+    i(v.dir, "dir");
+}
 } // namespace tg

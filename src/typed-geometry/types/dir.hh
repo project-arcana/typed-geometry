@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/common/assert.hh>
+#include <typed-geometry/feature/assert.hh>
 
 #include "../detail/comp_traits.hh"
 #include "../detail/macros.hh"
@@ -177,5 +177,8 @@ TG_IMPL_DEFINE_REDUCTION_OP_BINARY(dir, dir, bool, operator!=, ||, !=);
 
 // deduction guides
 TG_IMPL_COMP_DEDUCTION_GUIDES(dir);
+
+// reflection
+TG_IMPL_COMP_INTROSPECT(dir);
 
 } // namespace tg
