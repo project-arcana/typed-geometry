@@ -288,7 +288,7 @@ template <class ScalarT>
 {
     auto dir = direction(c);
 
-    auto p0 = project_to_boundary(p, c);
+    auto p0 = project(p, cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
     auto p1 = project(p, sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, dir));
     auto p2 = project(p, sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, dir));
 
@@ -338,12 +338,12 @@ template <class ScalarT>
     auto t = coordinates(c.axis, p);
 
     if (t < ScalarT(0))
-        return project_to_boundary(p, sphere<3, ScalarT>(c.axis.pos0, c.radius));
+        return project(p, sphere_boundary<3, ScalarT>(c.axis.pos0, c.radius));
 
     if (t > ScalarT(1))
-        return project_to_boundary(p, sphere<3, ScalarT>(c.axis.pos1, c.radius));
+        return project(p, sphere_boundary<3, ScalarT>(c.axis.pos1, c.radius));
 
-    return project_to_boundary(p, cylinder<3, ScalarT>(c.axis, c.radius));
+    return project(p, cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
 }
 
 
