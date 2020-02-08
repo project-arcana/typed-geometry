@@ -54,3 +54,6 @@ AccessModifierOffset: -4
 FixNamespaceComments: false
 AlignTrailingComments: true
 CommentPragmas: '!Api.*'
+
+# Includes
+IncludeBlocks: Preserve
