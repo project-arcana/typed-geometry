@@ -1,11 +1,11 @@
 #pragma once
 
-#include <typed-geometry/functions/basic/scalar_math.hh>
-#include <typed-geometry/functions/vector/distance.hh>
 #include <typed-geometry/detail/operators/ops_pos.hh>
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/detail/tg_traits.hh>
+#include <typed-geometry/functions/basic/scalar_math.hh>
+#include <typed-geometry/functions/vector/distance.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/segment.hh>
@@ -59,6 +59,12 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const& p, plane<D, ScalarT> const& pl)
 {
     return abs(signed_distance(p, pl));
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr auto signed_distance(pos<D, ScalarT> const& p, sphere_boundary<D, ScalarT> const& s) -> decltype(distance(p, s.center) - s.radius)
+{
+    return distance(p, s.center) - s.radius;
 }
 
 

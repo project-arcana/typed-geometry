@@ -39,7 +39,7 @@
 // "intersection_parameter" returns a coordinates for the first object such that a[coords] == intersection(a, b)
 // "intersection_parameters" returns coordinates for both objects
 // "intersection_exact" returns a variant type describing all possible intersections, including degenerate cases
-// the "closest_" variants only return the closest intersection for objects where thay concept is applicable (e.g. for rays)
+// the "closest_" variants only return the closest intersection for objects where that concept is applicable (e.g. for rays)
 
 // Notes:
 //  - intersection_exact is currently unsupported
