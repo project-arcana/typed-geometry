@@ -590,31 +590,38 @@ template <int D, class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r,
+                                                                 triangle<3, ScalarT> const& t,
+                                                                 dont_deduce<ScalarT> eps = 100 * tg::epsilon<ScalarT>)
 {
-    auto constexpr eps = 0.000001f;
-
     auto e1 = t.pos1 - t.pos0;
     auto e2 = t.pos2 - t.pos0;
 
-    auto pvec = tg::cross(tg::vec<3, ScalarT>(r.dir), e2);
+    auto pvec = tg::cross(r.dir, e2);
     auto det = dot(pvec, e1);
+
+    if (det < ScalarT(0))
+    {
+        std::swap(e1, e2);
+        pvec = tg::cross(r.dir, e2);
+        det = -det;
+    }
 
     if (det < eps)
         return {};
 
     auto tvec = r.origin - t.pos0;
     auto u = dot(tvec, pvec);
-    if (u < 0.f || u > det)
+    if (u < ScalarT(0) || u > det)
         return {};
 
     auto qvec = cross(tvec, e1);
     auto v = dot(r.dir, qvec);
-    if (v < 0.f || v + u > det)
+    if (v < ScalarT(0) || v + u > det)
         return {};
 
-    auto lambda = (1.f / det) * dot(e2, qvec);
-    return (lambda > 0) ? lambda : tg::optional<float>();
+    auto lambda = (ScalarT(1) / det) * dot(e2, qvec);
+    return (lambda > ScalarT(0)) ? lambda : tg::optional<ScalarT>();
 }
 
 template <class ScalarT>
