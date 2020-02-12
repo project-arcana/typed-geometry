@@ -51,6 +51,40 @@ using usphere2in3 = sphere<2, u32, 3>;
 template <int ObjectD, class ScalarT, int DomainD = ObjectD>
 using sphere_boundary = sphere<ObjectD, ScalarT, DomainD, boundary_tag>;
 
+// related objects
+template <int D, class ScalarT, class TraitsT = default_object_tag>
+using disk = sphere<2, ScalarT, D, TraitsT>;
+template <int D, class ScalarT>
+using disk_boundary = disk<D, ScalarT, boundary_tag>;
+
+using disk2 = disk<2, f32>;
+using fdisk2 = disk<2, f32>;
+using ddisk2 = disk<2, f64>;
+using idisk2 = disk<2, i32>;
+using udisk2 = disk<2, u32>;
+
+using disk3 = disk<3, f32>;
+using fdisk3 = disk<3, f32>;
+using ddisk3 = disk<3, f64>;
+using idisk3 = disk<3, i32>;
+using udisk3 = disk<3, u32>;
+
+template <int D, class ScalarT>
+using circle = sphere<2, ScalarT, D, boundary_tag>;
+
+using circle2 = circle<2, f32>;
+using fcircle2 = circle<2, f32>;
+using dcircle2 = circle<2, f64>;
+using icircle2 = circle<2, i32>;
+using ucircle2 = circle<2, u32>;
+
+using circle3 = circle<3, f32>;
+using fcircle3 = circle<3, f32>;
+using dcircle3 = circle<3, f64>;
+using icircle3 = circle<3, i32>;
+using ucircle3 = circle<3, u32>;
+
+
 // ======== IMPLEMENTATION ========
 
 template <int D, class ScalarT, class TraitsT>
