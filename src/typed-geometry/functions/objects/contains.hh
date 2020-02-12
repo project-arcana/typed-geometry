@@ -178,7 +178,28 @@ template <class ScalarT>
     auto pRing = c.base.center + (c.base.radius + eps) * any_normal(c.base.normal);
 
     // Inside iff the point is closer to the axis (in terms of angle wrt. the apex) than some point on the outer boundary
-    return dot(-c.base.normal, normalize(p - apex)) > dot(-c.base.normal, normalize(pRing - apex));
+    return dot(-c.base.normal, normalize(p - apex)) >= dot(-c.base.normal, normalize(pRing - apex));
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(cone_boundary_no_caps<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    if (eps == ScalarT(0))
+    {
+        if (dot(p - c.base.center, c.base.normal) < ScalarT(0))
+            return false; // Not inside if on the other side of the base
+
+        auto apex = c.base.center + c.height * c.base.normal;
+        auto pRing = c.base.center + c.base.radius * any_normal(c.base.normal);
+
+        // On the surface iff the point has the same angle to the axis (wrt. the apex) as some point on the outer boundary
+        return dot(-c.base.normal, normalize(p - apex)) == dot(-c.base.normal, normalize(pRing - apex));
+    }
+    else
+    {
+        // On the boundary within eps if inside an by eps larger and outside of an by eps smaller cone
+        auto solidCone = cone<3, ScalarT, default_object_tag>(c.base, c.height);
+        return contains(solidCone, p, eps) && !contains(solidCone, p, -eps);
+    }
 }
 
 template <class ScalarT>
@@ -186,6 +207,13 @@ template <class ScalarT>
 {
     auto apex = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
     return angle_between(p - apex, c.opening_dir) <= c.opening_angle;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cone_boundary<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto apexOuter = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
+    auto apexInner = c.apex + (c.opening_dir * eps); // Shift apex inwards to subtract eps
+    return angle_between(p - apexOuter, c.opening_dir) <= c.opening_angle && angle_between(p - apexInner, c.opening_dir) >= c.opening_angle;
 }
 
 } // namespace tg

@@ -92,6 +92,11 @@ template <class ScalarT>
     return tg::pi_scalar<fractional_result<ScalarT>> * tg::pow2(b.radius) * 2           // caps
            + 2 * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis); // mantle
 }
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area(cylinder_boundary_no_caps<3, ScalarT> const& b)
+{
+    return 2 * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis); // mantle
+}
 
 template <class ScalarT>
 [[nodiscard]] constexpr ScalarT area(cone<3, ScalarT> const& b)

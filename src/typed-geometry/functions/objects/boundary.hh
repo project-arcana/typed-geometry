@@ -30,11 +30,6 @@ template <class ScalarT, class TraitsT>
     return {v.center, v.half_extents, v.normal};
 }
 template <int D, class ScalarT, class TraitsT>
-[[nodiscard]] constexpr hemisphere_boundary<D, ScalarT> boundary_of(hemisphere<D, ScalarT, TraitsT> const& v)
-{
-    return {v.center, v.radius, v.normal};
-}
-template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr capsule_boundary<D, ScalarT> boundary_of(capsule<D, ScalarT, TraitsT> const& v)
 {
     return {v.axis, v.radius};
@@ -43,6 +38,11 @@ template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr cylinder_boundary<D, ScalarT> boundary_of(cylinder<D, ScalarT, TraitsT> const& v)
 {
     return {v.axis, v.radius};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr hemisphere_boundary<D, ScalarT> boundary_of(hemisphere<D, ScalarT, TraitsT> const& v)
+{
+    return {v.center, v.radius, v.normal};
 }
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr inf_cone_boundary<D, ScalarT> boundary_of(inf_cone<D, ScalarT, TraitsT> const& v)
@@ -71,6 +71,22 @@ template <class ScalarT, class TraitsT>
 }
 
 // === no caps versions ===
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr cylinder_boundary_no_caps<D, ScalarT> boundary_no_caps_of(cylinder<D, ScalarT, TraitsT> const& v)
+{
+    return {v.axis, v.radius};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr hemisphere_boundary_no_caps<D, ScalarT> boundary_no_caps_of(hemisphere<D, ScalarT, TraitsT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+template <class BaseT>
+[[nodiscard]] constexpr pyramid_boundary_no_caps<BaseT> boundary_no_caps_of(pyramid<BaseT> const& v)
+{
+    return {v.base, v.height};
+}
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr cylinder_boundary_no_caps<D, ScalarT> boundary_of(cylinder_boundary_no_caps<D, ScalarT> v)

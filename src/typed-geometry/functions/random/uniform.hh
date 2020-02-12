@@ -237,6 +237,11 @@ template <class ScalarT, class Rng>
 }
 // uniform_boundary(aabb1) == uniform(aabb1)
 template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, aabb_boundary<1, ScalarT> const& b)
+{
+    return {uniform(rng, b.min.x, b.max.x)};
+}
+template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, aabb_boundary<2, ScalarT> const& b)
 {
     auto extends = b.max - b.min;
@@ -328,7 +333,7 @@ template <class ScalarT, class Rng>
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cylinder_boundary_no_caps<3, ScalarT> const& t)
 {
-    auto c = sphere_boundary<3, ScalarT>(pos<3, ScalarT>::zero, t.radius, normalize(t.axis.pos1 - t.axis.pos0));
+    auto c = sphere_boundary<2, ScalarT, 3>(pos<3, ScalarT>::zero, t.radius, normalize(t.axis.pos1 - t.axis.pos0));
     return uniform(rng, t.axis) + vec<3, ScalarT>(uniform(rng, c));
 }
 
@@ -342,7 +347,7 @@ template <class ScalarT, class Rng>
     auto totalArea = ScalarT(2) * capArea + sideArea;
     auto part = detail::uniform01<ScalarT>(rng) * totalArea;
     if (part < sideArea) // Uniform sampling on cylinder side
-        return uniform(rng, cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
+        return uniform(rng, boundary_no_caps_of(c));
 
     // Otherwise sampling on one of the caps
     auto capDisk = sphere<2, ScalarT, 3>(part < sideArea + capArea ? c.axis.pos0 : c.axis.pos1, c.radius, normalize(x));
@@ -379,10 +384,10 @@ template <class ScalarT, class Rng>
     auto totalArea = ScalarT(2) * capArea + sideArea;
     auto part = detail::uniform01<ScalarT>(rng) * totalArea;
     if (part < sideArea) // Uniform sampling on capsule side
-        return uniform(rng, cylinder_boundary<3, ScalarT>(c.axis, c.radius));
+        return uniform(rng, cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
 
     // Otherwise sampling on one of the caps
-    auto capHemi = hemisphere_boundary<3, ScalarT>();
+    auto capHemi = hemisphere_boundary_no_caps<3, ScalarT>();
     capHemi.radius = c.radius;
     capHemi.center = part < sideArea + capArea ? c.axis.pos0 : c.axis.pos1;
     capHemi.normal = part < sideArea + capArea ? -normalize(x) : normalize(x);
@@ -446,7 +451,7 @@ template <int D, class ScalarT, class Rng>
 template <int D, class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere_boundary_no_caps<D, ScalarT> const& h)
 {
-    auto p = uniform(rng, sphere<D, ScalarT>(h.center, h.radius));
+    auto p = uniform(rng, sphere_boundary<D, ScalarT>(h.center, h.radius));
     auto v = p - h.center;
     if (dot(v, h.normal) >= ScalarT(0))
         return p;
