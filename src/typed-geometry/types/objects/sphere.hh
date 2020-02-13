@@ -138,4 +138,9 @@ constexpr void introspect(I&& i, sphere<ObjectD, ScalarT, DomainD, TraitsT>& v)
         i(v.normal, "normal");
     }
 }
+
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+struct object_traits<sphere<ObjectD, ScalarT, DomainD, TraitsT>> : detail::finite_object_traits<ObjectD, ScalarT, DomainD, TraitsT>
+{
+};
 } // namespace tg

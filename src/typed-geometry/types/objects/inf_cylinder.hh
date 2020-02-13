@@ -49,4 +49,9 @@ constexpr void introspect(I&& i, inf_cylinder<D, ScalarT, TraitsT>& v)
     i(v.axis, "axis");
     i(v.radius, "radius");
 }
+
+template <int D, class ScalarT, class TraitsT>
+struct object_traits<inf_cylinder<D, ScalarT, TraitsT>> : detail::infinite_object_traits<D, ScalarT, D, TraitsT>
+{
+};
 } // namespace tg

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../pos.hh"
 #include <typed-geometry/types/scalars/default.hh>
 #include "../dir.hh"
+#include "../pos.hh"
+#include "traits.hh"
 
 // An unoriented plane has a distance to the origin and a normal direction
 // In dimension n, the distance is 1-dimensional and the normal direction is n-dimensional
@@ -72,4 +73,9 @@ constexpr void introspect(I&& i, plane<D, ScalarT>& v)
     i(v.normal, "normal");
     i(v.dis, "dis");
 }
+
+template <int D, class ScalarT>
+struct object_traits<plane<D, ScalarT>> : detail::infinite_object_traits<D - 1, ScalarT, D, default_object_tag>
+{
+};
 } // namespace tg

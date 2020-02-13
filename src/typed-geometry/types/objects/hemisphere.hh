@@ -74,4 +74,9 @@ constexpr void introspect(I&& i, hemisphere<D, ScalarT, TraitsT>& v)
     i(v.radius, "radius");
     i(v.normal, "normal");
 }
+
+template <int D, class ScalarT, class TraitsT>
+struct object_traits<hemisphere<D, ScalarT, TraitsT>> : detail::finite_object_traits<D, ScalarT, D, TraitsT>
+{
+};
 } // namespace tg

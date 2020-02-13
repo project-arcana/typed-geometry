@@ -58,4 +58,9 @@ constexpr void introspect(I&& i, inf_cone<D, ScalarT, TraitsT>& v)
     i(v.opening_dir, "opening_dir");
     i(v.opening_angle, "opening_angle");
 }
+
+template <int D, class ScalarT, class TraitsT>
+struct object_traits<inf_cone<D, ScalarT, TraitsT>> : detail::infinite_object_traits<D, ScalarT, D, TraitsT>
+{
+};
 } // namespace tg

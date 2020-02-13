@@ -56,4 +56,6 @@ constexpr void introspect(I&& i, pyramid<BaseT, TraitsT>& v)
     i(v.base, "base");
     i(v.height, "height");
 }
+
+// TODO: traits
 } // namespace tg

@@ -4,6 +4,7 @@
 #include "../dir.hh"
 #include "../pos.hh"
 #include "../size.hh"
+#include "traits.hh"
 
 namespace tg
 {
@@ -64,4 +65,9 @@ constexpr void introspect(I&& i, ray<D, ScalarT>& v)
     i(v.origin, "origin");
     i(v.dir, "dir");
 }
+
+template <int D, class ScalarT>
+struct object_traits<ray<D, ScalarT>> : detail::infinite_object_traits<1, ScalarT, D, default_object_tag>
+{
+};
 } // namespace tg

@@ -105,4 +105,9 @@ constexpr void introspect(I&& i, box<ObjectD, ScalarT, DomainD, TraitsT>& v)
     i(v.center, "center");
     i(v.half_extents, "half_extents");
 }
+
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+struct object_traits<box<ObjectD, ScalarT, DomainD, TraitsT>> : detail::finite_object_traits<ObjectD, ScalarT, DomainD, TraitsT>
+{
+};
 } // namespace tg

@@ -4,6 +4,7 @@
 #include <typed-geometry/types/scalars/default.hh>
 #include "../size.hh"
 #include "../vec.hh"
+#include "traits.hh"
 
 // A segment is a line with defined start and end point
 namespace tg
@@ -63,4 +64,9 @@ constexpr void introspect(I&& i, segment<D, ScalarT>& v)
     i(v.pos0, "pos0");
     i(v.pos1, "pos1");
 }
+
+template <int D, class ScalarT>
+struct object_traits<segment<D, ScalarT>> : detail::finite_object_traits<1, ScalarT, D, default_object_tag>
+{
+};
 } // namespace tg

@@ -4,6 +4,7 @@
 #include "../array.hh"
 #include "../pos.hh"
 #include "../vec.hh"
+#include "traits.hh"
 
 namespace tg
 {
@@ -76,4 +77,9 @@ constexpr void introspect(I&& i, triangle<D, ScalarT>& v)
     i(v.pos1, "pos1");
     i(v.pos2, "pos2");
 }
+
+template <int D, class ScalarT>
+struct object_traits<triangle<D, ScalarT>> : detail::finite_object_traits<2, ScalarT, D, default_object_tag>
+{
+};
 } // namespace tg

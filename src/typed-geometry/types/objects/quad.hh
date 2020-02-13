@@ -4,6 +4,7 @@
 #include "../array.hh"
 #include "../pos.hh"
 #include "../vec.hh"
+#include "traits.hh"
 
 namespace tg
 {
@@ -82,4 +83,9 @@ constexpr void introspect(I&& i, quad<D, ScalarT>& v)
     i(v.pos11, "pos11");
     i(v.pos01, "pos01");
 }
+
+template <int D, class ScalarT>
+struct object_traits<quad<D, ScalarT>> : detail::finite_object_traits<2, ScalarT, D, default_object_tag>
+{
+};
 } // namespace tg
