@@ -380,6 +380,15 @@ template <class ScalarT>
 // ============== project to inf_cone ==============
 
 template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
+{
+    if (contains(icone, p))
+        return p;
+
+    return project(p, boundary_of(icone));
+}
+
+template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone_boundary<3, ScalarT> const& icone)
 {
     using dir_t = dir<3, ScalarT>;
