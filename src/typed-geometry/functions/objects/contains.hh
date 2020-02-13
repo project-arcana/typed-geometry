@@ -121,7 +121,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
+[[nodiscard]] constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     // TODO
     // use eps?
@@ -129,21 +129,37 @@ template <class ScalarT>
 
     auto n = normal(t);
 
+    if (!contains(plane<3, ScalarT>(n, t.pos0), p, eps))
+        return false;
+
     // checking whether point lies on right side of any edge
-    auto e = t.pos1 - t.pos0;
-    auto C = cross(e, p - t.pos0);
-    if (dot(n, C) < ScalarT(0))
-        return false;
+    if (eps == ScalarT(0))
+    {
+        auto e = t.pos1 - t.pos0;
+        auto C = cross(e, p - t.pos0);
+        if (dot(n, C) < ScalarT(0))
+            return false;
 
-    e = t.pos2 - t.pos1;
-    C = cross(e, p - t.pos1);
-    if (dot(n, C) < ScalarT(0))
-        return false;
+        e = t.pos2 - t.pos1;
+        C = cross(e, p - t.pos1);
+        if (dot(n, C) < ScalarT(0))
+            return false;
 
-    e = t.pos0 - t.pos2;
-    C = cross(e, p - t.pos2);
-    if (dot(n, C) < ScalarT(0))
-        return false;
+        e = t.pos0 - t.pos2;
+        C = cross(e, p - t.pos2);
+        if (dot(n, C) < ScalarT(0))
+            return false;
+    }
+    else
+    {
+        for (segment<3, ScalarT> const& edge : {segment<3, ScalarT>(t.pos0, t.pos1), segment<3, ScalarT>(t.pos1, t.pos2), segment<3, ScalarT>(t.pos2, t.pos0)})
+        {
+            auto pEdge = project(p, edge);
+            auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
+            if (dot(edgeNormal, p - pEdge) > eps)
+                return false;
+        }
+    }
 
     // point always on left side
     return true;

@@ -103,7 +103,7 @@ template <class ScalarT>
 {
     auto pPlane = project(p, plane<3, ScalarT>(normal(t), t.pos0));
 
-    if (contains(t, pPlane))
+    if (contains(t, pPlane, 64 * epsilon<ScalarT>))
         return pPlane;
 
     auto p0 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos1));
