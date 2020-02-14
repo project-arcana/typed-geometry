@@ -207,14 +207,21 @@ template <class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apex = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
-    return angle_between(p - apex, c.opening_dir) <= c.opening_angle;
+    auto apexToP = normalize_safe(p - apex);
+    if (apexToP == vec<3, ScalarT>::zero)
+        return true;
+    return angle_between(dir<3, ScalarT>(apexToP), c.opening_dir) <= c.opening_angle;
 }
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cone_boundary<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apexOuter = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
     auto apexInner = c.apex + (c.opening_dir * eps); // Shift apex inwards to subtract eps
-    return angle_between(p - apexOuter, c.opening_dir) <= c.opening_angle && angle_between(p - apexInner, c.opening_dir) >= c.opening_angle;
+    auto apexOuterToP = normalize_safe(p - apexOuter);
+    auto apexInnerToP = normalize_safe(p - apexInner);
+    if (apexOuterToP == vec<3, ScalarT>::zero || apexInnerToP == vec<3, ScalarT>::zero)
+        return true;
+    return angle_between(dir<3, ScalarT>(apexOuterToP), c.opening_dir) <= c.opening_angle && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= c.opening_angle;
 }
 
 } // namespace tg
