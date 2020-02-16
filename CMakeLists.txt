@@ -14,7 +14,7 @@ file(GLOB_RECURSE SOURCES
     "src/*.hh"
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+source_group(${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 add_library(typed-geometry STATIC ${SOURCES})
 set_property(TARGET typed-geometry PROPERTY POSITION_INDEPENDENT_CODE ON)
