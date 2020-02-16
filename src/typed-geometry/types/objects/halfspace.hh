@@ -1,14 +1,15 @@
 #pragma once
 
-#include "../pos.hh"
 #include <typed-geometry/types/scalars/default.hh>
 #include "../dir.hh"
+#include "../pos.hh"
+#include "traits.hh"
 
 // A halfspace has a distance to the origin and a normal direction
 // In dimension n, the distance is 1-dimensional and the normal direction is n-dimensional
 
-// Note that there is a semantic difference between hyperplane and halfspace in nD:
-//  - the hyperplane describes all points lying on an (n-1)-dimensional plane
+// Note that there is a semantic difference between plane and halfspace in nD:
+//  - the plane describes all points lying on an (n-1)-dimensional plane
 //  - the halfspace describes all points lying inside this n-dimensional subspace
 namespace tg
 {
@@ -61,5 +62,17 @@ struct halfspace
 
     [[nodiscard]] bool operator==(halfspace const& rhs) const { return normal == rhs.normal && dis == rhs.dis; }
     [[nodiscard]] bool operator!=(halfspace const& rhs) const { return !operator==(rhs); }
+};
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, halfspace<D, ScalarT>& v)
+{
+    i(v.normal, "normal");
+    i(v.dis, "dis");
+}
+
+template <int D, class ScalarT>
+struct object_traits<halfspace<D, ScalarT>> : detail::infinite_object_traits<D, ScalarT, D, default_object_tag>
+{
 };
 } // namespace tg

@@ -2,7 +2,8 @@
 
 #include "../dir.hh"
 
-#include "disk.hh"
+#include "pyramid.hh"
+
 namespace tg
 {
 /**
@@ -10,8 +11,12 @@ namespace tg
  * apex not stored explicitly, can be deduced from height and normal of base
  * (not yet) can construct cone from given apex and center of base (TODO would require extra functions here, do we want that?)
  */
+template <int D, class ScalarT, class TraitsT = default_object_tag>
+using cone = pyramid<sphere<D - 1, ScalarT, D>, TraitsT>;
 template <int D, class ScalarT>
-struct cone;
+using cone_boundary = pyramid<sphere<D - 1, ScalarT, D>, boundary_tag>;
+template <int D, class ScalarT>
+using cone_boundary_no_caps = pyramid<sphere<D - 1, ScalarT, D>, boundary_no_caps_tag>;
 
 // Common cone types
 using cone3 = cone<3, f32>;
@@ -19,22 +24,4 @@ using fcone3 = cone<3, f32>;
 using dcone3 = cone<3, f64>;
 using icone3 = cone<3, i32>;
 using ucone3 = cone<3, u32>;
-
-// ======== IMPLEMENTATION ========
-template <class ScalarT>
-struct cone<3, ScalarT>
-{
-    using scalar_t = ScalarT;
-    using dir_t = dir<3, ScalarT>;
-    using disk_t = disk<3, ScalarT>;
-
-    disk_t base;
-    scalar_t height;
-
-    constexpr cone() = default;
-    constexpr cone(disk_t const& base, scalar_t height) : base(base), height(height) {}
-
-    [[nodiscard]] bool operator==(cone const& rhs) const { return base == rhs.base && height == rhs.height; }
-    [[nodiscard]] bool operator!=(cone const& rhs) const { return !operator==(rhs); }
-};
 } // namespace tg

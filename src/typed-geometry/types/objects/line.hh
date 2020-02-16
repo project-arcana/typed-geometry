@@ -1,9 +1,10 @@
 #pragma once
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "../dir.hh"
 #include "../pos.hh"
-#include <typed-geometry/types/scalars/default.hh>
 #include "../size.hh"
+#include "traits.hh"
 
 // A line has a direction and a point lying on it
 // The direction is assumed to be normalized
@@ -60,5 +61,17 @@ struct line
 
     [[nodiscard]] bool operator==(line const& rhs) const { return pos == rhs.pos && dir == rhs.dir; }
     [[nodiscard]] bool operator!=(line const& rhs) const { return !operator==(rhs); }
+};
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, line<D, ScalarT>& v)
+{
+    i(v.pos, "pos");
+    i(v.dir, "dir");
+}
+
+template <int D, class ScalarT>
+struct object_traits<line<D, ScalarT>> : detail::infinite_object_traits<1, ScalarT, D, default_object_tag>
+{
 };
 } // namespace tg

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typed-geometry/common/random.hh>
-#include <typed-geometry/functions/gaussian.hh>
-#include <typed-geometry/functions/random_choice.hh>
-#include <typed-geometry/functions/uniform.hh>
+#include <typed-geometry/functions/random/random.hh>
+#include <typed-geometry/functions/random/gaussian.hh>
+#include <typed-geometry/functions/random/random_choice.hh>
+#include <typed-geometry/functions/random/uniform.hh>

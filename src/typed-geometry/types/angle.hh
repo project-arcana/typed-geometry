@@ -46,24 +46,30 @@ public:
     constexpr bool operator>=(angle_t<T> const& b) const { return angle_in_radians >= b.angle_in_radians; }
 };
 
-inline angle_t<f32> radians(i32 a) { return angle_t<f32>::from_radians(f32(a)); }
-inline angle_t<f32> radians(i64 a) { return angle_t<f32>::from_radians(f32(a)); }
-inline angle_t<f32> radians(f32 a) { return angle_t<f32>::from_radians(f32(a)); }
-inline angle_t<f64> radians(f64 a) { return angle_t<f64>::from_radians(f64(a)); }
+constexpr angle_t<f32> radians(i32 a) { return angle_t<f32>::from_radians(f32(a)); }
+constexpr angle_t<f32> radians(i64 a) { return angle_t<f32>::from_radians(f32(a)); }
+constexpr angle_t<f32> radians(f32 a) { return angle_t<f32>::from_radians(f32(a)); }
+constexpr angle_t<f64> radians(f64 a) { return angle_t<f64>::from_radians(f64(a)); }
 
-inline angle_t<f32> degree(i32 a) { return angle_t<f32>::from_degree(f32(a)); }
-inline angle_t<f32> degree(i64 a) { return angle_t<f32>::from_degree(f32(a)); }
-inline angle_t<f32> degree(f32 a) { return angle_t<f32>::from_degree(f32(a)); }
-inline angle_t<f64> degree(f64 a) { return angle_t<f64>::from_degree(f64(a)); }
+constexpr angle_t<f32> degree(i32 a) { return angle_t<f32>::from_degree(f32(a)); }
+constexpr angle_t<f32> degree(i64 a) { return angle_t<f32>::from_degree(f32(a)); }
+constexpr angle_t<f32> degree(f32 a) { return angle_t<f32>::from_degree(f32(a)); }
+constexpr angle_t<f64> degree(f64 a) { return angle_t<f64>::from_degree(f64(a)); }
 
 template <class T>
-T to_radians(angle_t<T> a)
+constexpr T to_radians(angle_t<T> const& a)
 {
     return a.radians();
 }
 template <class T>
-T to_degree(angle_t<T> a)
+constexpr T to_degree(angle_t<T> const& a)
 {
     return a.degree();
+}
+
+template <class I, class ScalarT>
+constexpr void introspect(I&& i, angle_t<ScalarT>& v)
+{
+    i(v.radians(), "rad");
 }
 } // namespace tg

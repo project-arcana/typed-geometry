@@ -83,5 +83,4 @@ template <class ControlPointT, class... ControlPoints>
     static_assert((std::is_convertible_v<ControlPoints, ControlPointT> && ...), "incompatible control points");
     return {p0, pts...};
 }
-
 }

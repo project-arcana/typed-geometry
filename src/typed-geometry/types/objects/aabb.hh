@@ -1,14 +1,15 @@
 #pragma once
 
-#include <typed-geometry/common/assert.hh>
+#include <typed-geometry/feature/assert.hh>
 
 #include <typed-geometry/types/scalars/default.hh>
 #include "../pos.hh"
 #include "../vec.hh"
+#include "traits.hh"
 
 namespace tg
 {
-template <int D, class ScalarT>
+template <int D, class ScalarT, class TraitsT = default_object_tag>
 struct aabb;
 
 // Common aabb types
@@ -38,10 +39,13 @@ using uaabb2 = aabb<2, u32>;
 using uaabb3 = aabb<3, u32>;
 using uaabb4 = aabb<4, u32>;
 
+template <int D, class ScalarT>
+using aabb_boundary = aabb<D, ScalarT, boundary_tag>;
+
 
 // ======== IMPLEMENTATION ========
 
-template <int D, class ScalarT>
+template <int D, class ScalarT, class TraitsT>
 struct aabb
 {
     using vec_t = vec<D, ScalarT>;
@@ -71,5 +75,17 @@ struct aabb
 
     [[nodiscard]] bool operator==(aabb const& rhs) const { return min == rhs.min && max == rhs.max; }
     [[nodiscard]] bool operator!=(aabb const& rhs) const { return !operator==(rhs); }
+};
+
+template <class I, int D, class ScalarT, class TraitsT>
+constexpr void introspect(I&& i, aabb<D, ScalarT, TraitsT>& v)
+{
+    i(v.min, "min");
+    i(v.max, "max");
+}
+
+template <int D, class ScalarT, class TraitsT>
+struct object_traits<aabb<D, ScalarT, TraitsT>> : detail::finite_object_traits<D, ScalarT, D, TraitsT>
+{
 };
 } // namespace tg

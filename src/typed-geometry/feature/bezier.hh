@@ -2,8 +2,8 @@
 
 #include <type_traits> // std::is_invocable_r_t, std::decay_t
 
-#include <typed-geometry/functions/minmax.hh>
-#include <typed-geometry/functions/perpendicular.hh>
+#include <typed-geometry/functions/basic/minmax.hh>
+#include <typed-geometry/functions/vector/perpendicular.hh>
 #include <typed-geometry/types/bezier.hh>
 #include <typed-geometry/types/capped_vector.hh>
 
@@ -372,8 +372,8 @@ template <int Degree, class ScalarT>
     return [d1, d2](auto t) {
         auto const a = normalize(d1(t));
         auto const b = normalize(a + d2(t));
-        auto const r = cross(a, b); // is normalized
-        return cross(r, a);         // is normalized
+        auto const r = normalize(cross(a, b));
+        return tg::dir<3, ScalarT>(cross(r, a)); // is normalized
     };
 }
 
@@ -397,10 +397,9 @@ template <int Degree, class ScalarT>
     return [d1, d2](auto t) {
         auto const a = normalize(d1(t));
         auto const b = normalize(a + d2(t));
-        return cross(a, b); // is normalized
+        return normalize(cross(a, b));
     };
 }
-
 
 template <int Degree, class ScalarT>
 [[nodiscard]] constexpr auto curvature_f(bezier<Degree, pos<2, ScalarT>> const& c)

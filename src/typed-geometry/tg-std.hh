@@ -1,7 +1,5 @@
 #pragma once
 
-#include "tg.hh"
+#include <typed-geometry/tg.hh>
 
-#include "std/hash.hh"
-#include "std/io.hh"
-#include "std/less.hh"
+#include <typed-geometry/feature/std-interop.hh>

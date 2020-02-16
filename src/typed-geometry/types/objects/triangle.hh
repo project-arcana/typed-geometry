@@ -1,9 +1,10 @@
 #pragma once
 
+#include <typed-geometry/types/scalars/default.hh>
 #include "../array.hh"
 #include "../pos.hh"
-#include <typed-geometry/types/scalars/default.hh>
 #include "../vec.hh"
+#include "traits.hh"
 
 namespace tg
 {
@@ -47,12 +48,38 @@ struct triangle
 
     constexpr triangle() = default;
     constexpr triangle(pos_t p0, pos_t p1, pos_t p2) : pos0(p0), pos1(p1), pos2(p2) {}
-    constexpr triangle(array<pos_t, 3> const& v) : pos0(v[0]), pos1(v[1]), pos2(v[2]) {}
+
+    template <class Range, class = std::void_t<decltype(pos_t(tg::begin(std::declval<Range>())))>>
+    explicit constexpr triangle(Range&& r)
+    {
+        auto it = tg::begin(r);
+        auto end = tg::end(r);
+        TG_CONTRACT(it != end);
+        pos0 = pos_t(*it++);
+        TG_CONTRACT(it != end);
+        pos1 = pos_t(*it++);
+        TG_CONTRACT(it != end);
+        pos2 = pos_t(*it++);
+        TG_CONTRACT(!(it != end));
+    }
 
     [[nodiscard]] constexpr pos_t operator[](comp<3, ScalarT> const& barycoords) const;
     [[nodiscard]] constexpr pos_t operator[](comp<2, ScalarT> const& barycoords) const;
 
     [[nodiscard]] bool operator==(triangle const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1 && pos2 == rhs.pos2; }
     [[nodiscard]] bool operator!=(triangle const& rhs) const { return !operator==(rhs); }
+};
+
+template <class I, int D, class ScalarT>
+constexpr void introspect(I&& i, triangle<D, ScalarT>& v)
+{
+    i(v.pos0, "pos0");
+    i(v.pos1, "pos1");
+    i(v.pos2, "pos2");
+}
+
+template <int D, class ScalarT>
+struct object_traits<triangle<D, ScalarT>> : detail::finite_object_traits<2, ScalarT, D, default_object_tag>
+{
 };
 } // namespace tg
