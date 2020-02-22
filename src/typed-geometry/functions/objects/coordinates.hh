@@ -66,9 +66,9 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr comp<3, ScalarT> coordinates(aabb<D, ScalarT> const& s, pos<D, ScalarT> const& p)
+[[nodiscard]] constexpr comp<D, ScalarT> coordinates(aabb<D, ScalarT> const& s, pos<D, ScalarT> const& p)
 {
-    return tg::comp<3, ScalarT>(p - s.min) / tg::comp<3, ScalarT>(s.max - s.min);
+    return tg::comp<D, ScalarT>(p - s.min) / tg::comp<D, ScalarT>(s.max - s.min);
 }
 
 } // namespace tg
