@@ -50,26 +50,46 @@ namespace detail
 template <class ScalarT>
 bool is_dir_valid(dir<1, ScalarT> const& d)
 {
-    auto const l = d.x * d.x;
-    return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+    if constexpr (is_abstract_scalar<ScalarT>)
+        return true;
+    else
+    {
+        auto const l = d.x * d.x;
+        return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+    }
 }
 template <class ScalarT>
 bool is_dir_valid(dir<2, ScalarT> const& d)
 {
-    auto const l = d.x * d.x + d.y * d.y;
-    return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+    if constexpr (is_abstract_scalar<ScalarT>)
+        return true;
+    else
+    {
+        auto const l = d.x * d.x + d.y * d.y;
+        return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+    }
 }
 template <class ScalarT>
 bool is_dir_valid(dir<3, ScalarT> const& d)
 {
-    auto const l = d.x * d.x + d.y * d.y + d.z * d.z;
-    return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+    if constexpr (is_abstract_scalar<ScalarT>)
+        return true;
+    else
+    {
+        auto const l = d.x * d.x + d.y * d.y + d.z * d.z;
+        return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+    }
 }
 template <class ScalarT>
 bool is_dir_valid(dir<4, ScalarT> const& d)
 {
-    auto const l = d.x * d.x + d.y * d.y + d.z * d.z + d.w * d.w;
-    return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+    if constexpr (is_abstract_scalar<ScalarT>)
+        return true;
+    else
+    {
+        auto const l = d.x * d.x + d.y * d.y + d.z * d.z + d.w * d.w;
+        return ScalarT(0.99) <= l && l <= ScalarT(1.01);
+    }
 }
 }
 

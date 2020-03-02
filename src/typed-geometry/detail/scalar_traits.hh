@@ -109,4 +109,8 @@ struct is_scalar_t<angle_t<T>>
 {
     static constexpr bool value = true;
 };
+
+// abstract scalars are scalars that don't hold a concrete values (e.g. traced types)
+TG_IMPL_DEFINE_TRAIT(is_abstract_scalar, bool, false);
+
 } // namespace tg
