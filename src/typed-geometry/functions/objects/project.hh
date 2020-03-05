@@ -103,9 +103,18 @@ template <class ScalarT>
 {
     auto pPlane = project(p, plane<3, ScalarT>(normal(t), t.pos0));
 
-    if (contains(t, pPlane, 64 * epsilon<ScalarT>))
+    // Check if projection is already in the triangle. Simplified version of contains(triangle3)
+    auto n = normal(t);
+    auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge) {
+        auto pEdge = project(p, edge);
+        auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
+        return dot(edgeNormal, p - pEdge) <= ScalarT(0);
+    };
+    if (isLeftOfEdge(segment<3, ScalarT>(t.pos0, t.pos1)) && isLeftOfEdge(segment<3, ScalarT>(t.pos1, t.pos2))
+        && isLeftOfEdge(segment<3, ScalarT>(t.pos2, t.pos0)))
         return pPlane;
 
+    // Projection is outside of the triangle. Choose closest projection onto one of the edges
     auto p0 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos1));
     auto p1 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos2));
     auto p2 = project(pPlane, segment<3, ScalarT>(t.pos1, t.pos2));
