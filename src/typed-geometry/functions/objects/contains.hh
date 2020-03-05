@@ -108,38 +108,38 @@ template <class ScalarT>
     auto A1 = cross(pv2, pv0);
     auto A2 = cross(pv0, pv1);
 
-    auto limit = eps == 0 ? eps : -std::copysign(eps, A0 != 0 ? A0 : A1 != 0 ? A1 : A2) * sign(eps);
+    auto limit = eps;
+    if (eps != ScalarT(0))
+    {
+        auto aMax = abs(A0) >= abs(A1) ? (abs(A0) >= abs(A2) ? A0 : A2)
+                                       : (abs(A1) >= abs(A2) ? A1 : A2);
+        limit = -std::copysign(eps, aMax) * sign(eps);
+    }
+
     return ((A0 >= limit) == (A1 >= limit)) && //
            ((A1 >= limit) == (A2 >= limit));
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p)
+[[nodiscard]] constexpr bool contains(triangle<3, ScalarT> const& t, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
-    // TODO
-    // use eps?
-    // does this also work for triangles where vertices are not ordered cc? should it?
+    // TODO: does this also work for triangles where vertices are not ordered cc? should it?
 
     auto n = normal(t);
 
-    // checking whether point lies on right side of any edge
-    auto e = t.pos1 - t.pos0;
-    auto C = cross(e, p - t.pos0);
-    if (dot(n, C) < ScalarT(0))
+    if (!contains(plane<3, ScalarT>(n, t.pos0), p, eps))
         return false;
 
-    e = t.pos2 - t.pos1;
-    C = cross(e, p - t.pos1);
-    if (dot(n, C) < ScalarT(0))
-        return false;
+    // checking whether point lies on left side of the given edge
+    auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge)
+    {
+        auto pEdge = project(p, edge);
+        auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
+        return dot(edgeNormal, p - pEdge) <= eps;
+    };
 
-    e = t.pos0 - t.pos2;
-    C = cross(e, p - t.pos2);
-    if (dot(n, C) < ScalarT(0))
-        return false;
-
-    // point always on left side
-    return true;
+    // Check if the point is on the left side of all edges
+    return isLeftOfEdge(segment<3, ScalarT>(t.pos0, t.pos1)) && isLeftOfEdge(segment<3, ScalarT>(t.pos1, t.pos2)) && isLeftOfEdge(segment<3, ScalarT>(t.pos2, t.pos0));
 }
 
 template <class ScalarT>
@@ -206,14 +206,21 @@ template <class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apex = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
-    return angle_between(p - apex, c.opening_dir) <= c.opening_angle;
+    auto apexToP = normalize_safe(p - apex);
+    if (apexToP == vec<3, ScalarT>::zero)
+        return true;
+    return angle_between(dir<3, ScalarT>(apexToP), c.opening_dir) <= c.opening_angle;
 }
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cone_boundary<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apexOuter = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
     auto apexInner = c.apex + (c.opening_dir * eps); // Shift apex inwards to subtract eps
-    return angle_between(p - apexOuter, c.opening_dir) <= c.opening_angle && angle_between(p - apexInner, c.opening_dir) >= c.opening_angle;
+    auto apexOuterToP = normalize_safe(p - apexOuter);
+    auto apexInnerToP = normalize_safe(p - apexInner);
+    if (apexOuterToP == vec<3, ScalarT>::zero || apexInnerToP == vec<3, ScalarT>::zero)
+        return true;
+    return angle_between(dir<3, ScalarT>(apexOuterToP), c.opening_dir) <= c.opening_angle && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= c.opening_angle;
 }
 
 } // namespace tg

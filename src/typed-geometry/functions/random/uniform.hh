@@ -260,7 +260,7 @@ template <class ScalarT, class Rng>
     auto areaY = extends.x * extends.z;
     auto areaZ = extends.x * extends.y;
 
-    auto res = uniform(rng, b); // Sample a random point inside the aabb
+    auto res = uniform(rng, aabb<3, ScalarT, default_object_tag>(b.min, b.max)); // Sample a random point inside the aabb
     // Project to one of the sides, proportional to their area
     auto part = uniform(rng, ScalarT(0), areaX + areaY + areaZ);
     int i = part < areaX ? 0 : part < areaX + areaY ? 1 : 2;
@@ -276,7 +276,7 @@ template <class ScalarT, class Rng>
     auto volZ = extends.x * extends.y * extends.w;
     auto volW = extends.x * extends.y * extends.z;
 
-    auto res = uniform(rng, b); // Sample a random point inside the aabb
+    auto res = uniform(rng, aabb<4, ScalarT, default_object_tag>(b.min, b.max)); // Sample a random point inside the aabb
     // Project to one of the borders, proportional to their volume
     auto part = uniform(rng, ScalarT(0), volX + volY + volZ + volW);
     int i = part < volX + volY ? (part < volX ? 0 : 1) : (part < volX + volY + volZ ? 2 : 3);
