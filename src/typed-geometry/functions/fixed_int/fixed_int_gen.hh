@@ -6,105 +6,64 @@
 #include <intrin.h>
 #else
 #include <x86intrin.h>
+#include <cstring>
 #endif
 
 #include <typed-geometry/feature/fixed_int.hh>
 
 namespace tg::detail
 {
-template<>
+template <>
 inline i128 imul(i64 lhs, i64 rhs)
 {
-    fixed_int<2> res;
-    u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_res = s_l ^ s_r;
-    { // conditional inversion
-        lhs = i64((u64(lhs) ^ s_l) - s_l);
-    }
-    { // conditional inversion
-        rhs = i64((u64(rhs) ^ s_r) - s_r);
-    }
-    u64 l00 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(u64(lhs), u64(rhs), &h00);
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00;
-    { // conditional inversion
-        res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) & s_res;
-        res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-    }
+#ifdef _MSC_VER
+    return imul(i128(lhs), i128(rhs));
+#else
+    __int128 l = lhs;
+    __int128 r = rhs;
+    __int128 inres = l * r;
+    i128 res;
+    memcpy(&res, &inres, sizeof(__int128));
     return res;
+#endif
 }
 
-template<>
+template <>
 inline i128 imul(i128 lhs, i64 rhs)
 {
-    fixed_int<2> res;
-    u64 s_l = u64(i64(lhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_res = s_l ^ s_r;
-    { // conditional inversion
-        lhs.d[0] = ((u64(lhs.d[0]) ^ s_l) - s_l);
-        u64 c0 = (lhs.d[0] == 0) & s_l;
-        lhs.d[1] = (u64(lhs.d[1]) ^ s_l) + c0;
-    }
-    { // conditional inversion
-        rhs = i64((u64(rhs) ^ s_r) - s_r);
-    }
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(u64(lhs.d[0]), u64(rhs), &h00);
-    l10 = u64(lhs.d[1]) * u64(rhs);
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l10;
-    { // conditional inversion
-        res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) & s_res;
-        res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-    }
+#ifdef _MSC_VER
+    return imul(lhs, i128(rhs));
+#else
+    __int128 l;
+    __int128 r = rhs;
+    memcpy(&l, &lhs, sizeof(__int128));
+    __int128 inres = l * r;
+    i128 res;
+    memcpy(&res, &inres, sizeof(__int128));
     return res;
+#endif
 }
 
-template<>
+template <>
 inline i128 imul(i64 lhs, i128 rhs)
 {
-    fixed_int<2> res;
-    u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(rhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_res = s_l ^ s_r;
-    { // conditional inversion
-        lhs = i64((u64(lhs) ^ s_l) - s_l);
-    }
-    { // conditional inversion
-        rhs.d[0] = ((u64(rhs.d[0]) ^ s_r) - s_r);
-        u64 c0 = (rhs.d[0] == 0) & s_r;
-        rhs.d[1] = (u64(rhs.d[1]) ^ s_r) + c0;
-    }
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(u64(lhs), u64(rhs.d[0]), &h00);
-    l01 = u64(lhs) * u64(rhs.d[1]);
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01;
-    { // conditional inversion
-        res.d[0] = ((u64(res.d[0]) ^ s_res) - s_res);
-        u64 c0 = (res.d[0] == 0) & s_res;
-        res.d[1] = (u64(res.d[1]) ^ s_res) + c0;
-    }
+#ifdef _MSC_VER
+    return imul(i128(lhs), rhs);
+#else
+    __int128 l = lhs;
+    __int128 r;
+    memcpy(&r, &rhs, sizeof(__int128));
+    __int128 inres = l * r;
+    i128 res;
+    memcpy(&res, &inres, sizeof(__int128));
     return res;
+#endif
 }
 
-template<>
+template <>
 inline i128 imul(i128 lhs, i128 rhs)
 {
-    fixed_int<2> res;
+    i128 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l10 = 0;
@@ -118,10 +77,10 @@ inline i128 imul(i128 lhs, i128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i192 imul(i128 lhs, i64 rhs)
 {
-    fixed_int<3> res;
+    i192 res;
     u64 s_l = u64(i64(lhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -156,10 +115,10 @@ inline i192 imul(i128 lhs, i64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i192 imul(i192 lhs, i64 rhs)
 {
-    fixed_int<3> res;
+    i192 res;
     u64 s_l = u64(i64(lhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -198,10 +157,10 @@ inline i192 imul(i192 lhs, i64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i192 imul(i64 lhs, i128 rhs)
 {
-    fixed_int<3> res;
+    i192 res;
     u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -236,10 +195,10 @@ inline i192 imul(i64 lhs, i128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i192 imul(i128 lhs, i128 rhs)
 {
-    fixed_int<3> res;
+    i192 res;
     u64 s_l = u64(i64(lhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -282,10 +241,10 @@ inline i192 imul(i128 lhs, i128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i192 imul(i192 lhs, i128 rhs)
 {
-    fixed_int<3> res;
+    i192 res;
     u64 s_l = u64(i64(lhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -332,10 +291,10 @@ inline i192 imul(i192 lhs, i128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i192 imul(i64 lhs, i192 rhs)
 {
-    fixed_int<3> res;
+    i192 res;
     u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -374,10 +333,10 @@ inline i192 imul(i64 lhs, i192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i192 imul(i128 lhs, i192 rhs)
 {
-    fixed_int<3> res;
+    i192 res;
     u64 s_l = u64(i64(lhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -424,10 +383,10 @@ inline i192 imul(i128 lhs, i192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i192 imul(i192 lhs, i192 rhs)
 {
-    fixed_int<3> res;
+    i192 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -454,10 +413,10 @@ inline i192 imul(i192 lhs, i192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i192 lhs, i64 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -503,10 +462,10 @@ inline i256 imul(i192 lhs, i64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i256 lhs, i64 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -556,10 +515,10 @@ inline i256 imul(i256 lhs, i64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i128 lhs, i128 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -610,10 +569,10 @@ inline i256 imul(i128 lhs, i128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i192 lhs, i128 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -672,10 +631,10 @@ inline i256 imul(i192 lhs, i128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i256 lhs, i128 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -738,10 +697,10 @@ inline i256 imul(i256 lhs, i128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i64 lhs, i192 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -787,10 +746,10 @@ inline i256 imul(i64 lhs, i192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i128 lhs, i192 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -849,10 +808,10 @@ inline i256 imul(i128 lhs, i192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i192 lhs, i192 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -919,10 +878,10 @@ inline i256 imul(i192 lhs, i192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i256 lhs, i192 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -993,10 +952,10 @@ inline i256 imul(i256 lhs, i192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i64 lhs, i256 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -1046,10 +1005,10 @@ inline i256 imul(i64 lhs, i256 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i128 lhs, i256 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -1112,10 +1071,10 @@ inline i256 imul(i128 lhs, i256 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i192 lhs, i256 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 s_l = u64(i64(lhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
@@ -1186,10 +1145,10 @@ inline i256 imul(i192 lhs, i256 rhs)
     return res;
 }
 
-template<>
+template <>
 inline i256 imul(i256 lhs, i256 rhs)
 {
-    fixed_int<4> res;
+    i256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
