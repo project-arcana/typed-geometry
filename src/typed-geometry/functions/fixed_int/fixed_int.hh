@@ -186,7 +186,7 @@ constexpr fixed_int<w>& operator<<=(fixed_int<w>& lhs, int shift) noexcept;
 namespace detail
 {
 template <int w_res, class T0, class T1>
-fixed_int<w_res> imul(T0 const& lhs, T1 const& rhs);
+fixed_int<w_res> imul(T0 lhs, T1 rhs);
 }
 
 // utility
