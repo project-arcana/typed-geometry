@@ -73,7 +73,7 @@ template <class ScalarT>
            b.min.w - eps <= o.w && o.w <= b.max.w + eps;
 }
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(aabb<D, ScalarT, boundary_tag> const& b, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(aabb_boundary<D, ScalarT> const& b, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto onSomeBoundary = false;
     for (auto i = 0; i < D; ++i)
@@ -88,14 +88,31 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
-    auto r = o - b.center;
+    auto r = p - b.center;
     // TODO: unroll
     for (auto i = 0; i < D; ++i)
         if (abs(dot(b.half_extents[i], r)) > length_sqr(b.half_extents[i]) + eps)
             return false;
     return true;
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(box_boundary<D, ScalarT> const& b, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto onSomeBoundary = false;
+    auto r = p - b.center;
+    for (auto i = 0; i < D; ++i)
+    {
+        auto ri = abs(dot(b.half_extents[i], r));
+        auto bi = length_sqr(b.half_extents[i]);
+        if (ri > bi + eps)
+            return false; // False if outside of the aabb in any dimension
+
+        if (!onSomeBoundary && (ri >= bi - eps))
+            onSomeBoundary = true;
+    }
+    return onSomeBoundary; // True, if at on the boundary in at least one dimension
 }
 
 template <int D, class ScalarT>
