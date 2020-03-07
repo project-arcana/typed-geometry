@@ -72,6 +72,20 @@ template <class ScalarT>
            b.min.z - eps <= o.z && o.z <= b.max.z + eps && //
            b.min.w - eps <= o.w && o.w <= b.max.w + eps;
 }
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(aabb<D, ScalarT, boundary_tag> const& b, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto onSomeBoundary = false;
+    for (auto i = 0; i < D; ++i)
+    {
+        if (p[i] < b.min[i] - eps || p[i] > b.max[i] + eps)
+            return false; // False if outside of the aabb in any dimension
+
+        if (!onSomeBoundary && (p[i] <= b.min[i] + eps || p[i] >= b.max[i] - eps))
+            onSomeBoundary = true;
+    }
+    return onSomeBoundary; // True, if at on the boundary in at least one dimension
+}
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(box<D, ScalarT> const& b, pos<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
@@ -131,15 +145,15 @@ template <class ScalarT>
         return false;
 
     // checking whether point lies on left side of the given edge
-    auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge)
-    {
+    auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge) {
         auto pEdge = project(p, edge);
         auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
         return dot(edgeNormal, p - pEdge) <= eps;
     };
 
     // Check if the point is on the left side of all edges
-    return isLeftOfEdge(segment<3, ScalarT>(t.pos0, t.pos1)) && isLeftOfEdge(segment<3, ScalarT>(t.pos1, t.pos2)) && isLeftOfEdge(segment<3, ScalarT>(t.pos2, t.pos0));
+    return isLeftOfEdge(segment<3, ScalarT>(t.pos0, t.pos1)) && isLeftOfEdge(segment<3, ScalarT>(t.pos1, t.pos2))
+           && isLeftOfEdge(segment<3, ScalarT>(t.pos2, t.pos0));
 }
 
 template <class ScalarT>
@@ -220,7 +234,8 @@ template <class ScalarT>
     auto apexInnerToP = normalize_safe(p - apexInner);
     if (apexOuterToP == vec<3, ScalarT>::zero || apexInnerToP == vec<3, ScalarT>::zero)
         return true;
-    return angle_between(dir<3, ScalarT>(apexOuterToP), c.opening_dir) <= c.opening_angle && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= c.opening_angle;
+    return angle_between(dir<3, ScalarT>(apexOuterToP), c.opening_dir) <= c.opening_angle
+           && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= c.opening_angle;
 }
 
 } // namespace tg
