@@ -1,6 +1,5 @@
 #pragma once
 
-#include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/functions/tests/vec_tests.hh>
 #include <typed-geometry/types/objects/capsule.hh>
@@ -89,9 +88,9 @@ template <int D, class ScalarT>
 {
     auto res = p;
     auto projectionNeeded = true;
-    ScalarT closestDist = max<ScalarT>();
-    int closestDim;
-    ScalarT closestDimVal;
+    auto closestDist = max<ScalarT>();
+    auto closestDim = 0; // Will be overwritten
+    auto closestDimVal = ScalarT(0); // Will be overwritten
     for (auto i = 0; i < D; ++i)
     {
         if (p[i] <= b.min[i])
