@@ -235,11 +235,10 @@ template <class ScalarT, class Rng>
             uniform(rng, b.min.z, b.max.z), //
             uniform(rng, b.min.w, b.max.w)};
 }
-// uniform_boundary(aabb1) == uniform(aabb1)
 template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, aabb_boundary<1, ScalarT> const& b)
+[[nodiscard]] constexpr pos<1, ScalarT> uniform(Rng& rng, aabb_boundary<1, ScalarT> const& b)
 {
-    return {uniform(rng, b.min.x, b.max.x)};
+    return uniform<bool>(rng) ? b.min.x : b.max.x;
 }
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, aabb_boundary<2, ScalarT> const& b)
@@ -247,9 +246,9 @@ template <class ScalarT, class Rng>
     auto extends = b.max - b.min;
     if (uniform(rng, ScalarT(0), extends.x + extends.y) < extends.x)
         return {uniform(rng, b.min.x, b.max.x), //
-                uniform(rng) ? b.min.y : b.max.y};
+                uniform<bool>(rng) ? b.min.y : b.max.y};
 
-    return {uniform(rng) ? b.min.x : b.max.x, //
+    return {uniform<bool>(rng) ? b.min.x : b.max.x, //
             uniform(rng, b.min.y, b.max.y)};
 }
 template <class ScalarT, class Rng>

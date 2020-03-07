@@ -1,6 +1,5 @@
 #pragma once
 
-#include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/functions/tests/vec_tests.hh>
 #include <typed-geometry/types/objects/capsule.hh>
@@ -16,10 +15,10 @@
 #include <typed-geometry/functions/matrix/inverse.hh>
 #include <typed-geometry/functions/vector/project.hh>
 
+#include "boundary.hh"
 #include "contains.hh"
 #include "coordinates.hh"
 #include "normal.hh"
-#include "boundary.hh"
 
 namespace tg
 {
@@ -80,9 +79,59 @@ template <int D, class ScalarT>
 // ============== project to aabb ==============
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D, ScalarT> const& s)
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D, ScalarT> const& b)
 {
-    return clamp(p, s.min, s.max);
+    return clamp(p, b.min, b.max);
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D, ScalarT, boundary_tag> const& b)
+{
+    auto res = p;
+    auto projectionNeeded = true;
+    auto closestDist = max<ScalarT>();
+    auto closestDim = 0; // Will be overwritten
+    auto closestDimVal = ScalarT(0); // Will be overwritten
+    for (auto i = 0; i < D; ++i)
+    {
+        if (p[i] <= b.min[i])
+        {
+            res[i] = b.min[i];
+            projectionNeeded = false;
+        }
+        else if (p[i] >= b.max[i])
+        {
+            res[i] = b.max[i];
+            projectionNeeded = false;
+        }
+        else if (projectionNeeded)
+        {
+            const auto distMin = abs(p[i] - b.min[i]);
+            const auto distMax = abs(p[i] - b.max[i]);
+            if (distMin <= distMax)
+            {
+                if (distMin < closestDist)
+                {
+                    closestDist = distMin;
+                    closestDim = i;
+                    closestDimVal = b.min[i];
+                }
+            }
+            else
+            {
+                if (distMax < closestDist)
+                {
+                    closestDist = distMax;
+                    closestDim = i;
+                    closestDimVal = b.max[i];
+                }
+            }
+        }
+    }
+
+    if (projectionNeeded)
+        res[closestDim] = closestDimVal;
+
+    return res;
 }
 
 
