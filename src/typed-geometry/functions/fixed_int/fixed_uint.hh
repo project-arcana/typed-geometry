@@ -179,7 +179,7 @@ constexpr fixed_uint<w>& operator<<=(fixed_uint<w>& lhs, int shift) noexcept;
 namespace detail
 {
 template <int w_res, class T0, class T1>
-fixed_uint<w_res> mul(T0 const& lhs, T1 const& rhs);
+fixed_uint<w_res> mul(T0 lhs, T1 rhs);
 }
 
 // utility

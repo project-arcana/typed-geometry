@@ -35,10 +35,6 @@ template <int w>
 constexpr bool operator>=(i64 lhs, fixed_int<w> const& rhs) noexcept;
 
 template <int w>
-constexpr bool operator==(fixed_int<w> const& lhs, i64 rhs) noexcept;
-template <int w>
-constexpr bool operator!=(fixed_int<w> const& lhs, i64 rhs) noexcept;
-template <int w>
 constexpr bool operator<(fixed_int<w> const& lhs, i64 rhs) noexcept;
 template <int w>
 constexpr bool operator>(fixed_int<w> const& lhs, i64 rhs) noexcept;
@@ -186,7 +182,7 @@ constexpr fixed_int<w>& operator<<=(fixed_int<w>& lhs, int shift) noexcept;
 namespace detail
 {
 template <int w_res, class T0, class T1>
-fixed_int<w_res> imul(T0 const& lhs, T1 const& rhs);
+fixed_int<w_res> imul(T0 lhs, T1 rhs);
 }
 
 // utility
@@ -1003,65 +999,6 @@ constexpr fixed_int<w> operator>>(fixed_int<w> const& lhs, int shift) noexcept
         }
         return res;
     }
-
-#if 0
-    // WARNING: NOT CORRECTLY IMPLEMENTED!
-    if (skip == 0)
-    {
-        res.d[0] = lhs.d[0] >> mod_shift;
-        if constexpr (w > 1)
-        {
-            res.d[0] |= lhs.d[1] << inv_shift;
-            res.d[1] = lhs.d[1] >> mod_shift;
-        }
-        if constexpr (w > 2)
-        {
-            res.d[1] |= lhs.d[2] << inv_shift;
-            res.d[2] = lhs.d[2] >> mod_shift;
-        }
-        if constexpr (w > 3)
-        {
-            res.d[2] |= lhs.d[3] << inv_shift;
-            res.d[3] = lhs.d[3] >> mod_shift;
-        }
-    }
-    else if (skip == 1)
-    {
-        if constexpr (w > 1)
-        {
-            res.d[0] = lhs.d[1] >> mod_shift;
-        }
-        if constexpr (w > 2)
-        {
-            res.d[0] |= lhs.d[2] << inv_shift;
-            res.d[1] = lhs.d[2] >> mod_shift;
-        }
-        if constexpr (w > 3)
-        {
-            res.d[1] |= lhs.d[3] << inv_shift;
-            res.d[2] = lhs.d[3] >> mod_shift;
-        }
-    }
-    else if (skip == 2)
-    {
-        if constexpr (w > 2)
-        {
-            res.d[0] = lhs.d[2] >> mod_shift;
-        }
-        if constexpr (w > 3)
-        {
-            res.d[0] |= lhs.d[3] << inv_shift;
-            res.d[1] = lhs.d[3] >> mod_shift;
-        }
-    }
-    else if (skip == 3)
-    {
-        if constexpr (w > 3)
-        {
-            res.d[0] = lhs.d[3] >> mod_shift;
-        }
-    }
-#else
     if constexpr (w == 1)
     {
         res.d[0] = i64(lhs.d[0]) >> mod_shift;
@@ -1141,7 +1078,6 @@ constexpr fixed_int<w> operator>>(fixed_int<w> const& lhs, int shift) noexcept
             res.d[3] = detail::less_than_zero(lhs) ? u64(-1) : 0;
         }
     }
-#endif
     return res;
 }
 
@@ -1184,8 +1120,6 @@ constexpr fixed_int<w> operator<<(fixed_int<w> const& lhs, int shift) noexcept
         }
         return res;
     }
-
-#if 1
     if (skip == 0)
     {
         res.d[0] = lhs.d[0] << mod_shift;
@@ -1241,74 +1175,6 @@ constexpr fixed_int<w> operator<<(fixed_int<w> const& lhs, int shift) noexcept
             res.d[3] = lhs.d[0] << mod_shift;
         }
     }
-#else
-
-    if constexpr (w == 2)
-    {
-        if (skip == 0)
-        {
-            res.d[1] = lhs.d[1] << mod_shift;
-            res.d[1] |= lhs.d[0] >> inv_shift;
-            res.d[0] = lhs.d[0] << mod_shift;
-        }
-        else // if (skip >= 1)
-        {
-            res.d[1] = lhs.d[0] << mod_shift;
-        }
-    }
-    if constexpr (w == 3)
-    {
-        if (skip == 0)
-        {
-            res.d[2] = lhs.d[2] << mod_shift;
-            res.d[2] |= lhs.d[1] >> inv_shift;
-            res.d[1] = lhs.d[1] << mod_shift;
-            res.d[1] |= lhs.d[0] >> inv_shift;
-            res.d[0] = lhs.d[0] << mod_shift;
-        }
-        if (skip == 1)
-        {
-            res.d[2] = lhs.d[1] << mod_shift;
-            res.d[2] |= lhs.d[0] >> inv_shift;
-            res.d[1] = lhs.d[0] << mod_shift;
-        }
-        else // if (skip == 2)
-        {
-            res.d[2] = lhs.d[0] << mod_shift;
-        }
-    }
-    if constexpr (w == 4)
-    {
-        if (skip == 0)
-        {
-            res.d[3] = lhs.d[3] << mod_shift;
-            res.d[3] |= lhs.d[2] >> inv_shift;
-            res.d[2] = lhs.d[2] << mod_shift;
-            res.d[2] |= lhs.d[1] >> inv_shift;
-            res.d[1] = lhs.d[1] << mod_shift;
-            res.d[1] |= lhs.d[0] >> inv_shift;
-            res.d[0] = lhs.d[0] << mod_shift;
-        }
-        if (skip == 1)
-        {
-            res.d[3] = lhs.d[2] << mod_shift;
-            res.d[3] |= lhs.d[1] >> inv_shift;
-            res.d[2] = lhs.d[1] << mod_shift;
-            res.d[2] |= lhs.d[0] >> inv_shift;
-            res.d[1] = lhs.d[0] << mod_shift;
-        }
-        else if (skip == 2)
-        {
-            res.d[3] = lhs.d[1] << mod_shift;
-            res.d[3] |= lhs.d[0] >> inv_shift;
-            res.d[2] = lhs.d[0] << mod_shift;
-        }
-        else // if (count == 3)
-        {
-            res.d[3] = lhs.d[0] << mod_shift;
-        }
-    }
-#endif
     return res;
 }
 

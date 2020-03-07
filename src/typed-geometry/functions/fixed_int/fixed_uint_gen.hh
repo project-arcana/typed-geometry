@@ -8,17 +8,14 @@
 #include <x86intrin.h>
 #endif
 
-#include <typed-geometry/functions/fixed_int/fixed_uint.hh>
+#include <typed-geometry/feature/fixed_int.hh>
 
 namespace tg::detail
 {
-template <int w_res, class T0, class T1>
-fixed_uint<w_res> mul(T0 const& lhs, T1 const& rhs);
-
-template <>
-inline fixed_uint<2> mul(u64 const& lhs, u64 const& rhs)
+template<>
+inline u128 mul(u64 lhs, u64 rhs)
 {
-    fixed_uint<2> res;
+    u128 res;
     u64 l00 = 0;
     u64 h00 = 0;
     l00 = _mulx_u64(lhs, rhs, &h00);
@@ -28,10 +25,10 @@ inline fixed_uint<2> mul(u64 const& lhs, u64 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<2> mul(u128 const& lhs, u64 const& rhs)
+template<>
+inline u128 mul(u128 lhs, u64 rhs)
 {
-    fixed_uint<2> res;
+    u128 res;
     u64 l00 = 0;
     u64 l10 = 0;
     u64 h00 = 0;
@@ -43,40 +40,10 @@ inline fixed_uint<2> mul(u128 const& lhs, u64 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<2> mul(u192 const& lhs, u64 const& rhs)
+template<>
+inline u128 mul(u64 lhs, u128 rhs)
 {
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs, &h00);
-    l10 = lhs.d[1] * rhs;
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u256 const& lhs, u64 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs, &h00);
-    l10 = lhs.d[1] * rhs;
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u64 const& lhs, u128 const& rhs)
-{
-    fixed_uint<2> res;
+    u128 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 h00 = 0;
@@ -88,10 +55,10 @@ inline fixed_uint<2> mul(u64 const& lhs, u128 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<2> mul(u128 const& lhs, u128 const& rhs)
+template<>
+inline u128 mul(u128 lhs, u128 rhs)
 {
-    fixed_uint<2> res;
+    u128 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l10 = 0;
@@ -105,192 +72,10 @@ inline fixed_uint<2> mul(u128 const& lhs, u128 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<2> mul(u192 const& lhs, u128 const& rhs)
+template<>
+inline u192 mul(u128 lhs, u64 rhs)
 {
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = lhs.d[0] * rhs.d[1];
-    l10 = lhs.d[1] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u256 const& lhs, u128 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = lhs.d[0] * rhs.d[1];
-    l10 = lhs.d[1] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u64 const& lhs, u192 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs, rhs.d[0], &h00);
-    l01 = lhs * rhs.d[1];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u128 const& lhs, u192 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = lhs.d[0] * rhs.d[1];
-    l10 = lhs.d[1] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u192 const& lhs, u192 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = lhs.d[0] * rhs.d[1];
-    l10 = lhs.d[1] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u256 const& lhs, u192 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = lhs.d[0] * rhs.d[1];
-    l10 = lhs.d[1] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u64 const& lhs, u256 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs, rhs.d[0], &h00);
-    l01 = lhs * rhs.d[1];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u128 const& lhs, u256 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = lhs.d[0] * rhs.d[1];
-    l10 = lhs.d[1] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u192 const& lhs, u256 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = lhs.d[0] * rhs.d[1];
-    l10 = lhs.d[1] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<2> mul(u256 const& lhs, u256 const& rhs)
-{
-    fixed_uint<2> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = lhs.d[0] * rhs.d[1];
-    l10 = lhs.d[1] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
-}
-
-template <>
-inline fixed_uint<3> mul(u64 const& lhs, u64 const& rhs)
-{
-    fixed_uint<3> res;
-    u64 l00 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs, rhs, &h00);
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    res.d[2] = c;
-    return res;
-}
-
-template <>
-inline fixed_uint<3> mul(u128 const& lhs, u64 const& rhs)
-{
-    fixed_uint<3> res;
+    u192 res;
     u64 l00 = 0;
     u64 l10 = 0;
     u64 h00 = 0;
@@ -307,10 +92,10 @@ inline fixed_uint<3> mul(u128 const& lhs, u64 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<3> mul(u192 const& lhs, u64 const& rhs)
+template<>
+inline u192 mul(u192 lhs, u64 rhs)
 {
-    fixed_uint<3> res;
+    u192 res;
     u64 l00 = 0;
     u64 l10 = 0;
     u64 l20 = 0;
@@ -329,32 +114,10 @@ inline fixed_uint<3> mul(u192 const& lhs, u64 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<3> mul(u256 const& lhs, u64 const& rhs)
+template<>
+inline u192 mul(u64 lhs, u128 rhs)
 {
-    fixed_uint<3> res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h10 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs, &h00);
-    l10 = _mulx_u64(lhs.d[1], rhs, &h10);
-    l20 = lhs.d[2] * rhs;
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
-    res.d[2] = c + h10 + l20;
-    return res;
-}
-
-template <>
-inline fixed_uint<3> mul(u64 const& lhs, u128 const& rhs)
-{
-    fixed_uint<3> res;
+    u192 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 h00 = 0;
@@ -371,10 +134,10 @@ inline fixed_uint<3> mul(u64 const& lhs, u128 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<3> mul(u128 const& lhs, u128 const& rhs)
+template<>
+inline u192 mul(u128 lhs, u128 rhs)
 {
-    fixed_uint<3> res;
+    u192 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l10 = 0;
@@ -397,10 +160,10 @@ inline fixed_uint<3> mul(u128 const& lhs, u128 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<3> mul(u192 const& lhs, u128 const& rhs)
+template<>
+inline u192 mul(u192 lhs, u128 rhs)
 {
-    fixed_uint<3> res;
+    u192 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l10 = 0;
@@ -425,38 +188,10 @@ inline fixed_uint<3> mul(u192 const& lhs, u128 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<3> mul(u256 const& lhs, u128 const& rhs)
+template<>
+inline u192 mul(u64 lhs, u192 rhs)
 {
-    fixed_uint<3> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
-    l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
-    l11 = lhs.d[1] * rhs.d[1];
-    l20 = lhs.d[2] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
-    res.d[2] = c + h01 + h10 + l11 + l20;
-    return res;
-}
-
-template <>
-inline fixed_uint<3> mul(u64 const& lhs, u192 const& rhs)
-{
-    fixed_uint<3> res;
+    u192 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -475,10 +210,10 @@ inline fixed_uint<3> mul(u64 const& lhs, u192 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<3> mul(u128 const& lhs, u192 const& rhs)
+template<>
+inline u192 mul(u128 lhs, u192 rhs)
 {
-    fixed_uint<3> res;
+    u192 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -503,10 +238,10 @@ inline fixed_uint<3> mul(u128 const& lhs, u192 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<3> mul(u192 const& lhs, u192 const& rhs)
+template<>
+inline u192 mul(u192 lhs, u192 rhs)
 {
-    fixed_uint<3> res;
+    u192 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -533,191 +268,10 @@ inline fixed_uint<3> mul(u192 const& lhs, u192 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<3> mul(u256 const& lhs, u192 const& rhs)
+template<>
+inline u256 mul(u192 lhs, u64 rhs)
 {
-    fixed_uint<3> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
-    l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
-    l02 = lhs.d[0] * rhs.d[2];
-    l11 = lhs.d[1] * rhs.d[1];
-    l20 = lhs.d[2] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
-    res.d[2] = c + h01 + l02 + h10 + l11 + l20;
-    return res;
-}
-
-template <>
-inline fixed_uint<3> mul(u64 const& lhs, u256 const& rhs)
-{
-    fixed_uint<3> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    l00 = _mulx_u64(lhs, rhs.d[0], &h00);
-    l01 = _mulx_u64(lhs, rhs.d[1], &h01);
-    l02 = lhs * rhs.d[2];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
-    res.d[2] = c + h01 + l02;
-    return res;
-}
-
-template <>
-inline fixed_uint<3> mul(u128 const& lhs, u256 const& rhs)
-{
-    fixed_uint<3> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
-    l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
-    l02 = lhs.d[0] * rhs.d[2];
-    l11 = lhs.d[1] * rhs.d[1];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
-    res.d[2] = c + h01 + l02 + h10 + l11;
-    return res;
-}
-
-template <>
-inline fixed_uint<3> mul(u192 const& lhs, u256 const& rhs)
-{
-    fixed_uint<3> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
-    l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
-    l02 = lhs.d[0] * rhs.d[2];
-    l11 = lhs.d[1] * rhs.d[1];
-    l20 = lhs.d[2] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
-    res.d[2] = c + h01 + l02 + h10 + l11 + l20;
-    return res;
-}
-
-template <>
-inline fixed_uint<3> mul(u256 const& lhs, u256 const& rhs)
-{
-    fixed_uint<3> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
-    l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
-    l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
-    l02 = lhs.d[0] * rhs.d[2];
-    l11 = lhs.d[1] * rhs.d[1];
-    l20 = lhs.d[2] * rhs.d[0];
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
-    res.d[2] = c + h01 + l02 + h10 + l11 + l20;
-    return res;
-}
-
-template <>
-inline fixed_uint<4> mul(u64 const& lhs, u64 const& rhs)
-{
-    fixed_uint<4> res;
-    u64 l00 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(lhs, rhs, &h00);
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
-    c = 0;
-    res.d[3] = c;
-    return res;
-}
-
-template <>
-inline fixed_uint<4> mul(u128 const& lhs, u64 const& rhs)
-{
-    fixed_uint<4> res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    u64 h10 = 0;
-    l00 = _mulx_u64(lhs.d[0], rhs, &h00);
-    l10 = _mulx_u64(lhs.d[1], rhs, &h10);
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l10, &res.d[1]);
-    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[2], h10, &res.d[2]);
-    res.d[3] = c;
-    return res;
-}
-
-template <>
-inline fixed_uint<4> mul(u192 const& lhs, u64 const& rhs)
-{
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l10 = 0;
     u64 l20 = 0;
@@ -741,10 +295,10 @@ inline fixed_uint<4> mul(u192 const& lhs, u64 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u256 const& lhs, u64 const& rhs)
+template<>
+inline u256 mul(u256 lhs, u64 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l10 = 0;
     u64 l20 = 0;
@@ -770,33 +324,10 @@ inline fixed_uint<4> mul(u256 const& lhs, u64 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u64 const& lhs, u128 const& rhs)
+template<>
+inline u256 mul(u128 lhs, u128 rhs)
 {
-    fixed_uint<4> res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    l00 = _mulx_u64(lhs, rhs.d[0], &h00);
-    l01 = _mulx_u64(lhs, rhs.d[1], &h01);
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    c += _addcarry_u64(0, res.d[1], c, &res.d[1]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[1], h00, &res.d[1]);
-    c += _addcarry_u64(0, res.d[1], l01, &res.d[1]);
-    c += _addcarry_u64(0, res.d[2], c, &res.d[2]);
-    c = 0;
-    c += _addcarry_u64(0, res.d[2], h01, &res.d[2]);
-    res.d[3] = c;
-    return res;
-}
-
-template <>
-inline fixed_uint<4> mul(u128 const& lhs, u128 const& rhs)
-{
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l10 = 0;
@@ -825,10 +356,10 @@ inline fixed_uint<4> mul(u128 const& lhs, u128 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u192 const& lhs, u128 const& rhs)
+template<>
+inline u256 mul(u192 lhs, u128 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l10 = 0;
@@ -863,10 +394,10 @@ inline fixed_uint<4> mul(u192 const& lhs, u128 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u256 const& lhs, u128 const& rhs)
+template<>
+inline u256 mul(u256 lhs, u128 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l10 = 0;
@@ -903,10 +434,10 @@ inline fixed_uint<4> mul(u256 const& lhs, u128 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u64 const& lhs, u192 const& rhs)
+template<>
+inline u256 mul(u64 lhs, u192 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -930,10 +461,10 @@ inline fixed_uint<4> mul(u64 const& lhs, u192 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u128 const& lhs, u192 const& rhs)
+template<>
+inline u256 mul(u128 lhs, u192 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -968,10 +499,10 @@ inline fixed_uint<4> mul(u128 const& lhs, u192 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u192 const& lhs, u192 const& rhs)
+template<>
+inline u256 mul(u192 lhs, u192 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -1012,10 +543,10 @@ inline fixed_uint<4> mul(u192 const& lhs, u192 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u256 const& lhs, u192 const& rhs)
+template<>
+inline u256 mul(u256 lhs, u192 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -1058,10 +589,10 @@ inline fixed_uint<4> mul(u256 const& lhs, u192 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u64 const& lhs, u256 const& rhs)
+template<>
+inline u256 mul(u64 lhs, u256 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -1087,10 +618,10 @@ inline fixed_uint<4> mul(u64 const& lhs, u256 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u128 const& lhs, u256 const& rhs)
+template<>
+inline u256 mul(u128 lhs, u256 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -1127,10 +658,10 @@ inline fixed_uint<4> mul(u128 const& lhs, u256 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u192 const& lhs, u256 const& rhs)
+template<>
+inline u256 mul(u192 lhs, u256 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
@@ -1173,10 +704,10 @@ inline fixed_uint<4> mul(u192 const& lhs, u256 const& rhs)
     return res;
 }
 
-template <>
-inline fixed_uint<4> mul(u256 const& lhs, u256 const& rhs)
+template<>
+inline u256 mul(u256 lhs, u256 rhs)
 {
-    fixed_uint<4> res;
+    u256 res;
     u64 l00 = 0;
     u64 l01 = 0;
     u64 l02 = 0;
