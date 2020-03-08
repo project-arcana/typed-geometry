@@ -47,43 +47,14 @@ template <int D, class ScalarT>
     return aabb_of(t.pos00, t.pos10, t.pos11, t.pos01);
 }
 
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr aabb<1, ScalarT> aabb_of(box<1, ScalarT, 1, TraitsT> const& b)
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr aabb<DomainD, ScalarT> aabb_of(box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
 {
-    return aabb_of(b[comp<1, ScalarT>(ScalarT(-1))], b[comp<1, ScalarT>(ScalarT(1))]);
-}
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr aabb<2, ScalarT> aabb_of(box<2, ScalarT, 2, TraitsT> const& b)
-{
-    return aabb_of(b[comp<2, ScalarT>(ScalarT(-1), ScalarT(-1))], b[comp<2, ScalarT>(ScalarT(-1), ScalarT(1))],
-                   b[comp<2, ScalarT>(ScalarT(1), ScalarT(-1))], b[comp<2, ScalarT>(ScalarT(1), ScalarT(1))]);
-}
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(box<3, ScalarT, 3, TraitsT> const& b)
-{
-    return aabb_of(b[comp<3, ScalarT>(ScalarT(-1), ScalarT(-1), ScalarT(-1))], b[comp<3, ScalarT>(ScalarT(-1), ScalarT(-1), ScalarT(1))],
-                   b[comp<3, ScalarT>(ScalarT(-1), ScalarT(1), ScalarT(-1))], b[comp<3, ScalarT>(ScalarT(-1), ScalarT(1), ScalarT(1))],
-                   b[comp<3, ScalarT>(ScalarT(1), ScalarT(-1), ScalarT(-1))], b[comp<3, ScalarT>(ScalarT(1), ScalarT(-1), ScalarT(1))],
-                   b[comp<3, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(-1))], b[comp<3, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(1))]);
-}
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr aabb<4, ScalarT> aabb_of(box<4, ScalarT, 4, TraitsT> const& b)
-{
-    return aabb_of(
-        b[comp<4, ScalarT>(ScalarT(-1), ScalarT(-1), ScalarT(-1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(-1), ScalarT(-1), ScalarT(-1), ScalarT(1))],
-        b[comp<4, ScalarT>(ScalarT(-1), ScalarT(-1), ScalarT(1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(-1), ScalarT(-1), ScalarT(1), ScalarT(1))],
-        b[comp<4, ScalarT>(ScalarT(-1), ScalarT(1), ScalarT(-1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(-1), ScalarT(1), ScalarT(-1), ScalarT(1))],
-        b[comp<4, ScalarT>(ScalarT(-1), ScalarT(1), ScalarT(1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(-1), ScalarT(1), ScalarT(1), ScalarT(1))],
-        b[comp<4, ScalarT>(ScalarT(1), ScalarT(-1), ScalarT(-1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(1), ScalarT(-1), ScalarT(-1), ScalarT(1))],
-        b[comp<4, ScalarT>(ScalarT(1), ScalarT(-1), ScalarT(1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(1), ScalarT(-1), ScalarT(1), ScalarT(1))],
-        b[comp<4, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(-1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(-1), ScalarT(1))],
-        b[comp<4, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1))]);
-}
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(box<2, ScalarT, 3, TraitsT> const& b)
-{
-    return aabb_of(b[comp<2, ScalarT>(ScalarT(-1), ScalarT(-1))], b[comp<2, ScalarT>(ScalarT(-1), ScalarT(1))],
-                   b[comp<2, ScalarT>(ScalarT(1), ScalarT(-1))], b[comp<2, ScalarT>(ScalarT(1), ScalarT(1))]);
+    vec<DomainD, ScalarT> diag;
+    for (auto i = 0; i < ObjectD; ++i)
+        diag += abs(b.half_extents[i]);
+
+    return {b.center - diag, b.center + diag};
 }
 
 template <class PrimA, class PrimB, class... PrimsT>
