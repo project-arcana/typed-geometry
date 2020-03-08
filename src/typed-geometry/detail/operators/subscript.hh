@@ -44,6 +44,11 @@ template <int D, class ScalarT, class TraitsT>
 {
     return this->center + this->half_extents * vec(c);
 }
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<3, ScalarT> box<2, ScalarT, 3, TraitsT>::operator[](comp<2, ScalarT> const& c) const
+{
+    return this->center + this->half_extents * vec(c);
+}
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> triangle<D, ScalarT>::operator[](comp<3, ScalarT> const& barycoords) const

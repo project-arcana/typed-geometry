@@ -79,6 +79,12 @@ template <class ScalarT, class TraitsT>
         b[comp<4, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(-1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(-1), ScalarT(1))],
         b[comp<4, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(-1))], b[comp<4, ScalarT>(ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1))]);
 }
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(box<2, ScalarT, 3, TraitsT> const& b)
+{
+    return aabb_of(b[comp<2, ScalarT>(ScalarT(-1), ScalarT(-1))], b[comp<2, ScalarT>(ScalarT(-1), ScalarT(1))],
+                   b[comp<2, ScalarT>(ScalarT(1), ScalarT(-1))], b[comp<2, ScalarT>(ScalarT(1), ScalarT(1))]);
+}
 
 template <class PrimA, class PrimB, class... PrimsT>
 [[nodiscard]] constexpr auto aabb_of(PrimA const& pa, PrimB const& pb, PrimsT const&... prims) -> decltype(aabb_of(pa))

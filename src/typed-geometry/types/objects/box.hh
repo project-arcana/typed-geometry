@@ -97,6 +97,8 @@ struct box<2, ScalarT, 3, TraitsT>
     constexpr box() = default;
     constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
 
+    [[nodiscard]] constexpr pos_t operator[](comp<2, ScalarT> const& c) const;
+
     [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
     [[nodiscard]] bool operator!=(box const& rhs) const { return !operator==(rhs); }
 };
