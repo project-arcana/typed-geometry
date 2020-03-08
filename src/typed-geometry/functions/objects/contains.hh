@@ -115,6 +115,42 @@ template <int D, class ScalarT>
     return onSomeBoundary; // True, if at on the boundary in at least one dimension
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(box<2, ScalarT, 3> const& b, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto r = p - b.center;
+
+    if (abs(dot(normal(b), r)) > eps)
+        return false; // Not in the spanned plane
+
+    if (abs(dot(b.half_extents[0], r)) > length_sqr(b.half_extents[0]) + eps || abs(dot(b.half_extents[1], r)) > length_sqr(b.half_extents[1]) + eps)
+        return false; // Outside of the box
+
+    return true;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(box_boundary<2, ScalarT, 3> const& b, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto r = p - b.center;
+
+    if (abs(dot(normal(b), r)) > eps)
+        return false; // Not in the spanned plane
+
+    // Rest is the same as for box2
+    auto onSomeBoundary = false;
+    for (auto i = 0; i < 2; ++i)
+    {
+        auto ri = abs(dot(b.half_extents[i], r));
+        auto bi = length_sqr(b.half_extents[i]);
+        if (ri > bi + eps)
+            return false;
+
+        if (!onSomeBoundary && (ri >= bi - eps))
+            onSomeBoundary = true;
+    }
+    return onSomeBoundary;
+}
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(aabb<D, ScalarT> const& b, aabb<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
