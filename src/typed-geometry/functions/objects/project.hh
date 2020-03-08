@@ -138,18 +138,26 @@ template <int D, class ScalarT>
 
 // ============== project to box ==============
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, box<D, ScalarT> const& b)
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, box<D, ScalarT, D, TraitsT> const& b)
 {
-    auto pLocal = pos<D, ScalarT>(inverse(b.half_extents) * (p - b.center));
-    return b.center + b.half_extents * vec<D, ScalarT>(project(pLocal, aabb<D, ScalarT>::minus_one_to_one));
+    auto pLocal = pos(inverse(b.half_extents) * (p - b.center));
+    return b.center + b.half_extents * vec(project(pLocal, aabb<D, ScalarT, TraitsT>::minus_one_to_one));
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, box_boundary<D, ScalarT> const& b)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, box<2, ScalarT, 3, TraitsT> const& b)
 {
-    auto pLocal = pos<D, ScalarT>(inverse(b.half_extents) * (p - b.center));
-    return b.center + b.half_extents * vec<D, ScalarT>(project(pLocal, aabb_boundary<D, ScalarT>::minus_one_to_one));
+    auto pPlane = project(p, plane<3, ScalarT>(normal(b), b.center));
+    auto r = pPlane - b.center;
+
+    pos<2, ScalarT> pLocal;
+    auto len0 = length(b.half_extents[0]);
+    auto len1 = length(b.half_extents[1]);
+    pLocal.x = len0 == ScalarT(0) ? ScalarT(0) : dot(b.half_extents[0] / len0, r) / len0;
+    pLocal.y = len1 == ScalarT(0) ? ScalarT(0) : dot(b.half_extents[1] / len1, r) / len1;
+
+    return b.center + b.half_extents * vec(project(pLocal, aabb<2, ScalarT, TraitsT>::minus_one_to_one));
 }
 
 
