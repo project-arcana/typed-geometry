@@ -21,7 +21,12 @@
 
 // Contained functions:
 // - contains
-//      - baabb
+//      - aabb
+//      - box
+//      - cone
+//      - inf_cone
+//      - cylinder
+//      - sphere
 //      - triangle
 
 namespace tg
@@ -162,6 +167,12 @@ template <int D, class ScalarT>
 {
     auto r = s.radius + eps;
     return distance_sqr(s.center, p) <= r * r;
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(sphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto d2 = distance_sqr(s.center, p);
+    return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
 }
 
 // Note that eps is used to compare 2D areas, not 1D lengths
