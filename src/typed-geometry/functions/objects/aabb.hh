@@ -3,6 +3,7 @@
 #include <typed-geometry/feature/assert.hh>
 
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -44,6 +45,16 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(quad<D, ScalarT> const& t)
 {
     return aabb_of(t.pos00, t.pos10, t.pos11, t.pos01);
+}
+
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr aabb<DomainD, ScalarT> aabb_of(box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
+{
+    vec<DomainD, ScalarT> diag;
+    for (auto i = 0; i < ObjectD; ++i)
+        diag += abs(b.half_extents[i]);
+
+    return {b.center - diag, b.center + diag};
 }
 
 template <class PrimA, class PrimB, class... PrimsT>

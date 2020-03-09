@@ -289,15 +289,10 @@ template <int D, class ScalarT, class Rng>
     return mix(s.pos0, s.pos1, detail::uniform01<ScalarT>(rng));
 }
 
-template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, box<D, ScalarT> const& b)
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class Rng>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> uniform(Rng& rng, box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
 {
-    return b.center + b.half_extents * uniform_vec(rng, aabb<D, ScalarT>::minus_one_to_one);
-}
-template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, box_boundary<D, ScalarT> const& b)
-{
-    return b.center + b.half_extents * (uniform(rng, aabb_boundary<D, ScalarT>::minus_one_to_one) - pos<D, ScalarT>::zero);
+    return b.center + b.half_extents * uniform_vec(rng, aabb<ObjectD, ScalarT, TraitsT>::minus_one_to_one);
 }
 
 template <class ScalarT, class Rng>

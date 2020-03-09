@@ -83,6 +83,7 @@ template <int D, class ScalarT>
 {
     return clamp(p, b.min, b.max);
 }
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, aabb<D, ScalarT, boundary_tag> const& b)
 {
@@ -137,11 +138,11 @@ template <int D, class ScalarT>
 
 // ============== project to box ==============
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, box<D, ScalarT> const& b)
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> project(pos<DomainD, ScalarT> const& p, box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
 {
-    auto pLocal = pos<D, ScalarT>(inverse(b.half_extents) * (p - b.center));
-    return b.center + b.half_extents * vec<D, ScalarT>(project(pLocal, aabb<D, ScalarT>::minus_one_to_one));
+    auto pLocal = pos(coordinates(b, p));
+    return b.center + b.half_extents * vec(project(pLocal, aabb<ObjectD, ScalarT, TraitsT>::minus_one_to_one));
 }
 
 
@@ -179,6 +180,7 @@ template <class ScalarT>
     else
         return p2;
 }
+
 template <class ScalarT>
 [[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, triangle<2, ScalarT> const& t)
 {
@@ -390,6 +392,7 @@ template <class ScalarT>
 
     return project(p, cylinder<3, ScalarT>(c.axis, c.radius));
 }
+
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, capsule_boundary<3, ScalarT> const& c) // boundary, including caps
 {
@@ -419,6 +422,7 @@ template <class ScalarT>
     auto closestOnCone = project(p, inf_cone(c));
     return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
 }
+
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone_boundary_no_caps<3, ScalarT> const& c)
 {
