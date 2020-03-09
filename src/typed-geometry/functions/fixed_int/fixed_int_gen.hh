@@ -22,6 +22,23 @@ using intrinsic_i128 = __int128;
 #endif
 
 template <>
+inline i128 imul(i128 lhs, i128 rhs)
+{
+    i128 res;
+    u64 l00 = 0;
+    u64 l01 = 0;
+    u64 l10 = 0;
+    u64 h00 = 0;
+    l00 = _mulx_u64(u64(lhs.d[0]), u64(rhs.d[0]), &h00);
+    l01 = u64(lhs.d[0]) * u64(rhs.d[1]);
+    l10 = u64(lhs.d[1]) * u64(rhs.d[0]);
+    unsigned char c = 0;
+    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
+    res.d[1] = c + h00 + l01 + l10;
+    return res;
+}
+
+template <>
 inline i128 imul(i64 lhs, i64 rhs)
 {
 #ifdef _MSC_VER
@@ -66,23 +83,6 @@ inline i128 imul(i64 lhs, i128 rhs)
     memcpy(&res, &inres, sizeof(intrinsic_i128));
     return res;
 #endif
-}
-
-template <>
-inline i128 imul(i128 lhs, i128 rhs)
-{
-    i128 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    l00 = _mulx_u64(u64(lhs.d[0]), u64(rhs.d[0]), &h00);
-    l01 = u64(lhs.d[0]) * u64(rhs.d[1]);
-    l10 = u64(lhs.d[1]) * u64(rhs.d[0]);
-    unsigned char c = 0;
-    c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
-    res.d[1] = c + h00 + l01 + l10;
-    return res;
 }
 
 template <>
