@@ -13,52 +13,13 @@
 
 namespace tg::detail
 {
-template <>
-inline i128 imul(i64 lhs, i64 rhs)
-{
-#ifdef _MSC_VER
-    return imul(i128(lhs), i128(rhs));
-#else
-    __int128 l = lhs;
-    __int128 r = rhs;
-    __int128 inres = l * r;
-    i128 res;
-    memcpy(&res, &inres, sizeof(__int128));
-    return res;
+/// GCC warns that __int128 is not iso-c++
+#ifndef _MSC_VER // MSVC does not support __int128
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+using intrinsic_i128 = __int128;
+#pragma GCC diagnostic pop
 #endif
-}
-
-template <>
-inline i128 imul(i128 lhs, i64 rhs)
-{
-#ifdef _MSC_VER
-    return imul(lhs, i128(rhs));
-#else
-    __int128 l;
-    __int128 r = rhs;
-    memcpy(&l, &lhs, sizeof(__int128));
-    __int128 inres = l * r;
-    i128 res;
-    memcpy(&res, &inres, sizeof(__int128));
-    return res;
-#endif
-}
-
-template <>
-inline i128 imul(i64 lhs, i128 rhs)
-{
-#ifdef _MSC_VER
-    return imul(i128(lhs), rhs);
-#else
-    __int128 l = lhs;
-    __int128 r;
-    memcpy(&r, &rhs, sizeof(__int128));
-    __int128 inres = l * r;
-    i128 res;
-    memcpy(&res, &inres, sizeof(__int128));
-    return res;
-#endif
-}
 
 template <>
 inline i128 imul(i128 lhs, i128 rhs)
@@ -78,11 +39,58 @@ inline i128 imul(i128 lhs, i128 rhs)
 }
 
 template <>
+inline i128 imul(i64 lhs, i64 rhs)
+{
+#ifdef _MSC_VER
+    return imul<2>(i128(lhs), i128(rhs));
+#else
+    intrinsic_i128 l = lhs;
+    intrinsic_i128 r = rhs;
+    intrinsic_i128 inres = l * r;
+    i128 res;
+    memcpy(&res, &inres, sizeof(intrinsic_i128));
+    return res;
+#endif
+}
+
+template <>
+inline i128 imul(i128 lhs, i64 rhs)
+{
+#ifdef _MSC_VER
+    return imul<2>(lhs, i128(rhs));
+#else
+    intrinsic_i128 l;
+    intrinsic_i128 r = rhs;
+    memcpy(&l, &lhs, sizeof(intrinsic_i128));
+    intrinsic_i128 inres = l * r;
+    i128 res;
+    memcpy(&res, &inres, sizeof(intrinsic_i128));
+    return res;
+#endif
+}
+
+template <>
+inline i128 imul(i64 lhs, i128 rhs)
+{
+#ifdef _MSC_VER
+    return imul<2>(i128(lhs), rhs);
+#else
+    intrinsic_i128 l = lhs;
+    intrinsic_i128 r;
+    memcpy(&r, &rhs, sizeof(intrinsic_i128));
+    intrinsic_i128 inres = l * r;
+    i128 res;
+    memcpy(&res, &inres, sizeof(intrinsic_i128));
+    return res;
+#endif
+}
+
+template <>
 inline i192 imul(i128 lhs, i64 rhs)
 {
     i192 res;
     u64 s_l = u64(i64(lhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(rhs) >> 63);      // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         lhs.d[0] = ((u64(lhs.d[0]) ^ s_l) - s_l);
@@ -120,7 +128,7 @@ inline i192 imul(i192 lhs, i64 rhs)
 {
     i192 res;
     u64 s_l = u64(i64(lhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(rhs) >> 63);      // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         lhs.d[0] = ((u64(lhs.d[0]) ^ s_l) - s_l);
@@ -161,7 +169,7 @@ template <>
 inline i192 imul(i64 lhs, i128 rhs)
 {
     i192 res;
-    u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(lhs) >> 63);      // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[1]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -295,7 +303,7 @@ template <>
 inline i192 imul(i64 lhs, i192 rhs)
 {
     i192 res;
-    u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(lhs) >> 63);      // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -418,7 +426,7 @@ inline i256 imul(i192 lhs, i64 rhs)
 {
     i256 res;
     u64 s_l = u64(i64(lhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(rhs) >> 63);      // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         lhs.d[0] = ((u64(lhs.d[0]) ^ s_l) - s_l);
@@ -467,7 +475,7 @@ inline i256 imul(i256 lhs, i64 rhs)
 {
     i256 res;
     u64 s_l = u64(i64(lhs.d[3]) >> 63); // 0 iff > 0, -1 otherwise
-    u64 s_r = u64(i64(rhs) >> 63); // 0 iff > 0, -1 otherwise
+    u64 s_r = u64(i64(rhs) >> 63);      // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
         lhs.d[0] = ((u64(lhs.d[0]) ^ s_l) - s_l);
@@ -701,7 +709,7 @@ template <>
 inline i256 imul(i64 lhs, i192 rhs)
 {
     i256 res;
-    u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(lhs) >> 63);      // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[2]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
@@ -956,7 +964,7 @@ template <>
 inline i256 imul(i64 lhs, i256 rhs)
 {
     i256 res;
-    u64 s_l = u64(i64(lhs) >> 63); // 0 iff > 0, -1 otherwise
+    u64 s_l = u64(i64(lhs) >> 63);      // 0 iff > 0, -1 otherwise
     u64 s_r = u64(i64(rhs.d[3]) >> 63); // 0 iff > 0, -1 otherwise
     u64 s_res = s_l ^ s_r;
     { // conditional inversion
