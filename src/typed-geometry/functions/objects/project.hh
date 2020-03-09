@@ -138,26 +138,11 @@ template <int D, class ScalarT>
 
 // ============== project to box ==============
 
-template <int D, class ScalarT, class TraitsT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, box<D, ScalarT, D, TraitsT> const& b)
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> project(pos<DomainD, ScalarT> const& p, box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
 {
-    auto pLocal = pos(inverse(b.half_extents) * (p - b.center));
-    return b.center + b.half_extents * vec(project(pLocal, aabb<D, ScalarT, TraitsT>::minus_one_to_one));
-}
-
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, box<2, ScalarT, 3, TraitsT> const& b)
-{
-    auto pPlane = project(p, plane<3, ScalarT>(normal(b), b.center));
-    auto r = pPlane - b.center;
-
-    pos<2, ScalarT> pLocal;
-    auto len0 = length(b.half_extents[0]);
-    auto len1 = length(b.half_extents[1]);
-    pLocal.x = len0 == ScalarT(0) ? ScalarT(0) : dot(b.half_extents[0] / len0, r) / len0;
-    pLocal.y = len1 == ScalarT(0) ? ScalarT(0) : dot(b.half_extents[1] / len1, r) / len1;
-
-    return b.center + b.half_extents * vec(project(pLocal, aabb<2, ScalarT, TraitsT>::minus_one_to_one));
+    auto pLocal = pos(coordinates(b, p));
+    return b.center + b.half_extents * vec(project(pLocal, aabb<ObjectD, ScalarT, TraitsT>::minus_one_to_one));
 }
 
 
