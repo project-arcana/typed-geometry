@@ -25,7 +25,7 @@ template <>
 inline i128 imul(i64 lhs, i64 rhs)
 {
 #ifdef _MSC_VER
-    return imul(i128(lhs), i128(rhs));
+    return imul<2>(i128(lhs), i128(rhs));
 #else
     intrinsic_i128 l = lhs;
     intrinsic_i128 r = rhs;
@@ -40,7 +40,7 @@ template <>
 inline i128 imul(i128 lhs, i64 rhs)
 {
 #ifdef _MSC_VER
-    return imul(lhs, i128(rhs));
+    return imul<2>(lhs, i128(rhs));
 #else
     intrinsic_i128 l;
     intrinsic_i128 r = rhs;
@@ -56,7 +56,7 @@ template <>
 inline i128 imul(i64 lhs, i128 rhs)
 {
 #ifdef _MSC_VER
-    return imul(i128(lhs), rhs);
+    return imul<2>(i128(lhs), rhs);
 #else
     intrinsic_i128 l = lhs;
     intrinsic_i128 r;
