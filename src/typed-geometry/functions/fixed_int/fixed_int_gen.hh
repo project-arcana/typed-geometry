@@ -11,14 +11,15 @@
 
 #include <typed-geometry/feature/fixed_int.hh>
 
-
 namespace tg::detail
 {
 /// GCC warns that __int128 is not iso-c++
+#ifndef _MSC_VER // MSVC does not support __int128
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 using intrinsic_i128 = __int128;
 #pragma GCC diagnostic pop
+#endif
 
 template <>
 inline i128 imul(i64 lhs, i64 rhs)
