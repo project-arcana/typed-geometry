@@ -65,10 +65,29 @@ template <int D, class ScalarT>
     return t;
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr comp<D, ScalarT> coordinates(aabb<D, ScalarT> const& s, pos<D, ScalarT> const& p)
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr comp<D, ScalarT> coordinates(aabb<D, ScalarT, TraitsT> const& s, pos<D, ScalarT> const& p)
 {
     return tg::comp<D, ScalarT>(p - s.min) / tg::comp<D, ScalarT>(s.max - s.min);
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr comp<D, ScalarT> coordinates(box<D, ScalarT, D, TraitsT> const& b, pos<D, ScalarT> const& p)
+{
+    return comp(inverse(b.half_extents) * (p - b.center));
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr comp<2, ScalarT> coordinates(box<2, ScalarT, 3, TraitsT> const& b, pos<3, ScalarT> const& p)
+{
+    auto pPlane = project(p, plane<3, ScalarT>(normal(b), b.center));
+    auto r = pPlane - b.center;
+
+    comp<2, ScalarT> pLocal;
+    auto len0 = length(b.half_extents[0]);
+    auto len1 = length(b.half_extents[1]);
+    pLocal.comp0 = len0 == ScalarT(0) ? ScalarT(0) : dot(b.half_extents[0] / len0, r) / len0;
+    pLocal.comp1 = len1 == ScalarT(0) ? ScalarT(0) : dot(b.half_extents[1] / len1, r) / len1;
+    return pLocal;
 }
 
 } // namespace tg
