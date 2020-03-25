@@ -9,6 +9,9 @@
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
+#include <typed-geometry/detail/operators/ops_pos.hh>
+#include <typed-geometry/detail/operators/ops_vec.hh>
+
 // returns the arithmetic mean of all points contained in an object
 // has variadic versions
 
