@@ -4,6 +4,7 @@
 
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -27,6 +28,14 @@ template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(sphere<D, ScalarT, D, TraitsT> const& s)
 {
     return {s.center - s.radius, s.center + s.radius};
+}
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(sphere<2, ScalarT, 3, TraitsT> const& s)
+{
+    // See http://www.iquilezles.org/www/articles/diskbbox/diskbbox.htm
+    const auto e = abs(s.radius) * sqrt(ScalarT(1) - comp(s.normal) * comp(s.normal));
+    return {s.center - e, s.center + e};
 }
 
 template <int D, class ScalarT>
@@ -55,6 +64,19 @@ template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
         diag += abs(b.half_extents[i]);
 
     return {b.center - diag, b.center + diag};
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(capsule<D, ScalarT, TraitsT> const& c)
+{
+    return aabb_of(sphere<D, ScalarT>(c.axis.pos0, c.radius), sphere<D, ScalarT>(c.axis.pos1, c.radius));
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(cylinder<D, ScalarT, TraitsT> const& c)
+{
+    const auto n = normalize(c.axis.pos1 - c.axis.pos0);
+    return aabb_of(sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, n), sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, n));
 }
 
 template <class PrimA, class PrimB, class... PrimsT>
