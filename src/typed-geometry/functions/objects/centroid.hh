@@ -1,7 +1,6 @@
 #pragma once
 
 #include <typed-geometry/detail/scalar_traits.hh>
-#include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
@@ -53,8 +52,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(triangle<D, ScalarT> const& p)
 {
-    auto z = tg::zero<pos<D, ScalarT>>();
-    return z + ((p.pos0 - z) + (p.pos1 - z) + (p.pos2 - z)) / ScalarT(3);
+    return (p.pos0 + p.pos1 + p.pos2) / ScalarT(3);
 }
 
 template <int D, class ScalarT>
