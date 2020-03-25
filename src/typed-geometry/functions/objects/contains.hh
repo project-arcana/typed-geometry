@@ -302,4 +302,60 @@ template <class ScalarT>
            && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= c.opening_angle;
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(pyramid<triangle<3, ScalarT>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    const auto c = centroid(py.base);
+    auto n = normal(py.base);
+
+    if (dot(p - c + eps * n, n) < ScalarT(0))
+        return false; // Not inside if on the other side of the base
+
+    // Check if inside for each pyramid side
+    const auto apex = c + n * py.height;
+    n = normalize(cross(apex - py.base.pos0, py.base.pos1 - py.base.pos0));
+    if (dot(p - apex + eps * n, n) < ScalarT(0))
+        return false;
+    n = normalize(cross(apex - py.base.pos1, py.base.pos2 - py.base.pos1));
+    if (dot(p - apex + eps * n, n) < ScalarT(0))
+        return false;
+    n = normalize(cross(apex - py.base.pos2, py.base.pos0 - py.base.pos2));
+    if (dot(p - apex + eps * n, n) < ScalarT(0))
+        return false;
+
+    return true;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(pyramid<box<2, ScalarT, 3>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    const auto c = centroid(py.base);
+    auto n = normal(py.base);
+
+    if (dot(p - c + eps * n, n) < ScalarT(0))
+        return false; // Not inside if on the other side of the base
+
+    // Check if inside for each pyramid side
+    const auto apex = c + n * py.height;
+    const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
+    const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
+    const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
+    const auto p3 = py.base[comp<2, ScalarT>(-1, 1)];
+
+    n = normalize(cross(apex - p0, p1 - p0));
+    if (dot(p - apex + eps * n, n) < ScalarT(0))
+        return false;
+    n = normalize(cross(apex - p1, p2 - p1));
+    if (dot(p - apex + eps * n, n) < ScalarT(0))
+        return false;
+    n = normalize(cross(apex - p2, p3 - p2));
+    if (dot(p - apex + eps * n, n) < ScalarT(0))
+        return false;
+    n = normalize(cross(apex - p3, p0 - p3));
+    if (dot(p - apex + eps * n, n) < ScalarT(0))
+        return false;
+
+    return true;
+}
+
 } // namespace tg

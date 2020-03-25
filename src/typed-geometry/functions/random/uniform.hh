@@ -453,6 +453,15 @@ template <int D, class ScalarT, class Rng>
         return h.center - v;
 }
 
+template <class BaseT, class Rng, class ScalarT = typename BaseT::scalar_t>
+[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid<BaseT> const& p)
+{
+    const auto n = normal(p.base);
+    const auto h = tg::pow2(detail::uniform01<ScalarT>(rng));
+    const auto pBase = uniform(rng, p.base);
+    return mix(pBase, centroid(p.base), h) + h * p.height * n;
+}
+
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
 [[deprecated("potentially misleading operation. use uniform_vec(rng, tg::aabb3(..)) or uniform_vec(rng, tg::segment3(..)) depending on your intended "
              "semantics")]] [[nodiscard]] constexpr vec<D, ScalarT>
