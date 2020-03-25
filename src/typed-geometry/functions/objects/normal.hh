@@ -13,6 +13,8 @@
 #include <typed-geometry/functions/vector/normalize.hh>
 #include <typed-geometry/functions/vector/perpendicular.hh>
 
+#include "typed-geometry/functions/tests/vec_tests.hh"
+
 // Computes the normal at the surface of an object
 // Some objects have a fixed normal everywhere, some only at defined positions
 // Evaluating the normal at other positions might be undefined or wrong
@@ -66,7 +68,7 @@ template <class ScalarT>
 {
     // Assumes the quad is planar, as it is a requirement for pyramid<quad>
     const auto res = normalize(cross(q.pos01 - q.pos00, q.pos10 - q.pos00));
-    TG_ASSERT(dot(q.pos11 - q.pos00, res) == ScalarT(0)); // Checks that the four points are indeed coplanar
+    TG_ASSERT(tg::are_orthogonal(q.pos11 - q.pos00, res)); // Checks that the four points are indeed coplanar
     return res;
 }
 
