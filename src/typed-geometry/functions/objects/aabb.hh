@@ -5,6 +5,7 @@
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
+#include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -38,6 +39,26 @@ template <class ScalarT, class TraitsT>
     return {s.center - e, s.center + e};
 }
 
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<1, ScalarT> aabb_of(hemisphere<1, ScalarT, TraitsT> const& h)
+{
+    return aabb_of(h.center, h.center + h.normal * h.radius);
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<2, ScalarT> aabb_of(hemisphere<2, ScalarT, TraitsT> const& h)
+{
+    const auto baseVec = h.radius * perpendicular(h.normal);
+    const auto sphereCorner = h.center + h.radius * sign(vec(h.normal));
+    return aabb_of(h.center - baseVec, h.center + baseVec, sphereCorner);
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(hemisphere<3, ScalarT, TraitsT> const& h)
+{
+    const auto disk = sphere<2, ScalarT, 3>(h.center, h.radius, h.normal);
+    const auto sphereCorner = h.center + h.radius * sign(vec(h.normal));
+    return aabb_of(disk, sphereCorner);
+}
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(segment<D, ScalarT> const& s)
 {
@@ -51,9 +72,9 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(quad<D, ScalarT> const& t)
+[[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(quad<D, ScalarT> const& q)
 {
-    return aabb_of(t.pos00, t.pos10, t.pos11, t.pos01);
+    return aabb_of(q.pos00, q.pos10, q.pos11, q.pos01);
 }
 
 template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
