@@ -6,6 +6,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -98,6 +99,13 @@ template <int D, class ScalarT, class TraitsT>
 {
     const auto n = normalize(c.axis.pos1 - c.axis.pos0);
     return aabb_of(sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, n), sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, n));
+}
+
+template <class BaseT, class TraitsT, class ScalarT = typename BaseT::scalar_t>
+[[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(pyramid<BaseT, TraitsT> const& p)
+{
+    const auto apex = centroid(p.base) + normal(p.base) * p.height;
+    return aabb_of(p.base, apex);
 }
 
 template <class PrimA, class PrimB, class... PrimsT>

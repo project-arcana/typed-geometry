@@ -5,6 +5,7 @@
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
@@ -31,8 +32,8 @@ template <int D, class ScalarT>
     return mix(a, b, ScalarT(0.5));
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> centroid(box<D, ScalarT> const& b)
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid(box<ObjectD, ScalarT, DomainD> const& b)
 {
     return b.center;
 }
@@ -44,6 +45,12 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(segment<D, ScalarT> const& p)
+{
+    return mix(p.pos0, p.pos1, fractional_result<ScalarT>(0.5));
+}
+
+template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(triangle<D, ScalarT> const& p)
 {
     auto z = tg::zero<pos<D, ScalarT>>();
@@ -51,13 +58,13 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(segment<D, ScalarT> const& p)
+[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(quad<D, ScalarT> const& q)
 {
-    return mix(p.pos0, p.pos1, fractional_result<ScalarT>(0.5));
+    return (q.pos00 + q.pos01 + q.pos10 + q.pos11) * ScalarT(0.25);
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> centroid(sphere<D, ScalarT> const& p)
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid(sphere<ObjectD, ScalarT, DomainD> const& p)
 {
     return p.center;
 }
