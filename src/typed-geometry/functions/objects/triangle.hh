@@ -7,7 +7,7 @@
 namespace tg
 {
 template <class ScalarT>
-[[nodiscard]] sphere<2, ScalarT, 2, default_object_tag> circumcircle(triangle<2, ScalarT> const& t)
+[[nodiscard]] sphere<2, ScalarT> circumcircle(triangle<2, ScalarT> const& t)
 {
     auto const& a = t.pos0;
     auto const& b = t.pos1;
