@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typed-geometry/functions/basic/scalar_math.hh>
 #include <typed-geometry/detail/macros.hh>
+#include <typed-geometry/functions/basic/scalar_math.hh>
 #include <typed-geometry/types/color.hh>
 #include <typed-geometry/types/comp.hh>
 #include <typed-geometry/types/dir.hh>
