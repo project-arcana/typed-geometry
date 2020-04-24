@@ -367,13 +367,22 @@ template <class ScalarT>
 
 // ============== project to inf_cylinder ==============
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder<D, ScalarT> const& itube)
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cylinder<3, ScalarT> const& c)
 {
-    auto vec = p - itube.axis.pos;
-    auto h = dot(vec, itube.axis.dir);
-    auto point_on_axis = itube.axis[h];
-    return point_on_axis + tg::normalize_safe(p - point_on_axis) * itube.radius;
+    if (contains(c, p))
+        return p;
+
+    return project(p, boundary_of(c));
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder_boundary<D, ScalarT> const& c)
+{
+    auto vec = p - c.axis.pos;
+    auto h = dot(vec, c.axis.dir);
+    auto point_on_axis = c.axis[h];
+    return point_on_axis + tg::normalize_safe(p - point_on_axis) * c.radius;
 }
 
 
