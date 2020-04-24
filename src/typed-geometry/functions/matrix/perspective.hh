@@ -10,7 +10,7 @@ namespace tg
 {
 /// aspect ratio is width / height
 template <class ScalarT>
-[[nodiscard]] mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane)
+[[nodiscard]] mat<4, 4, ScalarT> perspective_reverse_z_opengl(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane)
 {
     TG_CONTRACT(near_plane > 0);
     TG_CONTRACT(aspect_ratio > 0);
@@ -26,6 +26,25 @@ template <class ScalarT>
     m[0][0] = ScalarT(1) / (aspect_ratio * tan_half_hfov);
     m[1][1] = ScalarT(1) / tan_half_hfov;
     m[2][3] = -ScalarT(1);
+    m[3][2] = near_plane;
+
+    return m;
+}
+
+template <class ScalarT>
+[[nodiscard]] mat<4, 4, ScalarT> perspective_reverse_z_directx(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane)
+{
+    TG_CONTRACT(near_plane > 0);
+    TG_CONTRACT(aspect_ratio > 0);
+    TG_CONTRACT(horizontal_fov > degree(0));
+    TG_CONTRACT(horizontal_fov < degree(180));
+
+    auto const tan_half_hfov = tan(horizontal_fov / ScalarT(2));
+
+    auto m = mat<4, 4, ScalarT>::zero;
+    m[0][0] = ScalarT(1) / (aspect_ratio * tan_half_hfov);
+    m[1][1] = ScalarT(1) / tan_half_hfov;
+    m[2][3] = ScalarT(1);
     m[3][2] = near_plane;
 
     return m;
@@ -85,8 +104,19 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] mat<4, 4, ScalarT> perspective(angle_t<ScalarT> horizontal_fov, ScalarT aspect_ratio, ScalarT near_plane, ScalarT far_plane)
+[[deprecated("use explicit _opengl or _directx version")]] [[nodiscard]] mat<4, 4, ScalarT> perspective(angle_t<ScalarT> horizontal_fov,
+                                                                                                        ScalarT aspect_ratio,
+                                                                                                        ScalarT near_plane,
+                                                                                                        ScalarT far_plane)
 {
     return perspective_opengl(horizontal_fov, aspect_ratio, near_plane, far_plane);
+}
+
+template <class ScalarT>
+[[deprecated("use explicit _opengl or _directx version")]] [[nodiscard]] mat<4, 4, ScalarT> perspective_reverse_z(angle_t<ScalarT> horizontal_fov,
+                                                                                                                  ScalarT aspect_ratio,
+                                                                                                                  ScalarT near_plane)
+{
+    return perspective_reverse_z_opengl(horizontal_fov, aspect_ratio, near_plane);
 }
 }

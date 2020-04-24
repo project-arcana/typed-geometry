@@ -12,7 +12,7 @@
 
 namespace tg::detail
 {
-template<>
+template <>
 inline u128 mul(u64 lhs, u64 rhs)
 {
     u128 res;
@@ -25,7 +25,7 @@ inline u128 mul(u64 lhs, u64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u128 mul(u128 lhs, u64 rhs)
 {
     u128 res;
@@ -40,7 +40,7 @@ inline u128 mul(u128 lhs, u64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u128 mul(u64 lhs, u128 rhs)
 {
     u128 res;
@@ -55,7 +55,7 @@ inline u128 mul(u64 lhs, u128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u128 mul(u128 lhs, u128 rhs)
 {
     u128 res;
@@ -72,7 +72,7 @@ inline u128 mul(u128 lhs, u128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u192 mul(u128 lhs, u64 rhs)
 {
     u192 res;
@@ -92,7 +92,7 @@ inline u192 mul(u128 lhs, u64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u192 mul(u192 lhs, u64 rhs)
 {
     u192 res;
@@ -114,7 +114,7 @@ inline u192 mul(u192 lhs, u64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u192 mul(u64 lhs, u128 rhs)
 {
     u192 res;
@@ -134,7 +134,7 @@ inline u192 mul(u64 lhs, u128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u192 mul(u128 lhs, u128 rhs)
 {
     u192 res;
@@ -160,7 +160,7 @@ inline u192 mul(u128 lhs, u128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u192 mul(u192 lhs, u128 rhs)
 {
     u192 res;
@@ -188,7 +188,7 @@ inline u192 mul(u192 lhs, u128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u192 mul(u64 lhs, u192 rhs)
 {
     u192 res;
@@ -210,7 +210,7 @@ inline u192 mul(u64 lhs, u192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u192 mul(u128 lhs, u192 rhs)
 {
     u192 res;
@@ -238,7 +238,7 @@ inline u192 mul(u128 lhs, u192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u192 mul(u192 lhs, u192 rhs)
 {
     u192 res;
@@ -268,7 +268,7 @@ inline u192 mul(u192 lhs, u192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u192 lhs, u64 rhs)
 {
     u256 res;
@@ -295,7 +295,7 @@ inline u256 mul(u192 lhs, u64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u256 lhs, u64 rhs)
 {
     u256 res;
@@ -324,7 +324,7 @@ inline u256 mul(u256 lhs, u64 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u128 lhs, u128 rhs)
 {
     u256 res;
@@ -356,7 +356,7 @@ inline u256 mul(u128 lhs, u128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u192 lhs, u128 rhs)
 {
     u256 res;
@@ -394,7 +394,7 @@ inline u256 mul(u192 lhs, u128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u256 lhs, u128 rhs)
 {
     u256 res;
@@ -434,7 +434,7 @@ inline u256 mul(u256 lhs, u128 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u64 lhs, u192 rhs)
 {
     u256 res;
@@ -461,7 +461,7 @@ inline u256 mul(u64 lhs, u192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u128 lhs, u192 rhs)
 {
     u256 res;
@@ -499,7 +499,7 @@ inline u256 mul(u128 lhs, u192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u192 lhs, u192 rhs)
 {
     u256 res;
@@ -543,7 +543,7 @@ inline u256 mul(u192 lhs, u192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u256 lhs, u192 rhs)
 {
     u256 res;
@@ -589,7 +589,7 @@ inline u256 mul(u256 lhs, u192 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u64 lhs, u256 rhs)
 {
     u256 res;
@@ -618,7 +618,7 @@ inline u256 mul(u64 lhs, u256 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u128 lhs, u256 rhs)
 {
     u256 res;
@@ -658,7 +658,7 @@ inline u256 mul(u128 lhs, u256 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u192 lhs, u256 rhs)
 {
     u256 res;
@@ -704,7 +704,7 @@ inline u256 mul(u192 lhs, u256 rhs)
     return res;
 }
 
-template<>
+template <>
 inline u256 mul(u256 lhs, u256 rhs)
 {
     u256 res;

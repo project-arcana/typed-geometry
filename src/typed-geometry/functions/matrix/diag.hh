@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typed-geometry/functions/basic/scalar_math.hh>
 #include <typed-geometry/detail/utility.hh>
+#include <typed-geometry/functions/basic/scalar_math.hh>
 #include <typed-geometry/types/mat.hh>
 
 namespace tg

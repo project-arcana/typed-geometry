@@ -1,9 +1,9 @@
 #pragma once
 
+#include <typed-geometry/detail/operators/ops_mat.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/vec.hh>
-#include <typed-geometry/detail/operators/ops_mat.hh>
 #include "determinant.hh"
 
 namespace tg

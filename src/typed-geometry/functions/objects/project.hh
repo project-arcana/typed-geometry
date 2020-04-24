@@ -90,7 +90,7 @@ template <int D, class ScalarT>
     auto res = p;
     auto projectionNeeded = true;
     auto closestDist = max<ScalarT>();
-    auto closestDim = 0; // Will be overwritten
+    auto closestDim = 0;             // Will be overwritten
     auto closestDimVal = ScalarT(0); // Will be overwritten
     for (auto i = 0; i < D; ++i)
     {

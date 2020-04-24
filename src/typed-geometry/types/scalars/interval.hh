@@ -1,8 +1,8 @@
 #pragma once
 
+#include <typed-geometry/detail/macros.hh>
 #include <typed-geometry/feature/assert.hh>
 #include <typed-geometry/functions/basic/constants.hh>
-#include <typed-geometry/detail/macros.hh>
 
 namespace tg
 {
