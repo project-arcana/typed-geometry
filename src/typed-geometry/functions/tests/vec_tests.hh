@@ -5,6 +5,7 @@
 #include <typed-geometry/functions/basic/constants.hh>
 #include <typed-geometry/functions/basic/scalar_math.hh>
 
+#include <typed-geometry/functions/basic/minmax.hh>
 #include <typed-geometry/functions/vector/cross.hh>
 #include <typed-geometry/functions/vector/dot.hh>
 
@@ -31,7 +32,7 @@ template <int D, class ScalarT, class = enable_if<is_floating_point<ScalarT>>>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool are_orthogonal(vec<D, ScalarT> const& a, vec<D, ScalarT> const& b, ScalarT eps = 100 * D * tg::epsilon<ScalarT>)
 {
-    return abs(dot(a, b)) < eps;
+    return abs(dot(a, b)) < max(max_element(abs(a)), max_element(abs(b))) * eps;
 }
 
 template <int D, class ScalarT>

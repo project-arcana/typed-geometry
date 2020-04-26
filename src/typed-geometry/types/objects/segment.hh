@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../pos.hh"
 #include <typed-geometry/types/scalars/default.hh>
+#include "../pos.hh"
 #include "../size.hh"
 #include "../vec.hh"
 #include "traits.hh"

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typed-geometry/feature/assert.hh>
 #include <typed-geometry/detail/utility.hh>
+#include <typed-geometry/feature/assert.hh>
 
 namespace tg
 {

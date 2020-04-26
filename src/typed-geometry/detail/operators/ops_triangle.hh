@@ -1,8 +1,8 @@
 #pragma once
 
+#include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/size.hh>
-#include <typed-geometry/detail/scalar_traits.hh>
 
 namespace tg
 {

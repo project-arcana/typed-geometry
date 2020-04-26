@@ -27,10 +27,26 @@ static constexpr T nan = NAN;
 template <class T>
 static constexpr T inf = INFINITY;
 
+
+// Workaround for compiler discrepancies when using `static` or `inline` on variable template specializations
+namespace detail
+{
 template <class T>
-static constexpr T epsilon = type_error::unsupported_type<T>::value;
+struct epsilon_t : type_error::unsupported_type<T>::value
+{
+};
 template <>
-constexpr float epsilon<float> = 1.19209290E-07F; // FLT_EPSILON
+struct epsilon_t<float>
+{
+    static constexpr float value = 1.19209290E-07F; // FLT_EPSILON
+};
 template <>
-constexpr double epsilon<double> = 2.2204460492503131e-16; // DBL_EPSILON
+struct epsilon_t<double>
+{
+    static constexpr float value = 2.2204460492503131e-16; // DBL_EPSILON
+};
+}
+
+template <class T>
+static constexpr T epsilon = detail::epsilon_t<T>::value;
 }

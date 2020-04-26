@@ -45,7 +45,7 @@ struct assertion_info
     int line;
 };
 
-TG_COLD_FUNC TG_DONT_INLINE void assertion_failed(assertion_info const& info);
+[[noreturn]] TG_COLD_FUNC TG_DONT_INLINE void assertion_failed(assertion_info const& info);
 }
 } // namespace tg
 

@@ -5,6 +5,10 @@
 
 namespace
 {
+struct assertion_not_handled
+{
+};
+
 using assertion_handler_t = void (*)(tg::detail::assertion_info const&);
 
 thread_local assertion_handler_t s_current_handler = nullptr;
@@ -28,6 +32,8 @@ void tg::detail::assertion_failed(assertion_info const& info)
         s_current_handler(info);
     else
         default_assertion_handler(info);
+
+    throw assertion_not_handled{};
 }
 
 void tg::set_assertion_handler(void (*handler)(detail::assertion_info const&)) { s_current_handler = handler; }

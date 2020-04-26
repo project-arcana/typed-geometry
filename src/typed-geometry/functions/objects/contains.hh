@@ -189,8 +189,7 @@ template <class ScalarT>
     auto limit = eps;
     if (eps != ScalarT(0))
     {
-        auto aMax = abs(A0) >= abs(A1) ? (abs(A0) >= abs(A2) ? A0 : A2)
-                                       : (abs(A1) >= abs(A2) ? A1 : A2);
+        auto aMax = abs(A0) >= abs(A1) ? (abs(A0) >= abs(A2) ? A0 : A2) : (abs(A1) >= abs(A2) ? A1 : A2);
         limit = -std::copysign(eps, aMax) * sign(eps);
     }
 

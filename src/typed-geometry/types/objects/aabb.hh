@@ -71,6 +71,21 @@ struct aabb
     {
     }
 
+    template <class OtherT>
+    constexpr aabb(pos<D, OtherT> min, size<D, OtherT> size) : min(min)
+    {
+        for (auto i = 0; i < D; ++i)
+            TG_CONTRACT(ScalarT(size[i]) >= ScalarT(0));
+
+        this->max.x = ScalarT(min.x + size.width);
+        if constexpr (D >= 2)
+            this->max.y = ScalarT(min.y + size.height);
+        if constexpr (D >= 3)
+            this->max.z = ScalarT(min.z + size.depth);
+        if constexpr (D >= 4)
+            this->max.w = ScalarT(min.w + size.w);
+    }
+
     [[nodiscard]] constexpr pos_t operator[](tg::comp<D, ScalarT> const& c) const;
 
     [[nodiscard]] bool operator==(aabb const& rhs) const { return min == rhs.min && max == rhs.max; }
