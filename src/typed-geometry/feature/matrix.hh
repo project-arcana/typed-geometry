@@ -3,6 +3,7 @@
 #include <typed-geometry/feature/vector.hh>
 
 #include <typed-geometry/functions/matrix/adjugate.hh>
+#include <typed-geometry/functions/matrix/covariance.hh>
 #include <typed-geometry/functions/matrix/determinant.hh>
 #include <typed-geometry/functions/matrix/diag.hh>
 #include <typed-geometry/functions/matrix/eigenvalues.hh>
