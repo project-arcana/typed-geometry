@@ -34,9 +34,9 @@ template <class T = void, class RangeT, class TransformF, class ReduceF>
 {
     TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
     using R = same_or<T, element_type<RangeT>>;
-    using U = std::decay_t<decltype(f(t(R(*it)), t(R(*it))))>;
 
     auto it = tg::begin(values);
+    using U = std::decay_t<decltype(f(t(R(*it)), t(R(*it))))>;
     auto const e = tg::end(values);
     auto r = t(R(*it));
     it++;
