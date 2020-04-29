@@ -34,6 +34,7 @@ template <class T = void, class RangeT, class TransformF, class ReduceF>
 {
     TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
     using R = same_or<T, element_type<RangeT>>;
+    using U = std::decay_t<decltype(f(t(R(*it)), t(R(*it))))>;
 
     auto it = tg::begin(values);
     auto const e = tg::end(values);
@@ -41,7 +42,7 @@ template <class T = void, class RangeT, class TransformF, class ReduceF>
     it++;
     while (it != e)
     {
-        r = f(r, t(R(*it)));
+        auto r = U(t(R(*it)));
         it++;
     }
     return r;
@@ -126,7 +127,7 @@ template <class T = void, class RangeT = void, class TransformT = identity_fun>
 [[nodiscard]] constexpr auto arithmetic_mean(RangeT const& values, TransformT&& transform = {})
 {
     auto const s = sum<T>(values, transform);
-    return s / static_cast<decltype(s)>(tg::container_size(values));
+    return s / tg::container_size(values);
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
