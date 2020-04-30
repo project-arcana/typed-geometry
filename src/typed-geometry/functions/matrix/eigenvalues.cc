@@ -1,11 +1,16 @@
 #include "eigenvalues.hh"
 
+#include <cmath> // std::hypot
+
+// This file includes an adapted version of the Eigendecomposition class from Jama (https://math.nist.gov/javanumerics/jama/)
+// which is in public domain.
+
 namespace tg
 {
 namespace detail
 {
-template <int D>
-class EigenvalueDecomposition
+template <int D, class ScalarT>
+class eigenvalue_decomposition_impl
 {
 private:
     /* ------------------------
@@ -25,23 +30,23 @@ private:
     /** Arrays for internal storage of eigenvalues.
     @serial internal storage of eigenvalues.
     */
-    double d[D];
-    double e[D];
+    array<ScalarT, D> d;
+    array<ScalarT, D> e;
 
     /** Array for internal storage of eigenvectors.
     @serial internal storage of eigenvectors.
     */
-    double V[D][D];
+    array<array<ScalarT, D>, D> V;
 
     /** Array for internal storage of nonsymmetric Hessenberg form.
     @serial internal storage of nonsymmetric Hessenberg form.
     */
-    double H[D][D];
+    array<array<ScalarT, D>, D> H;
 
     /** Working storage for nonsymmetric algorithm.
     @serial working storage for nonsymmetric algorithm.
     */
-    double ort[D];
+    array<ScalarT, D> ort;
 
     /* ------------------------
        Private Methods
@@ -67,20 +72,20 @@ private:
         {
             // Scale to avoid under/overflow.
 
-            double scale = 0.0;
-            double h = 0.0;
+            ScalarT scale = ScalarT(0.0);
+            ScalarT h = ScalarT(0.0);
             for (int k = 0; k < i; k++)
             {
                 scale = scale + tg::abs(d[k]);
             }
-            if (scale == 0.0)
+            if (scale == ScalarT(0.0))
             {
                 e[i] = d[i - 1];
                 for (int j = 0; j < i; j++)
                 {
                     d[j] = V[i - 1][j];
-                    V[i][j] = 0.0;
-                    V[j][i] = 0.0;
+                    V[i][j] = ScalarT(0.0);
+                    V[j][i] = ScalarT(0.0);
                 }
             }
             else
@@ -92,8 +97,8 @@ private:
                     d[k] /= scale;
                     h += d[k] * d[k];
                 }
-                double f = d[i - 1];
-                double g = tg::sqrt(h);
+                ScalarT f = d[i - 1];
+                ScalarT g = tg::sqrt(h);
                 if (f > 0)
                 {
                     g = -g;
@@ -103,7 +108,7 @@ private:
                 d[i - 1] = f - g;
                 for (int j = 0; j < i; j++)
                 {
-                    e[j] = 0.0;
+                    e[j] = ScalarT(0.0);
                 }
 
                 // Apply similarity transformation to remaining columns.
@@ -120,13 +125,13 @@ private:
                     }
                     e[j] = g;
                 }
-                f = 0.0;
+                f = ScalarT(0.0);
                 for (int j = 0; j < i; j++)
                 {
                     e[j] /= h;
                     f += e[j] * d[j];
                 }
-                double hh = f / (h + h);
+                ScalarT hh = f / (h + h);
                 for (int j = 0; j < i; j++)
                 {
                     e[j] -= hh * d[j];
@@ -140,7 +145,7 @@ private:
                         V[k][j] -= (f * e[k] + g * d[k]);
                     }
                     d[j] = V[i - 1][j];
-                    V[i][j] = 0.0;
+                    V[i][j] = ScalarT(0.0);
                 }
             }
             d[i] = h;
@@ -151,9 +156,9 @@ private:
         for (int i = 0; i < D - 1; i++)
         {
             V[D - 1][i] = V[i][i];
-            V[i][i] = 1.0;
-            double h = d[i + 1];
-            if (h != 0.0)
+            V[i][i] = ScalarT(1.0);
+            ScalarT h = d[i + 1];
+            if (h != ScalarT(0.0))
             {
                 for (int k = 0; k <= i; k++)
                 {
@@ -161,7 +166,7 @@ private:
                 }
                 for (int j = 0; j <= i; j++)
                 {
-                    double g = 0.0;
+                    ScalarT g = ScalarT(0.0);
                     for (int k = 0; k <= i; k++)
                     {
                         g += V[k][i + 1] * V[k][j];
@@ -174,16 +179,16 @@ private:
             }
             for (int k = 0; k <= i; k++)
             {
-                V[k][i + 1] = 0.0;
+                V[k][i + 1] = ScalarT(0.0);
             }
         }
         for (int j = 0; j < D; j++)
         {
             d[j] = V[D - 1][j];
-            V[D - 1][j] = 0.0;
+            V[D - 1][j] = ScalarT(0.0);
         }
-        V[D - 1][D - 1] = 1.0;
-        e[0] = 0.0;
+        V[D - 1][D - 1] = ScalarT(1.0);
+        e[0] = ScalarT(0.0);
     }
 
     // Symmetric tridiagonal QL algorithm.
@@ -199,11 +204,11 @@ private:
         {
             e[i - 1] = e[i];
         }
-        e[D - 1] = 0.0;
+        e[D - 1] = ScalarT(0.0);
 
-        double f = 0.0;
-        double tst1 = 0.0;
-        double eps = tg::pow(2.0, -52.0);
+        ScalarT f = ScalarT(0.0);
+        ScalarT tst1 = ScalarT(0.0);
+        ScalarT eps = tg::pow(ScalarT(2.0), ScalarT(-52.0));
         for (int l = 0; l < D; l++)
         {
             // Find small subdiagonal element
@@ -231,18 +236,17 @@ private:
 
                     // Compute implicit shift
 
-                    double g = d[l];
-                    double p = (d[l + 1] - g) / (2.0 * e[l]);
-                    // todo: tg::hypot
-                    double r = hypot(p, 1.0);
+                    ScalarT g = d[l];
+                    ScalarT p = (d[l + 1] - g) / (ScalarT(2.0) * e[l]);
+                    ScalarT r = std::hypot(p, ScalarT(1.0));
                     if (p < 0)
                     {
                         r = -r;
                     }
                     d[l] = e[l] / (p + r);
                     d[l + 1] = e[l] * (p + r);
-                    double dl1 = d[l + 1];
-                    double h = g - d[l];
+                    ScalarT dl1 = d[l + 1];
+                    ScalarT h = g - d[l];
                     for (int i = l + 2; i < D; i++)
                     {
                         d[i] -= h;
@@ -252,12 +256,12 @@ private:
                     // Implicit QL transformation.
 
                     p = d[m];
-                    double c = 1.0;
-                    double c2 = c;
-                    double c3 = c;
-                    double el1 = e[l + 1];
-                    double s = 0.0;
-                    double s2 = 0.0;
+                    ScalarT c = ScalarT(1.0);
+                    ScalarT c2 = c;
+                    ScalarT c3 = c;
+                    ScalarT el1 = e[l + 1];
+                    ScalarT s = ScalarT(0.0);
+                    ScalarT s2 = ScalarT(0.0);
                     for (int i = m - 1; i >= l; i--)
                     {
                         c3 = c2;
@@ -265,7 +269,7 @@ private:
                         s2 = s;
                         g = c * e[i];
                         h = c * p;
-                        r = hypot(p, e[i]);
+                        r = std::hypot(p, e[i]);
                         e[i + 1] = s * r;
                         s = e[i] / r;
                         c = p / r;
@@ -290,7 +294,7 @@ private:
                 } while (tg::abs(e[l]) > eps * tst1);
             }
             d[l] = d[l] + f;
-            e[l] = 0.0;
+            e[l] = ScalarT(0.0);
         }
 
         // Sort eigenvalues and corresponding vectors.
@@ -298,7 +302,7 @@ private:
         for (int i = 0; i < D - 1; i++)
         {
             int k = i;
-            double p = d[i];
+            ScalarT p = d[i];
             for (int j = i + 1; j < D; j++)
             {
                 if (d[j] < p)
@@ -337,22 +341,22 @@ private:
         {
             // Scale column.
 
-            double scale = 0.0;
+            ScalarT scale = ScalarT(0.0);
             for (int i = m; i <= high; i++)
             {
                 scale = scale + tg::abs(H[i][m - 1]);
             }
-            if (scale != 0.0)
+            if (scale != ScalarT(0.0))
             {
                 // Compute Householder transformation.
 
-                double h = 0.0;
+                ScalarT h = ScalarT(0.0);
                 for (int i = high; i >= m; i--)
                 {
                     ort[i] = H[i][m - 1] / scale;
                     h += ort[i] * ort[i];
                 }
-                double g = tg::sqrt(h);
+                ScalarT g = tg::sqrt(h);
                 if (ort[m] > 0)
                 {
                     g = -g;
@@ -365,7 +369,7 @@ private:
 
                 for (int j = m; j < D; j++)
                 {
-                    double f = 0.0;
+                    ScalarT f = ScalarT(0.0);
                     for (int i = high; i >= m; i--)
                     {
                         f += ort[i] * H[i][j];
@@ -379,7 +383,7 @@ private:
 
                 for (int i = 0; i <= high; i++)
                 {
-                    double f = 0.0;
+                    ScalarT f = ScalarT(0.0);
                     for (int j = high; j >= m; j--)
                     {
                         f += ort[j] * H[i][j];
@@ -401,13 +405,13 @@ private:
         {
             for (int j = 0; j < D; j++)
             {
-                V[i][j] = (i == j ? 1.0 : 0.0);
+                V[i][j] = (i == j ? ScalarT(1.0) : ScalarT(0.0));
             }
         }
 
         for (int m = high - 1; m >= low + 1; m--)
         {
-            if (H[m][m - 1] != 0.0)
+            if (H[m][m - 1] != ScalarT(0.0))
             {
                 for (int i = m + 1; i <= high; i++)
                 {
@@ -415,12 +419,12 @@ private:
                 }
                 for (int j = m; j <= high; j++)
                 {
-                    double g = 0.0;
+                    ScalarT g = ScalarT(0.0);
                     for (int i = m; i <= high; i++)
                     {
                         g += ort[i] * V[i][j];
                     }
-                    // Double division avoids possible underflow
+                    // ScalarT division avoids possible underflow
                     g = (g / ort[m]) / H[m][m - 1];
                     for (int i = m; i <= high; i++)
                     {
@@ -433,12 +437,12 @@ private:
 
 
     // Complex scalar division.
-    double cdivr;
-    double cdivi;
+    ScalarT cdivr;
+    ScalarT cdivi;
 
-    void cdiv(double xr, double xi, double yr, double yi)
+    void cdiv(ScalarT xr, ScalarT xi, ScalarT yr, ScalarT yi)
     {
-        double r, d;
+        ScalarT r, d;
         if (tg::abs(yr) > tg::abs(yi))
         {
             r = yi / yr;
@@ -469,19 +473,19 @@ private:
         int n = nn - 1;
         int low = 0;
         int high = nn - 1;
-        double eps = tg::pow(2.0, -52.0);
-        double exshift = 0.0;
-        double p = 0, q = 0, r = 0, s = 0, z = 0, t, w, x, y;
+        ScalarT eps = tg::pow(ScalarT(2.0), ScalarT(-52.0));
+        ScalarT exshift = ScalarT(0.0);
+        ScalarT p = 0, q = 0, r = 0, s = 0, z = 0, t, w, x, y;
 
         // Store roots isolated by balanc and compute matrix norm
 
-        double norm = 0.0;
+        ScalarT norm = ScalarT(0.0);
         for (int i = 0; i < nn; i++)
         {
-            if (i<low | i> high)
+            if ((i < low) | (i > high))
             {
                 d[i] = H[i][i];
-                e[i] = 0.0;
+                e[i] = ScalarT(0.0);
             }
             for (int j = tg::max(i - 1, 0); j < nn; j++)
             {
@@ -500,7 +504,7 @@ private:
             while (l > low)
             {
                 s = tg::abs(H[l - 1][l - 1]) + tg::abs(H[l][l]);
-                if (s == 0.0)
+                if (s == ScalarT(0.0))
                 {
                     s = norm;
                 }
@@ -518,7 +522,7 @@ private:
             {
                 H[n][n] = H[n][n] + exshift;
                 d[n] = H[n][n];
-                e[n] = 0.0;
+                e[n] = ScalarT(0.0);
                 n--;
                 iter = 0;
 
@@ -527,7 +531,7 @@ private:
             else if (l == n - 1)
             {
                 w = H[n][n - 1] * H[n - 1][n];
-                p = (H[n - 1][n - 1] - H[n][n]) / 2.0;
+                p = (H[n - 1][n - 1] - H[n][n]) / ScalarT(2.0);
                 q = p * p + w;
                 z = tg::sqrt(tg::abs(q));
                 H[n][n] = H[n][n] + exshift;
@@ -548,12 +552,12 @@ private:
                     }
                     d[n - 1] = x + z;
                     d[n] = d[n - 1];
-                    if (z != 0.0)
+                    if (z != ScalarT(0.0))
                     {
                         d[n] = x - w / z;
                     }
-                    e[n - 1] = 0.0;
-                    e[n] = 0.0;
+                    e[n - 1] = ScalarT(0.0);
+                    e[n] = ScalarT(0.0);
                     x = H[n][n - 1];
                     s = tg::abs(x) + tg::abs(z);
                     p = x / s;
@@ -608,8 +612,8 @@ private:
                 // Form shift
 
                 x = H[n][n];
-                y = 0.0;
-                w = 0.0;
+                y = ScalarT(0.0);
+                w = ScalarT(0.0);
                 if (l < n)
                 {
                     y = H[n - 1][n - 1];
@@ -626,15 +630,15 @@ private:
                         H[i][i] -= x;
                     }
                     s = tg::abs(H[n][n - 1]) + tg::abs(H[n - 1][n - 2]);
-                    x = y = 0.75 * s;
-                    w = -0.4375 * s * s;
+                    x = y = ScalarT(0.75) * s;
+                    w = ScalarT(-0.4375) * s * s;
                 }
 
                 // MATLAB's new ad hoc shift
 
                 if (iter == 30)
                 {
-                    s = (y - x) / 2.0;
+                    s = (y - x) / ScalarT(2.0);
                     s = s * s + w;
                     if (s > 0)
                     {
@@ -643,13 +647,13 @@ private:
                         {
                             s = -s;
                         }
-                        s = x - w / ((y - x) / 2.0 + s);
+                        s = x - w / ((y - x) / ScalarT(2.0) + s);
                         for (int i = low; i <= n; i++)
                         {
                             H[i][i] -= s;
                         }
                         exshift += s;
-                        x = y = w = 0.964;
+                        x = y = w = ScalarT(0.964);
                     }
                 }
 
@@ -684,14 +688,14 @@ private:
 
                 for (int i = m + 2; i <= n; i++)
                 {
-                    H[i][i - 2] = 0.0;
+                    H[i][i - 2] = ScalarT(0.0);
                     if (i > m + 2)
                     {
-                        H[i][i - 3] = 0.0;
+                        H[i][i - 3] = ScalarT(0.0);
                     }
                 }
 
-                // Double QR step involving rows l:n and columns m:n
+                // ScalarT QR step involving rows l:n and columns m:n
 
 
                 for (int k = m; k <= n - 1; k++)
@@ -701,9 +705,9 @@ private:
                     {
                         p = H[k][k - 1];
                         q = H[k + 1][k - 1];
-                        r = (notlast ? H[k + 2][k - 1] : 0.0);
+                        r = (notlast ? H[k + 2][k - 1] : ScalarT(0.0));
                         x = tg::abs(p) + tg::abs(q) + tg::abs(r);
-                        if (x == 0.0)
+                        if (x == ScalarT(0.0))
                         {
                             continue;
                         }
@@ -782,7 +786,7 @@ private:
 
         // Backsubstitute to find vectors of upper triangular form
 
-        if (norm == 0.0)
+        if (norm == ScalarT(0.0))
         {
             return;
         }
@@ -797,16 +801,16 @@ private:
             if (q == 0)
             {
                 int l = n;
-                H[n][n] = 1.0;
+                H[n][n] = ScalarT(1.0);
                 for (int i = n - 1; i >= 0; i--)
                 {
                     w = H[i][i] - p;
-                    r = 0.0;
+                    r = ScalarT(0.0);
                     for (int j = l; j <= n; j++)
                     {
                         r = r + H[i][j] * H[j][n];
                     }
-                    if (e[i] < 0.0)
+                    if (e[i] < ScalarT(0.0))
                     {
                         z = w;
                         s = r;
@@ -814,9 +818,9 @@ private:
                     else
                     {
                         l = i;
-                        if (e[i] == 0.0)
+                        if (e[i] == ScalarT(0.0))
                         {
-                            if (w != 0.0)
+                            if (w != ScalarT(0.0))
                             {
                                 H[i][n] = -r / w;
                             }
@@ -872,17 +876,17 @@ private:
                 }
                 else
                 {
-                    cdiv(0.0, -H[n - 1][n], H[n - 1][n - 1] - p, q);
+                    cdiv(ScalarT(0.0), -H[n - 1][n], H[n - 1][n - 1] - p, q);
                     H[n - 1][n - 1] = cdivr;
                     H[n - 1][n] = cdivi;
                 }
-                H[n][n - 1] = 0.0;
-                H[n][n] = 1.0;
+                H[n][n - 1] = ScalarT(0.0);
+                H[n][n] = ScalarT(1.0);
                 for (int i = n - 2; i >= 0; i--)
                 {
-                    double ra, sa, vr, vi;
-                    ra = 0.0;
-                    sa = 0.0;
+                    ScalarT ra, sa, vr, vi;
+                    ra = ScalarT(0.0);
+                    sa = ScalarT(0.0);
                     for (int j = l; j <= n; j++)
                     {
                         ra = ra + H[i][j] * H[j][n - 1];
@@ -890,7 +894,7 @@ private:
                     }
                     w = H[i][i] - p;
 
-                    if (e[i] < 0.0)
+                    if (e[i] < ScalarT(0.0))
                     {
                         z = w;
                         r = ra;
@@ -912,8 +916,8 @@ private:
                             x = H[i][i + 1];
                             y = H[i + 1][i];
                             vr = (d[i] - p) * (d[i] - p) + e[i] * e[i] - q * q;
-                            vi = (d[i] - p) * 2.0 * q;
-                            if (vr == 0.0 & vi == 0.0)
+                            vi = (d[i] - p) * ScalarT(2.0) * q;
+                            if ((vr == ScalarT(0.0)) & (vi == ScalarT(0.0)))
                             {
                                 vr = eps * norm * (tg::abs(w) + tg::abs(q) + tg::abs(x) + tg::abs(y) + tg::abs(z));
                             }
@@ -953,7 +957,7 @@ private:
 
         for (int i = 0; i < nn; i++)
         {
-            if (i<low | i> high)
+            if ((i < low) | (i > high))
             {
                 for (int j = i; j < nn; j++)
                 {
@@ -968,7 +972,7 @@ private:
         {
             for (int i = low; i <= high; i++)
             {
-                z = 0.0;
+                z = ScalarT(0.0);
                 for (int k = low; k <= tg::min(j, high); k++)
                 {
                     z = z + V[i][k] * H[k][j];
@@ -988,10 +992,10 @@ private:
     @param Arg    Square matrix
     */
 public:
-    EigenvalueDecomposition(mat<D, D, double> const& m)
+    eigenvalue_decomposition_impl(mat<D, D, ScalarT> const& m)
     {
-        // todo: check if column or row major
-        mat<D, D, double> A = m;
+        // internal matrices are row-major, tg::mat is column major
+        mat<D, D, ScalarT> A = transpose(m);
 
         issymmetric = true;
         for (int j = 0; (j < D) & issymmetric; j++)
@@ -1044,32 +1048,35 @@ public:
     @return     V
     */
 
-    mat<D, D, double> getV() { return {D}; }
+    mat<D, D, ScalarT> getV()
+    {
+        // column vs row-major
+        return transpose(mat<D, D, ScalarT>(V));
+    }
 
     /** Return the real parts of the eigenvalues
     @return     real(diag(D))
     */
 
-    array<double, D> getRealEigenvalues() { return d; }
+    array<ScalarT, D> getRealEigenvalues() { return d; }
 
     /** Return the imaginary parts of the eigenvalues
     @return     imag(diag(D))
     */
-    array<double, D> getImagEigenvalues() { return e; }
+    array<ScalarT, D> getImagEigenvalues() { return e; }
 
     /** Return the block diagonal eigenvalue matrix
     @return     D
     */
 
-    mat<D, D, double> getD()
+    mat<D, D, ScalarT> getD()
     {
-        // todo: column or row major
-        mat<D, D, double> X;
+        mat<D, D, ScalarT> X;
         for (int i = 0; i < D; i++)
         {
             for (int j = 0; j < D; j++)
             {
-                X[i][j] = 0.0;
+                X[i][j] = ScalarT(0.0);
             }
             X[i][i] = d[i];
             if (e[i] > 0)
@@ -1081,13 +1088,24 @@ public:
                 X[i][i - 1] = e[i];
             }
         }
-        return X;
+        // column vs row-major
+        return transpose(X);
     }
 };
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr array<eigen_decomposition_result<D, ScalarT>, D> eigen_decomposition_impl(mat<D, D, ScalarT> const& m)
 {
+    eigenvalue_decomposition_impl<D, ScalarT> decomp(m);
+    array<eigen_decomposition_result<D, ScalarT>, D> res;
+
+    auto const eigenvalues = decomp.getRealEigenvalues();
+    auto const eigenvectors = decomp.getV();
+
+    for (auto i = 0; i < D; ++i)
+        res[i] = {eigenvectors[i], eigenvalues[i]};
+
+    return res;
 }
 }
 
