@@ -16,88 +16,139 @@ struct eigen_decomposition_result
     ScalarT eigenvalue;
 };
 
-template <class ScalarT>
-[[nodiscard]] constexpr array<eigen_decomposition_result<2, ScalarT>, 2> eigen_decomposition(mat<2, 2, ScalarT> const& m)
+namespace detail
 {
-    // todo
+array<eigen_decomposition_result<2, float>, 2> eigen_decomposition_impl(mat<2, 2, float> const& m);
+array<eigen_decomposition_result<2, double>, 2> eigen_decomposition_impl(mat<2, 2, double> const& m);
+array<eigen_decomposition_result<3, float>, 3> eigen_decomposition_impl(mat<3, 3, float> const& m);
+array<eigen_decomposition_result<3, double>, 3> eigen_decomposition_impl(mat<3, 3, double> const& m);
+array<eigen_decomposition_result<4, float>, 4> eigen_decomposition_impl(mat<4, 4, float> const& m);
+array<eigen_decomposition_result<4, double>, 4> eigen_decomposition_impl(mat<4, 4, double> const& m);
+
+array<float, 2> eigenvalues_impl(mat<2, 2, float> const& m);
+array<double, 2> eigenvalues_impl(mat<2, 2, double> const& m);
+array<float, 3> eigenvalues_impl(mat<3, 3, float> const& m);
+array<double, 3> eigenvalues_impl(mat<3, 3, double> const& m);
+array<float, 4> eigenvalues_impl(mat<4, 4, float> const& m);
+array<double, 4> eigenvalues_impl(mat<4, 4, double> const& m);
+
+array<vec<2, float>, 2> eigenvectors_impl(mat<2, 2, float> const& m);
+array<vec<2, double>, 2> eigenvectors_impl(mat<2, 2, double> const& m);
+array<vec<3, float>, 3> eigenvectors_impl(mat<3, 3, float> const& m);
+array<vec<3, double>, 3> eigenvectors_impl(mat<3, 3, double> const& m);
+array<vec<4, float>, 4> eigenvectors_impl(mat<4, 4, float> const& m);
+array<vec<4, double>, 4> eigenvectors_impl(mat<4, 4, double> const& m);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr array<eigen_decomposition_result<3, ScalarT>, 3> eigen_decomposition(mat<3, 3, ScalarT> const& m);
-
-template <class ScalarT>
-[[nodiscard]] constexpr array<eigen_decomposition_result<4, ScalarT>, 4> eigen_decomposition(mat<4, 4, ScalarT> const& m);
-
-template <>
-[[nodiscard]] inline constexpr array<eigen_decomposition_result<3, float>, 3> eigen_decomposition(mat<3, 3, float> const& m);
-
-template <>
-[[nodiscard]] inline constexpr array<eigen_decomposition_result<4, float>, 4> eigen_decomposition(mat<4, 4, float> const& m);
-
-template <>
-[[nodiscard]] inline constexpr array<eigen_decomposition_result<3, double>, 3> eigen_decomposition(mat<3, 3, double> const& m);
-
-template <>
-[[nodiscard]] inline constexpr array<eigen_decomposition_result<4, double>, 4> eigen_decomposition(mat<4, 4, double> const& m);
-
-template <class ScalarT>
-[[nodiscard]] constexpr array<ScalarT, 2> eigenvalues(mat<2, 2, ScalarT> const& m)
+template <class ScalarT, int D>
+[[nodiscard]] array<eigen_decomposition_result<D, ScalarT>, D> eigen_decomposition(mat<D, D, ScalarT> const& m)
 {
-    auto mp_half = (m[0][0] + m[1][1]) / ScalarT(2);
-    auto q = m[0][0] * m[1][1] - m[1][0] * m[0][1];
-    auto d = sqrt(max(ScalarT(0), mp_half * mp_half - q));
-    return {mp_half + d, mp_half - d};
+    if constexpr (D == 1)
+    {
+        return {m[0], m[0]};
+    }
+    else if constexpr (D == 2)
+    {
+        static_assert(std::is_same_v<ScalarT, float> || std::is_same_v<ScalarT, double>, "currently only suports float or double");
+        return detail::eigen_decomposition_impl(m);
+    }
+    else if constexpr (D == 3)
+    {
+        static_assert(std::is_same_v<ScalarT, float> || std::is_same_v<ScalarT, double>, "currently only suports float or double");
+        return detail::eigen_decomposition_impl(m);
+    }
+    else if constexpr (D == 4)
+    {
+        static_assert(std::is_same_v<ScalarT, float> || std::is_same_v<ScalarT, double>, "currently only suports float or double");
+        return detail::eigen_decomposition_impl(m);
+    }
+    else
+    {
+        static_assert(false, "unsupported dimension");
+        return {};
+    }
 }
 
-
-template <class ScalarT>
-[[nodiscard]] constexpr array<ScalarT, 3> eigenvalues(mat<3, 3, ScalarT> const& m)
+template <class ScalarT, int D>
+[[nodiscard]] array<ScalarT, D> eigenvalues(mat<D, D, ScalarT> const& m)
 {
-    // todo
+    if constexpr (D == 1)
+    {
+        return {m[0], m[0]};
+    }
+    else if constexpr (D == 2)
+    {
+        auto mp_half = (m[0][0] + m[1][1]) / ScalarT(2);
+        auto q = m[0][0] * m[1][1] - m[1][0] * m[0][1];
+        auto d = sqrt(max(ScalarT(0), mp_half * mp_half - q));
+        return {mp_half + d, mp_half - d};
+    }
+    else if constexpr (D == 3)
+    {
+        static_assert(std::is_same_v<ScalarT, float> || std::is_same_v<ScalarT, double>, "currently only suports float or double");
+        return detail::eigenvalues_impl(m);
+    }
+    else if constexpr (D == 4)
+    {
+        static_assert(std::is_same_v<ScalarT, float> || std::is_same_v<ScalarT, double>, "currently only suports float or double");
+        return detail::eigenvalues_impl(m);
+    }
+    else
+    {
+        static_assert(false, "unsupported dimension");
+        return {};
+    }
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr array<ScalarT, 4> eigenvalues(mat<4, 4, ScalarT> const& m)
+template <class ScalarT, int D>
+[[nodiscard]] array<vec<D, ScalarT>, D> eigenvectors(mat<D, D, ScalarT> const& m)
 {
-    // todo
+    if constexpr (D == 1)
+    {
+        return {m[0], m[0]};
+    }
+    else if constexpr (D == 2)
+    {
+        static_assert(std::is_same_v<ScalarT, float> || std::is_same_v<ScalarT, double>, "currently only suports float or double");
+        return detail::eigenvectors_impl(m);
+    }
+    else if constexpr (D == 3)
+    {
+        static_assert(std::is_same_v<ScalarT, float> || std::is_same_v<ScalarT, double>, "currently only suports float or double");
+        return detail::eigenvectors_impl(m);
+    }
+    else if constexpr (D == 4)
+    {
+        static_assert(std::is_same_v<ScalarT, float> || std::is_same_v<ScalarT, double>, "currently only suports float or double");
+        return detail::eigenvectors_impl(m);
+    }
+    else
+    {
+        static_assert(false, "unsupported dimension");
+        return {};
+    }
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr array<vec<2, ScalarT>, 2> eigenvectors(mat<2, 2, ScalarT> const& m)
+template <class ScalarT, int D>
+[[nodiscard]] array<ScalarT, D> singular_values(mat<D, D, ScalarT> const& m)
 {
-    // todo
+    if constexpr (D == 1)
+    {
+        return {m[0]};
+    }
+    else if constexpr (D == 2)
+    {
+        auto [s0, s1] = eigenvalues(m * transpose(m));
+        return {sqrt(s0), sqrt(s1)};
+    }
+    else if constexpr (D == 3)
+    {
+        static_assert(false, "not yet supported");
+    }
+    else if constexpr (D == 4)
+    {
+        static_assert(false, "not yet supported");
+    }
 }
-
-template <class ScalarT>
-[[nodiscard]] constexpr array<vec<3, ScalarT>, 3> eigenvectors(mat<3, 3, ScalarT> const& m)
-{
-    // todo
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr array<vec<4, ScalarT>, 4> eigenvectors(mat<4, 4, ScalarT> const& m)
-{
-    // todo
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr array<ScalarT, 2> singular_values(mat<2, 2, ScalarT> const& m)
-{
-    auto [s0, s1] = eigenvalues(m * transpose(m));
-    return {sqrt(s0), sqrt(s1)};
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr array<ScalarT, 3> singular_values(mat<3, 3, ScalarT> const& m)
-{
-    // todo
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr array<ScalarT, 4> singular_values(mat<4, 4, ScalarT> const& m)
-{
-    // todo
-}
-
 
 }

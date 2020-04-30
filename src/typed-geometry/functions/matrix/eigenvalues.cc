@@ -2,12 +2,12 @@
 
 #include <cmath> // std::hypot
 
+#include <typed-geometry/detail/special_values.hh>
+
 // This file includes an adapted version of the Eigendecomposition class from Jama (https://math.nist.gov/javanumerics/jama/)
 // which is in public domain.
 
-namespace tg
-{
-namespace detail
+namespace
 {
 template <int D, class ScalarT>
 class eigenvalue_decomposition_impl
@@ -30,23 +30,23 @@ private:
     /** Arrays for internal storage of eigenvalues.
     @serial internal storage of eigenvalues.
     */
-    array<ScalarT, D> d;
-    array<ScalarT, D> e;
+    tg::array<ScalarT, D> d;
+    tg::array<ScalarT, D> e;
 
     /** Array for internal storage of eigenvectors.
     @serial internal storage of eigenvectors.
     */
-    array<array<ScalarT, D>, D> V;
+    tg::array<tg::array<ScalarT, D>, D> V;
 
     /** Array for internal storage of nonsymmetric Hessenberg form.
     @serial internal storage of nonsymmetric Hessenberg form.
     */
-    array<array<ScalarT, D>, D> H;
+    tg::array<tg::array<ScalarT, D>, D> H;
 
     /** Working storage for nonsymmetric algorithm.
     @serial working storage for nonsymmetric algorithm.
     */
-    array<ScalarT, D> ort;
+    tg::array<ScalarT, D> ort;
 
     /* ------------------------
        Private Methods
@@ -992,10 +992,10 @@ private:
     @param Arg    Square matrix
     */
 public:
-    eigenvalue_decomposition_impl(mat<D, D, ScalarT> const& m)
+    eigenvalue_decomposition_impl(tg::mat<D, D, ScalarT> const& m)
     {
         // internal matrices are row-major, tg::mat is column major
-        mat<D, D, ScalarT> A = transpose(m);
+        tg::mat<D, D, ScalarT> A = transpose(m);
 
         issymmetric = true;
         for (int j = 0; (j < D) & issymmetric; j++)
@@ -1048,30 +1048,30 @@ public:
     @return     V
     */
 
-    mat<D, D, ScalarT> getV()
+    tg::mat<D, D, ScalarT> getV()
     {
         // column vs row-major
-        return transpose(mat<D, D, ScalarT>(V));
+        return transpose(tg::mat<D, D, ScalarT>(V));
     }
 
     /** Return the real parts of the eigenvalues
     @return     real(diag(D))
     */
 
-    array<ScalarT, D> getRealEigenvalues() { return d; }
+    tg::array<ScalarT, D> getRealEigenvalues() { return d; }
 
     /** Return the imaginary parts of the eigenvalues
     @return     imag(diag(D))
     */
-    array<ScalarT, D> getImagEigenvalues() { return e; }
+    tg::array<ScalarT, D> getImagEigenvalues() { return e; }
 
     /** Return the block diagonal eigenvalue matrix
     @return     D
     */
 
-    mat<D, D, ScalarT> getD()
+    tg::mat<D, D, ScalarT> getD()
     {
-        mat<D, D, ScalarT> X;
+        tg::mat<D, D, ScalarT> X;
         for (int i = 0; i < D; i++)
         {
             for (int j = 0; j < D; j++)
@@ -1094,10 +1094,10 @@ public:
 };
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr array<eigen_decomposition_result<D, ScalarT>, D> eigen_decomposition_impl(mat<D, D, ScalarT> const& m)
+tg::array<tg::eigen_decomposition_result<D, ScalarT>, D> eigen_decomp_wrapper(tg::mat<D, D, ScalarT> const& m)
 {
     eigenvalue_decomposition_impl<D, ScalarT> decomp(m);
-    array<eigen_decomposition_result<D, ScalarT>, D> res;
+    tg::array<tg::eigen_decomposition_result<D, ScalarT>, D> res;
 
     auto const eigenvalues = decomp.getRealEigenvalues();
     auto const eigenvectors = decomp.getV();
@@ -1107,31 +1107,53 @@ template <int D, class ScalarT>
 
     return res;
 }
-}
 
-template <>
-[[nodiscard]] inline constexpr array<eigen_decomposition_result<3, float>, 3> eigen_decomposition(mat<3, 3, float> const& m)
+template <int D, class ScalarT>
+tg::array<ScalarT, D> eigenvalues_wrapper(tg::mat<D, D, ScalarT> const& m)
 {
-    return detail::eigen_decomposition_impl(m);
+    eigenvalue_decomposition_impl<D, ScalarT> decomp(m);
+    tg::array<ScalarT, D> res;
+
+    auto const eigenvalues = decomp.getRealEigenvalues();
+
+    for (auto i = 0; i < D; ++i)
+        res[i] = {eigenvalues[i]};
+
+    return res;
 }
 
-template <>
-[[nodiscard]] inline constexpr array<eigen_decomposition_result<4, float>, 4> eigen_decomposition(mat<4, 4, float> const& m)
+template <int D, class ScalarT>
+tg::array<tg::vec<D, ScalarT>, D> eigenvectors_wrapper(tg::mat<D, D, ScalarT> const& m)
 {
-    return detail::eigen_decomposition_impl(m);
-}
+    eigenvalue_decomposition_impl<D, ScalarT> decomp(m);
+    tg::array<tg::vec<D, ScalarT>, D> res;
 
-template <>
-[[nodiscard]] inline constexpr array<eigen_decomposition_result<3, double>, 3> eigen_decomposition(mat<3, 3, double> const& m)
+    auto const eigenvectors = decomp.getV();
+
+    for (auto i = 0; i < D; ++i)
+        res[i] = {eigenvectors[i]};
+
+    return res;
+}
+}
+namespace tg::detail
 {
-    return detail::eigen_decomposition_impl(m);
-}
-
-template <>
-[[nodiscard]] inline constexpr array<eigen_decomposition_result<4, double>, 4> eigen_decomposition(mat<4, 4, double> const& m)
-{
-    return detail::eigen_decomposition_impl(m);
-}
-
-
+array<eigen_decomposition_result<2, float>, 2> eigen_decomposition_impl(mat<2, 2, float> const& m) { return eigen_decomp_wrapper(m); }
+array<eigen_decomposition_result<2, double>, 2> eigen_decomposition_impl(mat<2, 2, double> const& m) { return eigen_decomp_wrapper(m); }
+array<eigen_decomposition_result<3, float>, 3> eigen_decomposition_impl(mat<3, 3, float> const& m) { return eigen_decomp_wrapper(m); }
+array<eigen_decomposition_result<3, double>, 3> eigen_decomposition_impl(mat<3, 3, double> const& m) { return eigen_decomp_wrapper(m); }
+array<eigen_decomposition_result<4, float>, 4> eigen_decomposition_impl(mat<4, 4, float> const& m) { return eigen_decomp_wrapper(m); }
+array<eigen_decomposition_result<4, double>, 4> eigen_decomposition_impl(mat<4, 4, double> const& m) { return eigen_decomp_wrapper(m); }
+array<float, 2> eigenvalues_impl(mat<2, 2, float> const& m) { return eigenvalues_wrapper(m); }
+array<double, 2> eigenvalues_impl(mat<2, 2, double> const& m) { return eigenvalues_wrapper(m); }
+array<float, 3> eigenvalues_impl(mat<3, 3, float> const& m) { return eigenvalues_wrapper(m); }
+array<double, 3> eigenvalues_impl(mat<3, 3, double> const& m) { return eigenvalues_wrapper(m); }
+array<float, 4> eigenvalues_impl(mat<4, 4, float> const& m) { return eigenvalues_wrapper(m); }
+array<double, 4> eigenvalues_impl(mat<4, 4, double> const& m) { return eigenvalues_wrapper(m); }
+array<vec<2, float>, 2> eigenvectors_impl(mat<2, 2, float> const& m) { return eigenvectors_wrapper(m); }
+array<vec<2, double>, 2> eigenvectors_impl(mat<2, 2, double> const& m) { return eigenvectors_wrapper(m); }
+array<vec<3, float>, 3> eigenvectors_impl(mat<3, 3, float> const& m) { return eigenvectors_wrapper(m); }
+array<vec<3, double>, 3> eigenvectors_impl(mat<3, 3, double> const& m) { return eigenvectors_wrapper(m); }
+array<vec<4, float>, 4> eigenvectors_impl(mat<4, 4, float> const& m) { return eigenvectors_wrapper(m); }
+array<vec<4, double>, 4> eigenvectors_impl(mat<4, 4, double> const& m) { return eigenvectors_wrapper(m); }
 }
