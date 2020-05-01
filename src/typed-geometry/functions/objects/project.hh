@@ -428,7 +428,7 @@ template <class ScalarT>
         return closestOnBase;
 
     // Return closer projection
-    auto closestOnCone = project(p, inf_cone(c));
+    auto closestOnCone = project(p, inf_cone<3, ScalarT>(c));
     return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
 }
 
