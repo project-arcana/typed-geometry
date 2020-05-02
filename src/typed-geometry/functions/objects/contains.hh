@@ -286,7 +286,7 @@ template <class ScalarT>
     auto apexToP = normalize_safe(p - apex);
     if (apexToP == vec<3, ScalarT>::zero)
         return true;
-    return angle_between(dir<3, ScalarT>(apexToP), c.opening_dir) <= c.opening_angle;
+    return angle_between(dir<3, ScalarT>(apexToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle; // opening_angle is between the cone surfaces
 }
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cone_boundary<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
@@ -297,8 +297,8 @@ template <class ScalarT>
     auto apexInnerToP = normalize_safe(p - apexInner);
     if (apexOuterToP == vec<3, ScalarT>::zero || apexInnerToP == vec<3, ScalarT>::zero)
         return true;
-    return angle_between(dir<3, ScalarT>(apexOuterToP), c.opening_dir) <= c.opening_angle
-           && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= c.opening_angle;
+    return angle_between(dir<3, ScalarT>(apexOuterToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle
+           && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= ScalarT(0.5) * c.opening_angle;
 }
 
 template <class ScalarT>
