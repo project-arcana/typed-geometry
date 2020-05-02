@@ -419,16 +419,16 @@ template <class ScalarT>
 
 // ============== project to cone ==============
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT> const& c)
-{
+template <class ScalarT, class TraitsT, class = enable_if<!std::is_same<TraitsT, boundary_no_caps_tag>::value>>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT, TraitsT> const& c)
+{ // enable_if is not necessary as long as project(cone_boundary_no_caps) is defined separately. But it is kept to prevent misusing the function.
     auto closestOnBase = project(p, c.base);
     auto apex = c.base.center + c.height * c.base.normal;
     if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
         return closestOnBase;
 
     // Return closer projection
-    auto closestOnCone = project(p, inf_cone<3, ScalarT>(c));
+    auto closestOnCone = project(p, inf_cone<3, ScalarT, TraitsT>(c));
     return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
 }
 
