@@ -434,4 +434,6 @@ ScalarT simplex_noise(ScalarT const x, ScalarT const y, ScalarT const z, ScalarT
 }
 
 } // namespace noise
+
+using noise::simplex_noise;
 } // namespace tg

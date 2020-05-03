@@ -329,4 +329,6 @@ ScalarT perlin_noise(ScalarT const x, ScalarT const y, ScalarT const z, ScalarT 
     return perlin_noise(pos<4, ScalarT>(x, y, z, w));
 }
 } // namespace noise
+
+using noise::perlin_noise;
 } // namespace tg
