@@ -280,6 +280,13 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cylinder<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto d = distance(c.axis, p);
+    return d <= c.radius + eps;
+}
+
+template <class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apex = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
