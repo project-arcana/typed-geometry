@@ -39,11 +39,13 @@ template <int D, class ScalarT, class TraitsT>
     return this->min + (this->max - this->min) * size(c);
 }
 
+/// Note that the box goes from -1 to 1 instead of the usual 0 to 1
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<D, ScalarT> box<D, ScalarT, D, TraitsT>::operator[](comp<D, ScalarT> const& c) const
 {
     return this->center + this->half_extents * vec(c);
 }
+/// Note that the box goes from -1 to 1 instead of the usual 0 to 1
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<3, ScalarT> box<2, ScalarT, 3, TraitsT>::operator[](comp<2, ScalarT> const& c) const
 {

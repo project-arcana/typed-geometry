@@ -367,13 +367,22 @@ template <class ScalarT>
 
 // ============== project to inf_cylinder ==============
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder<D, ScalarT> const& itube)
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cylinder<3, ScalarT> const& c)
 {
-    auto vec = p - itube.axis.pos;
-    auto h = dot(vec, itube.axis.dir);
-    auto point_on_axis = itube.axis[h];
-    return point_on_axis + tg::normalize_safe(p - point_on_axis) * itube.radius;
+    if (contains(c, p))
+        return p;
+
+    return project(p, boundary_of(c));
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder_boundary<D, ScalarT> const& c)
+{
+    auto vec = p - c.axis.pos;
+    auto h = dot(vec, c.axis.dir);
+    auto point_on_axis = c.axis[h];
+    return point_on_axis + tg::normalize_safe(p - point_on_axis) * c.radius;
 }
 
 
@@ -410,16 +419,16 @@ template <class ScalarT>
 
 // ============== project to cone ==============
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT> const& c)
-{
+template <class ScalarT, class TraitsT, class = enable_if<!std::is_same<TraitsT, boundary_no_caps_tag>::value>>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT, TraitsT> const& c)
+{ // enable_if is not necessary as long as project(cone_boundary_no_caps) is defined separately. But it is kept to prevent misusing the function.
     auto closestOnBase = project(p, c.base);
     auto apex = c.base.center + c.height * c.base.normal;
     if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
         return closestOnBase;
 
     // Return closer projection
-    auto closestOnCone = project(p, inf_cone(c));
+    auto closestOnCone = project(p, inf_cone<3, ScalarT, TraitsT>(c));
     return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
 }
 

@@ -39,6 +39,7 @@ using uquad4 = quad<4, u32>;
 template <int D, class ScalarT>
 struct quad
 {
+    using scalar_t = ScalarT;
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 

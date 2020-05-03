@@ -39,6 +39,7 @@ using utriangle4 = triangle<4, u32>;
 template <int D, class ScalarT>
 struct triangle
 {
+    using scalar_t = ScalarT;
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 

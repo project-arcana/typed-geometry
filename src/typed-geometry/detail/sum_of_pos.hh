@@ -20,9 +20,16 @@ struct sum_of_pos
 
     constexpr sum_of_pos() = default;
     /* implicit */ constexpr sum_of_pos(pos_t const& p) : accum(p) {}
-
-    constexpr pos<D, div_t> operator/(div_t const& rhs) const { return accum / rhs; }
-    constexpr pos<D, div_t> operator*(div_t const& rhs) const { return accum * rhs; }
+    constexpr auto operator/(div_t const& rhs) const
+    {
+        using T = std::common_type_t<ScalarT, div_t>;
+        return pos<D, T>(accum) / T(rhs);
+    }
+    constexpr auto operator*(div_t const& rhs) const
+    {
+        using T = std::common_type_t<ScalarT, div_t>;
+        return pos<D, T>(accum) * T(rhs);
+    }
 
     constexpr sum_of_pos operator+(sum_of_pos const& rhs) const { return accum + vec(rhs); }
     constexpr sum_of_pos operator+(pos_t const& rhs) const { return accum + vec(rhs); }

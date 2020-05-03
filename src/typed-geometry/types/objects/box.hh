@@ -76,6 +76,7 @@ struct box<D, ScalarT, D, TraitsT>
     constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
     constexpr box(aabb<D, ScalarT, TraitsT> const& b); // requires tg.hh
 
+    /// Note that the box goes from -1 to 1 instead of the usual 0 to 1
     [[nodiscard]] constexpr pos_t operator[](comp<D, ScalarT> const& c) const;
 
     [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
@@ -97,6 +98,7 @@ struct box<2, ScalarT, 3, TraitsT>
     constexpr box() = default;
     constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
 
+    /// Note that the box goes from -1 to 1 instead of the usual 0 to 1
     [[nodiscard]] constexpr pos_t operator[](comp<2, ScalarT> const& c) const;
 
     [[nodiscard]] bool operator==(box const& rhs) const { return center == rhs.center && half_extents == rhs.half_extents; }
