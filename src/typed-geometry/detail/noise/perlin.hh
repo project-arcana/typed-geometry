@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typed-geometry/detail/noise_helper.hh>
-#include <typed-geometry/functions/mix.hh>
+#include <typed-geometry/functions/basic/mix.hh>
 
 namespace tg
 {

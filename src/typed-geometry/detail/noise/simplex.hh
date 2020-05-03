@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typed-geometry/detail/noise_helper.hh>
-#include <typed-geometry/common/scalar_math.hh> // clamp(ScalarT, ..)
+#include <typed-geometry/functions/basic/scalar_math.hh> // clamp(ScalarT, ..)
 
 namespace tg
 {
