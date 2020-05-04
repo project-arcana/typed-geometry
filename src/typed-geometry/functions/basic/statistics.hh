@@ -38,11 +38,11 @@ template <class T = void, class RangeT, class TransformF, class ReduceF>
     auto it = tg::begin(values);
     using U = std::decay_t<decltype(f(t(R(*it)), t(R(*it))))>;
     auto const e = tg::end(values);
-    auto r = t(R(*it));
+    U r = t(R(*it));
     it++;
     while (it != e)
     {
-        r = U(t(R(*it)));
+        r = f(r, t(R(*it)));
         it++;
     }
     return r;
