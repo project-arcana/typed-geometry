@@ -64,7 +64,7 @@ template <class ScalarT, int D>
     }
     else
     {
-        static_assert(false, "unsupported dimension");
+        static_assert(tg::always_false<D>, "unsupported dimension");
         return {};
     }
 }
@@ -95,7 +95,7 @@ template <class ScalarT, int D>
     }
     else
     {
-        static_assert(false, "unsupported dimension");
+        static_assert(tg::always_false<D>, "unsupported dimension");
         return {};
     }
 }
@@ -124,7 +124,7 @@ template <class ScalarT, int D>
     }
     else
     {
-        static_assert(false, "unsupported dimension");
+        static_assert(tg::always_false<D>, "unsupported dimension");
         return {};
     }
 }
@@ -143,11 +143,11 @@ template <class ScalarT, int D>
     }
     else if constexpr (D == 3)
     {
-        static_assert(false, "not yet supported");
+        static_assert(tg::always_false<D>, "not yet supported");
     }
     else if constexpr (D == 4)
     {
-        static_assert(false, "not yet supported");
+        static_assert(tg::always_false<D>, "not yet supported");
     }
 }
 
