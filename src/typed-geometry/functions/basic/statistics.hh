@@ -42,7 +42,7 @@ template <class T = void, class RangeT, class TransformF, class ReduceF>
     it++;
     while (it != e)
     {
-        auto r = U(t(R(*it)));
+        r = U(t(R(*it)));
         it++;
     }
     return r;
