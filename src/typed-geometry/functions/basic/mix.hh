@@ -10,7 +10,7 @@
 namespace tg
 {
 template <class ScalarT>
-[[nodiscard]] constexpr ScalarT mix(ScalarT v0, ScalarT v1, ScalarT t)
+[[nodiscard]] constexpr ScalarT mix(ScalarT v0, ScalarT v1, tg::dont_deduce<ScalarT> t)
 {
     return v0 + t * (v1 - v0);
 }
