@@ -367,8 +367,8 @@ template <class ScalarT>
 
 // ============== project to inf_cylinder ==============
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cylinder<3, ScalarT> const& c)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder<D, ScalarT> const& c)
 {
     if (contains(c, p))
         return p;

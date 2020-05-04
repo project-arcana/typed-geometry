@@ -243,6 +243,19 @@ template <class ScalarT>
     return true;
 }
 
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cylinder<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto r = c.radius + eps;
+    return distance_sqr(p, c.axis) < r * r;
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cylinder_boundary<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto d2 = distance_sqr(p, c.axis);
+    return pow2(c.radius - eps) <= d2 && d2 <= pow2(c.radius + eps);
+}
+
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
