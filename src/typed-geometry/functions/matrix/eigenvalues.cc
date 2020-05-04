@@ -25,28 +25,28 @@ private:
     /** Symmetry flag.
     @serial internal symmetry flag.
     */
-    bool issymmetric;
+    bool m_is_symmetric;
 
     /** Arrays for internal storage of eigenvalues.
     @serial internal storage of eigenvalues.
     */
-    tg::array<ScalarT, D> d;
-    tg::array<ScalarT, D> e;
+    tg::array<ScalarT, D> m_d;
+    tg::array<ScalarT, D> m_e;
 
     /** Array for internal storage of eigenvectors.
     @serial internal storage of eigenvectors.
     */
-    tg::array<tg::array<ScalarT, D>, D> V;
+    tg::array<tg::array<ScalarT, D>, D> m_V;
 
     /** Array for internal storage of nonsymmetric Hessenberg form.
     @serial internal storage of nonsymmetric Hessenberg form.
     */
-    tg::array<tg::array<ScalarT, D>, D> H;
+    tg::array<tg::array<ScalarT, D>, D> m_H;
 
     /** Working storage for nonsymmetric algorithm.
     @serial working storage for nonsymmetric algorithm.
     */
-    tg::array<ScalarT, D> ort;
+    tg::array<ScalarT, D> m_ort;
 
     /* ------------------------
        Private Methods
@@ -63,7 +63,7 @@ private:
 
         for (int j = 0; j < D; j++)
         {
-            d[j] = V[D - 1][j];
+            m_d[j] = m_V[D - 1][j];
         }
 
         // Householder reduction to tridiagonal form.
@@ -76,16 +76,16 @@ private:
             ScalarT h = ScalarT(0.0);
             for (int k = 0; k < i; k++)
             {
-                scale = scale + tg::abs(d[k]);
+                scale = scale + tg::abs(m_d[k]);
             }
             if (scale == ScalarT(0.0))
             {
-                e[i] = d[i - 1];
+                m_e[i] = m_d[i - 1];
                 for (int j = 0; j < i; j++)
                 {
-                    d[j] = V[i - 1][j];
-                    V[i][j] = ScalarT(0.0);
-                    V[j][i] = ScalarT(0.0);
+                    m_d[j] = m_V[i - 1][j];
+                    m_V[i][j] = ScalarT(0.0);
+                    m_V[j][i] = ScalarT(0.0);
                 }
             }
             else
@@ -94,101 +94,101 @@ private:
 
                 for (int k = 0; k < i; k++)
                 {
-                    d[k] /= scale;
-                    h += d[k] * d[k];
+                    m_d[k] /= scale;
+                    h += m_d[k] * m_d[k];
                 }
-                ScalarT f = d[i - 1];
+                ScalarT f = m_d[i - 1];
                 ScalarT g = tg::sqrt(h);
                 if (f > 0)
                 {
                     g = -g;
                 }
-                e[i] = scale * g;
+                m_e[i] = scale * g;
                 h = h - f * g;
-                d[i - 1] = f - g;
+                m_d[i - 1] = f - g;
                 for (int j = 0; j < i; j++)
                 {
-                    e[j] = ScalarT(0.0);
+                    m_e[j] = ScalarT(0.0);
                 }
 
                 // Apply similarity transformation to remaining columns.
 
                 for (int j = 0; j < i; j++)
                 {
-                    f = d[j];
-                    V[j][i] = f;
-                    g = e[j] + V[j][j] * f;
+                    f = m_d[j];
+                    m_V[j][i] = f;
+                    g = m_e[j] + m_V[j][j] * f;
                     for (int k = j + 1; k <= i - 1; k++)
                     {
-                        g += V[k][j] * d[k];
-                        e[k] += V[k][j] * f;
+                        g += m_V[k][j] * m_d[k];
+                        m_e[k] += m_V[k][j] * f;
                     }
-                    e[j] = g;
+                    m_e[j] = g;
                 }
                 f = ScalarT(0.0);
                 for (int j = 0; j < i; j++)
                 {
-                    e[j] /= h;
-                    f += e[j] * d[j];
+                    m_e[j] /= h;
+                    f += m_e[j] * m_d[j];
                 }
                 ScalarT hh = f / (h + h);
                 for (int j = 0; j < i; j++)
                 {
-                    e[j] -= hh * d[j];
+                    m_e[j] -= hh * m_d[j];
                 }
                 for (int j = 0; j < i; j++)
                 {
-                    f = d[j];
-                    g = e[j];
+                    f = m_d[j];
+                    g = m_e[j];
                     for (int k = j; k <= i - 1; k++)
                     {
-                        V[k][j] -= (f * e[k] + g * d[k]);
+                        m_V[k][j] -= (f * m_e[k] + g * m_d[k]);
                     }
-                    d[j] = V[i - 1][j];
-                    V[i][j] = ScalarT(0.0);
+                    m_d[j] = m_V[i - 1][j];
+                    m_V[i][j] = ScalarT(0.0);
                 }
             }
-            d[i] = h;
+            m_d[i] = h;
         }
 
         // Accumulate transformations.
 
         for (int i = 0; i < D - 1; i++)
         {
-            V[D - 1][i] = V[i][i];
-            V[i][i] = ScalarT(1.0);
-            ScalarT h = d[i + 1];
+            m_V[D - 1][i] = m_V[i][i];
+            m_V[i][i] = ScalarT(1.0);
+            ScalarT h = m_d[i + 1];
             if (h != ScalarT(0.0))
             {
                 for (int k = 0; k <= i; k++)
                 {
-                    d[k] = V[k][i + 1] / h;
+                    m_d[k] = m_V[k][i + 1] / h;
                 }
                 for (int j = 0; j <= i; j++)
                 {
                     ScalarT g = ScalarT(0.0);
                     for (int k = 0; k <= i; k++)
                     {
-                        g += V[k][i + 1] * V[k][j];
+                        g += m_V[k][i + 1] * m_V[k][j];
                     }
                     for (int k = 0; k <= i; k++)
                     {
-                        V[k][j] -= g * d[k];
+                        m_V[k][j] -= g * m_d[k];
                     }
                 }
             }
             for (int k = 0; k <= i; k++)
             {
-                V[k][i + 1] = ScalarT(0.0);
+                m_V[k][i + 1] = ScalarT(0.0);
             }
         }
         for (int j = 0; j < D; j++)
         {
-            d[j] = V[D - 1][j];
-            V[D - 1][j] = ScalarT(0.0);
+            m_d[j] = m_V[D - 1][j];
+            m_V[D - 1][j] = ScalarT(0.0);
         }
-        V[D - 1][D - 1] = ScalarT(1.0);
-        e[0] = ScalarT(0.0);
+        m_V[D - 1][D - 1] = ScalarT(1.0);
+        m_e[0] = ScalarT(0.0);
     }
 
     // Symmetric tridiagonal QL algorithm.
@@ -202,22 +202,23 @@ private:
 
         for (int i = 1; i < D; i++)
         {
-            e[i - 1] = e[i];
+            m_e[i - 1] = m_e[i];
         }
-        e[D - 1] = ScalarT(0.0);
+        m_e[D - 1] = ScalarT(0.0);
 
         ScalarT f = ScalarT(0.0);
         ScalarT tst1 = ScalarT(0.0);
-        ScalarT eps = tg::pow(ScalarT(2.0), ScalarT(-52.0));
+        ScalarT eps = tg::epsilon<ScalarT>;
+
         for (int l = 0; l < D; l++)
         {
             // Find small subdiagonal element
 
-            tst1 = tg::max(tst1, tg::abs(d[l]) + tg::abs(e[l]));
+            tst1 = tg::max(tst1, tg::abs(m_d[l]) + tg::abs(m_e[l]));
             int m = l;
             while (m < D)
             {
-                if (tg::abs(e[m]) <= eps * tst1)
+                if (tg::abs(m_e[m]) <= eps * tst1)
                 {
                     break;
                 }
@@ -236,30 +237,30 @@ private:
 
                     // Compute implicit shift
 
-                    ScalarT g = d[l];
-                    ScalarT p = (d[l + 1] - g) / (ScalarT(2.0) * e[l]);
+                    ScalarT g = m_d[l];
+                    ScalarT p = (m_d[l + 1] - g) / (ScalarT(2.0) * m_e[l]);
                     ScalarT r = std::hypot(p, ScalarT(1.0));
                     if (p < 0)
                     {
                         r = -r;
                     }
-                    d[l] = e[l] / (p + r);
-                    d[l + 1] = e[l] * (p + r);
-                    ScalarT dl1 = d[l + 1];
-                    ScalarT h = g - d[l];
+                    m_d[l] = m_e[l] / (p + r);
+                    m_d[l + 1] = m_e[l] * (p + r);
+                    ScalarT dl1 = m_d[l + 1];
+                    ScalarT h = g - m_d[l];
                     for (int i = l + 2; i < D; i++)
                     {
-                        d[i] -= h;
+                        m_d[i] -= h;
                     }
                     f = f + h;
 
                     // Implicit QL transformation.
 
-                    p = d[m];
+                    p = m_d[m];
                     ScalarT c = ScalarT(1.0);
                     ScalarT c2 = c;
                     ScalarT c3 = c;
-                    ScalarT el1 = e[l + 1];
+                    ScalarT el1 = m_e[l + 1];
                     ScalarT s = ScalarT(0.0);
                     ScalarT s2 = ScalarT(0.0);
                     for (int i = m - 1; i >= l; i--)
@@ -267,34 +268,34 @@ private:
                         c3 = c2;
                         c2 = c;
                         s2 = s;
-                        g = c * e[i];
+                        g = c * m_e[i];
                         h = c * p;
-                        r = std::hypot(p, e[i]);
-                        e[i + 1] = s * r;
-                        s = e[i] / r;
+                        r = std::hypot(p, m_e[i]);
+                        m_e[i + 1] = s * r;
+                        s = m_e[i] / r;
                         c = p / r;
-                        p = c * d[i] - s * g;
-                        d[i + 1] = h + s * (c * g + s * d[i]);
+                        p = c * m_d[i] - s * g;
+                        m_d[i + 1] = h + s * (c * g + s * m_d[i]);
 
                         // Accumulate transformation.
 
                         for (int k = 0; k < D; k++)
                         {
-                            h = V[k][i + 1];
-                            V[k][i + 1] = s * V[k][i] + c * h;
-                            V[k][i] = c * V[k][i] - s * h;
+                            h = m_V[k][i + 1];
+                            m_V[k][i + 1] = s * m_V[k][i] + c * h;
+                            m_V[k][i] = c * m_V[k][i] - s * h;
                         }
                     }
-                    p = -s * s2 * c3 * el1 * e[l] / dl1;
-                    e[l] = s * p;
-                    d[l] = c * p;
+                    p = -s * s2 * c3 * el1 * m_e[l] / dl1;
+                    m_e[l] = s * p;
+                    m_d[l] = c * p;
 
                     // Check for convergence.
 
-                } while (tg::abs(e[l]) > eps * tst1);
+                } while (tg::abs(m_e[l]) > eps * tst1);
             }
-            d[l] = d[l] + f;
-            e[l] = ScalarT(0.0);
+            m_d[l] = m_d[l] + f;
+            m_e[l] = ScalarT(0.0);
         }
 
         // Sort eigenvalues and corresponding vectors.
@@ -302,24 +303,24 @@ private:
         for (int i = 0; i < D - 1; i++)
         {
             int k = i;
-            ScalarT p = d[i];
+            ScalarT p = m_d[i];
             for (int j = i + 1; j < D; j++)
             {
-                if (d[j] < p)
+                if (m_d[j] < p)
                 {
                     k = j;
-                    p = d[j];
+                    p = m_d[j];
                 }
             }
             if (k != i)
             {
-                d[k] = d[i];
-                d[i] = p;
+                m_d[k] = m_d[i];
+                m_d[i] = p;
                 for (int j = 0; j < D; j++)
                 {
-                    p = V[j][i];
-                    V[j][i] = V[j][k];
-                    V[j][k] = p;
+                    p = m_V[j][i];
+                    m_V[j][i] = m_V[j][k];
+                    m_V[j][k] = p;
                 }
             }
         }
@@ -344,7 +345,7 @@ private:
             ScalarT scale = ScalarT(0.0);
             for (int i = m; i <= high; i++)
             {
-                scale = scale + tg::abs(H[i][m - 1]);
+                scale = scale + tg::abs(m_H[i][m - 1]);
             }
             if (scale != ScalarT(0.0))
             {
@@ -353,16 +354,16 @@ private:
                 ScalarT h = ScalarT(0.0);
                 for (int i = high; i >= m; i--)
                 {
-                    ort[i] = H[i][m - 1] / scale;
-                    h += ort[i] * ort[i];
+                    m_ort[i] = m_H[i][m - 1] / scale;
+                    h += m_ort[i] * m_ort[i];
                 }
                 ScalarT g = tg::sqrt(h);
-                if (ort[m] > 0)
+                if (m_ort[m] > 0)
                 {
                     g = -g;
                 }
-                h = h - ort[m] * g;
-                ort[m] = ort[m] - g;
+                h = h - m_ort[m] * g;
+                m_ort[m] = m_ort[m] - g;
 
                 // Apply Householder similarity transformation
                 // H = (I-u*u'/h)*H*(I-u*u')/h)
@@ -372,12 +373,12 @@ private:
                     ScalarT f = ScalarT(0.0);
                     for (int i = high; i >= m; i--)
                     {
-                        f += ort[i] * H[i][j];
+                        f += m_ort[i] * m_H[i][j];
                     }
                     f = f / h;
                     for (int i = m; i <= high; i++)
                     {
-                        H[i][j] -= f * ort[i];
+                        m_H[i][j] -= f * m_ort[i];
                     }
                 }
 
@@ -386,16 +387,16 @@ private:
                     ScalarT f = ScalarT(0.0);
                     for (int j = high; j >= m; j--)
                     {
-                        f += ort[j] * H[i][j];
+                        f += m_ort[j] * m_H[i][j];
                     }
                     f = f / h;
                     for (int j = m; j <= high; j++)
                     {
-                        H[i][j] -= f * ort[j];
+                        m_H[i][j] -= f * m_ort[j];
                     }
                 }
-                ort[m] = scale * ort[m];
-                H[m][m - 1] = scale * g;
+                m_ort[m] = scale * m_ort[m];
+                m_H[m][m - 1] = scale * g;
             }
         }
 
@@ -405,30 +406,30 @@ private:
         {
             for (int j = 0; j < D; j++)
             {
-                V[i][j] = (i == j ? ScalarT(1.0) : ScalarT(0.0));
+                m_V[i][j] = (i == j ? ScalarT(1.0) : ScalarT(0.0));
             }
         }
 
         for (int m = high - 1; m >= low + 1; m--)
         {
-            if (H[m][m - 1] != ScalarT(0.0))
+            if (m_H[m][m - 1] != ScalarT(0.0))
             {
                 for (int i = m + 1; i <= high; i++)
                 {
-                    ort[i] = H[i][m - 1];
+                    m_ort[i] = m_H[i][m - 1];
                 }
                 for (int j = m; j <= high; j++)
                 {
                     ScalarT g = ScalarT(0.0);
                     for (int i = m; i <= high; i++)
                     {
-                        g += ort[i] * V[i][j];
+                        g += m_ort[i] * m_V[i][j];
                     }
                     // ScalarT division avoids possible underflow
-                    g = (g / ort[m]) / H[m][m - 1];
+                    g = (g / m_ort[m]) / m_H[m][m - 1];
                     for (int i = m; i <= high; i++)
                     {
-                        V[i][j] += g * ort[i];
+                        m_V[i][j] += g * m_ort[i];
                     }
                 }
             }
@@ -473,7 +474,7 @@ private:
         int n = nn - 1;
         int low = 0;
         int high = nn - 1;
-        ScalarT eps = tg::pow(ScalarT(2.0), ScalarT(-52.0));
+        ScalarT eps = tg::epsilon<ScalarT>;
         ScalarT exshift = ScalarT(0.0);
         ScalarT p = 0, q = 0, r = 0, s = 0, z = 0, t, w, x, y;
 
@@ -484,12 +485,12 @@ private:
         {
             if ((i < low) | (i > high))
             {
-                d[i] = H[i][i];
-                e[i] = ScalarT(0.0);
+                m_d[i] = m_H[i][i];
+                m_e[i] = ScalarT(0.0);
             }
             for (int j = tg::max(i - 1, 0); j < nn; j++)
             {
-                norm = norm + tg::abs(H[i][j]);
+                norm = norm + tg::abs(m_H[i][j]);
             }
         }
 
@@ -503,12 +504,12 @@ private:
             int l = n;
             while (l > low)
             {
-                s = tg::abs(H[l - 1][l - 1]) + tg::abs(H[l][l]);
+                s = tg::abs(m_H[l - 1][l - 1]) + tg::abs(m_H[l][l]);
                 if (s == ScalarT(0.0))
                 {
                     s = norm;
                 }
-                if (tg::abs(H[l][l - 1]) < eps * s)
+                if (tg::abs(m_H[l][l - 1]) < eps * s)
                 {
                     break;
                 }
@@ -520,9 +521,9 @@ private:
 
             if (l == n)
             {
-                H[n][n] = H[n][n] + exshift;
-                d[n] = H[n][n];
-                e[n] = ScalarT(0.0);
+                m_H[n][n] = m_H[n][n] + exshift;
+                m_d[n] = m_H[n][n];
+                m_e[n] = ScalarT(0.0);
                 n--;
                 iter = 0;
 
@@ -530,13 +531,13 @@ private:
             }
             else if (l == n - 1)
             {
-                w = H[n][n - 1] * H[n - 1][n];
-                p = (H[n - 1][n - 1] - H[n][n]) / ScalarT(2.0);
+                w = m_H[n][n - 1] * m_H[n - 1][n];
+                p = (m_H[n - 1][n - 1] - m_H[n][n]) / ScalarT(2.0);
                 q = p * p + w;
                 z = tg::sqrt(tg::abs(q));
-                H[n][n] = H[n][n] + exshift;
-                H[n - 1][n - 1] = H[n - 1][n - 1] + exshift;
-                x = H[n][n];
+                m_H[n][n] = m_H[n][n] + exshift;
+                m_H[n - 1][n - 1] = m_H[n - 1][n - 1] + exshift;
+                x = m_H[n][n];
 
                 // Real pair
 
@@ -550,15 +551,15 @@ private:
                     {
                         z = p - z;
                     }
-                    d[n - 1] = x + z;
-                    d[n] = d[n - 1];
+                    m_d[n - 1] = x + z;
+                    m_d[n] = m_d[n - 1];
                     if (z != ScalarT(0.0))
                     {
-                        d[n] = x - w / z;
+                        m_d[n] = x - w / z;
                     }
-                    e[n - 1] = ScalarT(0.0);
-                    e[n] = ScalarT(0.0);
-                    x = H[n][n - 1];
+                    m_e[n - 1] = ScalarT(0.0);
+                    m_e[n] = ScalarT(0.0);
+                    x = m_H[n][n - 1];
                     s = tg::abs(x) + tg::abs(z);
                     p = x / s;
                     q = z / s;
@@ -570,37 +571,37 @@ private:
 
                     for (int j = n - 1; j < nn; j++)
                     {
-                        z = H[n - 1][j];
-                        H[n - 1][j] = q * z + p * H[n][j];
-                        H[n][j] = q * H[n][j] - p * z;
+                        z = m_H[n - 1][j];
+                        m_H[n - 1][j] = q * z + p * m_H[n][j];
+                        m_H[n][j] = q * m_H[n][j] - p * z;
                     }
 
                     // Column modification
 
                     for (int i = 0; i <= n; i++)
                     {
-                        z = H[i][n - 1];
-                        H[i][n - 1] = q * z + p * H[i][n];
-                        H[i][n] = q * H[i][n] - p * z;
+                        z = m_H[i][n - 1];
+                        m_H[i][n - 1] = q * z + p * m_H[i][n];
+                        m_H[i][n] = q * m_H[i][n] - p * z;
                     }
 
                     // Accumulate transformations
 
                     for (int i = low; i <= high; i++)
                     {
-                        z = V[i][n - 1];
-                        V[i][n - 1] = q * z + p * V[i][n];
-                        V[i][n] = q * V[i][n] - p * z;
+                        z = m_V[i][n - 1];
+                        m_V[i][n - 1] = q * z + p * m_V[i][n];
+                        m_V[i][n] = q * m_V[i][n] - p * z;
                     }
 
                     // Complex pair
                 }
                 else
                 {
-                    d[n - 1] = x + p;
-                    d[n] = x + p;
-                    e[n - 1] = z;
-                    e[n] = -z;
+                    m_d[n - 1] = x + p;
+                    m_d[n] = x + p;
+                    m_e[n - 1] = z;
+                    m_e[n] = -z;
                 }
                 n = n - 2;
                 iter = 0;
@@ -611,13 +612,13 @@ private:
             {
                 // Form shift
 
-                x = H[n][n];
+                x = m_H[n][n];
                 y = ScalarT(0.0);
                 w = ScalarT(0.0);
                 if (l < n)
                 {
-                    y = H[n - 1][n - 1];
-                    w = H[n][n - 1] * H[n - 1][n];
+                    y = m_H[n - 1][n - 1];
+                    w = m_H[n][n - 1] * m_H[n - 1][n];
                 }
 
                 // Wilkinson's original ad hoc shift
@@ -627,9 +628,9 @@ private:
                     exshift += x;
                     for (int i = low; i <= n; i++)
                     {
-                        H[i][i] -= x;
+                        m_H[i][i] -= x;
                     }
-                    s = tg::abs(H[n][n - 1]) + tg::abs(H[n - 1][n - 2]);
+                    s = tg::abs(m_H[n][n - 1]) + tg::abs(m_H[n - 1][n - 2]);
                     x = y = ScalarT(0.75) * s;
                     w = ScalarT(-0.4375) * s * s;
                 }
@@ -650,7 +651,7 @@ private:
                         s = x - w / ((y - x) / ScalarT(2.0) + s);
                         for (int i = low; i <= n; i++)
                         {
-                            H[i][i] -= s;
+                            m_H[i][i] -= s;
                         }
                         exshift += s;
                         x = y = w = ScalarT(0.964);
@@ -664,12 +665,12 @@ private:
                 int m = n - 2;
                 while (m >= l)
                 {
-                    z = H[m][m];
+                    z = m_H[m][m];
                     r = x - z;
                     s = y - z;
-                    p = (r * s - w) / H[m + 1][m] + H[m][m + 1];
-                    q = H[m + 1][m + 1] - z - r - s;
-                    r = H[m + 2][m + 1];
+                    p = (r * s - w) / m_H[m + 1][m] + m_H[m][m + 1];
+                    q = m_H[m + 1][m + 1] - z - r - s;
+                    r = m_H[m + 2][m + 1];
                     s = tg::abs(p) + tg::abs(q) + tg::abs(r);
                     p = p / s;
                     q = q / s;
@@ -678,8 +679,8 @@ private:
                     {
                         break;
                     }
-                    if (tg::abs(H[m][m - 1]) * (tg::abs(q) + tg::abs(r))
-                        < eps * (tg::abs(p) * (tg::abs(H[m - 1][m - 1]) + tg::abs(z) + tg::abs(H[m + 1][m + 1]))))
+                    if (tg::abs(m_H[m][m - 1]) * (tg::abs(q) + tg::abs(r))
+                        < eps * (tg::abs(p) * (tg::abs(m_H[m - 1][m - 1]) + tg::abs(z) + tg::abs(m_H[m + 1][m + 1]))))
                     {
                         break;
                     }
@@ -688,10 +689,10 @@ private:
 
                 for (int i = m + 2; i <= n; i++)
                 {
-                    H[i][i - 2] = ScalarT(0.0);
+                    m_H[i][i - 2] = ScalarT(0.0);
                     if (i > m + 2)
                     {
-                        H[i][i - 3] = ScalarT(0.0);
+                        m_H[i][i - 3] = ScalarT(0.0);
                     }
                 }
 
@@ -703,9 +704,9 @@ private:
                     bool notlast = (k != n - 1);
                     if (k != m)
                     {
-                        p = H[k][k - 1];
-                        q = H[k + 1][k - 1];
-                        r = (notlast ? H[k + 2][k - 1] : ScalarT(0.0));
+                        p = m_H[k][k - 1];
+                        q = m_H[k + 1][k - 1];
+                        r = (notlast ? m_H[k + 2][k - 1] : ScalarT(0.0));
                         x = tg::abs(p) + tg::abs(q) + tg::abs(r);
                         if (x == ScalarT(0.0))
                         {
@@ -725,11 +726,11 @@ private:
                     {
                         if (k != m)
                         {
-                            H[k][k - 1] = -s * x;
+                            m_H[k][k - 1] = -s * x;
                         }
                         else if (l != m)
                         {
-                            H[k][k - 1] = -H[k][k - 1];
+                            m_H[k][k - 1] = -m_H[k][k - 1];
                         }
                         p = p + s;
                         x = p / s;
@@ -742,42 +743,42 @@ private:
 
                         for (int j = k; j < nn; j++)
                         {
-                            p = H[k][j] + q * H[k + 1][j];
+                            p = m_H[k][j] + q * m_H[k + 1][j];
                             if (notlast)
                             {
-                                p = p + r * H[k + 2][j];
-                                H[k + 2][j] = H[k + 2][j] - p * z;
+                                p = p + r * m_H[k + 2][j];
+                                m_H[k + 2][j] = m_H[k + 2][j] - p * z;
                             }
-                            H[k][j] = H[k][j] - p * x;
-                            H[k + 1][j] = H[k + 1][j] - p * y;
+                            m_H[k][j] = m_H[k][j] - p * x;
+                            m_H[k + 1][j] = m_H[k + 1][j] - p * y;
                         }
 
                         // Column modification
 
                         for (int i = 0; i <= tg::min(n, k + 3); i++)
                         {
-                            p = x * H[i][k] + y * H[i][k + 1];
+                            p = x * m_H[i][k] + y * m_H[i][k + 1];
                             if (notlast)
                             {
-                                p = p + z * H[i][k + 2];
-                                H[i][k + 2] = H[i][k + 2] - p * r;
+                                p = p + z * m_H[i][k + 2];
+                                m_H[i][k + 2] = m_H[i][k + 2] - p * r;
                             }
-                            H[i][k] = H[i][k] - p;
-                            H[i][k + 1] = H[i][k + 1] - p * q;
+                            m_H[i][k] = m_H[i][k] - p;
+                            m_H[i][k + 1] = m_H[i][k + 1] - p * q;
                         }
 
                         // Accumulate transformations
 
                         for (int i = low; i <= high; i++)
                         {
-                            p = x * V[i][k] + y * V[i][k + 1];
+                            p = x * m_V[i][k] + y * m_V[i][k + 1];
                             if (notlast)
                             {
-                                p = p + z * V[i][k + 2];
-                                V[i][k + 2] = V[i][k + 2] - p * r;
+                                p = p + z * m_V[i][k + 2];
+                                m_V[i][k + 2] = m_V[i][k + 2] - p * r;
                             }
-                            V[i][k] = V[i][k] - p;
-                            V[i][k + 1] = V[i][k + 1] - p * q;
+                            m_V[i][k] = m_V[i][k] - p;
+                            m_V[i][k + 1] = m_V[i][k + 1] - p * q;
                         }
                     } // (s != 0)
                 }     // k loop
@@ -793,24 +794,24 @@ private:
 
         for (n = nn - 1; n >= 0; n--)
         {
-            p = d[n];
-            q = e[n];
+            p = m_d[n];
+            q = m_e[n];
 
             // Real vector
 
             if (q == 0)
             {
                 int l = n;
-                H[n][n] = ScalarT(1.0);
+                m_H[n][n] = ScalarT(1.0);
                 for (int i = n - 1; i >= 0; i--)
                 {
-                    w = H[i][i] - p;
+                    w = m_H[i][i] - p;
                     r = ScalarT(0.0);
                     for (int j = l; j <= n; j++)
                     {
-                        r = r + H[i][j] * H[j][n];
+                        r = r + m_H[i][j] * m_H[j][n];
                     }
-                    if (e[i] < ScalarT(0.0))
+                    if (m_e[i] < ScalarT(0.0))
                     {
                         z = w;
                         s = r;
@@ -818,44 +819,44 @@ private:
                     else
                     {
                         l = i;
-                        if (e[i] == ScalarT(0.0))
+                        if (m_e[i] == ScalarT(0.0))
                         {
                             if (w != ScalarT(0.0))
                             {
-                                H[i][n] = -r / w;
+                                m_H[i][n] = -r / w;
                             }
                             else
                             {
-                                H[i][n] = -r / (eps * norm);
+                                m_H[i][n] = -r / (eps * norm);
                             }
 
                             // Solve real equations
                         }
                         else
                         {
-                            x = H[i][i + 1];
-                            y = H[i + 1][i];
-                            q = (d[i] - p) * (d[i] - p) + e[i] * e[i];
+                            x = m_H[i][i + 1];
+                            y = m_H[i + 1][i];
+                            q = (m_d[i] - p) * (m_d[i] - p) + m_e[i] * m_e[i];
                             t = (x * s - z * r) / q;
-                            H[i][n] = t;
+                            m_H[i][n] = t;
                             if (tg::abs(x) > tg::abs(z))
                             {
-                                H[i + 1][n] = (-r - w * t) / x;
+                                m_H[i + 1][n] = (-r - w * t) / x;
                             }
                             else
                             {
-                                H[i + 1][n] = (-s - y * t) / z;
+                                m_H[i + 1][n] = (-s - y * t) / z;
                             }
                         }
 
                         // Overflow control
 
-                        t = tg::abs(H[i][n]);
+                        t = tg::abs(m_H[i][n]);
                         if ((eps * t) * t > 1)
                         {
                             for (int j = i; j <= n; j++)
                             {
-                                H[j][n] = H[j][n] / t;
+                                m_H[j][n] = m_H[j][n] / t;
                             }
                         }
                     }
@@ -869,19 +870,19 @@ private:
 
                 // Last vector component imaginary so matrix is triangular
 
-                if (tg::abs(H[n][n - 1]) > tg::abs(H[n - 1][n]))
+                if (tg::abs(m_H[n][n - 1]) > tg::abs(m_H[n - 1][n]))
                 {
-                    H[n - 1][n - 1] = q / H[n][n - 1];
-                    H[n - 1][n] = -(H[n][n] - p) / H[n][n - 1];
+                    m_H[n - 1][n - 1] = q / m_H[n][n - 1];
+                    m_H[n - 1][n] = -(m_H[n][n] - p) / m_H[n][n - 1];
                 }
                 else
                 {
-                    cdiv(ScalarT(0.0), -H[n - 1][n], H[n - 1][n - 1] - p, q);
-                    H[n - 1][n - 1] = cdivr;
-                    H[n - 1][n] = cdivi;
+                    cdiv(ScalarT(0.0), -m_H[n - 1][n], m_H[n - 1][n - 1] - p, q);
+                    m_H[n - 1][n - 1] = cdivr;
+                    m_H[n - 1][n] = cdivi;
                 }
-                H[n][n - 1] = ScalarT(0.0);
-                H[n][n] = ScalarT(1.0);
+                m_H[n][n - 1] = ScalarT(0.0);
+                m_H[n][n] = ScalarT(1.0);
                 for (int i = n - 2; i >= 0; i--)
                 {
                     ScalarT ra, sa, vr, vi;
@@ -889,12 +890,12 @@ private:
                     sa = ScalarT(0.0);
                     for (int j = l; j <= n; j++)
                     {
-                        ra = ra + H[i][j] * H[j][n - 1];
-                        sa = sa + H[i][j] * H[j][n];
+                        ra = ra + m_H[i][j] * m_H[j][n - 1];
+                        sa = sa + m_H[i][j] * m_H[j][n];
                     }
-                    w = H[i][i] - p;
+                    w = m_H[i][i] - p;
 
-                    if (e[i] < ScalarT(0.0))
+                    if (m_e[i] < ScalarT(0.0))
                     {
                         z = w;
                         r = ra;
@@ -903,49 +904,49 @@ private:
                     else
                     {
                         l = i;
-                        if (e[i] == 0)
+                        if (m_e[i] == 0)
                         {
                             cdiv(-ra, -sa, w, q);
-                            H[i][n - 1] = cdivr;
-                            H[i][n] = cdivi;
+                            m_H[i][n - 1] = cdivr;
+                            m_H[i][n] = cdivi;
                         }
                         else
                         {
                             // Solve complex equations
 
-                            x = H[i][i + 1];
-                            y = H[i + 1][i];
-                            vr = (d[i] - p) * (d[i] - p) + e[i] * e[i] - q * q;
-                            vi = (d[i] - p) * ScalarT(2.0) * q;
+                            x = m_H[i][i + 1];
+                            y = m_H[i + 1][i];
+                            vr = (m_d[i] - p) * (m_d[i] - p) + m_e[i] * m_e[i] - q * q;
+                            vi = (m_d[i] - p) * ScalarT(2.0) * q;
                             if ((vr == ScalarT(0.0)) & (vi == ScalarT(0.0)))
                             {
                                 vr = eps * norm * (tg::abs(w) + tg::abs(q) + tg::abs(x) + tg::abs(y) + tg::abs(z));
                             }
                             cdiv(x * r - z * ra + q * sa, x * s - z * sa - q * ra, vr, vi);
-                            H[i][n - 1] = cdivr;
-                            H[i][n] = cdivi;
+                            m_H[i][n - 1] = cdivr;
+                            m_H[i][n] = cdivi;
                             if (tg::abs(x) > (tg::abs(z) + tg::abs(q)))
                             {
-                                H[i + 1][n - 1] = (-ra - w * H[i][n - 1] + q * H[i][n]) / x;
-                                H[i + 1][n] = (-sa - w * H[i][n] - q * H[i][n - 1]) / x;
+                                m_H[i + 1][n - 1] = (-ra - w * m_H[i][n - 1] + q * m_H[i][n]) / x;
+                                m_H[i + 1][n] = (-sa - w * m_H[i][n] - q * m_H[i][n - 1]) / x;
                             }
                             else
                             {
-                                cdiv(-r - y * H[i][n - 1], -s - y * H[i][n], z, q);
-                                H[i + 1][n - 1] = cdivr;
-                                H[i + 1][n] = cdivi;
+                                cdiv(-r - y * m_H[i][n - 1], -s - y * m_H[i][n], z, q);
+                                m_H[i + 1][n - 1] = cdivr;
+                                m_H[i + 1][n] = cdivi;
                             }
                         }
 
                         // Overflow control
 
-                        t = tg::max(tg::abs(H[i][n - 1]), tg::abs(H[i][n]));
+                        t = tg::max(tg::abs(m_H[i][n - 1]), tg::abs(m_H[i][n]));
                         if ((eps * t) * t > 1)
                         {
                             for (int j = i; j <= n; j++)
                             {
-                                H[j][n - 1] = H[j][n - 1] / t;
-                                H[j][n] = H[j][n] / t;
+                                m_H[j][n - 1] = m_H[j][n - 1] / t;
+                                m_H[j][n] = m_H[j][n] / t;
                             }
                         }
                     }
@@ -961,7 +962,7 @@ private:
             {
                 for (int j = i; j < nn; j++)
                 {
-                    V[i][j] = H[i][j];
+                    m_V[i][j] = m_H[i][j];
                 }
             }
         }
@@ -975,9 +976,9 @@ private:
                 z = ScalarT(0.0);
                 for (int k = low; k <= tg::min(j, high); k++)
                 {
-                    z = z + V[i][k] * H[k][j];
+                    z = z + m_V[i][k] * m_H[k][j];
                 }
-                V[i][j] = z;
+                m_V[i][j] = z;
             }
         }
     }
@@ -997,22 +998,22 @@ public:
         // internal matrices are row-major, tg::mat is column major
         tg::mat<D, D, ScalarT> A = transpose(m);
 
-        issymmetric = true;
-        for (int j = 0; (j < D) & issymmetric; j++)
+        m_is_symmetric = true;
+        for (int j = 0; (j < D) & m_is_symmetric; j++)
         {
-            for (int i = 0; (i < D) & issymmetric; i++)
+            for (int i = 0; (i < D) & m_is_symmetric; i++)
             {
-                issymmetric = (A[i][j] == A[j][i]);
+                m_is_symmetric = (A[i][j] == A[j][i]);
             }
         }
 
-        if (issymmetric)
+        if (m_is_symmetric)
         {
             for (int i = 0; i < D; i++)
             {
                 for (int j = 0; j < D; j++)
                 {
-                    V[i][j] = A[i][j];
+                    m_V[i][j] = A[i][j];
                 }
             }
 
@@ -1028,7 +1029,7 @@ public:
             {
                 for (int i = 0; i < D; i++)
                 {
-                    H[i][j] = A[i][j];
+                    m_H[i][j] = A[i][j];
                 }
             }
 
@@ -1051,19 +1052,19 @@ public:
     tg::mat<D, D, ScalarT> getV()
     {
         // column vs row-major
-        return transpose(tg::mat<D, D, ScalarT>(V));
+        return transpose(tg::mat<D, D, ScalarT>(m_V));
     }
 
     /** Return the real parts of the eigenvalues
     @return     real(diag(D))
     */
 
-    tg::array<ScalarT, D> getRealEigenvalues() { return d; }
+    tg::array<ScalarT, D> getRealEigenvalues() { return m_d; }
 
     /** Return the imaginary parts of the eigenvalues
     @return     imag(diag(D))
     */
-    tg::array<ScalarT, D> getImagEigenvalues() { return e; }
+    tg::array<ScalarT, D> getImagEigenvalues() { return m_e; }
 
     /** Return the block diagonal eigenvalue matrix
     @return     D
@@ -1078,14 +1079,14 @@ public:
             {
                 X[i][j] = ScalarT(0.0);
             }
-            X[i][i] = d[i];
-            if (e[i] > 0)
+            X[i][i] = m_d[i];
+            if (m_e[i] > 0)
             {
-                X[i][i + 1] = e[i];
+                X[i][i + 1] = m_e[i];
             }
-            else if (e[i] < 0)
+            else if (m_e[i] < 0)
             {
-                X[i][i - 1] = e[i];
+                X[i][i - 1] = m_e[i];
             }
         }
         // column vs row-major

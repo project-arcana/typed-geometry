@@ -41,7 +41,7 @@ array<vec<4, double>, 4> eigenvectors_impl(mat<4, 4, double> const& m);
 }
 
 template <class ScalarT, int D>
-[[nodiscard]] array<eigen_decomposition_result<D, ScalarT>, D> eigen_decomposition(mat<D, D, ScalarT> const& m)
+[[nodiscard]] array<eigen_decomposition_result<D, ScalarT>, D> eigen_decomposition_symmetric(mat<D, D, ScalarT> const& m)
 {
     if constexpr (D == 1)
     {
@@ -70,7 +70,7 @@ template <class ScalarT, int D>
 }
 
 template <class ScalarT, int D>
-[[nodiscard]] array<ScalarT, D> eigenvalues(mat<D, D, ScalarT> const& m)
+[[nodiscard]] array<ScalarT, D> eigenvalues_symmetric(mat<D, D, ScalarT> const& m)
 {
     if constexpr (D == 1)
     {
@@ -101,7 +101,7 @@ template <class ScalarT, int D>
 }
 
 template <class ScalarT, int D>
-[[nodiscard]] array<vec<D, ScalarT>, D> eigenvectors(mat<D, D, ScalarT> const& m)
+[[nodiscard]] array<vec<D, ScalarT>, D> eigenvectors_symmetric(mat<D, D, ScalarT> const& m)
 {
     if constexpr (D == 1)
     {
@@ -130,7 +130,7 @@ template <class ScalarT, int D>
 }
 
 template <class ScalarT, int D>
-[[nodiscard]] array<ScalarT, D> singular_values(mat<D, D, ScalarT> const& m)
+[[nodiscard]] array<ScalarT, D> singular_values_symmetric(mat<D, D, ScalarT> const& m)
 {
     if constexpr (D == 1)
     {
