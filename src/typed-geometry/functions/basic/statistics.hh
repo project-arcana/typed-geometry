@@ -127,7 +127,21 @@ template <class T = void, class RangeT = void, class TransformT = identity_fun>
 [[nodiscard]] constexpr auto arithmetic_mean(RangeT const& values, TransformT&& transform = {})
 {
     auto const s = sum<T>(values, transform);
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#endif
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4244) // possible loss of data
+#endif
     return s / tg::container_size(values);
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
