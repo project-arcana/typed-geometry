@@ -25,7 +25,8 @@
 #include "random.hh"
 
 /*
- * uniform(rng)       - fair coin flip
+ * uniform<T>(rng)    - uniform sample for T's where no parameter is needed
+ * uniform(rng)       - returns an object that implicitly converts to T (and calls uniform<T>(rng))
  * uniform(rng, a, b) - uniform between a..b (inclusive!)
  * uniform(rng, obj)  - uniform sample from obj
  *
@@ -47,12 +48,34 @@ struct sampler
 {
     static_assert(sizeof(T) >= 0, "sampling of this type not supported without parameters");
 };
+
+// NOTE: this class should not be saved
+template <class Rng>
+struct uniform_sampler
+{
+    explicit uniform_sampler(Rng& rng) : rng(rng) {}
+
+    template <class T>
+    operator T() &&
+    {
+        return sampler<T>::uniform(rng);
+    }
+
+private:
+    Rng& rng;
+};
 }
 
 template <class T, class Rng>
 [[nodiscard]] constexpr T uniform(Rng& rng)
 {
     return detail::sampler<T>::uniform(rng);
+}
+
+template <class Rng>
+[[nodiscard]] constexpr detail::uniform_sampler<Rng> uniform(Rng& rng)
+{
+    return detail::uniform_sampler<Rng>{rng};
 }
 
 template <class Rng>
