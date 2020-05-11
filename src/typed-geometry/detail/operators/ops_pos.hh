@@ -2,7 +2,6 @@
 
 #include <typed-geometry/detail/macros.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
-#include <typed-geometry/detail/sum_of_pos.hh>
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
@@ -36,13 +35,10 @@ TG_IMPL_DEFINE_BINARY_OP_SCALAR(pos, +);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR(pos, *);
 TG_IMPL_DEFINE_BINARY_OP_SCALAR_DIV(pos);
 
-// special pos+pos handling
-template <int D, class ScalarT>
-[[nodiscard]] constexpr sum_of_pos<D, ScalarT> operator+(pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
-{
-    return sum_of_pos(a) + b;
-}
-
-// deprecated / not supported operations
+// pos + pos results in a pos
+// NOTE: this should only be used if the result is still a proper position
+//       e.g. for weighted sums, such as "pos * 0.3 + pos * 0.7"
+//            or as a shortcut for "tanslation(pos) * pos"
+TG_IMPL_DEFINE_BINARY_OP(pos, pos, pos, +);
 
 } // namespace tg
