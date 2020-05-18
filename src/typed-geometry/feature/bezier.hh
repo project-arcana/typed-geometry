@@ -2,8 +2,8 @@
 
 #include <type_traits> // std::is_invocable_r_t, std::decay_t
 
+#include <typed-geometry/feature/vector.hh>
 #include <typed-geometry/functions/basic/minmax.hh>
-#include <typed-geometry/functions/vector/perpendicular.hh>
 #include <typed-geometry/types/bezier.hh>
 #include <typed-geometry/types/capped_vector.hh>
 
