@@ -54,9 +54,26 @@ struct pair
 {
     A first;
     B second;
+
+    template <class C, class D>
+    constexpr bool operator==(pair<C, D> const& rhs) const noexcept
+    {
+        return first == rhs.first && second == rhs.second;
+    }
+    template <class C, class D>
+    constexpr bool operator!=(pair<C, D> const& rhs) const noexcept
+    {
+        return first != rhs.first || second != rhs.second;
+    }
 };
 template <class A, class B>
 pair(A const&, B const&)->pair<A, B>;
+template <class I, class A, class B>
+constexpr void introspect(I&& i, pair<A, B>& p)
+{
+    i(p.first, "first");
+    i(p.second, "second");
+}
 
 template <class A, class B, class C>
 struct triple
