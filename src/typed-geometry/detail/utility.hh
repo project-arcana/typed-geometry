@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 namespace tg
 {
 using u8 = unsigned char;
@@ -209,10 +211,43 @@ template <class Container, class ElementT>
 auto container_test(Container* c) -> decltype(static_cast<ElementT*>(c->data()), static_cast<decltype(sizeof(0))>(c->size()), 0);
 template <class Container, class ElementT>
 char container_test(...);
+
+template <class Container, class ElementT, class = void>
+struct is_range_t : false_type
+{
+};
+template <class ElementT, size_t N>
+struct is_range_t<ElementT[N], ElementT> : true_type
+{
+};
+template <class ElementT, size_t N>
+struct is_range_t<ElementT[N], ElementT const> : true_type
+{
+};
+template <class ElementT, size_t N>
+struct is_range_t<ElementT (&)[N], ElementT> : true_type
+{
+};
+template <class ElementT, size_t N>
+struct is_range_t<ElementT (&)[N], ElementT const> : true_type
+{
+};
+template <class Container, class ElementT>
+struct is_range_t<Container,
+                  ElementT,
+                  std::void_t<                                                              //
+                      decltype(static_cast<ElementT&>(*std::declval<Container>().begin())), //
+                      decltype(std::declval<Container>().end())                             //
+                      >> : std::true_type
+{
+};
 }
 
 template <class Container, class ElementT>
 static constexpr bool is_container = sizeof(detail::container_test<Container, ElementT>(nullptr)) == sizeof(int);
+
+template <class Container, class ElementT>
+static constexpr bool is_range = detail::is_range_t<Container, ElementT>::value;
 
 template <class C>
 constexpr auto begin(C& c) -> decltype(c.begin())

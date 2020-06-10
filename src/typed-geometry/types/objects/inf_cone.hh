@@ -44,6 +44,11 @@ struct inf_cone
     }
     explicit constexpr inf_cone(cone<D, ScalarT, TraitsT> const& c);
 
+    template <class OtherT, class OtherTraitsT>
+    constexpr inf_cone(inf_cone<D, OtherT, OtherTraitsT> const& v) : apex(v.apex), opening_dir(v.opening_dir), opening_angle(v.opening_angle)
+    {
+    }
+
     [[nodiscard]] bool operator==(inf_cone const& rhs) const
     {
         return apex == rhs.apex && opening_dir == rhs.opening_dir && opening_angle == rhs.opening_angle;

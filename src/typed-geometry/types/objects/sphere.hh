@@ -101,6 +101,11 @@ struct sphere<D, ScalarT, D, TraitsT>
     constexpr sphere() = default;
     constexpr sphere(pos_t c, ScalarT r) : center(c), radius(r) {}
 
+    template <class OtherT, class OtherTraitsT>
+    constexpr sphere(sphere<D, OtherT, D, OtherTraitsT> const& v) : center(v.center), radius(v.radius)
+    {
+    }
+
     [[nodiscard]] bool operator==(sphere const& rhs) const { return center == rhs.center && radius == rhs.radius; }
     [[nodiscard]] bool operator!=(sphere const& rhs) const { return !operator==(rhs); }
 };
@@ -118,6 +123,11 @@ struct sphere<2, ScalarT, 3, TraitsT>
 
     constexpr sphere() = default;
     constexpr sphere(pos_t c, ScalarT r, dir_t n) : center(c), radius(r), normal(n) {}
+
+    template <class OtherT, class OtherTraitsT>
+    constexpr sphere(sphere<2, OtherT, 3, OtherTraitsT> const& v) : center(v.center), radius(v.radius), normal(v.normal)
+    {
+    }
 
     [[nodiscard]] bool operator==(sphere const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
     [[nodiscard]] bool operator!=(sphere const& rhs) const { return !operator==(rhs); }

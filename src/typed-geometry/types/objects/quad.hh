@@ -51,7 +51,12 @@ struct quad
     constexpr quad() = default;
     constexpr quad(pos_t p00, pos_t p10, pos_t p11, pos_t p01) : pos00(p00), pos10(p10), pos11(p11), pos01(p01) {}
 
-    template <class Range, class = std::void_t<decltype(pos_t(tg::begin(std::declval<Range>())))>>
+    template <class OtherT>
+    constexpr quad(quad<D, OtherT> const& v) : pos00(v.pos00), pos10(v.pos10), pos11(v.pos11), pos01(v.pos01)
+    {
+    }
+
+    template <class Range, class = std::enable_if_t<tg::is_range<Range, pos_t>>>
     explicit constexpr quad(Range&& r)
     {
         auto it = tg::begin(r);

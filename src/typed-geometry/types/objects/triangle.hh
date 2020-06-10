@@ -50,7 +50,12 @@ struct triangle
     constexpr triangle() = default;
     constexpr triangle(pos_t p0, pos_t p1, pos_t p2) : pos0(p0), pos1(p1), pos2(p2) {}
 
-    template <class Range, class = std::void_t<decltype(pos_t(tg::begin(std::declval<Range>())))>>
+    template <class OtherT>
+    constexpr triangle(triangle<D, OtherT> const& v) : pos0(v.pos0), pos1(v.pos1), pos2(v.pos2)
+    {
+    }
+
+    template <class Range, class = std::enable_if_t<tg::is_range<Range, pos_t>>>
     explicit constexpr triangle(Range&& r)
     {
         auto it = tg::begin(r);

@@ -39,6 +39,11 @@ struct inf_cylinder
     constexpr inf_cylinder() = default;
     constexpr inf_cylinder(line_t const& axis, ScalarT radius) : axis(axis), radius(radius) {}
 
+    template <class OtherT, class OtherTraitsT>
+    constexpr inf_cylinder(inf_cylinder<D, OtherT, OtherTraitsT> const& v) : axis(v.axis), radius(v.radius)
+    {
+    }
+
     [[nodiscard]] bool operator==(inf_cylinder const& rhs) const { return axis == rhs.axis && radius == rhs.radius; }
     [[nodiscard]] bool operator!=(inf_cylinder const& rhs) const { return !operator==(rhs); }
 };

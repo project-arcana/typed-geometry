@@ -60,6 +60,11 @@ struct halfspace
     constexpr halfspace(dir_t n, scalar_t d) : normal(n), dis(d) {}
     constexpr halfspace(dir_t n, pos_t p);
 
+    template <class OtherT>
+    constexpr halfspace(halfspace<D, OtherT> const& v) : normal(v.normal), dis(v.dis)
+    {
+    }
+
     [[nodiscard]] bool operator==(halfspace const& rhs) const { return normal == rhs.normal && dis == rhs.dis; }
     [[nodiscard]] bool operator!=(halfspace const& rhs) const { return !operator==(rhs); }
 };

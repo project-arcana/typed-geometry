@@ -55,6 +55,11 @@ struct line
     constexpr line() = default;
     constexpr line(pos_t p, dir_t dir) : pos(p), dir(dir) {}
 
+    template <class OtherT>
+    constexpr line(line<D, OtherT> const& v) : pos(v.pos), dir(v.dir)
+    {
+    }
+
     static constexpr line from_points(pos_t a, pos_t b);
 
     [[nodiscard]] constexpr pos_t operator[](ScalarT t) const;

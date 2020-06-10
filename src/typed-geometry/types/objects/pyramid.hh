@@ -46,6 +46,11 @@ struct pyramid
     constexpr pyramid() = default;
     constexpr pyramid(base_t const& base, scalar_t height) : base(base), height(height) {}
 
+    template <class OtherT, class OtherTraitsT>
+    constexpr pyramid(pyramid<OtherT, OtherTraitsT> const& v) : base(v.base), height(v.height)
+    {
+    }
+
     [[nodiscard]] bool operator==(pyramid const& rhs) const { return base == rhs.base && height == rhs.height; }
     [[nodiscard]] bool operator!=(pyramid const& rhs) const { return !operator==(rhs); }
 };
