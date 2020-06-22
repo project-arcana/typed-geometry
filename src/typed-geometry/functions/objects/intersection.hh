@@ -540,6 +540,14 @@ template <class ScalarT>
     return {};
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> intersection(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
+{
+    auto M = tg::mat<2, 2, ScalarT>::from_cols(l0.dir, -l1.dir);
+    auto t = inverse(M) * (l1.pos - l0.pos);
+    return l0[t.x];
+}
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<aabb<D, ScalarT>> intersection(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
 {
