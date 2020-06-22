@@ -37,6 +37,7 @@ struct quadric<2, ScalarT>
     using scalar_t = ScalarT;
     using vec_t = tg::vec<2, ScalarT>;
     using pos_t = tg::pos<2, ScalarT>;
+    using mat_t = tg::mat<2, 2, ScalarT>;
 
     // x^T A x - 2 b^T x + c
 public:
@@ -51,6 +52,18 @@ public:
 
 public:
     constexpr quadric() = default;
+
+    static constexpr quadric from_coefficients(mat_t const& A, vec_t const& b, scalar_t c)
+    {
+        quadric q;
+        q.A00 = A[0][0];
+        q.A01 = A[0][1];
+        q.A11 = A[1][1];
+        q.b0 = b[0];
+        q.b1 = b[1];
+        q.c = c;
+        return q;
+    }
 
     // TODO: constexpr explicit quadric(mat<3, 3, ScalarT> const& m);
     // TODO: constexpr explicit operator mat<3, 3, ScalarT>() const;

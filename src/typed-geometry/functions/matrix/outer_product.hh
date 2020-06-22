@@ -41,15 +41,10 @@ template <class ScalarT>
 }
 
 template <class T>
-tg::mat<1, 1, T> self_outer_product(tg::vec<2, T> const& v)
+tg::mat<1, 1, T> self_outer_product(tg::vec<1, T> const& v)
 {
-    auto const a = v.x;
-    auto const b = v.y;
-
-    tg::mat<2, 2, T> M;
-
-    M[0][0] = a * a;
-
+    tg::mat<1, 1, T> M;
+    M[0][0] = v[0] * v[0];
     return M;
 }
 template <class T>
