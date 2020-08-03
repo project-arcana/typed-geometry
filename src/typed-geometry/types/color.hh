@@ -99,7 +99,7 @@ const color<4, T> color<4, T>::magenta = {T(1), T(0), T(1)};
 template <class T>
 const color<4, T> color<4, T>::yellow = {T(1), T(1), T(0)};
 template <class T>
-const color<4, T> color<4, T>::transparent = {T(0), T(0), T(0), T(1)};
+const color<4, T> color<4, T>::transparent = {T(0), T(0), T(0), T(0)};
 
 // comparison operators
 TG_IMPL_DEFINE_REDUCTION_OP_BINARY(color, color, bool, operator==, &&, ==);
