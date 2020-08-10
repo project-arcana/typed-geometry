@@ -91,6 +91,7 @@ private:
 
 
 // ====================================== Default Implementations ======================================
+// TODO: intersection_parameter from intersection_parameters
 
 // returns whether two objects intersect
 template <class A, class B>
@@ -517,35 +518,50 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<tg::pos<2, ScalarT>> intersection(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
+[[nodiscard]] constexpr optional<pair<ScalarT, ScalarT>> intersection_parameters(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
 {
     /// https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
-    auto const denominator
-        = (seg_0.pos0.x - seg_0.pos1.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_0.pos1.y) * (seg_1.pos0.x - seg_1.pos1.x);
+    auto const denom = (seg_0.pos0.x - seg_0.pos1.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_0.pos1.y) * (seg_1.pos0.x - seg_1.pos1.x);
 
     // todo: might want to check == 0 with an epsilon corridor
     // todo: colinear line segments can still intersect in a point or a line segment.
     //       This might require api changes, as either a point or a line segment can be returned!
     //       Possible solution: return a segment where pos0 == pos1
-    if (denominator == ScalarT(0))
+    if (denom == ScalarT(0))
         return {}; // colinear
 
-    auto const numerator = (seg_0.pos0.x - seg_1.pos0.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_1.pos0.y) * (seg_1.pos0.x - seg_1.pos1.x);
-    auto const t = numerator / denominator;
-    if (ScalarT(0) <= t && t <= ScalarT(1))
-    {
-        // intersection
-        return seg_0.pos0 + t * (seg_0.pos1 - seg_0.pos0);
-    }
+    auto const num0 = (seg_0.pos0.x - seg_1.pos0.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_1.pos0.y) * (seg_1.pos0.x - seg_1.pos1.x);
+    auto const num1 = (seg_0.pos0.x - seg_0.pos1.x) * (seg_0.pos0.y - seg_1.pos0.y) - (seg_0.pos0.y - seg_0.pos1.y) * (seg_0.pos0.x - seg_1.pos0.x);
+    auto const t = num0 / denom;
+    auto const u = -num1 / denom;
+    if (ScalarT(0) <= t && t <= ScalarT(1) && ScalarT(0) <= u && u <= ScalarT(1))
+        return pair<ScalarT, ScalarT>{t, u};
     return {};
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> intersection(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
+[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
+{
+    auto ip = intersection_parameters(seg_0, seg_1);
+    if (ip.has_value())
+        return ip.value().first;
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT intersection_parameter(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
 {
     auto M = tg::mat<2, 2, ScalarT>::from_cols(l0.dir, -l1.dir);
     auto t = inverse(M) * (l1.pos - l0.pos);
-    return l0[t.x];
+    return t.x;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pair<ScalarT, ScalarT> intersection_parameters(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
+{
+    auto M = tg::mat<2, 2, ScalarT>::from_cols(l0.dir, -l1.dir);
+    auto t = inverse(M) * (l1.pos - l0.pos);
+    return {t.x, t.y};
 }
 
 template <int D, class ScalarT>
@@ -813,6 +829,116 @@ template <class ScalarT>
 }
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(aabb<2, ScalarT> const& a, triangle<2, ScalarT> const& b)
+{
+    return intersects(b, a);
+}
+
+// NOTE: does NOT work for integer objects
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& tri_in, aabb<3, ScalarT> const& bb_in)
+{
+    using pos_t = pos<3, ScalarT>;
+    using vec_t = vec<3, ScalarT>;
+
+    auto const center = (bb_in.max + bb_in.min) / ScalarT(2);
+    auto const amin = pos_t(bb_in.min - center);
+    auto const amax = pos_t(bb_in.max - center);
+    auto const bb = aabb<3, ScalarT>(amin, amax);
+
+    auto const p0 = pos_t(tri_in.pos0 - center);
+    auto const p1 = pos_t(tri_in.pos1 - center);
+    auto const p2 = pos_t(tri_in.pos2 - center);
+
+    // early out: AABB vs tri AABB
+    auto tri_aabb = aabb_of(p0, p1, p2);
+    if (tri_aabb.max.x < amin.x || tri_aabb.max.y < amin.y || tri_aabb.max.z < amin.z || //
+        tri_aabb.min.x > amax.x || tri_aabb.min.y > amax.y || tri_aabb.min.z > amax.z)
+        return false;
+
+    auto const proper_contains = [](aabb<3, ScalarT> const& b, pos_t const& p) {
+        return b.min.x < p.x && p.x < b.max.x && //
+               b.min.y < p.y && p.y < b.max.y && //
+               b.min.z < p.z && p.z < b.max.z;
+    };
+
+    auto const contains_p0 = proper_contains(bb, p0);
+    auto const contains_p1 = proper_contains(bb, p1);
+    auto const contains_p2 = proper_contains(bb, p2);
+
+    // early in: tri points vs AABB
+    if (contains_p0 || contains_p1 || contains_p2)
+        return true;
+
+    // get adjusted tri base plane
+    auto plane = tg::plane<3, ScalarT>(normal(tri_in), p0);
+
+    // fast plane / AABB test
+    {
+        auto pn = plane.normal;
+        auto bn = abs(pn.x * amax.x) + abs(pn.y * amax.y) + abs(pn.z * amax.z);
+
+        // min dis: d - bn
+        if (bn < -plane.dis)
+            return false;
+
+        // max dis: d + bn
+        if (-plane.dis < -bn)
+            return false;
+    }
+
+    // 9 axis SAT test
+    {
+        auto const is_seperating = [amax](vec<3, ScalarT> const& n, pos_t const& tp0, pos_t const& tp1) -> bool {
+            if (tg::is_zero_vector(n))
+                return false; // not a real candidate axis
+
+            // fast point / AABB separation test
+            auto bn = abs(n.x * amax.x) + abs(n.y * amax.y) + abs(n.z * amax.z);
+
+            auto tn0 = dot(n, tp0);
+            auto tn1 = dot(n, tp1);
+
+            auto tmin = min(tn0, tn1);
+            auto tmax = max(tn0, tn1);
+
+            auto bmin = -bn;
+            auto bmax = bn;
+
+            if (tmax < bmin)
+                return true;
+            if (bmax < tmin)
+                return true;
+
+            return false;
+        };
+
+        if (is_seperating(cross(p1 - p0, vec_t::unit_x), p0, p2))
+            return false;
+        if (is_seperating(cross(p1 - p0, vec_t::unit_y), p0, p2))
+            return false;
+        if (is_seperating(cross(p1 - p0, vec_t::unit_z), p0, p2))
+            return false;
+
+        if (is_seperating(cross(p2 - p0, vec_t::unit_x), p0, p1))
+            return false;
+        if (is_seperating(cross(p2 - p0, vec_t::unit_y), p0, p1))
+            return false;
+        if (is_seperating(cross(p2 - p0, vec_t::unit_z), p0, p1))
+            return false;
+
+        if (is_seperating(cross(p1 - p2, vec_t::unit_x), p0, p2))
+            return false;
+        if (is_seperating(cross(p1 - p2, vec_t::unit_y), p0, p2))
+            return false;
+        if (is_seperating(cross(p1 - p2, vec_t::unit_z), p0, p2))
+            return false;
+    }
+
+    // found no separating axis? -> intersection
+    return true;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(aabb<3, ScalarT> const& a, triangle<3, ScalarT> const& b)
 {
     return intersects(b, a);
 }

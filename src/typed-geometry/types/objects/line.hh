@@ -60,6 +60,9 @@ struct line
     {
     }
 
+    /// constructs a line such that
+    /// pos = a
+    /// dir = normalize(b - a)
     static constexpr line from_points(pos_t a, pos_t b);
 
     [[nodiscard]] constexpr pos_t operator[](ScalarT t) const;
