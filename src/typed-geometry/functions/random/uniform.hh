@@ -475,24 +475,20 @@ template <int D, class ScalarT, class Rng>
     else
         return h.center - v;
 }
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, hemisphere_boundary<3, ScalarT> const& h)
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere_boundary<D, ScalarT> const& h)
 {
+    ScalarT ratio;
+    if constexpr (D == 2)
+        ratio = ScalarT(2) / (ScalarT(2) + pi_scalar<ScalarT>);
+    if constexpr (D == 3)
+        ratio = ScalarT(1) / ScalarT(3);
+
     // round area = 2 * pi * r^2, flat area = pi * r^2 => ratio 2 : 1
-    if (detail::uniform01<ScalarT>(rng) >= ScalarT(1) / ScalarT(3))
+    if (detail::uniform01<ScalarT>(rng) >= ratio)
         return uniform(rng, boundary_no_caps_of(h));
 
-    return uniform(rng, disk<3, ScalarT>(h.center, h.radius, h.normal));
-}
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, hemisphere_boundary<2, ScalarT> const& h)
-{
-    // round length = pi * r, flat length = 2 * r => ratio pi : 2
-    if (detail::uniform01<ScalarT>(rng) >= ScalarT(2) / (ScalarT(2) + pi_scalar<ScalarT>))
-        return uniform(rng, boundary_no_caps_of(h));
-
-    auto v = perpendicular(h.normal) * h.radius;
-    return uniform(rng, segment<2, ScalarT>(h.center - v, h.center + v));
+    return uniform(rng, caps_of(h));
 }
 
 template <class BaseT, class Rng, class ScalarT = typename BaseT::scalar_t>

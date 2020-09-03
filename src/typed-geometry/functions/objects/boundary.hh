@@ -104,4 +104,39 @@ template <class BaseT>
     return v;
 }
 
+// === only caps versions ===
+
+template <class ScalarT>
+[[nodiscard]] constexpr disk<3, ScalarT> caps_of(hemisphere<3, ScalarT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+template <class ScalarT>
+[[nodiscard]] constexpr segment<2, ScalarT> caps_of(hemisphere<2, ScalarT> const& v)
+{
+    auto half = perpendicular(v.normal) * v.radius;
+    return {v.center - half, v.center + half};
+}
+template <class ScalarT>
+[[nodiscard]] constexpr disk<3, ScalarT> caps_of(hemisphere_boundary<3, ScalarT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+template <class ScalarT>
+[[nodiscard]] constexpr segment<2, ScalarT> caps_of(hemisphere_boundary<2, ScalarT> const& v)
+{
+    auto half = perpendicular(v.normal) * v.radius;
+    return {v.center - half, v.center + half};
+}
+template <class ScalarT>
+[[nodiscard]] constexpr circle<3, ScalarT> caps_of(hemisphere_boundary_no_caps<3, ScalarT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+template <class ScalarT>
+[[nodiscard]] constexpr sphere_boundary<1, ScalarT, 2> caps_of(hemisphere_boundary_no_caps<2, ScalarT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+
 }

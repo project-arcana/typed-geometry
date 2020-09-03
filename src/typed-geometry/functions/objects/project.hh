@@ -251,11 +251,26 @@ template <class ScalarT>
     return c.center + dir * c.radius;
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, sphere<1, ScalarT, 2> const& s)
+{
+    auto v = perpendicular(s.normal) * s.radius;
+    auto seg = segment<2, ScalarT>(s.center - v, s.center + v); // sphere1in2 is the same as segment2
+    return project(p, seg);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, sphere_boundary<1, ScalarT, 2> const& s)
+{
+    auto v = perpendicular(s.normal) * s.radius;
+    return dot(p - s.center, v) >= ScalarT(0) ? s.center + v : s.center - v;
+}
+
 
 // ============== project to hemisphere ==============
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hemisphere<D, ScalarT> const& h)
 {
     auto toP = p - h.center;
     if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
@@ -266,43 +281,13 @@ template <class ScalarT>
             return h.center + normalize(toP) * h.radius;
     }
     // On the flat side of the hemisphere
-    return project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h)
-{
-    auto toP = p - h.center;
-    if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
-    {
-        if (length_sqr(toP) <= h.radius * h.radius)
-            return p;
-        else
-            return h.center + normalize(toP) * h.radius;
-    }
-
-    // On the flat side of the hemisphere
-    auto v = perpendicular(h.normal) * h.radius;
-    return project(p, segment<2, ScalarT>(h.center - v, h.center + v));
+    return project(p, caps_of(h));
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere_boundary<3, ScalarT> const& h)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hemisphere_boundary<D, ScalarT> const& h)
 {
-    auto closestOnFlat = project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
-
-    auto dirToP = tg::normalize_safe(p - h.center);
-    if (dot(dirToP, h.normal) > ScalarT(0))
-    {
-        auto closestOnRound = h.center + dirToP * h.radius;
-        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
-    }
-    return closestOnFlat;
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere_boundary<2, ScalarT> const& h) // boundary, including caps
-{
-    auto v = perpendicular(h.normal) * h.radius;
-    auto closestOnFlat = project(p, segment<2, ScalarT>(h.center - v, h.center + v));
+    auto closestOnFlat = project(p, caps_of(h));
 
     auto dirToP = tg::normalize_safe(p - h.center);
     if (dot(dirToP, h.normal) > ScalarT(0))
@@ -313,24 +298,14 @@ template <class ScalarT>
     return closestOnFlat;
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere_boundary_no_caps<3, ScalarT> const& h)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hemisphere_boundary_no_caps<D, ScalarT> const& h)
 {
     auto dirToP = tg::normalize_safe(p - h.center);
     if (dot(dirToP, h.normal) > ScalarT(0))
         return h.center + dirToP * h.radius;
 
-    return project(p, circle<3, ScalarT>(h.center, h.radius, h.normal));
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere_boundary_no_caps<2, ScalarT> const& h)
-{
-    auto dirToP = tg::normalize_safe(p - h.center);
-    if (dot(dirToP, h.normal) > ScalarT(0))
-        return h.center + dirToP * h.radius;
-
-    auto v = perpendicular(h.normal) * h.radius;
-    return dot(dirToP, v) >= ScalarT(0) ? h.center + v : h.center - v;
+    return project(p, caps_of(h));
 }
 
 
