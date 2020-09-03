@@ -318,6 +318,32 @@ template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class Rng>
     return b.center + b.half_extents * uniform_vec(rng, aabb<ObjectD, ScalarT, TraitsT>::minus_one_to_one);
 }
 
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere_boundary<D, ScalarT> const& s)
+{
+    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length_sqr(p);
+        if (l > ScalarT(0) && l <= ScalarT(1))
+            return s.center + p * (s.radius / sqrt(l));
+    }
+}
+
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& b)
+{
+    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length_sqr(p);
+        if (l <= ScalarT(1))
+            return b.center + p * b.radius;
+    }
+}
+
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, sphere_boundary<2, ScalarT> const& c)
 {
@@ -339,6 +365,19 @@ template <class ScalarT, class Rng>
     auto x = any_normal(d.normal);
     auto y = cross(d.normal, x);
     return d.center + direction.x * x + direction.y * y;
+}
+
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, sphere<1, ScalarT, 2> const& s)
+{
+    auto v = perpendicular(s.normal) * s.radius;
+    return mix(s.center - v, s.center + v, detail::uniform01<ScalarT>(rng));
+}
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, sphere_boundary<1, ScalarT, 2> const& s)
+{
+    auto v = perpendicular(s.normal) * s.radius;
+    return uniform(rng) ? s.center + v : s.center - v;
 }
 
 template <class ScalarT, class Rng>
@@ -412,50 +451,6 @@ template <class ScalarT, class Rng>
 }
 
 template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere_boundary<D, ScalarT> const& s)
-{
-    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
-    while (true)
-    {
-        auto p = uniform_vec(rng, ub);
-        auto l = length_sqr(p);
-        if (l > ScalarT(0) && l <= ScalarT(1))
-            return s.center + p * (s.radius / sqrt(l));
-    }
-}
-
-template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& b)
-{
-    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
-    while (true)
-    {
-        auto p = uniform_vec(rng, ub);
-        auto l = length_sqr(p);
-        if (l <= ScalarT(1))
-            return b.center + p * b.radius;
-    }
-}
-
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary_no_caps<3, ScalarT> const& c) // boundary, no_caps (not on base)
-{
-    auto ub = tg::aabb<2, ScalarT>::minus_one_to_one;
-    while (true)
-    {
-        auto p = uniform_vec(rng, ub);
-        auto l = length_sqr(p);
-        if (l <= ScalarT(1))
-        {
-            p *= c.base.radius;
-            auto x = any_normal(c.base.normal);
-            auto y = cross(c.base.normal, x);
-            return c.base.center + p.x * x + p.y * y + (ScalarT(1) - sqrt(l)) * c.base.normal * c.height;
-        }
-    }
-}
-
-template <int D, class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> const& h)
 {
     auto p = uniform(rng, sphere<D, ScalarT>(h.center, h.radius));
@@ -489,6 +484,24 @@ template <int D, class ScalarT, class Rng>
         return uniform(rng, boundary_no_caps_of(h));
 
     return uniform(rng, caps_of(h));
+}
+
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary_no_caps<3, ScalarT> const& c) // boundary, no_caps (not on base)
+{
+    auto ub = tg::aabb<2, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length_sqr(p);
+        if (l <= ScalarT(1))
+        {
+            p *= c.base.radius;
+            auto x = any_normal(c.base.normal);
+            auto y = cross(c.base.normal, x);
+            return c.base.center + p.x * x + p.y * y + (ScalarT(1) - sqrt(l)) * c.base.normal * c.height;
+        }
+    }
 }
 
 template <class BaseT, class Rng, class ScalarT = typename BaseT::scalar_t>

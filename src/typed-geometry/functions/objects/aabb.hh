@@ -34,6 +34,13 @@ template <int D, class ScalarT, class TraitsT>
 }
 
 template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<2, ScalarT> aabb_of(sphere<1, ScalarT, 2, TraitsT> const& s)
+{
+    const auto v = perpendicular(s.normal) * s.radius;
+    return aabb_of(s.center - v, s.center + v);
+}
+
+template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(sphere<2, ScalarT, 3, TraitsT> const& s)
 {
     // See http://www.iquilezles.org/www/articles/diskbbox/diskbbox.htm
@@ -56,7 +63,7 @@ template <class ScalarT, class TraitsT>
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(hemisphere<3, ScalarT, TraitsT> const& h)
 {
-    const auto disk = sphere<2, ScalarT, 3>(h.center, h.radius, h.normal);
+    const auto disk = caps_of(h);
     const auto sphereCorner = h.center + h.radius * sign(vec(h.normal));
     return aabb_of(disk, sphereCorner);
 }
