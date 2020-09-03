@@ -42,7 +42,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     if (eps > ScalarT(0))
-        return distance_sqr(b, o) < eps * eps;
+        return distance_sqr(b, o) <= pow2(eps);
     return b == o;
 }
 
@@ -166,7 +166,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto r = s.radius + eps;
-    return distance_sqr(s.center, p) <= r * r;
+    return distance_sqr(s.center, p) <= pow2(r);
 }
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(sphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
@@ -246,8 +246,7 @@ template <class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cylinder<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
-    auto r = c.radius + eps;
-    return distance_sqr(p, c.axis) < r * r;
+    return distance_sqr(p, c.axis) <= pow2(c.radius + eps);
 }
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cylinder_boundary<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
