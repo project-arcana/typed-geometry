@@ -266,23 +266,8 @@ template <class ScalarT>
             return h.center + normalize(toP) * h.radius;
     }
     // On the flat side of the hemisphere
-    return project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
+    return project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
 }
-
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere_boundary<3, ScalarT> const& h)
-{
-    auto closestOnFlat = project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
-
-    auto dirToP = tg::normalize_safe(p - h.center);
-    if (dot(dirToP, h.normal) >= ScalarT(0))
-    {
-        auto closestOnRound = h.center + dirToP * h.radius;
-        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
-    }
-    return closestOnFlat;
-}
-
 template <class ScalarT>
 [[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h)
 {
@@ -301,18 +286,51 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere_boundary<3, ScalarT> const& h)
+{
+    auto closestOnFlat = project(p, disk<3, ScalarT>(h.center, h.radius, h.normal));
+
+    auto dirToP = tg::normalize_safe(p - h.center);
+    if (dot(dirToP, h.normal) > ScalarT(0))
+    {
+        auto closestOnRound = h.center + dirToP * h.radius;
+        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
+    }
+    return closestOnFlat;
+}
+template <class ScalarT>
 [[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere_boundary<2, ScalarT> const& h) // boundary, including caps
 {
     auto v = perpendicular(h.normal) * h.radius;
     auto closestOnFlat = project(p, segment<2, ScalarT>(h.center - v, h.center + v));
 
     auto dirToP = tg::normalize_safe(p - h.center);
-    if (dot(dirToP, h.normal) >= ScalarT(0))
+    if (dot(dirToP, h.normal) > ScalarT(0))
     {
         auto closestOnRound = h.center + dirToP * h.radius;
         return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
     }
     return closestOnFlat;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere_boundary_no_caps<3, ScalarT> const& h)
+{
+    auto dirToP = tg::normalize_safe(p - h.center);
+    if (dot(dirToP, h.normal) > ScalarT(0))
+        return h.center + dirToP * h.radius;
+
+    return project(p, circle<3, ScalarT>(h.center, h.radius, h.normal));
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere_boundary_no_caps<2, ScalarT> const& h)
+{
+    auto dirToP = tg::normalize_safe(p - h.center);
+    if (dot(dirToP, h.normal) > ScalarT(0))
+        return h.center + dirToP * h.radius;
+
+    auto v = perpendicular(h.normal) * h.radius;
+    return dot(dirToP, v) >= ScalarT(0) ? h.center + v : h.center - v;
 }
 
 

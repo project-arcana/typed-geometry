@@ -175,6 +175,27 @@ template <int D, class ScalarT>
     return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
 }
 
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(hemisphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto c = s.center - eps * s.normal;
+    if (dot(s.normal, p - c) < 0)
+        return false;
+
+    return distance_sqr(s.center, p) <= pow2(s.radius + eps);
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(hemisphere_boundary_no_caps<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto c = s.center - eps * s.normal;
+    if (dot(s.normal, p - c) < 0)
+        return false;
+
+    auto d2 = distance_sqr(s.center, p);
+    return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
+}
+// contains(hemisphere_boundary, ...) is not explicitly implemented here because it is not better than the default contains->distance->project implementation
+
 // Note that eps is used to compare 2D areas, not 1D lengths
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
