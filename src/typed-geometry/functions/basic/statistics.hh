@@ -36,8 +36,9 @@ template <class T = void, class RangeT, class TransformF, class ReduceF>
     using R = same_or<T, element_type<RangeT>>;
 
     auto it = tg::begin(values);
+    using U = std::decay_t<decltype(f(t(R(*it)), t(R(*it))))>;
     auto const e = tg::end(values);
-    auto r = t(R(*it));
+    U r = t(R(*it));
     it++;
     while (it != e)
     {
@@ -126,7 +127,21 @@ template <class T = void, class RangeT = void, class TransformT = identity_fun>
 [[nodiscard]] constexpr auto arithmetic_mean(RangeT const& values, TransformT&& transform = {})
 {
     auto const s = sum<T>(values, transform);
-    return s / static_cast<decltype(s)>(tg::container_size(values));
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#endif
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4244) // possible loss of data
+#endif
+    return s / tg::container_size(values);
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 }
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>

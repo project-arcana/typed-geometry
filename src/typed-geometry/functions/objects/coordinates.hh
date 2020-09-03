@@ -3,7 +3,9 @@
 #include <typed-geometry/detail/operators/ops_vec.hh>
 #include <typed-geometry/types/array.hh>
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/line.hh>
+#include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/triangle.hh>
@@ -63,6 +65,18 @@ template <int D, class ScalarT>
     auto d = s.pos1 - s.pos0;
     auto t = dot(p - s.pos0, d) / dot(d, d);
     return t;
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr ScalarT coordinates(ray<D, ScalarT> const& r, pos<D, ScalarT> const& p)
+{
+    return dot(p - r.origin, r.dir);
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr ScalarT coordinates(line<D, ScalarT> const& l, pos<D, ScalarT> const& p)
+{
+    return dot(p - l.pos, l.dir);
 }
 
 template <int D, class ScalarT, class TraitsT>

@@ -3,6 +3,7 @@
 #include <typed-geometry/types/angle.hh>
 #include <typed-geometry/types/mat.hh>
 
+#include <typed-geometry/detail/operators/ops_angle.hh>
 #include <typed-geometry/feature/assert.hh>
 #include <typed-geometry/functions/basic/scalar_math.hh>
 

@@ -53,6 +53,11 @@ struct ray
     constexpr ray() = default;
     constexpr ray(pos_t origin, dir_t dir) : origin(origin), dir(dir) {}
 
+    template <class OtherT>
+    constexpr ray(ray<D, OtherT> const& v) : origin(v.origin), dir(v.dir)
+    {
+    }
+
     [[nodiscard]] constexpr pos_t operator[](ScalarT t) const;
 
     [[nodiscard]] bool operator==(ray const& rhs) const { return origin == rhs.origin && dir == rhs.dir; }

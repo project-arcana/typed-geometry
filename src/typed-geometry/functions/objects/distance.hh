@@ -5,6 +5,8 @@
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/detail/tg_traits.hh>
 #include <typed-geometry/functions/basic/scalar_math.hh>
+#include <typed-geometry/functions/objects/edges.hh>
+#include <typed-geometry/functions/objects/vertices.hh>
 #include <typed-geometry/functions/vector/distance.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
@@ -14,6 +16,7 @@
 #include <typed-geometry/types/vec.hh>
 
 #include "closest_points.hh"
+#include "intersection.hh"
 
 namespace tg
 {
@@ -50,21 +53,100 @@ template <class Obj>
 
 // signed distance is positive if p lies above pl, 0 if it lies on the plane and negative if below pl
 template <int D, class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> signed_distance(pos<3, ScalarT> const& p, plane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr fractional_result<ScalarT> signed_distance(pos<D, ScalarT> const& p, plane<D, ScalarT> const& pl)
 {
     return dot(p - pos<D, ScalarT>::zero, pl.normal) - pl.dis;
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> distance(pos<3, ScalarT> const& p, plane<D, ScalarT> const& pl)
+[[nodiscard]] constexpr fractional_result<ScalarT> distance(pos<D, ScalarT> const& p, plane<D, ScalarT> const& pl)
 {
     return abs(signed_distance(p, pl));
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr auto signed_distance(pos<D, ScalarT> const& p, sphere_boundary<D, ScalarT> const& s) -> decltype(distance(p, s.center) - s.radius)
+[[nodiscard]] constexpr fractional_result<ScalarT> signed_distance(pos<D, ScalarT> const& p, sphere_boundary<D, ScalarT> const& s)
 {
     return distance(p, s.center) - s.radius;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance(line<3, ScalarT> const& l0, line<3, ScalarT> const& l1)
+{
+    auto n = cross(l0.dir, l1.dir);
+    return abs(dot(l0.pos - l1.pos, n) / length(n));
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance(segment<2, ScalarT> const& s0, segment<2, ScalarT> const& s1)
+{
+    auto l0 = tg::line<2, ScalarT>::from_points(s0.pos0, s0.pos1);
+    auto l1 = tg::line<2, ScalarT>::from_points(s1.pos0, s1.pos1);
+
+    auto sl0 = distance(s0.pos0, s0.pos1);
+    auto sl1 = distance(s1.pos0, s1.pos1);
+
+    auto [t0, t1] = intersection_parameters(l0, l1);
+
+    if (ScalarT(0) <= t0 && t0 <= ScalarT(sl0) && //
+        ScalarT(0) <= t1 && t1 <= ScalarT(sl1))
+        return ScalarT(0); // intersects
+
+    auto p0 = t0 < ScalarT(0) ? s0.pos0 : s0.pos1;
+    auto p1 = t1 < ScalarT(0) ? s1.pos0 : s1.pos1;
+
+    return min(distance(p0, s1), distance(p1, s0));
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance(segment<3, ScalarT> const& s0, segment<3, ScalarT> const& s1)
+{
+    auto l0 = tg::line<3, ScalarT>::from_points(s0.pos0, s0.pos1);
+    auto l1 = tg::line<3, ScalarT>::from_points(s1.pos0, s1.pos1);
+
+    auto sl0 = distance(s0.pos0, s0.pos1);
+    auto sl1 = distance(s1.pos0, s1.pos1);
+
+    auto [t0, t1] = closest_points_parameters(l0, l1);
+
+    if (ScalarT(0) <= t0 && t0 <= ScalarT(sl0) && //
+        ScalarT(0) <= t1 && t1 <= ScalarT(sl1))
+        return distance(l0[t0], l1[t1]); // closest points is inside segments
+
+    auto p0 = t0 < ScalarT(0) ? s0.pos0 : s0.pos1;
+    auto p1 = t1 < ScalarT(0) ? s1.pos0 : s1.pos1;
+
+    return min(distance(p0, s1), distance(p1, s0));
+}
+
+// TODO: use GJK or something?
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance(aabb<3, ScalarT> const& bb, triangle<3, ScalarT> const& t)
+{
+    if (intersects(bb, t))
+        return fractional_result<ScalarT>(0);
+
+    auto d = tg::max<ScalarT>();
+
+    // tri vertices to bb
+    for (auto p : vertices(t))
+        d = min(d, distance(bb, p));
+
+    // bb vertices to tri
+    for (auto p : vertices(bb))
+        d = min(d, distance(t, p));
+
+    // edges to edges
+    for (auto e0 : edges(t))
+        for (auto e1 : edges(bb))
+            d = min(d, distance(e0, e1));
+
+    return d;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance(triangle<3, ScalarT> const& t, aabb<3, ScalarT> const& bb)
+{
+    return distance(bb, t);
 }
 
 

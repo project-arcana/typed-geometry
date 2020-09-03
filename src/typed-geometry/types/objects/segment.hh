@@ -52,6 +52,23 @@ struct segment
     constexpr segment() = default;
     constexpr segment(pos_t p0, pos_t p1) : pos0(p0), pos1(p1) {}
 
+    template <class OtherT>
+    constexpr segment(segment<D, OtherT> const& v) : pos0(v.pos0), pos1(v.pos1)
+    {
+    }
+
+    template <class Range, class = std::enable_if_t<tg::is_range<Range, pos_t>>>
+    explicit constexpr segment(Range&& r)
+    {
+        auto it = tg::begin(r);
+        auto end = tg::end(r);
+        TG_CONTRACT(it != end);
+        pos0 = pos_t(*it++);
+        TG_CONTRACT(it != end);
+        pos1 = pos_t(*it++);
+        TG_CONTRACT(!(it != end));
+    }
+
     [[nodiscard]] constexpr pos_t operator[](ScalarT t) const;
 
     [[nodiscard]] bool operator==(segment const& rhs) const { return pos0 == rhs.pos0 && pos1 == rhs.pos1; }

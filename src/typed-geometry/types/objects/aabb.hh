@@ -66,6 +66,11 @@ struct aabb
             TG_CONTRACT(min[i] <= max[i]);
     }
 
+    template <class OtherT, class OtherTraitsT>
+    constexpr aabb(aabb<D, OtherT, OtherTraitsT> const& v) : min(v.min), max(v.max)
+    {
+    }
+
     template <class OtherT>
     constexpr aabb(pos<D, OtherT> min, pos<D, OtherT> max) : aabb(pos_t(min), pos_t(max))
     {

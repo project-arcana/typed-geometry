@@ -13,6 +13,7 @@
 #include "project.hh"
 
 // closest_points(a, b) returns points {p_a, p_b} such that contains(a, p_a) and contains(b, p_b) and |p_a - p_b| is minimal
+// closest_points_parameters(a, b) return parameters {t_a, t_b} such that {a[t_a], b[t_a]} are the closest points
 
 namespace tg
 {
@@ -38,7 +39,22 @@ template <int D, class ScalarT, class ObjectT>
 
 // =========== Object Implementations ===========
 
-// TODO
+template <class ScalarT>
+[[nodiscard]] constexpr pair<ScalarT, ScalarT> closest_points_parameters(line<3, ScalarT> const& l0, line<3, ScalarT> const& l1)
+{
+    auto d0d1 = dot(l0.dir, l1.dir);
+    auto b0 = dot(l1.pos - l0.pos, l0.dir);
+    auto b1 = dot(l1.pos - l0.pos, l1.dir);
+    auto [t0, t1] = inverse(tg::mat<2, 2, ScalarT>::from_cols({1, d0d1}, {-d0d1, -1})) * tg::vec2(b0, b1);
+    return {t0, t1};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pair<pos<3, ScalarT>, pos<3, ScalarT>> closest_points(line<3, ScalarT> const& l0, line<3, ScalarT> const& l1)
+{
+    auto [t0, t1] = closest_points_parameters(l0, l1);
+    return {l0[t0], l1[t1]};
+}
 
 
 // =========== Other Implementations ===========

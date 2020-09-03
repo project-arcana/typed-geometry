@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 namespace tg
 {
 using u8 = unsigned char;
@@ -54,9 +56,26 @@ struct pair
 {
     A first;
     B second;
+
+    template <class C, class D>
+    constexpr bool operator==(pair<C, D> const& rhs) const noexcept
+    {
+        return first == rhs.first && second == rhs.second;
+    }
+    template <class C, class D>
+    constexpr bool operator!=(pair<C, D> const& rhs) const noexcept
+    {
+        return first != rhs.first || second != rhs.second;
+    }
 };
 template <class A, class B>
 pair(A const&, B const&)->pair<A, B>;
+template <class I, class A, class B>
+constexpr void introspect(I&& i, pair<A, B>& p)
+{
+    i(p.first, "first");
+    i(p.second, "second");
+}
 
 template <class A, class B, class C>
 struct triple
@@ -192,10 +211,43 @@ template <class Container, class ElementT>
 auto container_test(Container* c) -> decltype(static_cast<ElementT*>(c->data()), static_cast<decltype(sizeof(0))>(c->size()), 0);
 template <class Container, class ElementT>
 char container_test(...);
+
+template <class Container, class ElementT, class = void>
+struct is_range_t : false_type
+{
+};
+template <class ElementT, size_t N>
+struct is_range_t<ElementT[N], ElementT> : true_type
+{
+};
+template <class ElementT, size_t N>
+struct is_range_t<ElementT[N], ElementT const> : true_type
+{
+};
+template <class ElementT, size_t N>
+struct is_range_t<ElementT (&)[N], ElementT> : true_type
+{
+};
+template <class ElementT, size_t N>
+struct is_range_t<ElementT (&)[N], ElementT const> : true_type
+{
+};
+template <class Container, class ElementT>
+struct is_range_t<Container,
+                  ElementT,
+                  std::void_t<                                                              //
+                      decltype(static_cast<ElementT&>(*std::declval<Container>().begin())), //
+                      decltype(std::declval<Container>().end())                             //
+                      >> : std::true_type
+{
+};
 }
 
 template <class Container, class ElementT>
 static constexpr bool is_container = sizeof(detail::container_test<Container, ElementT>(nullptr)) == sizeof(int);
+
+template <class Container, class ElementT>
+static constexpr bool is_range = detail::is_range_t<Container, ElementT>::value;
 
 template <class C>
 constexpr auto begin(C& c) -> decltype(c.begin())

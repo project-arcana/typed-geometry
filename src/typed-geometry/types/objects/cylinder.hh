@@ -44,6 +44,11 @@ struct cylinder<3, ScalarT, TraitsT>
     constexpr cylinder(seg_t const& axis, scalar_t radius) : axis(axis), radius(radius) {}
     constexpr cylinder(pos_t const& p0, pos_t const& p1, scalar_t radius) : axis(p0, p1), radius(radius) {}
 
+    template <class OtherT, class OtherTraitsT>
+    constexpr cylinder(cylinder<3, OtherT, OtherTraitsT> const& v) : axis(v.axis), radius(v.radius)
+    {
+    }
+
     [[nodiscard]] bool operator==(cylinder const& rhs) const { return axis == rhs.axis && radius == rhs.radius; }
     [[nodiscard]] bool operator!=(cylinder const& rhs) const { return !operator==(rhs); }
 };

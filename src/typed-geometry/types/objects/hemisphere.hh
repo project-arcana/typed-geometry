@@ -63,6 +63,11 @@ struct hemisphere
     constexpr hemisphere() = default;
     constexpr hemisphere(pos_t const& c, ScalarT r, dir_t const& normal) : center(c), radius(r), normal(normal) {}
 
+    template <class OtherT, class OtherTraitsT>
+    constexpr hemisphere(hemisphere<D, OtherT, OtherTraitsT> const& v) : center(v.center), radius(v.radius), normal(v.normal)
+    {
+    }
+
     [[nodiscard]] bool operator==(hemisphere const& rhs) const { return center == rhs.center && radius == rhs.radius && normal == rhs.normal; }
     [[nodiscard]] bool operator!=(hemisphere const& rhs) const { return !operator==(rhs); }
 };
