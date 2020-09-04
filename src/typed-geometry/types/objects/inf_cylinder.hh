@@ -40,7 +40,7 @@ struct inf_cylinder
     constexpr inf_cylinder(line_t const& axis, ScalarT radius) : axis(axis), radius(radius) {}
 
     template <class OtherT, class OtherTraitsT>
-    constexpr inf_cylinder(inf_cylinder<D, OtherT, OtherTraitsT> const& v) : axis(v.axis), radius(v.radius)
+    explicit constexpr inf_cylinder(inf_cylinder<D, OtherT, OtherTraitsT> const& v) : axis(v.axis), radius(v.radius)
     {
     }
 

@@ -56,7 +56,7 @@ struct line
     constexpr line(pos_t p, dir_t dir) : pos(p), dir(dir) {}
 
     template <class OtherT>
-    constexpr line(line<D, OtherT> const& v) : pos(v.pos), dir(v.dir)
+    explicit constexpr line(line<D, OtherT> const& v) : pos(v.pos), dir(v.dir)
     {
     }
 

@@ -64,7 +64,7 @@ struct plane
     constexpr plane(dir_t n, pos_t p);
 
     template <class OtherT>
-    constexpr plane(plane<D, OtherT> const& v) : normal(v.normal), dis(v.dis)
+    explicit constexpr plane(plane<D, OtherT> const& v) : normal(v.normal), dis(v.dis)
     {
     }
 

@@ -102,7 +102,7 @@ struct sphere<D, ScalarT, D, TraitsT>
     constexpr sphere(pos_t c, ScalarT r) : center(c), radius(r) {}
 
     template <class OtherT, class OtherTraitsT>
-    constexpr sphere(sphere<D, OtherT, D, OtherTraitsT> const& v) : center(v.center), radius(v.radius)
+    explicit constexpr sphere(sphere<D, OtherT, D, OtherTraitsT> const& v) : center(v.center), radius(v.radius)
     {
     }
 
@@ -125,7 +125,7 @@ struct sphere<2, ScalarT, 3, TraitsT>
     constexpr sphere(pos_t c, ScalarT r, dir_t n) : center(c), radius(r), normal(n) {}
 
     template <class OtherT, class OtherTraitsT>
-    constexpr sphere(sphere<2, OtherT, 3, OtherTraitsT> const& v) : center(v.center), radius(v.radius), normal(v.normal)
+    explicit constexpr sphere(sphere<2, OtherT, 3, OtherTraitsT> const& v) : center(v.center), radius(v.radius), normal(v.normal)
     {
     }
 
@@ -148,7 +148,7 @@ struct sphere<1, ScalarT, 2, TraitsT>
     constexpr sphere(pos_t c, ScalarT r, dir_t n) : center(c), radius(r), normal(n) {}
 
     template <class OtherT, class OtherTraitsT>
-    constexpr sphere(sphere<1, OtherT, 2, OtherTraitsT> const& v) : center(v.center), radius(v.radius), normal(v.normal)
+    explicit constexpr sphere(sphere<1, OtherT, 2, OtherTraitsT> const& v) : center(v.center), radius(v.radius), normal(v.normal)
     {
     }
 

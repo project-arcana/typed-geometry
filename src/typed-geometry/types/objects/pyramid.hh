@@ -47,7 +47,7 @@ struct pyramid
     constexpr pyramid(base_t const& base, scalar_t height) : base(base), height(height) {}
 
     template <class OtherT, class OtherTraitsT>
-    constexpr pyramid(pyramid<OtherT, OtherTraitsT> const& v) : base(v.base), height(v.height)
+    explicit constexpr pyramid(pyramid<OtherT, OtherTraitsT> const& v) : base(v.base), height(v.height)
     {
     }
 

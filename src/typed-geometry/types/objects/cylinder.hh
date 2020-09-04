@@ -45,7 +45,7 @@ struct cylinder<3, ScalarT, TraitsT>
     constexpr cylinder(pos_t const& p0, pos_t const& p1, scalar_t radius) : axis(p0, p1), radius(radius) {}
 
     template <class OtherT, class OtherTraitsT>
-    constexpr cylinder(cylinder<3, OtherT, OtherTraitsT> const& v) : axis(v.axis), radius(v.radius)
+    explicit constexpr cylinder(cylinder<3, OtherT, OtherTraitsT> const& v) : axis(v.axis), radius(v.radius)
     {
     }
 
