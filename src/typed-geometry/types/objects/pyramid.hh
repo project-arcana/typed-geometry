@@ -62,5 +62,12 @@ constexpr void introspect(I&& i, pyramid<BaseT, TraitsT>& v)
     i(v.height, "height");
 }
 
-// TODO: traits
+template <class BaseT, class TraitsT>
+struct object_traits<pyramid<BaseT, TraitsT>> : detail::finite_object_traits<
+    object_traits<BaseT>::object_dimension + 1,
+    typename object_traits<BaseT>::scalar_t,
+    object_traits<BaseT>::domain_dimension,
+    TraitsT>
+{
+};
 } // namespace tg
