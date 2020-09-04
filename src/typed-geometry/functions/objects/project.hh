@@ -412,39 +412,24 @@ template <class ScalarT>
 
 // ============== project to cone ==============
 
-template <class ScalarT, class TraitsT, class = enable_if<!std::is_same<TraitsT, boundary_no_caps_tag>::value>>
+template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT, TraitsT> const& c)
-{ // enable_if is not necessary as long as project(cone_boundary_no_caps) is defined separately. But it is kept to prevent misusing the function.
-    auto closestOnBase = project(p, c.base);
-    auto apex = c.base.center + c.height * c.base.normal;
-    if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
-        return closestOnBase;
-
-    // Return closer projection
-    auto closestOnCone = project(p, inf_cone<3, ScalarT, TraitsT>(c));
-    return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone_boundary_no_caps<3, ScalarT> const& c)
 {
-    auto baseCircle = sphere_boundary<2, ScalarT, 3>(c.base.center, c.base.radius, c.base.normal);
-    auto closestOnBase = project(p, baseCircle);
+    auto closestOnBase = project(p, caps_of(c));
     auto apex = c.base.center + c.height * c.base.normal;
     if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
         return closestOnBase;
 
     // Return closer projection
-    auto infCone = inf_cone<3, ScalarT, boundary_tag>(cone<3, ScalarT, boundary_tag>(c.base, c.height));
-    auto closestOnCone = project(p, infCone);
+    auto closestOnCone = project(p, inf_of<3, ScalarT>(c));
     return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
 }
 
 
 // ============== project to inf_cone ==============
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cone<D, ScalarT> const& icone)
 {
     if (contains(icone, p))
         return p;
@@ -510,5 +495,14 @@ template <class ScalarT>
     }
     else
         return icone.apex;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, inf_cone_boundary<2, ScalarT> const& icone)
+{
+    auto ray1 = ray<2, ScalarT>(icone.apex, rotate(icone.opening_dir, icone.opening_angle / ScalarT(2)));
+    auto ray2 = ray<2, ScalarT>(icone.apex, rotate(icone.opening_dir, -icone.opening_angle / ScalarT(2)));
+    auto proj1 = project(p, ray1);
+    auto proj2 = project(p, ray2);
+    return distance_sqr(p, proj1) <= distance_sqr(p, proj2) ? proj1 : proj2;
 }
 } // namespace tg

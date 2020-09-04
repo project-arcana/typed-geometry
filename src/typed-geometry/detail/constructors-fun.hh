@@ -8,9 +8,7 @@
 #include <typed-geometry/types/vec.hh>
 
 #include <typed-geometry/types/objects/box.hh>
-#include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
-#include <typed-geometry/types/objects/inf_cone.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 
@@ -48,13 +46,5 @@ template <int D, class ScalarT>
 constexpr line<D, ScalarT> line<D, ScalarT>::from_points(pos_t a, pos_t b)
 {
     return line(a, normalize(b - a));
-}
-
-template <int D, class ScalarT, class TraitsT>
-constexpr inf_cone<D, ScalarT, TraitsT>::inf_cone(cone<D, ScalarT, TraitsT> const& c)
-{
-    apex = c.base.center + c.height * c.base.normal;
-    opening_dir = -c.base.normal;
-    opening_angle = ScalarT(2) * angle_between(normalize(c.base.center + any_normal(c.base.normal) * c.base.radius - apex), opening_dir);
 }
 }

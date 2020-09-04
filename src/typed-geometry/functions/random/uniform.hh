@@ -475,11 +475,10 @@ template <int D, class ScalarT, class Rng>
 {
     ScalarT ratio;
     if constexpr (D == 2)
-        ratio = ScalarT(2) / (ScalarT(2) + pi_scalar<ScalarT>);
+        ratio = ScalarT(2) / (ScalarT(2) + pi_scalar<ScalarT>); // round length = pi * r, flat length = 2 * r => ratio pi : 2
     if constexpr (D == 3)
-        ratio = ScalarT(1) / ScalarT(3);
+        ratio = ScalarT(1) / ScalarT(3); // round area = 2 * pi * r^2, flat area = pi * r^2 => ratio 2 : 1
 
-    // round area = 2 * pi * r^2, flat area = pi * r^2 => ratio 2 : 1
     if (detail::uniform01<ScalarT>(rng) >= ratio)
         return uniform(rng, boundary_no_caps_of(h));
 
@@ -487,7 +486,19 @@ template <int D, class ScalarT, class Rng>
 }
 
 template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary_no_caps<3, ScalarT> const& c) // boundary, no_caps (not on base)
+[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary<3, ScalarT> const& c)
+{
+    // base area = pi * r^^2, lateral area (mantle) = pi * r * sqrt(r^2 + h^2) => ratio r : sqrt(r^2 + h^2)
+    auto r = c.base.radius;
+    ScalarT ratio = r / (r + sqrt(pow2(r) + pow2(c.height)));
+    if (detail::uniform01<ScalarT>(rng) >= ratio)
+        return uniform(rng, boundary_no_caps_of(c));
+
+    return uniform(rng, caps_of(c));
+}
+
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary_no_caps<3, ScalarT> const& c)
 {
     auto ub = tg::aabb<2, ScalarT>::minus_one_to_one;
     while (true)

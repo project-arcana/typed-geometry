@@ -65,6 +65,11 @@ template <int D, class ScalarT, class TraitsT>
     return {v.center, v.radius};
 }
 template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr sphere_boundary<1, ScalarT, 2> boundary_of(sphere<1, ScalarT, 2, TraitsT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr sphere_boundary<2, ScalarT, 3> boundary_of(sphere<2, ScalarT, 3, TraitsT> const& v)
 {
     return {v.center, v.radius, v.normal};
@@ -82,8 +87,8 @@ template <int D, class ScalarT, class TraitsT>
 {
     return {v.center, v.radius, v.normal};
 }
-template <class BaseT>
-[[nodiscard]] constexpr pyramid_boundary_no_caps<BaseT> boundary_no_caps_of(pyramid<BaseT> const& v)
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr pyramid_boundary_no_caps<BaseT> boundary_no_caps_of(pyramid<BaseT, TraitsT> const& v)
 {
     return {v.base, v.height};
 }
@@ -139,4 +144,46 @@ template <class ScalarT>
     return {v.center, v.radius, v.normal};
 }
 
+template <class BaseT>
+[[nodiscard]] constexpr BaseT caps_of(pyramid<BaseT> const& v)
+{
+    return v.base;
+}
+template <class BaseT>
+[[nodiscard]] constexpr BaseT caps_of(pyramid<BaseT, boundary_tag> const& v)
+{
+    return v.base;
+}
+template <class BaseT>
+[[nodiscard]] constexpr auto caps_of(pyramid<BaseT, boundary_no_caps_tag> const& v) -> decltype(boundary_of(v.base))
+{
+    return boundary_of(v.base);
+}
+
+// === infinite versions ===
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr inf_cone<D, ScalarT> inf_of(cone<D, ScalarT> const& v)
+{
+    auto apex = v.base.center + v.height * v.base.normal;
+    auto openingDir = -v.base.normal;
+    auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
+    return {apex, openingDir, openingAngle};
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr inf_cone<D, ScalarT, boundary_tag> inf_of(cone<D, ScalarT, boundary_tag> const& v)
+{
+    auto apex = v.base.center + v.height * v.base.normal;
+    auto openingDir = -v.base.normal;
+    auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
+    return {apex, openingDir, openingAngle};
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr inf_cone_boundary<D, ScalarT> inf_of(cone_boundary_no_caps<D, ScalarT> const& v)
+{
+    auto apex = v.base.center + v.height * v.base.normal;
+    auto openingDir = -v.base.normal;
+    auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
+    return {apex, openingDir, openingAngle};
+}
 }

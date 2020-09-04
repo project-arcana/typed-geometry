@@ -42,7 +42,6 @@ struct inf_cone
       : apex(apex), opening_dir(dir), opening_angle(opening_angle)
     {
     }
-    explicit constexpr inf_cone(cone<D, ScalarT, TraitsT> const& c);
 
     template <class OtherT, class OtherTraitsT>
     explicit constexpr inf_cone(inf_cone<D, OtherT, OtherTraitsT> const& v) : apex(v.apex), opening_dir(v.opening_dir), opening_angle(v.opening_angle)

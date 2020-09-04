@@ -312,26 +312,26 @@ template <class ScalarT>
     }
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(inf_cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cone<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apex = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
     auto apexToP = normalize_safe(p - apex);
-    if (apexToP == vec<3, ScalarT>::zero)
+    if (apexToP == vec<D, ScalarT>::zero)
         return true;
-    return angle_between(dir<3, ScalarT>(apexToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle; // opening_angle is between the cone surfaces
+    return angle_between(dir<D, ScalarT>(apexToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle; // opening_angle is between the cone surfaces
 }
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(inf_cone_boundary<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cone_boundary<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apexOuter = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
     auto apexInner = c.apex + (c.opening_dir * eps); // Shift apex inwards to subtract eps
     auto apexOuterToP = normalize_safe(p - apexOuter);
     auto apexInnerToP = normalize_safe(p - apexInner);
-    if (apexOuterToP == vec<3, ScalarT>::zero || apexInnerToP == vec<3, ScalarT>::zero)
+    if (apexOuterToP == vec<D, ScalarT>::zero || apexInnerToP == vec<D, ScalarT>::zero)
         return true;
-    return angle_between(dir<3, ScalarT>(apexOuterToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle
-           && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= ScalarT(0.5) * c.opening_angle;
+    return angle_between(dir<D, ScalarT>(apexOuterToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle
+           && angle_between(dir<D, ScalarT>(apexInnerToP), c.opening_dir) >= ScalarT(0.5) * c.opening_angle;
 }
 
 template <class ScalarT>
