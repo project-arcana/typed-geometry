@@ -385,7 +385,7 @@ template <class ScalarT>
     return false;
 }
 
-template <class BaseT, int D = object_traits<pyramid_boundary<BaseT>>::domain_dimension, class ScalarT = typename object_traits<pyramid_boundary<BaseT>>::scalar_t>
+template <class BaseT, int D = object_traits<pyramid_boundary<BaseT>>::domain_dimension, class ScalarT = typename BaseT::scalar_t>
 [[nodiscard]] constexpr bool contains(pyramid_boundary<BaseT> const& py, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     if (contains(caps_of(py), p, eps))
