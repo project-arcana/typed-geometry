@@ -138,11 +138,24 @@ template <int D, class ScalarT>
 
 // ============== project to box ==============
 
-template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
-[[nodiscard]] constexpr pos<DomainD, ScalarT> project(pos<DomainD, ScalarT> const& p, box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> project(pos<DomainD, ScalarT> const& p, box<ObjectD, ScalarT, DomainD> const& b)
 {
+    auto localAabb = aabb<ObjectD, ScalarT>::minus_one_to_one;
     auto pLocal = pos(coordinates(b, p));
-    return b.center + b.half_extents * vec(project(pLocal, aabb<ObjectD, ScalarT, TraitsT>::minus_one_to_one));
+    return b.center + b.half_extents * vec(project(pLocal, localAabb));
+}
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> project(pos<DomainD, ScalarT> const& p, box_boundary<ObjectD, ScalarT, DomainD> const& b)
+{
+    auto boxSize = pos<ObjectD, ScalarT>();
+    for (auto i = 0; i < ObjectD; ++i)
+        boxSize[i] = length(b.half_extents[i]);
+    auto localAabb = aabb_boundary<ObjectD, ScalarT>(-boxSize, boxSize);
+
+    auto pLocal = pos(coordinates(b, p));
+    auto projLocal = project(pLocal * comp(boxSize), localAabb) / comp(boxSize); // Up-scaling and down-scaling handles stretched boxes
+    return b.center + b.half_extents * vec(projLocal);
 }
 
 
