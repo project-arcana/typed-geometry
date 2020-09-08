@@ -264,6 +264,33 @@ public:
     static constexpr mat diag(ScalarT v);
     static constexpr mat diag(vec<detail::min(C, R), ScalarT> const& v);
 
+    /// creates a matrix from contiguous memory, treating the data as row-by-row
+    static constexpr mat from_data_rowwise(ScalarT const* data)
+    {
+        mat<C, R, ScalarT> m;
+        m.set_row(0, vec<C, ScalarT>::from_data(data));
+        if constexpr (R >= 2)
+            m.set_row(1, vec<C, ScalarT>::from_data(data + C));
+        if constexpr (R >= 3)
+            m.set_row(2, vec<C, ScalarT>::from_data(data + C * 2));
+        if constexpr (R >= 4)
+            m.set_row(3, vec<C, ScalarT>::from_data(data + C * 3));
+        return m;
+    }
+    /// creates a matrix from contiguous memory, treating the data as col-by-col
+    static constexpr mat from_data_colwise(ScalarT const* data)
+    {
+        mat<C, R, ScalarT> m;
+        m[0] = vec<R, ScalarT>::from_data(data);
+        if constexpr (C >= 2)
+            m[1] = vec<R, ScalarT>::from_data(data + R);
+        if constexpr (C >= 3)
+            m[2] = vec<R, ScalarT>::from_data(data + R * 2);
+        if constexpr (C >= 4)
+            m[3] = vec<R, ScalarT>::from_data(data + R * 3);
+        return m;
+    }
+
     template <class... Args>
     static constexpr mat from_cols(Args const&... args)
     {

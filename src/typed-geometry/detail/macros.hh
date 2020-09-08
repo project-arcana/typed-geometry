@@ -153,6 +153,7 @@
         TG_IMPL_MEMBER(TYPE, 0) = detail::comp_get(v, 0, s, fill);                                                                   \
         TG_IMPL_COMP_VERIFY(TYPE)                                                                                                    \
     }                                                                                                                                \
+    static constexpr TYPE from_data(ScalarT const* data) { return {data[0]}; }                                                       \
     TG_FORCE_SEMICOLON
 
 #define TG_DECLARE_COMP_TYPE_2(TYPE)                                                                       \
@@ -177,6 +178,7 @@
         TG_IMPL_MEMBER(TYPE, 1) = detail::comp_get(v, 1, s, fill);                                         \
         TG_IMPL_COMP_VERIFY(TYPE)                                                                          \
     }                                                                                                      \
+    static constexpr TYPE from_data(ScalarT const* data) { return {data[0], data[1]}; }                    \
     TG_FORCE_SEMICOLON
 
 #define TG_DECLARE_COMP_TYPE_3(TYPE)                                                                                                                         \
@@ -202,6 +204,7 @@
         TG_IMPL_MEMBER(TYPE, 2) = detail::comp_get(v, 2, s, fill);                                                                                           \
         TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                            \
     }                                                                                                                                                        \
+    static constexpr TYPE from_data(ScalarT const* data) { return {data[0], data[1], data[2]}; }                                                             \
     TG_FORCE_SEMICOLON
 
 #define TG_DECLARE_COMP_TYPE_4_NO_SWIZZLE(TYPE)                                                                                                        \
@@ -233,6 +236,7 @@
         TG_IMPL_MEMBER(TYPE, 3) = detail::comp_get(v, 3, s, fill);                                                                                     \
         TG_IMPL_COMP_VERIFY(TYPE)                                                                                                                      \
     }                                                                                                                                                  \
+    static constexpr TYPE from_data(ScalarT const* data) { return {data[0], data[1], data[2], data[3]}; }                                              \
     TG_FORCE_SEMICOLON
 
 #define TG_DECLARE_COMP_TYPE_4(TYPE)         \
