@@ -190,6 +190,10 @@ constexpr u64 leading_zeros_count(fixed_uint<w> const& v);
 template <int w>
 constexpr u64 leading_ones_count(fixed_uint<w> const& v);
 
+template <int w>
+constexpr bool is_zero(fixed_int<w> const& v);
+
+
 //#############################################################################
 //#                             implemenation                                 #
 //#############################################################################
@@ -1330,6 +1334,23 @@ constexpr u64 leading_ones_count(fixed_uint<w> const& v)
             return ones;
     }
     return ones + _lzcnt_u64(~v.d[0]);
+}
+
+template <int w>
+constexpr bool is_zero(fixed_uint<w> const& v)
+{
+    if (v.d[0] != 0)
+        return false;
+    if constexpr (w > 1)
+        if (v.d[1] != 0)
+            return false;
+    if constexpr (w > 2)
+        if (v.d[2] != 0)
+            return false;
+    if constexpr (w > 3)
+        if (v.d[3] != 0)
+            return false;
+    return true;
 }
 
 } // namespace tg
