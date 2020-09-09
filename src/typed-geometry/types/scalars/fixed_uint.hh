@@ -44,8 +44,8 @@ struct fixed_uint
 
     // explicit conversion
     explicit constexpr operator u64() const { return d[0]; }
-    explicit constexpr operator float();
-    explicit constexpr operator double();
+    explicit constexpr operator float() const;
+    explicit constexpr operator double() const;
 };
 
 static_assert(sizeof(u128) == 128 / 8, "u128 is not 128 bit!");

@@ -188,13 +188,16 @@ fixed_int<w_res> imul(T0 lhs, T1 rhs);
 // utility
 
 template <int w>
-constexpr u64 leading_zeros_count(fixed_int<w> const& v);
+[[nodiscard]] constexpr u64 leading_zeros_count(fixed_int<w> const& v);
 
 template <int w>
-constexpr u64 leading_ones_count(fixed_int<w> const& v);
+[[nodiscard]] constexpr u64 leading_ones_count(fixed_int<w> const& v);
 
 template <int w>
-constexpr bool is_zero(fixed_int<w> const& v);
+[[nodiscard]] constexpr bool is_zero(fixed_int<w> const& v);
+
+template <int w>
+[[nodiscard]] constexpr int sign(fixed_int<w> const& v);
 
 
 //#############################################################################
@@ -245,7 +248,7 @@ constexpr fixed_int<words>::fixed_int(fixed_int<rhs_words> rhs)
 }
 
 template <int words>
-constexpr fixed_int<words>::operator float()
+constexpr fixed_int<words>::operator float() const
 {
     auto cpy = *this;
     float sign = 1;
@@ -267,7 +270,7 @@ constexpr fixed_int<words>::operator float()
 }
 
 template <int words>
-constexpr fixed_int<words>::operator double()
+constexpr fixed_int<words>::operator double() const
 {
     auto cpy = *this;
     double sign = 1;
@@ -1265,6 +1268,13 @@ constexpr bool is_zero(fixed_int<w> const& v)
         if (v.d[3] != 0)
             return false;
     return true;
+}
+
+template <int w>
+constexpr int sign(fixed_int<w> const& v)
+{
+    int neg = i64(v.d[w - 1]) >> 63;
+    return 1 - is_zero(v) + 2 * neg;
 }
 
 } // namespace tg

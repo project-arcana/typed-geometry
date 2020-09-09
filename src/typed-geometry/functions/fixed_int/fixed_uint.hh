@@ -185,13 +185,13 @@ fixed_uint<w_res> mul(T0 lhs, T1 rhs);
 // utility
 
 template <int w>
-constexpr u64 leading_zeros_count(fixed_uint<w> const& v);
+[[nodiscard]] constexpr u64 leading_zeros_count(fixed_uint<w> const& v);
 
 template <int w>
-constexpr u64 leading_ones_count(fixed_uint<w> const& v);
+[[nodiscard]] constexpr u64 leading_ones_count(fixed_uint<w> const& v);
 
 template <int w>
-constexpr bool is_zero(fixed_int<w> const& v);
+[[nodiscard]] constexpr bool is_zero(fixed_int<w> const& v);
 
 
 //#############################################################################
@@ -234,7 +234,7 @@ constexpr fixed_uint<words>::fixed_uint(fixed_uint<rhs_words> rhs)
 }
 
 template <int words>
-constexpr fixed_uint<words>::operator float()
+constexpr fixed_uint<words>::operator float() const
 {
     float res = float(d[0]);
     if constexpr (words > 1)
@@ -247,7 +247,7 @@ constexpr fixed_uint<words>::operator float()
 }
 
 template <int words>
-constexpr fixed_uint<words>::operator double()
+constexpr fixed_uint<words>::operator double() const
 {
     double res = double(d[0]);
     if constexpr (words > 1)

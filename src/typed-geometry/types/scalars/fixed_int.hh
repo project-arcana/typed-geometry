@@ -51,9 +51,9 @@ struct fixed_int
     constexpr fixed_int(fixed_int<rhs_words> rhs);
 
     // explicit conversion
-    explicit constexpr operator i64() { return i64(d[0]); }
-    explicit constexpr operator float();
-    explicit constexpr operator double();
+    explicit constexpr operator i64() const { return i64(d[0]); }
+    explicit constexpr operator float() const;
+    explicit constexpr operator double() const;
 };
 
 static_assert(sizeof(i128) == 128 / 8, "i128 is not 128 bit!");
