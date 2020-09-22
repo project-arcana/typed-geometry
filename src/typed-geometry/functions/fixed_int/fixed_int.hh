@@ -1234,7 +1234,7 @@ constexpr u64 leading_ones_count(fixed_int<w> const& v)
     u64 ones = 0;
     if constexpr (w > 3)
     {
-        ones += _l_u64(~v.d[3]);
+        ones += _lzcnt_u64(~v.d[3]);
         if (ones < 64)
             return ones;
     }
