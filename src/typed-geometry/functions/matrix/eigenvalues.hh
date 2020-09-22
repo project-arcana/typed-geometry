@@ -130,7 +130,7 @@ template <class ScalarT, int D>
 }
 
 template <class ScalarT, int D>
-[[nodiscard]] array<ScalarT, D> singular_values_symmetric(mat<D, D, ScalarT> const& m)
+[[nodiscard]] array<ScalarT, D> singular_values(mat<D, D, ScalarT> const& m)
 {
     if constexpr (D == 1)
     {
@@ -143,11 +143,13 @@ template <class ScalarT, int D>
     }
     else if constexpr (D == 3)
     {
-        static_assert(tg::always_false<D>, "not yet supported");
+        auto [s0, s1, s2] = eigenvalues(m * transpose(m));
+        return {sqrt(s0), sqrt(s1), sqrt(s2)};
     }
     else if constexpr (D == 4)
     {
-        static_assert(tg::always_false<D>, "not yet supported");
+        auto [s0, s1, s2, s3] = eigenvalues(m * transpose(m));
+        return {sqrt(s0), sqrt(s1), sqrt(s2), sqrt(s3)};
     }
 }
 

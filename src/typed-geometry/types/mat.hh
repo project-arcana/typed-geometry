@@ -1,6 +1,9 @@
 #pragma once
 
+#include <initializer_list>
+
 #include <typed-geometry/types/scalars/default.hh>
+#include <typed-geometry/types/span.hh>
 #include "vec.hh"
 
 #include <typed-geometry/feature/assert.hh>
@@ -277,6 +280,16 @@ public:
             m.set_row(3, vec<C, ScalarT>::from_data(data + C * 3));
         return m;
     }
+    static constexpr mat from_data_rowwise(span<ScalarT const> data)
+    {
+        TG_ASSERT(data.size() == C * R && "wrong amount of data");
+        return mat::from_data_rowwise(data.data());
+    }
+    static constexpr mat from_data_rowwise(std::initializer_list<ScalarT> data)
+    {
+        TG_ASSERT(data.size() == C * R && "wrong amount of data");
+        return mat::from_data_rowwise(data.begin());
+    }
     /// creates a matrix from contiguous memory, treating the data as col-by-col
     static constexpr mat from_data_colwise(ScalarT const* data)
     {
@@ -289,6 +302,16 @@ public:
         if constexpr (C >= 4)
             m[3] = vec<R, ScalarT>::from_data(data + R * 3);
         return m;
+    }
+    static constexpr mat from_data_colwise(span<ScalarT const> data)
+    {
+        TG_ASSERT(data.size() == C * R && "wrong amount of data");
+        return mat::from_data_rowwise(data.data());
+    }
+    static constexpr mat from_data_colwise(std::initializer_list<ScalarT> data)
+    {
+        TG_ASSERT(data.size() == C * R && "wrong amount of data");
+        return mat::from_data_rowwise(data.begin());
     }
 
     template <class... Args>
