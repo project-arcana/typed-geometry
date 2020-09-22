@@ -191,8 +191,16 @@ template <int w>
 [[nodiscard]] constexpr u64 leading_ones_count(fixed_uint<w> const& v);
 
 template <int w>
+[[nodiscard]] constexpr u64 trailing_zeros_count(fixed_uint<w> const& v);
+
+template <int w>
+[[nodiscard]] constexpr u64 trailing_ones_count(fixed_uint<w> const& v);
+
+template <int w>
 [[nodiscard]] constexpr bool is_zero(fixed_int<w> const& v);
 
+template <int w0, int w1>
+[[nodiscard]] fixed_uint<max(w0, w1)> gcd(fixed_uint<w0> const& a, fixed_uint<w1> const& b);
 
 //#############################################################################
 //#                             implemenation                                 #
@@ -1337,6 +1345,58 @@ constexpr u64 leading_ones_count(fixed_uint<w> const& v)
 }
 
 template <int w>
+constexpr u64 trailing_zeros_count(fixed_uint<w> const& v)
+{
+    u64 zeros = 0;
+    zeros + _tzcnt_u64(v.d[0]);
+    if constexpr (w > 1)
+    {
+        if (zeros < 64)
+            return zeros;
+        zeros += _tzcnt_u64(v.d[1]);
+    }
+    if constexpr (w > 2)
+    {
+        if (zeros < (2 * 64))
+            return zeros;
+        zeros += _tzcnt_u64(v.d[2]);
+    }
+    if constexpr (w > 3)
+    {
+        if (zeros < (3 * 64))
+            return zeros;
+        zeros += _tzcnt_u64(v.d[3]);
+    }
+    return zeros;
+}
+
+template <int w>
+constexpr u64 trailing_ones_count(fixed_uint<w> const& v)
+{
+    u64 ones = 0;
+    ones + _tzcnt_u64(~v.d[0]);
+    if constexpr (w > 1)
+    {
+        if (ones < 64)
+            return ones;
+        ones += _tzcnt_u64(~v.d[1]);
+    }
+    if constexpr (w > 2)
+    {
+        if (ones < (2 * 64))
+            return ones;
+        ones += _tzcnt_u64(~v.d[2]);
+    }
+    if constexpr (w > 3)
+    {
+        if (ones < (3 * 64))
+            return ones;
+        ones += _tzcnt_u64(~v.d[3]);
+    }
+    return ones;
+}
+
+template <int w>
 constexpr bool is_zero(fixed_uint<w> const& v)
 {
     if (v.d[0] != 0)
@@ -1351,6 +1411,36 @@ constexpr bool is_zero(fixed_uint<w> const& v)
         if (v.d[3] != 0)
             return false;
     return true;
+}
+
+template <int w0, int w1>
+[[nodiscard]] fixed_uint<max(w0, w1)> gcd(fixed_uint<w0> const& a, fixed_uint<w1> const& b)
+{
+    // todo: I think we can return fixed_uint<min(w0, w1)> (note the min instead of the max)
+
+    // https://lemire.me/blog/2013/12/26/fastest-way-to-compute-the-greatest-common-divisor/
+    fixed_uint<max(w0, w1)> u = a;
+    fixed_uint<max(w0, w1)> v = b;
+
+    int shift;
+    if (is_zero(u))
+        return v;
+    if (is_zero(v))
+        return u;
+    shift = trailing_zeros_count(u | v);
+    u >>= trailing_zeros_count(u);
+    do
+    {
+        v >>= trailing_zeros_count(v);
+        if (u > v)
+        {
+            fixed_uint<max(w0, w1)> t = v;
+            v = u;
+            u = t;
+        }
+        v = v - u;
+    } while (!is_zero(v));
+    return u << shift;
 }
 
 } // namespace tg
