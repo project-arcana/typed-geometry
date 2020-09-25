@@ -202,6 +202,12 @@ template <int w>
 template <int w0, int w1>
 [[nodiscard]] fixed_uint<max(w0, w1)> gcd(fixed_uint<w0> const& a, fixed_uint<w1> const& b);
 
+template <int w>
+[[nodiscard]] fixed_uint<w> gcd(u64 a, fixed_uint<w> const& b);
+
+template <int w>
+[[nodiscard]] fixed_uint<w> gcd(fixed_uint<w> const& a, u64 b);
+
 //#############################################################################
 //#                             implemenation                                 #
 //#############################################################################
@@ -1325,7 +1331,7 @@ constexpr u64 leading_ones_count(fixed_uint<w> const& v)
     u64 ones = 0;
     if constexpr (w > 3)
     {
-        ones += _l_u64(~v.d[3]);
+        ones += _lzcnt_u64(~v.d[3]);
         if (ones < 64)
             return ones;
     }
@@ -1348,7 +1354,7 @@ template <int w>
 constexpr u64 trailing_zeros_count(fixed_uint<w> const& v)
 {
     u64 zeros = 0;
-    zeros + _tzcnt_u64(v.d[0]);
+    zeros += _tzcnt_u64(v.d[0]);
     if constexpr (w > 1)
     {
         if (zeros < 64)
@@ -1374,7 +1380,7 @@ template <int w>
 constexpr u64 trailing_ones_count(fixed_uint<w> const& v)
 {
     u64 ones = 0;
-    ones + _tzcnt_u64(~v.d[0]);
+    ones += _tzcnt_u64(~v.d[0]);
     if constexpr (w > 1)
     {
         if (ones < 64)
@@ -1413,6 +1419,18 @@ constexpr bool is_zero(fixed_uint<w> const& v)
     return true;
 }
 
+template <int w>
+[[nodiscard]] fixed_uint<w> gcd(u64 a, fixed_uint<w> const& b)
+{
+    return gcd(fixed_uint<1>(a), b);
+}
+
+template <int w>
+[[nodiscard]] fixed_uint<w> gcd(fixed_uint<w> const& a, u64 b)
+{
+    return gcd(a, fixed_uint<1>(b));
+}
+
 template <int w0, int w1>
 [[nodiscard]] fixed_uint<max(w0, w1)> gcd(fixed_uint<w0> const& a, fixed_uint<w1> const& b)
 {
@@ -1427,11 +1445,11 @@ template <int w0, int w1>
         return v;
     if (is_zero(v))
         return u;
-    shift = trailing_zeros_count(u | v);
-    u >>= trailing_zeros_count(u);
+    shift = int(trailing_zeros_count(u | v));
+    u >>= int(trailing_zeros_count(u));
     do
     {
-        v >>= trailing_zeros_count(v);
+        v >>= int(trailing_zeros_count(v));
         if (u > v)
         {
             fixed_uint<max(w0, w1)> t = v;
