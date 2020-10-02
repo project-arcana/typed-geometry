@@ -533,6 +533,15 @@ struct sampler<bool>
         return rng() & 1;
     }
 };
+template <>
+struct sampler<std::byte>
+{
+    template <class Rng>
+    constexpr static std::byte uniform(Rng& rng)
+    {
+        return std::byte(rng() & 0xFF);
+    }
+};
 template <class T>
 struct sampler<angle_t<T>>
 {
