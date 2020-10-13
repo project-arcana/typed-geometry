@@ -60,6 +60,11 @@ struct uniform_sampler
     {
         return sampler<T>::uniform(rng);
     }
+    template <class T>
+    operator T() &
+    {
+        static_assert(always_false<T>, "the result of uniform(rng) must not be stored!");
+    }
 
 private:
     Rng& rng;
