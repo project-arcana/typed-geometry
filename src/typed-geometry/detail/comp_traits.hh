@@ -101,14 +101,15 @@ constexpr ScalarT comp_get(Obj const& v, unsigned char idx, int size, ScalarT fi
 }
 
 template <class Obj, class ScalarT>
-constexpr bool is_comp_convertible = decltype(detail::test_comp_convertible<Obj, ScalarT>(nullptr))::value;
+constexpr bool is_comp_convertible = !std::is_pointer_v<std::remove_reference_t<Obj>> && decltype(detail::test_comp_convertible<Obj, ScalarT>(nullptr))::value;
 
 template <class Obj, class ScalarT>
-constexpr bool is_mat_convertible = decltype(detail::test_mat_convertible<Obj, ScalarT>(nullptr))::value;
+constexpr bool is_mat_convertible = !std::is_pointer_v<std::remove_reference_t<Obj>> && decltype(detail::test_mat_convertible<Obj, ScalarT>(nullptr))::value;
 
 template <class Obj>
 constexpr bool is_comp_dynamic_size = detail::comp_size<Obj>::value < 0;
 
 template <class Obj, int D, class ScalarT>
-constexpr bool is_comp_like = is_comp_convertible<Obj, ScalarT> && (is_comp_dynamic_size<Obj> || detail::comp_size<Obj>::value >= D);
+constexpr bool is_comp_like
+    = !std::is_pointer_v<std::remove_reference_t<Obj>> && is_comp_convertible<Obj, ScalarT> && (is_comp_dynamic_size<Obj> || detail::comp_size<Obj>::value >= D);
 }
