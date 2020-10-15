@@ -165,7 +165,7 @@ template <class BaseT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr inf_cone<D, ScalarT> inf_of(cone<D, ScalarT> const& v)
 {
-    auto apex = v.base.center + v.height * v.base.normal;
+    auto apex = apex_of(v);
     auto openingDir = -v.base.normal;
     auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
     return {apex, openingDir, openingAngle};
@@ -173,7 +173,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr inf_cone<D, ScalarT, boundary_tag> inf_of(cone<D, ScalarT, boundary_tag> const& v)
 {
-    auto apex = v.base.center + v.height * v.base.normal;
+    auto apex = apex_of(v);
     auto openingDir = -v.base.normal;
     auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
     return {apex, openingDir, openingAngle};
@@ -181,7 +181,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr inf_cone_boundary<D, ScalarT> inf_of(cone_boundary_no_caps<D, ScalarT> const& v)
 {
-    auto apex = v.base.center + v.height * v.base.normal;
+    auto apex = apex_of(v);
     auto openingDir = -v.base.normal;
     auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
     return {apex, openingDir, openingAngle};

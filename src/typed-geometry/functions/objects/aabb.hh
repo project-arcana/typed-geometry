@@ -109,11 +109,10 @@ template <int D, class ScalarT, class TraitsT>
     return aabb_of(sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, n), sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, n));
 }
 
-template <class BaseT, class TraitsT, class ScalarT = typename BaseT::scalar_t>
-[[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(pyramid<BaseT, TraitsT> const& p)
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr aabb<3, typename BaseT::scalar_t> aabb_of(pyramid<BaseT, TraitsT> const& p)
 {
-    const auto apex = centroid(p.base) + normal(p.base) * p.height;
-    return aabb_of(p.base, apex);
+    return aabb_of(p.base, apex_of(p));
 }
 
 template <class PrimA, class PrimB, class... PrimsT>

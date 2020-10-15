@@ -527,7 +527,7 @@ template <class BaseT, class Rng, class ScalarT = typename BaseT::scalar_t>
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary<triangle<3, ScalarT>> const& py)
 {
-    const auto apex = centroid(py.base) + normal(py.base) * py.height;
+    const auto apex = apex_of(py);
     const auto tri0 = py.base;
     const auto tri1 = triangle<3, ScalarT>(apex, py.base.pos0, py.base.pos1);
     const auto tri2 = triangle<3, ScalarT>(apex, py.base.pos1, py.base.pos2);
@@ -549,7 +549,7 @@ template <class ScalarT, class Rng>
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary_no_caps<triangle<3, ScalarT>> const& py)
 {
-    const auto apex = centroid(py.base) + normal(py.base) * py.height;
+    const auto apex = apex_of(py);
     const auto tri1 = triangle<3, ScalarT>(apex, py.base.pos0, py.base.pos1);
     const auto tri2 = triangle<3, ScalarT>(apex, py.base.pos1, py.base.pos2);
     const auto tri3 = triangle<3, ScalarT>(apex, py.base.pos2, py.base.pos0);
@@ -567,7 +567,7 @@ template <class ScalarT, class Rng>
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary<box<2, ScalarT, 3>> const& py)
 {
-    const auto apex = centroid(py.base) + normal(py.base) * py.height;
+    const auto apex = apex_of(py);
     const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
     const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
     const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
@@ -598,7 +598,7 @@ template <class ScalarT, class Rng>
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary_no_caps<box<2, ScalarT, 3>> const& py)
 {
-    const auto apex = centroid(py.base) + normal(py.base) * py.height;
+    const auto apex = apex_of(py);
     const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
     const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
     const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
@@ -625,7 +625,7 @@ template <class ScalarT, class Rng>
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary_no_caps<quad<3, ScalarT>> const& py)
 {
-    const auto apex = centroid(py.base) + normal(py.base) * py.height;
+    const auto apex = apex_of(py);
     const auto tri1 = triangle<3, ScalarT>(apex, py.base.pos00, py.base.pos10);
     const auto tri2 = triangle<3, ScalarT>(apex, py.base.pos10, py.base.pos11);
     const auto tri3 = triangle<3, ScalarT>(apex, py.base.pos11, py.base.pos01);

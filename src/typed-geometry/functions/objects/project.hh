@@ -12,7 +12,6 @@
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
 
-#include <typed-geometry/functions/matrix/inverse.hh>
 #include <typed-geometry/functions/vector/project.hh>
 
 #include "boundary.hh"
@@ -430,8 +429,7 @@ template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT, TraitsT> const& c)
 {
     auto closestOnBase = project(p, caps_of(c));
-    auto apex = c.base.center + c.height * c.base.normal;
-    if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
+    if (dot(p - closestOnBase, closestOnBase - apex_of(c)) >= ScalarT(0)) // Base is closer than any point on the cone can be
         return closestOnBase;
 
     // Return closer projection
@@ -440,20 +438,19 @@ template <class ScalarT, class TraitsT>
 }
 
 // other pyramids
-template <class BaseT, int D = object_traits<pyramid_boundary<BaseT>>::domain_dimension, class ScalarT = typename BaseT::scalar_t, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, ScalarT, 3>>>>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, pyramid<BaseT> const& py)
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid<BaseT> const& py)
 {
     if (contains(py, p))
         return p;
 
     return project(p, boundary_of(py));
 }
-template <class BaseT, int D = object_traits<pyramid_boundary<BaseT>>::domain_dimension, class ScalarT = typename BaseT::scalar_t, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, ScalarT, 3>>>>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, pyramid_boundary<BaseT> const& py)
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid_boundary<BaseT> const& py)
 {
     auto closestOnBase = project(p, caps_of(py));
-    auto apex = centroid(py.base) + normal(py.base) * py.height;
-    if (dot(p - closestOnBase, apex - closestOnBase) <= ScalarT(0)) // Base is closer than any point on the pyramid can be
+    if (dot(p - closestOnBase, apex_of(py) - closestOnBase) <= BaseT::scalar_t(0)) // Base is closer than any point on the pyramid can be
         return closestOnBase;
 
     // Return closer projection
@@ -466,7 +463,7 @@ template <class ScalarT>
 {
     auto bestDist = max<float>();
     auto bestProj = p;
-    const auto apex = centroid(py.base) + normal(py.base) * py.height;
+    const auto apex = apex_of(py);
 
     auto checkBetterProj = [&](triangle<3, ScalarT> const& tri)
     {
@@ -488,7 +485,7 @@ template <class ScalarT>
 {
     auto bestDist = max<float>();
     auto bestProj = p;
-    const auto apex = centroid(py.base) + normal(py.base) * py.height;
+    const auto apex = apex_of(py);
     const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
     const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
     const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
@@ -514,7 +511,7 @@ template <class ScalarT>
 {
     auto bestDist = max<float>();
     auto bestProj = p;
-    const auto apex = centroid(py.base) + normal(py.base) * py.height;
+    const auto apex = apex_of(py);
 
     auto checkBetterProj = [&](triangle<3, ScalarT> const& tri) {
         auto proj = project(p, tri);
