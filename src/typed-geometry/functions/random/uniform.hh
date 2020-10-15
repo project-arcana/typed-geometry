@@ -1,6 +1,7 @@
 #pragma once
 
 #include <initializer_list>
+#include <vector>
 
 #include <typed-geometry/detail/scalar_traits.hh>
 
@@ -515,133 +516,50 @@ template <class ScalarT, class Rng>
     }
 }
 
-template <class BaseT, class Rng, class ScalarT = typename BaseT::scalar_t>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid<BaseT> const& p)
+// All solid pyramid variants
+template <class BaseT, class Rng>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT> const& p)
 {
     const auto n = normal(p.base);
-    const auto h = tg::pow2(detail::uniform01<ScalarT>(rng));
+    const auto h = tg::pow2(detail::uniform01<BaseT::scalar_t>(rng));
     const auto pBase = uniform(rng, p.base);
     return mix(pBase, centroid(p.base), h) + h * p.height * n;
 }
 
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary<triangle<3, ScalarT>> const& py)
+// All boundary and boundary_no_caps pyramid variants except cones
+template <class BaseT, class TraitsT, class Rng>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT, TraitsT> const& py)
 {
+    using ScalarT = typename BaseT::scalar_t;
     const auto apex = apex_of(py);
-    const auto tri0 = py.base;
-    const auto tri1 = triangle<3, ScalarT>(apex, py.base.pos0, py.base.pos1);
-    const auto tri2 = triangle<3, ScalarT>(apex, py.base.pos1, py.base.pos2);
-    const auto tri3 = triangle<3, ScalarT>(apex, py.base.pos2, py.base.pos0);
-    const auto a0 = area(tri0);
-    const auto a1 = area(tri1);
-    const auto a2 = area(tri2);
-    const auto a3 = area(tri3);
-    auto part = detail::uniform01<ScalarT>(rng) * (a0 + a1 + a2 + a3);
-    if (part < a0)
-        return uniform(rng, tri0);
-    if (part < a0 + a1)
-        return uniform(rng, tri1);
-    if (part < a0 + a1 + a2)
-        return uniform(rng, tri2);
-    return uniform(rng, tri3);
-}
+    const auto verts = vertices(py.base);
+    auto triangles = std::vector<triangle<3, ScalarT>>();
+    auto areas = std::vector<ScalarT>();
+    auto totalArea = ScalarT(0);
+    for (size_t i = 0; i < verts.size(); ++i)
+    {
+        const auto tri = triangle<3, ScalarT>(apex, verts[i], verts[(i+1) % verts.size()]);
+        const auto a = area(tri);
+        triangles.push_back(tri);
+        areas.push_back(a);
+        totalArea += a;
+    }
 
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary_no_caps<triangle<3, ScalarT>> const& py)
-{
-    const auto apex = apex_of(py);
-    const auto tri1 = triangle<3, ScalarT>(apex, py.base.pos0, py.base.pos1);
-    const auto tri2 = triangle<3, ScalarT>(apex, py.base.pos1, py.base.pos2);
-    const auto tri3 = triangle<3, ScalarT>(apex, py.base.pos2, py.base.pos0);
-    const auto a1 = area(tri1);
-    const auto a2 = area(tri2);
-    const auto a3 = area(tri3);
-    auto part = detail::uniform01<ScalarT>(rng) * (a1 + a2 + a3);
-    if (part < a1)
-        return uniform(rng, tri1);
-    if (part < a1 + a2)
-        return uniform(rng, tri2);
-    return uniform(rng, tri3);
-}
+    if constexpr (std::is_same_v<TraitsT, boundary_tag>)
+        totalArea += area(py.base);
 
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary<box<2, ScalarT, 3>> const& py)
-{
-    const auto apex = apex_of(py);
-    const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
-    const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
-    const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
-    const auto p3 = py.base[comp<2, ScalarT>(-1, 1)];
+    auto part = uniform(rng, ScalarT(0), totalArea);
+    for (size_t i = 0; i < triangles.size(); ++i)
+    {
+        part -= areas[i];
+        if (part <= ScalarT(0))
+            return uniform(rng, triangles[i]);
+    }
 
-    const auto box0 = py.base;
-    const auto tri1 = triangle<3, ScalarT>(apex, p0, p1);
-    const auto tri2 = triangle<3, ScalarT>(apex, p1, p2);
-    const auto tri3 = triangle<3, ScalarT>(apex, p2, p3);
-    const auto tri4 = triangle<3, ScalarT>(apex, p3, p0);
-    const auto a0 = area(box0);
-    const auto a1 = area(tri1);
-    const auto a2 = area(tri2);
-    const auto a3 = area(tri3);
-    const auto a4 = area(tri4);
-    auto part = detail::uniform01<ScalarT>(rng) * (a0 + a1 + a2 + a3 + a4);
-    if (part < a0)
-        return uniform(rng, box0);
-    if (part < a0 + a1)
-        return uniform(rng, tri1);
-    if (part < a0 + a1 + a2)
-        return uniform(rng, tri2);
-    if (part < a0 + a1 + a2 + a3)
-        return uniform(rng, tri3);
-    return uniform(rng, tri4);
-}
-
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary_no_caps<box<2, ScalarT, 3>> const& py)
-{
-    const auto apex = apex_of(py);
-    const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
-    const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
-    const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
-    const auto p3 = py.base[comp<2, ScalarT>(-1, 1)];
-
-    const auto tri1 = triangle<3, ScalarT>(apex, p0, p1);
-    const auto tri2 = triangle<3, ScalarT>(apex, p1, p2);
-    const auto tri3 = triangle<3, ScalarT>(apex, p2, p3);
-    const auto tri4 = triangle<3, ScalarT>(apex, p3, p0);
-    const auto a1 = area(tri1);
-    const auto a2 = area(tri2);
-    const auto a3 = area(tri3);
-    const auto a4 = area(tri4);
-    auto part = detail::uniform01<ScalarT>(rng) * (a1 + a2 + a3 + a4);
-    if (part < a1)
-        return uniform(rng, tri1);
-    if (part < a1 + a2)
-        return uniform(rng, tri2);
-    if (part < a1 + a2 + a3)
-        return uniform(rng, tri3);
-    return uniform(rng, tri4);
-}
-
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid_boundary_no_caps<quad<3, ScalarT>> const& py)
-{
-    const auto apex = apex_of(py);
-    const auto tri1 = triangle<3, ScalarT>(apex, py.base.pos00, py.base.pos10);
-    const auto tri2 = triangle<3, ScalarT>(apex, py.base.pos10, py.base.pos11);
-    const auto tri3 = triangle<3, ScalarT>(apex, py.base.pos11, py.base.pos01);
-    const auto tri4 = triangle<3, ScalarT>(apex, py.base.pos01, py.base.pos00);
-    const auto a1 = area(tri1);
-    const auto a2 = area(tri2);
-    const auto a3 = area(tri3);
-    const auto a4 = area(tri4);
-    auto part = detail::uniform01<ScalarT>(rng) * (a1 + a2 + a3 + a4);
-    if (part < a1)
-        return uniform(rng, tri1);
-    if (part < a1 + a2)
-        return uniform(rng, tri2);
-    if (part < a1 + a2 + a3)
-        return uniform(rng, tri3);
-    return uniform(rng, tri4);
+    if constexpr (std::is_same_v<TraitsT, boundary_tag>)
+        return uniform(rng, py.base);
+    else
+        return uniform(rng, triangles[triangles.size() - 1]);
 }
 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>

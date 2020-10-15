@@ -3,9 +3,6 @@
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
 
-#include "centroid.hh"
-#include "normal.hh"
-
 namespace tg
 {
 template <class BaseT, class TraitsT>
