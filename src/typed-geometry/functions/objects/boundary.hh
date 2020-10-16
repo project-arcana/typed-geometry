@@ -162,6 +162,17 @@ template <class BaseT>
 
 // === infinite versions ===
 
+template <int D, class ScalarT>
+[[nodiscard]] constexpr line<D, ScalarT> inf_of(segment<D, ScalarT> const& v)
+{
+    return {v.pos0, normalize(v.pos1 - v.pos0)};
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr line<D, ScalarT> inf_of(ray<D, ScalarT> const& v)
+{
+    return {v.origin, v.dir};
+}
+
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr auto inf_of(cone<D, ScalarT, TraitsT> const& v)
 {
@@ -172,5 +183,15 @@ template <int D, class ScalarT, class TraitsT>
         return inf_cone<D, ScalarT, default_object_tag>(apex, openingDir, openingAngle);
     else
         return inf_cone<D, ScalarT, boundary_tag>(apex, openingDir, openingAngle);
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto inf_of(cylinder<D, ScalarT, TraitsT> const& v)
+{
+    const auto axis = inf_of(v.axis);
+    if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+        return inf_cylinder<D, ScalarT, default_object_tag>(axis, v.radius);
+    else
+        return inf_cylinder<D, ScalarT, boundary_tag>(axis, v.radius);
 }
 }
