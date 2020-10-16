@@ -322,7 +322,7 @@ template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class Rng>
 template <int D, class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere_boundary<D, ScalarT> const& s)
 {
-    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
+    auto ub = aabb<D, ScalarT>::minus_one_to_one;
     while (true)
     {
         auto p = uniform_vec(rng, ub);
@@ -335,7 +335,7 @@ template <int D, class ScalarT, class Rng>
 template <int D, class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& b)
 {
-    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
+    auto ub = aabb<D, ScalarT>::minus_one_to_one;
     while (true)
     {
         auto p = uniform_vec(rng, ub);
@@ -501,7 +501,7 @@ template <class ScalarT, class Rng>
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary_no_caps<3, ScalarT> const& c)
 {
-    auto ub = tg::aabb<2, ScalarT>::minus_one_to_one;
+    auto ub = aabb<2, ScalarT>::minus_one_to_one;
     while (true)
     {
         auto p = uniform_vec(rng, ub);
@@ -625,7 +625,7 @@ struct sampler<color<3, T>>
     template <class Rng>
     constexpr static color<3, T> uniform(Rng& rng)
     {
-        return tg::color3(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
+        return color<3, T>(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
     }
 };
 template <class T>
@@ -634,7 +634,7 @@ struct sampler<color<4, T>>
     template <class Rng>
     constexpr static color<4, T> uniform(Rng& rng)
     {
-        return tg::color3(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
+        return color<4, T>(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
     }
 };
 template <int D, class ScalarT>
@@ -643,7 +643,7 @@ struct sampler<dir<D, ScalarT>>
     template <class Rng>
     constexpr static dir<D, ScalarT> uniform(Rng& rng)
     {
-        auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
+        auto ub = aabb<D, ScalarT>::minus_one_to_one;
         while (true)
         {
             auto p = uniform_vec(rng, ub);
