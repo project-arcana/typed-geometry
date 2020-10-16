@@ -1,7 +1,6 @@
 #pragma once
 
 #include <initializer_list>
-#include <vector>
 
 #include <typed-geometry/detail/scalar_traits.hh>
 
@@ -78,6 +77,8 @@ template <class Rng>
 {
     return detail::uniform_sampler<Rng>{rng};
 }
+
+// ======== Uniform between two numbers ========
 
 template <class Rng>
 [[nodiscard]] constexpr f32 uniform(Rng& rng, f32 a, f32 b)
@@ -198,6 +199,8 @@ template <class T, class Rng>
     return mix(a, b, detail::uniform01<T>(rng));
 }
 
+// ======== Uniform selection from a list ========
+
 template <class Rng, class T>
 [[nodiscard]] constexpr T uniform(Rng& rng, std::initializer_list<T> list)
 {
@@ -211,6 +214,115 @@ template <class Rng, class Container>
     TG_CONTRACT(c.size() > 0 && "cannot pick from an empty container");
     return c[uniform(rng, u64(0), u64(c.size() - 1))];
 }
+
+// ======== Uniform point on multiple objects ========
+
+template <class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_length(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+{
+    using ScalarT = typename object_traits<ObjectA>::scalar_t;
+
+    static_assert(object_traits<ObjectA>::object_dimension == 1, "objects must be 1D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectRest>::object_dimension == 1)), "objects must be 1D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
+    static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
+
+    ScalarT lengthSums[1 + sizeof...(rest)];
+    ScalarT lengthSum = ScalarT(0);
+    { // compute cumulative areas
+        auto i = 0;
+        lengthSums[i++] = lengthSum += length(obj);
+        ((lengthSums[i++] = lengthSum += length(rest)), ...);
+    }
+
+    auto part = uniform(rng, ScalarT(0), lengthSum);
+
+    // special case for the first object
+    if (part <= lengthSums[0])
+        return uniform(rng, obj);
+
+    typename object_traits<ObjectA>::pos_t result;
+    { // otherwise, sample from rest
+        auto i = 1;
+        // this code finds the interval where part is within lengthSums, samples from the associated object (stored in result), then stops by short circuiting
+        auto ok = ((part <= lengthSums[i++] ? (result = uniform(rng, rest), true) : false) || ...);
+        TG_ASSERT(ok);
+    }
+    return result;
+}
+
+template <class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+{
+    using ScalarT = typename object_traits<ObjectA>::scalar_t;
+
+    static_assert(object_traits<ObjectA>::object_dimension == 2, "objects must be 2D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectRest>::object_dimension == 2)), "objects must be 2D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
+    static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
+
+    ScalarT areaSums[1 + sizeof...(rest)];
+    ScalarT areaSum = ScalarT(0);
+    { // compute cumulative areas
+        auto i = 0;
+        areaSums[i++] = areaSum += area(obj);
+        ((areaSums[i++] = areaSum += area(rest)), ...);
+    }
+
+    auto part = uniform(rng, ScalarT(0), areaSum);
+
+    // special case for the first object
+    if (part <= areaSums[0])
+        return uniform(rng, obj);
+
+    typename object_traits<ObjectA>::pos_t result;
+    { // otherwise, sample from rest
+        auto i = 1;
+        // this code finds the interval where part is within areaSums, samples from the associated object (stored in result), then stops by short circuiting
+        auto ok = ((part <= areaSums[i++] ? (result = uniform(rng, rest), true) : false) || ...);
+        TG_ASSERT(ok);
+    }
+    return result;
+}
+
+template <class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_volume(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+{
+    using ScalarT = typename object_traits<ObjectA>::scalar_t;
+
+    static_assert(object_traits<ObjectA>::object_dimension == 3, "objects must be 3D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectRest>::object_dimension == 3)), "objects must be 3D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
+    static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
+
+    ScalarT volumeSums[1 + sizeof...(rest)];
+    ScalarT volumeSum = ScalarT(0);
+    { // compute cumulative volumes
+        auto i = 0;
+        volumeSums[i++] = volumeSum += volume(obj);
+        ((volumeSums[i++] = volumeSum += volume(rest)), ...);
+    }
+
+    auto part = uniform(rng, ScalarT(0), volumeSum);
+
+    // special case for the first object
+    if (part <= volumeSums[0])
+        return uniform(rng, obj);
+
+    typename object_traits<ObjectA>::pos_t result;
+    { // otherwise, sample from rest
+        auto i = 1;
+        // this code finds the interval where part is within volumeSums, samples from the associated object (stored in result), then stops by short circuiting
+        auto ok = ((part <= volumeSums[i++] ? (result = uniform(rng, rest), true) : false) || ...);
+        TG_ASSERT(ok);
+    }
+    return result;
+}
+
+// ======== Uniform point on an object ========
 
 template <class Rng>
 [[nodiscard]] constexpr int uniform(Rng& rng, range1 const& b)
@@ -530,36 +642,26 @@ template <class BaseT, class Rng>
 template <class BaseT, class TraitsT, class Rng>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT, TraitsT> const& py)
 {
-    using ScalarT = typename BaseT::scalar_t;
     const auto apex = apex_of(py);
     const auto verts = vertices(py.base);
-    auto triangles = std::vector<triangle<3, ScalarT>>();
-    auto areas = std::vector<ScalarT>();
-    auto totalArea = ScalarT(0);
+    auto triangles = array<triangle<3, typename BaseT::scalar_t>, verts.size()>();
     for (size_t i = 0; i < verts.size(); ++i)
-    {
-        const auto tri = triangle<3, ScalarT>(apex, verts[i], verts[(i+1) % verts.size()]);
-        const auto a = area(tri);
-        triangles.push_back(tri);
-        areas.push_back(a);
-        totalArea += a;
-    }
+        triangles[i] = {apex, verts[i], verts[(i+1) % verts.size()]};
 
     if constexpr (std::is_same_v<TraitsT, boundary_tag>)
-        totalArea += area(py.base);
-
-    auto part = uniform(rng, ScalarT(0), totalArea);
-    for (size_t i = 0; i < triangles.size(); ++i)
     {
-        part -= areas[i];
-        if (part <= ScalarT(0))
-            return uniform(rng, triangles[i]);
+        if constexpr (verts.size() == 3)
+            return uniform_by_area(rng, py.base, triangles[0], triangles[1], triangles[2]);
+        else // verts.size() == 4
+            return uniform_by_area(rng, py.base, triangles[0], triangles[1], triangles[2], triangles[3]);
     }
-
-    if constexpr (std::is_same_v<TraitsT, boundary_tag>)
-        return uniform(rng, py.base);
     else
-        return uniform(rng, triangles[triangles.size() - 1]);
+    {
+        if constexpr (verts.size() == 3)
+            return uniform_by_area(rng, triangles[0], triangles[1], triangles[2]);
+        else // verts.size() == 4
+            return uniform_by_area(rng, triangles[0], triangles[1], triangles[2], triangles[3]);
+    }
 }
 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
