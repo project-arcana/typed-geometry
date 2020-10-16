@@ -111,53 +111,33 @@ template <class BaseT>
 
 // === only caps versions ===
 
-template <class ScalarT>
-[[nodiscard]] constexpr disk<3, ScalarT> caps_of(hemisphere<3, ScalarT> const& v)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto caps_of(hemisphere<3, ScalarT, TraitsT> const& v)
 {
-    return {v.center, v.radius, v.normal};
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return circle<3, ScalarT>(v.center, v.radius, v.normal);
+    else
+        return disk<3, ScalarT>(v.center, v.radius, v.normal);
 }
-template <class ScalarT>
-[[nodiscard]] constexpr segment<2, ScalarT> caps_of(hemisphere<2, ScalarT> const& v)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto caps_of(hemisphere<2, ScalarT, TraitsT> const& v)
 {
-    auto half = perpendicular(v.normal) * v.radius;
-    return {v.center - half, v.center + half};
-}
-template <class ScalarT>
-[[nodiscard]] constexpr disk<3, ScalarT> caps_of(hemisphere_boundary<3, ScalarT> const& v)
-{
-    return {v.center, v.radius, v.normal};
-}
-template <class ScalarT>
-[[nodiscard]] constexpr segment<2, ScalarT> caps_of(hemisphere_boundary<2, ScalarT> const& v)
-{
-    auto half = perpendicular(v.normal) * v.radius;
-    return {v.center - half, v.center + half};
-}
-template <class ScalarT>
-[[nodiscard]] constexpr circle<3, ScalarT> caps_of(hemisphere_boundary_no_caps<3, ScalarT> const& v)
-{
-    return {v.center, v.radius, v.normal};
-}
-template <class ScalarT>
-[[nodiscard]] constexpr sphere_boundary<1, ScalarT, 2> caps_of(hemisphere_boundary_no_caps<2, ScalarT> const& v)
-{
-    return {v.center, v.radius, v.normal};
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return sphere_boundary<1, ScalarT, 2>(v.center, v.radius, v.normal);
+    else
+    {
+        auto half = perpendicular(v.normal) * v.radius;
+        return segment<2, ScalarT>(v.center - half, v.center + half);
+    }
 }
 
-template <class BaseT>
-[[nodiscard]] constexpr BaseT caps_of(pyramid<BaseT> const& v)
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr auto caps_of(pyramid<BaseT, TraitsT> const& v)
 {
-    return v.base;
-}
-template <class BaseT>
-[[nodiscard]] constexpr BaseT caps_of(pyramid<BaseT, boundary_tag> const& v)
-{
-    return v.base;
-}
-template <class BaseT>
-[[nodiscard]] constexpr auto caps_of(pyramid<BaseT, boundary_no_caps_tag> const& v) -> decltype(boundary_of(v.base))
-{
-    return boundary_of(v.base);
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return boundary_of(v.base);
+    else
+        return v.base;
 }
 
 template <int D, class ScalarT, class TraitsT>
