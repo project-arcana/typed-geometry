@@ -276,9 +276,11 @@ template <int D, class ScalarT>
     return pow2(c.radius - eps) <= d2 && d2 <= pow2(c.radius + eps);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(pyramid<triangle<3, ScalarT>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr bool contains(pyramid<BaseT> const& py, pos<3, typename BaseT::scalar_t> const& p,
+                                      dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
 {
+    using ScalarT = typename BaseT::scalar_t;
     const auto c = centroid(py.base);
     auto n = normal(py.base);
 
@@ -287,100 +289,27 @@ template <class ScalarT>
 
     // Check if inside for each pyramid side
     const auto apex = apex_of(py);
-    n = normalize(cross(apex - py.base.pos0, py.base.pos1 - py.base.pos0));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - py.base.pos1, py.base.pos2 - py.base.pos1));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - py.base.pos2, py.base.pos0 - py.base.pos2));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-
+    const auto verts = vertices(py.base);
+    for (size_t i = 0; i < verts.size(); ++i)
+    {
+        n = normalize(cross(apex - verts[i], verts[(i + 1) % verts.size()] - verts[i]));
+        if (dot(p - apex + eps * n, n) < ScalarT(0))
+            return false;
+    }
     return true;
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(pyramid_boundary_no_caps<triangle<3, ScalarT>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr bool contains(pyramid_boundary_no_caps<BaseT> const& py, pos<3, typename BaseT::scalar_t> const& p,
+                                      dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
 {
     // Check if contained in any pyramid side
+    using tri_t = triangle<3, typename BaseT::scalar_t>;
     const auto apex = apex_of(py);
-    if (contains(triangle<3, ScalarT>(apex, py.base.pos0, py.base.pos1), p), eps)
-        return true;
-    if (contains(triangle<3, ScalarT>(apex, py.base.pos1, py.base.pos2), p), eps)
-        return true;
-    if (contains(triangle<3, ScalarT>(apex, py.base.pos2, py.base.pos0), p), eps)
-        return true;
-
-    return false;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(pyramid<box<2, ScalarT, 3>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
-{
-    const auto c = centroid(py.base);
-    auto n = normal(py.base);
-
-    if (dot(p - c + eps * n, n) < ScalarT(0))
-        return false; // Not inside if on the other side of the base
-
-    // Check if inside for each pyramid side
-    const auto apex = apex_of(py);
-    const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
-    const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
-    const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
-    const auto p3 = py.base[comp<2, ScalarT>(-1, 1)];
-
-    n = normalize(cross(apex - p0, p1 - p0));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - p1, p2 - p1));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - p2, p3 - p2));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - p3, p0 - p3));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-
-    return true;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(pyramid_boundary_no_caps<box<2, ScalarT, 3>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
-{
-    // Check if contained in any pyramid side
-    const auto apex = apex_of(py);
-    const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
-    const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
-    const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
-    const auto p3 = py.base[comp<2, ScalarT>(-1, 1)];
-    if (contains(triangle<3, ScalarT>(apex, p0, p1), p), eps)
-        return true;
-    if (contains(triangle<3, ScalarT>(apex, p1, p2), p), eps)
-        return true;
-    if (contains(triangle<3, ScalarT>(apex, p2, p3), p), eps)
-        return true;
-    if (contains(triangle<3, ScalarT>(apex, p3, p0), p), eps)
-        return true;
-
-    return false;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(pyramid_boundary_no_caps<quad<3, ScalarT>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
-{
-    // Check if contained in any pyramid side
-    const auto apex = apex_of(py);
-    if (contains(triangle<3, ScalarT>(apex, py.base.pos00, py.base.pos10), p), eps)
-        return true;
-    if (contains(triangle<3, ScalarT>(apex, py.base.pos10, py.base.pos11), p), eps)
-        return true;
-    if (contains(triangle<3, ScalarT>(apex, py.base.pos11, py.base.pos01), p), eps)
-        return true;
-    if (contains(triangle<3, ScalarT>(apex, py.base.pos01, py.base.pos00), p), eps)
-        return true;
+    const auto verts = vertices(py.base);
+    for (size_t i = 0; i < verts.size(); ++i)
+        if(contains(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]), p, eps))
+            return true;
 
     return false;
 }
