@@ -429,12 +429,12 @@ template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT, TraitsT> const& c)
 {
     auto closestOnBase = project(p, caps_of(c));
-    if (dot(p - closestOnBase, closestOnBase - apex_of(c)) >= ScalarT(0)) // Base is closer than any point on the cone can be
+    if (dot(p - closestOnBase, apex_of(c) - closestOnBase) <= ScalarT(0)) // Base is closer than any point on the cone can be
         return closestOnBase;
 
     // Return closer projection
-    auto closestOnCone = project(p, inf_of<3, ScalarT>(c));
-    return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
+    auto closestOnSide = project(p, inf_of<3, ScalarT>(c));
+    return distance_sqr(p, closestOnSide) >= distance_sqr(p, closestOnBase) ? closestOnBase : closestOnSide;
 }
 
 // other pyramids
@@ -457,75 +457,28 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
     auto closestOnSide = project(p, boundary_no_caps_of(py));
     return distance_sqr(p, closestOnSide) >= distance_sqr(p, closestOnBase) ? closestOnBase : closestOnSide;
 }
-// pyramid type specific base functions
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, pyramid_boundary_no_caps<triangle<3, ScalarT>> const& py)
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid_boundary_no_caps<BaseT> const& py)
 {
+    using tri_t = triangle<3, typename BaseT::scalar_t>;
     auto bestDist = max<float>();
     auto bestProj = p;
-    const auto apex = apex_of(py);
-
-    auto checkBetterProj = [&](triangle<3, ScalarT> const& tri)
+    const auto checkBetterProj = [&](tri_t const& tri)
     {
-        auto proj = project(p, tri);
-        auto dist = distance_sqr(p, proj);
+        const auto proj = project(p, tri);
+        const auto dist = distance_sqr(p, proj);
         if (dist < bestDist)
         {
             bestDist = dist;
             bestProj = proj;
         }
     };
-    checkBetterProj(triangle<3, ScalarT>(apex, py.base.pos0, py.base.pos1));
-    checkBetterProj(triangle<3, ScalarT>(apex, py.base.pos1, py.base.pos2));
-    checkBetterProj(triangle<3, ScalarT>(apex, py.base.pos2, py.base.pos0));
-    return bestProj;
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, pyramid_boundary_no_caps<box<2, ScalarT, 3>> const& py)
-{
-    auto bestDist = max<float>();
-    auto bestProj = p;
-    const auto apex = apex_of(py);
-    const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
-    const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
-    const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
-    const auto p3 = py.base[comp<2, ScalarT>(-1, 1)];
 
-    auto checkBetterProj = [&](triangle<3, ScalarT> const& tri) {
-        auto proj = project(p, tri);
-        auto dist = distance_sqr(p, proj);
-        if (dist < bestDist)
-        {
-            bestDist = dist;
-            bestProj = proj;
-        }
-    };
-    checkBetterProj(triangle<3, ScalarT>(apex, p0, p1));
-    checkBetterProj(triangle<3, ScalarT>(apex, p1, p2));
-    checkBetterProj(triangle<3, ScalarT>(apex, p2, p3));
-    checkBetterProj(triangle<3, ScalarT>(apex, p3, p0));
-    return bestProj;
-}
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, pyramid_boundary_no_caps<quad<3, ScalarT>> const& py)
-{
-    auto bestDist = max<float>();
-    auto bestProj = p;
     const auto apex = apex_of(py);
+    const auto verts = vertices(py.base);
+    for (size_t i = 0; i < verts.size(); ++i)
+        checkBetterProj(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]));
 
-    auto checkBetterProj = [&](triangle<3, ScalarT> const& tri) {
-        auto proj = project(p, tri);
-        auto dist = distance_sqr(p, proj);
-        if (dist < bestDist)
-        {
-            bestDist = dist;
-            bestProj = proj;
-        }
-    };
-    checkBetterProj(triangle<3, ScalarT>(apex, py.base.pos00, py.base.pos10));
-    checkBetterProj(triangle<3, ScalarT>(apex, py.base.pos10, py.base.pos11));
-    checkBetterProj(triangle<3, ScalarT>(apex, py.base.pos11, py.base.pos01));
-    checkBetterProj(triangle<3, ScalarT>(apex, py.base.pos01, py.base.pos00));
     return bestProj;
 }
 
