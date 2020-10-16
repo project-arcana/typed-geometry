@@ -162,28 +162,15 @@ template <class BaseT>
 
 // === infinite versions ===
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr inf_cone<D, ScalarT> inf_of(cone<D, ScalarT> const& v)
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto inf_of(cone<D, ScalarT, TraitsT> const& v)
 {
-    auto apex = apex_of(v);
-    auto openingDir = -v.base.normal;
-    auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
-    return {apex, openingDir, openingAngle};
-}
-template <int D, class ScalarT>
-[[nodiscard]] constexpr inf_cone<D, ScalarT, boundary_tag> inf_of(cone<D, ScalarT, boundary_tag> const& v)
-{
-    auto apex = apex_of(v);
-    auto openingDir = -v.base.normal;
-    auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
-    return {apex, openingDir, openingAngle};
-}
-template <int D, class ScalarT>
-[[nodiscard]] constexpr inf_cone_boundary<D, ScalarT> inf_of(cone_boundary_no_caps<D, ScalarT> const& v)
-{
-    auto apex = apex_of(v);
-    auto openingDir = -v.base.normal;
-    auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
-    return {apex, openingDir, openingAngle};
+    const auto apex = apex_of(v);
+    const auto openingDir = -v.base.normal;
+    const auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
+    if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+        return inf_cone<D, ScalarT, default_object_tag>(apex, openingDir, openingAngle);
+    else
+        return inf_cone<D, ScalarT, boundary_tag>(apex, openingDir, openingAngle);
 }
 }
