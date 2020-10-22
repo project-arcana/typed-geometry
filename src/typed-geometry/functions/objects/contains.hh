@@ -228,16 +228,16 @@ template <class ScalarT>
     if (!contains(plane<3, ScalarT>(n, t.pos0), p, eps))
         return false;
 
-    // checking whether point lies on left side of the given edge
-    auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge) {
+    // checking whether point lies on left side of all edges
+    auto edges = edges_of(t);
+    for (const auto& edge : edges)
+    {
         auto pEdge = project(p, edge);
         auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
-        return dot(edgeNormal, p - pEdge) <= eps;
-    };
-
-    // Check if the point is on the left side of all edges
-    return isLeftOfEdge(segment<3, ScalarT>(t.pos0, t.pos1)) && isLeftOfEdge(segment<3, ScalarT>(t.pos1, t.pos2))
-           && isLeftOfEdge(segment<3, ScalarT>(t.pos2, t.pos0));
+        if (dot(edgeNormal, p - pEdge) > eps)
+            return false;
+    }
+    return true;
 }
 
 template <class ScalarT>
