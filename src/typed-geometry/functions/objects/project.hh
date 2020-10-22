@@ -450,7 +450,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid_boundary<BaseT> const& py)
 {
     auto closestOnBase = project(p, caps_of(py));
-    if (dot(p - closestOnBase, apex_of(py) - closestOnBase) <= BaseT::scalar_t(0)) // Base is closer than any point on the pyramid can be
+    if (dot(p - closestOnBase, apex_of(py) - closestOnBase) <= typename BaseT::scalar_t(0)) // Base is closer than any point on the pyramid can be
         return closestOnBase;
 
     // Return closer projection
