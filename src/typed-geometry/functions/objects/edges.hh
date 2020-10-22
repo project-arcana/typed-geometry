@@ -8,13 +8,13 @@
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] array<segment<D, ScalarT>, 3> edges(triangle<D, ScalarT> const& t)
+[[nodiscard]] array<segment<D, ScalarT>, 3> edges_of(triangle<D, ScalarT> const& t)
 {
     return {{{t.pos0, t.pos1}, {t.pos1, t.pos2}, {t.pos2, t.pos0}}};
 }
 
 template <class ScalarT>
-[[nodiscard]] array<segment<2, ScalarT>, 4> edges(aabb<2, ScalarT> const& bb)
+[[nodiscard]] array<segment<2, ScalarT>, 4> edges_of(aabb<2, ScalarT> const& bb)
 {
     auto p00 = pos<3, ScalarT>(bb.min.x, bb.min.y);
     auto p01 = pos<3, ScalarT>(bb.min.x, bb.max.y);
@@ -25,7 +25,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] array<segment<3, ScalarT>, 12> edges(aabb<3, ScalarT> const& bb)
+[[nodiscard]] array<segment<3, ScalarT>, 12> edges_of(aabb<3, ScalarT> const& bb)
 {
     auto p000 = pos<3, ScalarT>(bb.min.x, bb.min.y, bb.min.z);
     auto p001 = pos<3, ScalarT>(bb.min.x, bb.min.y, bb.max.z);
@@ -52,5 +52,12 @@ template <class ScalarT>
         {p100, p101},
         {p110, p111}, // z dir
     }};
+}
+
+
+template <class ObjectT>
+[[deprecated("use edges_of")]] [[nodiscard]] constexpr auto edges(ObjectT const& o) -> decltype(edges_of(o))
+{
+    return edges_of(o);
 }
 }

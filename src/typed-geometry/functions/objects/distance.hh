@@ -137,8 +137,8 @@ template <class ScalarT>
         d = min(d, distance(t, p));
 
     // edges to edges
-    for (auto e0 : edges(t))
-        for (auto e1 : edges(bb))
+    for (auto e0 : edges_of(t))
+        for (auto e1 : edges_of(bb))
             d = min(d, distance(e0, e1));
 
     return d;
