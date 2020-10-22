@@ -870,7 +870,7 @@ template <class ScalarT>
         return true;
 
     // get adjusted tri base plane
-    auto plane = tg::plane<3, ScalarT>(normal(tri_in), p0);
+    auto plane = tg::plane<3, ScalarT>(normal_of(tri_in), p0);
 
     // fast plane / AABB test
     {

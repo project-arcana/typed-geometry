@@ -125,7 +125,7 @@ template <class ScalarT>
 {
     auto r = p - b.center;
 
-    if (abs(dot(normal(b), r)) > eps)
+    if (abs(dot(normal_of(b), r)) > eps)
         return false; // Not in the spanned plane
 
     if (abs(dot(b.half_extents[0], r)) > length_sqr(b.half_extents[0]) + eps || abs(dot(b.half_extents[1], r)) > length_sqr(b.half_extents[1]) + eps)
@@ -138,7 +138,7 @@ template <class ScalarT>
 {
     auto r = p - b.center;
 
-    if (abs(dot(normal(b), r)) > eps)
+    if (abs(dot(normal_of(b), r)) > eps)
         return false; // Not in the spanned plane
 
     // Rest is the same as for box2
@@ -223,7 +223,7 @@ template <class ScalarT>
 {
     // TODO: does this also work for triangles where vertices are not ordered cc? should it?
 
-    auto n = normal(t);
+    auto n = normal_of(t);
 
     if (!contains(plane<3, ScalarT>(n, t.pos0), p, eps))
         return false;
@@ -282,7 +282,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
 {
     using ScalarT = typename BaseT::scalar_t;
     const auto c = centroid_of(py.base);
-    auto n = normal(py.base);
+    auto n = normal_of(py.base);
 
     if (dot(p - c + eps * n, n) < ScalarT(0))
         return false; // Not inside if on the other side of the base

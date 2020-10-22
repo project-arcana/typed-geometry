@@ -163,10 +163,10 @@ template <int ObjectD, class ScalarT, int DomainD>
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangle<3, ScalarT> const& t)
 {
-    auto pPlane = project(p, plane<3, ScalarT>(normal(t), t.pos0));
+    auto n = normal_of(t);
+    auto pPlane = project(p, plane<3, ScalarT>(n, t.pos0));
 
     // Check if projection is already in the triangle. Simplified version of contains(triangle3)
-    auto n = normal(t);
     auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge) {
         auto pEdge = project(p, edge);
         auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
