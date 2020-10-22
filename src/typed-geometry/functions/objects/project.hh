@@ -475,7 +475,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
     };
 
     const auto apex = apex_of(py);
-    const auto verts = vertices(py.base);
+    const auto verts = vertices_of(py.base);
     for (size_t i = 0; i < verts.size(); ++i)
         checkBetterProj(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]));
 

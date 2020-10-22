@@ -289,7 +289,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
 
     // Check if inside for each pyramid side
     const auto apex = apex_of(py);
-    const auto verts = vertices(py.base);
+    const auto verts = vertices_of(py.base);
     for (size_t i = 0; i < verts.size(); ++i)
     {
         n = normalize(cross(apex - verts[i], verts[(i + 1) % verts.size()] - verts[i]));
@@ -306,7 +306,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
     // Check if contained in any pyramid side
     using tri_t = triangle<3, typename BaseT::scalar_t>;
     const auto apex = apex_of(py);
-    const auto verts = vertices(py.base);
+    const auto verts = vertices_of(py.base);
     for (size_t i = 0; i < verts.size(); ++i)
         if(contains(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]), p, eps))
             return true;

@@ -10,25 +10,25 @@
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] array<pos<D, ScalarT>, 2> vertices(segment<D, ScalarT> const& s)
+[[nodiscard]] array<pos<D, ScalarT>, 2> vertices_of(segment<D, ScalarT> const& s)
 {
     return {{s.pos0, s.pos1}};
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] array<pos<D, ScalarT>, 3> vertices(triangle<D, ScalarT> const& t)
+[[nodiscard]] array<pos<D, ScalarT>, 3> vertices_of(triangle<D, ScalarT> const& t)
 {
     return {{t.pos0, t.pos1, t.pos2}};
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] array<pos<D, ScalarT>, 4> vertices(quad<D, ScalarT> const& q)
+[[nodiscard]] array<pos<D, ScalarT>, 4> vertices_of(quad<D, ScalarT> const& q)
 {
     return {{q.pos00, q.pos10, q.pos11, q.pos01}}; // in ccw order
 }
 
 template <class ScalarT>
-[[nodiscard]] array<pos<2, ScalarT>, 4> vertices(aabb<2, ScalarT> const& bb)
+[[nodiscard]] array<pos<2, ScalarT>, 4> vertices_of(aabb<2, ScalarT> const& bb)
 {
     auto p00 = pos<3, ScalarT>(bb.min.x, bb.min.y);
     auto p10 = pos<3, ScalarT>(bb.max.x, bb.min.y);
@@ -39,7 +39,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] array<pos<3, ScalarT>, 8> vertices(aabb<3, ScalarT> const& bb)
+[[nodiscard]] array<pos<3, ScalarT>, 8> vertices_of(aabb<3, ScalarT> const& bb)
 {
     auto p000 = pos<3, ScalarT>(bb.min.x, bb.min.y, bb.min.z);
     auto p001 = pos<3, ScalarT>(bb.min.x, bb.min.y, bb.max.z);
@@ -54,7 +54,7 @@ template <class ScalarT>
 }
 
 template <int DomainD, class ScalarT>
-[[nodiscard]] array<pos<DomainD, ScalarT>, 4> vertices(box<2, ScalarT, DomainD> const& b)
+[[nodiscard]] array<pos<DomainD, ScalarT>, 4> vertices_of(box<2, ScalarT, DomainD> const& b)
 {
     const auto p00 = b[comp<2, ScalarT>(-1, -1)];
     const auto p10 = b[comp<2, ScalarT>(1, -1)];
@@ -62,5 +62,12 @@ template <int DomainD, class ScalarT>
     const auto p01 = b[comp<2, ScalarT>(-1, 1)];
 
     return {{p00, p10, p11, p01}}; // in ccw order
+}
+
+
+template <class ObjectT>
+[[deprecated("use vertices_of")]] [[nodiscard]] constexpr auto vertices(ObjectT const& o) -> decltype(vertices_of(o))
+{
+    return vertices_of(o);
 }
 }

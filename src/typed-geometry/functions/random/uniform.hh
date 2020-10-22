@@ -649,7 +649,7 @@ template <class BaseT, class TraitsT, class Rng>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT, TraitsT> const& py)
 {
     const auto apex = apex_of(py);
-    const auto verts = vertices(py.base);
+    const auto verts = vertices_of(py.base);
     auto triangles = array<triangle<3, typename BaseT::scalar_t>, verts.size()>();
     for (size_t i = 0; i < verts.size(); ++i)
         triangles[i] = {apex, verts[i], verts[(i+1) % verts.size()]};
