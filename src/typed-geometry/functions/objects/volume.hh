@@ -49,6 +49,6 @@ template <class BaseT>
 [[nodiscard]] constexpr typename BaseT::scalar_t volume(pyramid<BaseT> const& b)
 {
     using T = typename BaseT::scalar_t;
-    return area(b.base) * b.height * T(1) / T(3);
+    return area_of(b.base) * b.height * T(1) / T(3);
 }
 } // namespace tg

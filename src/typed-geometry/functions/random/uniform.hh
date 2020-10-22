@@ -273,8 +273,8 @@ constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&..
     ScalarT areaSum = ScalarT(0);
     { // compute cumulative areas
         auto i = 0;
-        areaSums[i++] = areaSum += area(obj);
-        ((areaSums[i++] = areaSum += area(rest)), ...);
+        areaSums[i++] = areaSum += area_of(obj);
+        ((areaSums[i++] = areaSum += area_of(rest)), ...);
     }
 
     auto part = uniform(rng, ScalarT(0), areaSum);
