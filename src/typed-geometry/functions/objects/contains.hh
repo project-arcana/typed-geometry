@@ -281,7 +281,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
                                       dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
 {
     using ScalarT = typename BaseT::scalar_t;
-    const auto c = centroid(py.base);
+    const auto c = centroid_of(py.base);
     auto n = normal(py.base);
 
     if (dot(p - c + eps * n, n) < ScalarT(0))

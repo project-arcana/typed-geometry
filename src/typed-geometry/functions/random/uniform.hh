@@ -641,7 +641,7 @@ template <class BaseT, class Rng>
     const auto n = normal(p.base);
     const auto h = tg::pow2(detail::uniform01<typename BaseT::scalar_t>(rng));
     const auto pBase = uniform(rng, p.base);
-    return mix(pBase, centroid(p.base), h) + h * p.height * n;
+    return mix(pBase, centroid_of(p.base), h) + h * p.height * n;
 }
 
 // All boundary and boundary_no_caps pyramid variants except cones
