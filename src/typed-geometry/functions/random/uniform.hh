@@ -308,8 +308,8 @@ constexpr auto uniform_by_volume(rng& rng, ObjectA const& obj, ObjectRest const&
     ScalarT volumeSum = ScalarT(0);
     { // compute cumulative volumes
         auto i = 0;
-        volumeSums[i++] = volumeSum += volume(obj);
-        ((volumeSums[i++] = volumeSum += volume(rest)), ...);
+        volumeSums[i++] = volumeSum += volume_of(obj);
+        ((volumeSums[i++] = volumeSum += volume_of(rest)), ...);
     }
 
     auto part = uniform(rng, ScalarT(0), volumeSum);
