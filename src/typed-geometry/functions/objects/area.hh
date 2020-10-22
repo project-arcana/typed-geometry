@@ -104,4 +104,15 @@ template <class ScalarT>
     // TODO: FIXME
     return area_of(b.base) + tg::pi_scalar<ScalarT> * b.base.radius * sqrt(pow2(b.base.radius) + pow2(b.height));
 }
+
+template <class ObjectT>
+[[deprecated("use area_of")]] [[nodiscard]] constexpr auto area(ObjectT const& o) -> decltype(area_of(o))
+{
+    return area_of(o);
+}
+template <class ObjectT>
+[[deprecated("use signed_area_of")]] [[nodiscard]] constexpr auto signed_area(ObjectT const& o) -> decltype(signed_area_of(o))
+{
+    return signed_area_of(o);
+}
 } // namespace tg
