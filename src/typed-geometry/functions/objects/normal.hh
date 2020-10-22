@@ -68,7 +68,7 @@ template <class ScalarT>
 {
     // Assumes the quad is planar, as it is a requirement for pyramid<quad>
     const auto res = normalize(cross(q.pos01 - q.pos00, q.pos10 - q.pos00));
-    TG_ASSERT(tg::are_orthogonal(q.pos11 - q.pos00, res)); // Checks that the four points are indeed coplanar
+    TG_ASSERT(tg::are_orthogonal(q.pos11 - q.pos00, vec(res))); // Checks that the four points are indeed coplanar
     return res;
 }
 

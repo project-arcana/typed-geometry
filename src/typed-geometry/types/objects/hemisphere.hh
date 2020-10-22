@@ -64,7 +64,7 @@ struct hemisphere
     constexpr hemisphere(pos_t const& c, ScalarT r, dir_t const& normal) : center(c), radius(r), normal(normal) {}
 
     template <class OtherT, class OtherTraitsT>
-    constexpr hemisphere(hemisphere<D, OtherT, OtherTraitsT> const& v) : center(v.center), radius(v.radius), normal(v.normal)
+    explicit constexpr hemisphere(hemisphere<D, OtherT, OtherTraitsT> const& v) : center(v.center), radius(v.radius), normal(v.normal)
     {
     }
 

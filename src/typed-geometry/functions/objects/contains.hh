@@ -42,7 +42,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(pos<D, ScalarT> const& b, pos<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     if (eps > ScalarT(0))
-        return distance_sqr(b, o) < eps * eps;
+        return distance_sqr(b, o) <= pow2(eps);
     return b == o;
 }
 
@@ -166,7 +166,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(sphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto r = s.radius + eps;
-    return distance_sqr(s.center, p) <= r * r;
+    return distance_sqr(s.center, p) <= pow2(r);
 }
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(sphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
@@ -174,6 +174,27 @@ template <int D, class ScalarT>
     auto d2 = distance_sqr(s.center, p);
     return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
 }
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(hemisphere<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto c = s.center - eps * s.normal;
+    if (dot(s.normal, p - c) < 0)
+        return false;
+
+    return distance_sqr(s.center, p) <= pow2(s.radius + eps);
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(hemisphere_boundary_no_caps<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto c = s.center - eps * s.normal;
+    if (dot(s.normal, p - c) < 0)
+        return false;
+
+    auto d2 = distance_sqr(s.center, p);
+    return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
+}
+// contains(hemisphere_boundary, ...) is not explicitly implemented here because it is not better than the default contains->distance->project implementation
 
 // Note that eps is used to compare 2D areas, not 1D lengths
 template <class ScalarT>
@@ -243,6 +264,66 @@ template <class ScalarT>
     return true;
 }
 
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cylinder<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    return distance_sqr(p, c.axis) <= pow2(c.radius + eps);
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cylinder_boundary<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto d2 = distance_sqr(p, c.axis);
+    return pow2(c.radius - eps) <= d2 && d2 <= pow2(c.radius + eps);
+}
+
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr bool contains(pyramid<BaseT> const& py, pos<3, typename BaseT::scalar_t> const& p,
+                                      dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
+{
+    using ScalarT = typename BaseT::scalar_t;
+    const auto c = centroid(py.base);
+    auto n = normal(py.base);
+
+    if (dot(p - c + eps * n, n) < ScalarT(0))
+        return false; // Not inside if on the other side of the base
+
+    // Check if inside for each pyramid side
+    const auto apex = apex_of(py);
+    const auto verts = vertices(py.base);
+    for (size_t i = 0; i < verts.size(); ++i)
+    {
+        n = normalize(cross(apex - verts[i], verts[(i + 1) % verts.size()] - verts[i]));
+        if (dot(p - apex + eps * n, n) < ScalarT(0))
+            return false;
+    }
+    return true;
+}
+
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr bool contains(pyramid_boundary_no_caps<BaseT> const& py, pos<3, typename BaseT::scalar_t> const& p,
+                                      dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
+{
+    // Check if contained in any pyramid side
+    using tri_t = triangle<3, typename BaseT::scalar_t>;
+    const auto apex = apex_of(py);
+    const auto verts = vertices(py.base);
+    for (size_t i = 0; i < verts.size(); ++i)
+        if(contains(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]), p, eps))
+            return true;
+
+    return false;
+}
+
+template <class BaseT>
+[[nodiscard]] constexpr bool contains(pyramid_boundary<BaseT> const& py, pos<3, typename BaseT::scalar_t> const& p,
+                                      dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
+{
+    if (contains(caps_of(py), p, eps))
+        return true;
+
+    return contains(boundary_no_caps_of(py), p, eps);
+}
+
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
@@ -265,7 +346,7 @@ template <class ScalarT>
         if (dot(p - c.base.center, c.base.normal) < ScalarT(0))
             return false; // Not inside if on the other side of the base
 
-        auto apex = c.base.center + c.height * c.base.normal;
+        auto apex = apex_of(c);
         auto pRing = c.base.center + c.base.radius * any_normal(c.base.normal);
 
         // On the surface iff the point has the same angle to the axis (wrt. the apex) as some point on the outer boundary
@@ -279,89 +360,25 @@ template <class ScalarT>
     }
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(inf_cylinder<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
-{
-    auto d = distance(c.axis, p);
-    return d <= c.radius + eps;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(inf_cone<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cone<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apex = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
     auto apexToP = normalize_safe(p - apex);
-    if (apexToP == vec<3, ScalarT>::zero)
+    if (apexToP == vec<D, ScalarT>::zero)
         return true;
-    return angle_between(dir<3, ScalarT>(apexToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle; // opening_angle is between the cone surfaces
+    return angle_between(dir<D, ScalarT>(apexToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle; // opening_angle is between the cone surfaces
 }
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(inf_cone_boundary<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_cone_boundary<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto apexOuter = c.apex - (c.opening_dir * eps); // Shift apex outwards to add eps
     auto apexInner = c.apex + (c.opening_dir * eps); // Shift apex inwards to subtract eps
     auto apexOuterToP = normalize_safe(p - apexOuter);
     auto apexInnerToP = normalize_safe(p - apexInner);
-    if (apexOuterToP == vec<3, ScalarT>::zero || apexInnerToP == vec<3, ScalarT>::zero)
+    if (apexOuterToP == vec<D, ScalarT>::zero || apexInnerToP == vec<D, ScalarT>::zero)
         return true;
-    return angle_between(dir<3, ScalarT>(apexOuterToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle
-           && angle_between(dir<3, ScalarT>(apexInnerToP), c.opening_dir) >= ScalarT(0.5) * c.opening_angle;
+    return angle_between(dir<D, ScalarT>(apexOuterToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle
+           && angle_between(dir<D, ScalarT>(apexInnerToP), c.opening_dir) >= ScalarT(0.5) * c.opening_angle;
 }
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(pyramid<triangle<3, ScalarT>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
-{
-    const auto c = centroid(py.base);
-    auto n = normal(py.base);
-
-    if (dot(p - c + eps * n, n) < ScalarT(0))
-        return false; // Not inside if on the other side of the base
-
-    // Check if inside for each pyramid side
-    const auto apex = c + n * py.height;
-    n = normalize(cross(apex - py.base.pos0, py.base.pos1 - py.base.pos0));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - py.base.pos1, py.base.pos2 - py.base.pos1));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - py.base.pos2, py.base.pos0 - py.base.pos2));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-
-    return true;
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool contains(pyramid<box<2, ScalarT, 3>> const& py, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
-{
-    const auto c = centroid(py.base);
-    auto n = normal(py.base);
-
-    if (dot(p - c + eps * n, n) < ScalarT(0))
-        return false; // Not inside if on the other side of the base
-
-    // Check if inside for each pyramid side
-    const auto apex = c + n * py.height;
-    const auto p0 = py.base[comp<2, ScalarT>(-1, -1)];
-    const auto p1 = py.base[comp<2, ScalarT>(1, -1)];
-    const auto p2 = py.base[comp<2, ScalarT>(1, 1)];
-    const auto p3 = py.base[comp<2, ScalarT>(-1, 1)];
-
-    n = normalize(cross(apex - p0, p1 - p0));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - p1, p2 - p1));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - p2, p3 - p2));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-    n = normalize(cross(apex - p3, p0 - p3));
-    if (dot(p - apex + eps * n, n) < ScalarT(0))
-        return false;
-
-    return true;
-}
-
 } // namespace tg

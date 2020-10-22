@@ -65,6 +65,11 @@ template <int D, class ScalarT, class TraitsT>
     return {v.center, v.radius};
 }
 template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr sphere_boundary<1, ScalarT, 2> boundary_of(sphere<1, ScalarT, 2, TraitsT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr sphere_boundary<2, ScalarT, 3> boundary_of(sphere<2, ScalarT, 3, TraitsT> const& v)
 {
     return {v.center, v.radius, v.normal};
@@ -82,8 +87,8 @@ template <int D, class ScalarT, class TraitsT>
 {
     return {v.center, v.radius, v.normal};
 }
-template <class BaseT>
-[[nodiscard]] constexpr pyramid_boundary_no_caps<BaseT> boundary_no_caps_of(pyramid<BaseT> const& v)
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr pyramid_boundary_no_caps<BaseT> boundary_no_caps_of(pyramid<BaseT, TraitsT> const& v)
 {
     return {v.base, v.height};
 }
@@ -104,4 +109,79 @@ template <class BaseT>
     return v;
 }
 
+// === only caps versions ===
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto caps_of(hemisphere<3, ScalarT, TraitsT> const& v)
+{
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return circle<3, ScalarT>(v.center, v.radius, v.normal);
+    else
+        return disk<3, ScalarT>(v.center, v.radius, v.normal);
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto caps_of(hemisphere<2, ScalarT, TraitsT> const& v)
+{
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return sphere_boundary<1, ScalarT, 2>(v.center, v.radius, v.normal);
+    else
+    {
+        auto half = perpendicular(v.normal) * v.radius;
+        return segment<2, ScalarT>(v.center - half, v.center + half);
+    }
+}
+
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr auto caps_of(pyramid<BaseT, TraitsT> const& v)
+{
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return boundary_of(v.base);
+    else
+        return v.base;
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto caps_of(cylinder<D, ScalarT, TraitsT> const& v)
+{
+    const auto normal = normalize(v.axis.pos1 - v.axis.pos0);
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return array<sphere<D-1, ScalarT, D, boundary_tag>, 2>{{{v.axis.pos0, v.radius, -normal}, {v.axis.pos1, v.radius, normal}}};
+    else
+        return array<sphere<D-1, ScalarT, D>, 2>{{{v.axis.pos0, v.radius, -normal}, {v.axis.pos1, v.radius, normal}}};
+}
+
+// === infinite versions ===
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr line<D, ScalarT> inf_of(segment<D, ScalarT> const& v)
+{
+    return {v.pos0, normalize(v.pos1 - v.pos0)};
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr line<D, ScalarT> inf_of(ray<D, ScalarT> const& v)
+{
+    return {v.origin, v.dir};
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto inf_of(cone<D, ScalarT, TraitsT> const& v)
+{
+    const auto apex = apex_of(v);
+    const auto openingDir = -v.base.normal;
+    const auto openingAngle = ScalarT(2) * angle_between(normalize(v.base.center + any_normal(v.base.normal) * v.base.radius - apex), openingDir);
+    if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+        return inf_cone<D, ScalarT, default_object_tag>(apex, openingDir, openingAngle);
+    else
+        return inf_cone<D, ScalarT, boundary_tag>(apex, openingDir, openingAngle);
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr auto inf_of(cylinder<D, ScalarT, TraitsT> const& v)
+{
+    const auto axis = inf_of(v.axis);
+    if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+        return inf_cylinder<D, ScalarT, default_object_tag>(axis, v.radius);
+    else
+        return inf_cylinder<D, ScalarT, boundary_tag>(axis, v.radius);
+}
 }

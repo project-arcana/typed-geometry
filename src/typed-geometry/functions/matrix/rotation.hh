@@ -151,4 +151,23 @@ template <class ScalarT>
 
     return translation(origin_to_p) * r * translation(-origin_to_p);
 }
+
+template <class ScalarT>
+[[nodiscard]] constexpr vec<2, ScalarT> rotate(vec<2, ScalarT> v, angle_t<ScalarT> a)
+{
+    auto [sin, cos] = tg::sin_cos(a);
+    return {cos * v.x - sin * v.y, sin * v.x + cos * v.y};
+}
+template <class ScalarT>
+[[nodiscard]] constexpr dir<2, ScalarT> rotate(dir<2, ScalarT> v, angle_t<ScalarT> a)
+{
+    auto [sin, cos] = tg::sin_cos(a);
+    return {cos * v.x - sin * v.y, sin * v.x + cos * v.y};
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> rotate(pos<2, ScalarT> v, angle_t<ScalarT> a)
+{
+    auto [sin, cos] = tg::sin_cos(a);
+    return {cos * v.x - sin * v.y, sin * v.x + cos * v.y};
+}
 } // namespace tg

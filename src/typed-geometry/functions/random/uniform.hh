@@ -84,6 +84,8 @@ template <class Rng>
     return detail::uniform_sampler<Rng>{rng};
 }
 
+// ======== Uniform between two numbers ========
+
 template <class Rng>
 [[nodiscard]] constexpr f32 uniform(Rng& rng, f32 a, f32 b)
 {
@@ -203,6 +205,8 @@ template <class T, class Rng>
     return mix(a, b, detail::uniform01<T>(rng));
 }
 
+// ======== Uniform selection from a list ========
+
 template <class Rng, class T>
 [[nodiscard]] constexpr T uniform(Rng& rng, std::initializer_list<T> list)
 {
@@ -216,6 +220,115 @@ template <class Rng, class Container>
     TG_CONTRACT(c.size() > 0 && "cannot pick from an empty container");
     return c[uniform(rng, u64(0), u64(c.size() - 1))];
 }
+
+// ======== Uniform point on multiple objects ========
+
+template <class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_length(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+{
+    using ScalarT = typename object_traits<ObjectA>::scalar_t;
+
+    static_assert(object_traits<ObjectA>::object_dimension == 1, "objects must be 1D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectRest>::object_dimension == 1)), "objects must be 1D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
+    static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
+
+    ScalarT lengthSums[1 + sizeof...(rest)];
+    ScalarT lengthSum = ScalarT(0);
+    { // compute cumulative areas
+        auto i = 0;
+        lengthSums[i++] = lengthSum += length(obj);
+        ((lengthSums[i++] = lengthSum += length(rest)), ...);
+    }
+
+    auto part = uniform(rng, ScalarT(0), lengthSum);
+
+    // special case for the first object
+    if (part <= lengthSums[0])
+        return uniform(rng, obj);
+
+    typename object_traits<ObjectA>::pos_t result;
+    { // otherwise, sample from rest
+        auto i = 1;
+        // this code finds the interval where part is within lengthSums, samples from the associated object (stored in result), then stops by short circuiting
+        auto ok = ((part <= lengthSums[i++] ? (result = uniform(rng, rest), true) : false) || ...);
+        TG_ASSERT(ok);
+    }
+    return result;
+}
+
+template <class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+{
+    using ScalarT = typename object_traits<ObjectA>::scalar_t;
+
+    static_assert(object_traits<ObjectA>::object_dimension == 2, "objects must be 2D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectRest>::object_dimension == 2)), "objects must be 2D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
+    static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
+
+    ScalarT areaSums[1 + sizeof...(rest)];
+    ScalarT areaSum = ScalarT(0);
+    { // compute cumulative areas
+        auto i = 0;
+        areaSums[i++] = areaSum += area(obj);
+        ((areaSums[i++] = areaSum += area(rest)), ...);
+    }
+
+    auto part = uniform(rng, ScalarT(0), areaSum);
+
+    // special case for the first object
+    if (part <= areaSums[0])
+        return uniform(rng, obj);
+
+    typename object_traits<ObjectA>::pos_t result;
+    { // otherwise, sample from rest
+        auto i = 1;
+        // this code finds the interval where part is within areaSums, samples from the associated object (stored in result), then stops by short circuiting
+        auto ok = ((part <= areaSums[i++] ? (result = uniform(rng, rest), true) : false) || ...);
+        TG_ASSERT(ok);
+    }
+    return result;
+}
+
+template <class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_volume(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+{
+    using ScalarT = typename object_traits<ObjectA>::scalar_t;
+
+    static_assert(object_traits<ObjectA>::object_dimension == 3, "objects must be 3D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectRest>::object_dimension == 3)), "objects must be 3D (but might be embedded in another dimension)");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
+    static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
+
+    ScalarT volumeSums[1 + sizeof...(rest)];
+    ScalarT volumeSum = ScalarT(0);
+    { // compute cumulative volumes
+        auto i = 0;
+        volumeSums[i++] = volumeSum += volume(obj);
+        ((volumeSums[i++] = volumeSum += volume(rest)), ...);
+    }
+
+    auto part = uniform(rng, ScalarT(0), volumeSum);
+
+    // special case for the first object
+    if (part <= volumeSums[0])
+        return uniform(rng, obj);
+
+    typename object_traits<ObjectA>::pos_t result;
+    { // otherwise, sample from rest
+        auto i = 1;
+        // this code finds the interval where part is within volumeSums, samples from the associated object (stored in result), then stops by short circuiting
+        auto ok = ((part <= volumeSums[i++] ? (result = uniform(rng, rest), true) : false) || ...);
+        TG_ASSERT(ok);
+    }
+    return result;
+}
+
+// ======== Uniform point on an object ========
 
 template <class Rng>
 [[nodiscard]] constexpr int uniform(Rng& rng, range1 const& b)
@@ -324,6 +437,32 @@ template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class Rng>
     return b.center + b.half_extents * uniform_vec(rng, aabb<ObjectD, ScalarT, TraitsT>::minus_one_to_one);
 }
 
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere_boundary<D, ScalarT> const& s)
+{
+    auto ub = aabb<D, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length_sqr(p);
+        if (l > ScalarT(0) && l <= ScalarT(1))
+            return s.center + p * (s.radius / sqrt(l));
+    }
+}
+
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& b)
+{
+    auto ub = aabb<D, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length_sqr(p);
+        if (l <= ScalarT(1))
+            return b.center + p * b.radius;
+    }
+}
+
 template <class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, sphere_boundary<2, ScalarT> const& c)
 {
@@ -345,6 +484,19 @@ template <class ScalarT, class Rng>
     auto x = any_normal(d.normal);
     auto y = cross(d.normal, x);
     return d.center + direction.x * x + direction.y * y;
+}
+
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, sphere<1, ScalarT, 2> const& s)
+{
+    auto v = perpendicular(s.normal) * s.radius;
+    return mix(s.center - v, s.center + v, detail::uniform01<ScalarT>(rng));
+}
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<2, ScalarT> uniform(Rng& rng, sphere_boundary<1, ScalarT, 2> const& s)
+{
+    auto v = perpendicular(s.normal) * s.radius;
+    return uniform(rng) ? s.center + v : s.center - v;
 }
 
 template <class ScalarT, class Rng>
@@ -418,50 +570,6 @@ template <class ScalarT, class Rng>
 }
 
 template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere_boundary<D, ScalarT> const& s)
-{
-    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
-    while (true)
-    {
-        auto p = uniform_vec(rng, ub);
-        auto l = length_sqr(p);
-        if (l > ScalarT(0) && l <= ScalarT(1))
-            return s.center + p * (s.radius / sqrt(l));
-    }
-}
-
-template <int D, class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, sphere<D, ScalarT> const& b)
-{
-    auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
-    while (true)
-    {
-        auto p = uniform_vec(rng, ub);
-        auto l = length_sqr(p);
-        if (l <= ScalarT(1))
-            return b.center + p * b.radius;
-    }
-}
-
-template <class ScalarT, class Rng>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary_no_caps<3, ScalarT> const& c) // boundary, no_caps (not on base)
-{
-    auto ub = tg::aabb<2, ScalarT>::minus_one_to_one;
-    while (true)
-    {
-        auto p = uniform_vec(rng, ub);
-        auto l = length_sqr(p);
-        if (l <= ScalarT(1))
-        {
-            p *= c.base.radius;
-            auto x = any_normal(c.base.normal);
-            auto y = cross(c.base.normal, x);
-            return c.base.center + p.x * x + p.y * y + (ScalarT(1) - sqrt(l)) * c.base.normal * c.height;
-        }
-    }
-}
-
-template <int D, class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere<D, ScalarT> const& h)
 {
     auto p = uniform(rng, sphere<D, ScalarT>(h.center, h.radius));
@@ -481,14 +589,85 @@ template <int D, class ScalarT, class Rng>
     else
         return h.center - v;
 }
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere_boundary<D, ScalarT> const& h)
+{
+    ScalarT ratio;
+    if constexpr (D == 2)
+        ratio = ScalarT(2) / (ScalarT(2) + pi_scalar<ScalarT>); // round length = pi * r, flat length = 2 * r => ratio pi : 2
+    if constexpr (D == 3)
+        ratio = ScalarT(1) / ScalarT(3); // round area = 2 * pi * r^2, flat area = pi * r^2 => ratio 2 : 1
 
-template <class BaseT, class Rng, class ScalarT = typename BaseT::scalar_t>
-[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, pyramid<BaseT> const& p)
+    if (detail::uniform01<ScalarT>(rng) >= ratio)
+        return uniform(rng, boundary_no_caps_of(h));
+
+    return uniform(rng, caps_of(h));
+}
+
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary<3, ScalarT> const& c)
+{
+    // base area = pi * r^^2, lateral area (mantle) = pi * r * sqrt(r^2 + h^2) => ratio r : sqrt(r^2 + h^2)
+    auto r = c.base.radius;
+    ScalarT ratio = r / (r + sqrt(pow2(r) + pow2(c.height)));
+    if (detail::uniform01<ScalarT>(rng) >= ratio)
+        return uniform(rng, boundary_no_caps_of(c));
+
+    return uniform(rng, caps_of(c));
+}
+
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<3, ScalarT> uniform(Rng& rng, cone_boundary_no_caps<3, ScalarT> const& c)
+{
+    auto ub = aabb<2, ScalarT>::minus_one_to_one;
+    while (true)
+    {
+        auto p = uniform_vec(rng, ub);
+        auto l = length_sqr(p);
+        if (l <= ScalarT(1))
+        {
+            p *= c.base.radius;
+            auto x = any_normal(c.base.normal);
+            auto y = cross(c.base.normal, x);
+            return c.base.center + p.x * x + p.y * y + (ScalarT(1) - sqrt(l)) * c.base.normal * c.height;
+        }
+    }
+}
+
+// All solid pyramid variants
+template <class BaseT, class Rng>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT> const& p)
 {
     const auto n = normal(p.base);
-    const auto h = tg::pow2(detail::uniform01<ScalarT>(rng));
+    const auto h = tg::pow2(detail::uniform01<BaseT::scalar_t>(rng));
     const auto pBase = uniform(rng, p.base);
     return mix(pBase, centroid(p.base), h) + h * p.height * n;
+}
+
+// All boundary and boundary_no_caps pyramid variants except cones
+template <class BaseT, class TraitsT, class Rng>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT, TraitsT> const& py)
+{
+    const auto apex = apex_of(py);
+    const auto verts = vertices(py.base);
+    auto triangles = array<triangle<3, typename BaseT::scalar_t>, verts.size()>();
+    for (size_t i = 0; i < verts.size(); ++i)
+        triangles[i] = {apex, verts[i], verts[(i+1) % verts.size()]};
+
+    if constexpr (std::is_same_v<TraitsT, boundary_tag>)
+    {
+        if constexpr (verts.size() == 3)
+            return uniform_by_area(rng, py.base, triangles[0], triangles[1], triangles[2]);
+        else // verts.size() == 4
+            return uniform_by_area(rng, py.base, triangles[0], triangles[1], triangles[2], triangles[3]);
+    }
+    else
+    {
+        if constexpr (verts.size() == 3)
+            return uniform_by_area(rng, triangles[0], triangles[1], triangles[2]);
+        else // verts.size() == 4
+            return uniform_by_area(rng, triangles[0], triangles[1], triangles[2], triangles[3]);
+    }
 }
 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
@@ -563,7 +742,7 @@ struct sampler<color<3, T>>
     template <class Rng>
     constexpr static color<3, T> uniform(Rng& rng)
     {
-        return tg::color3(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
+        return color<3, T>(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
     }
 };
 template <class T>
@@ -572,7 +751,7 @@ struct sampler<color<4, T>>
     template <class Rng>
     constexpr static color<4, T> uniform(Rng& rng)
     {
-        return tg::color3(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
+        return color<4, T>(tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)), tg::uniform(rng, T(0), T(1)));
     }
 };
 template <int D, class ScalarT>
@@ -581,7 +760,7 @@ struct sampler<dir<D, ScalarT>>
     template <class Rng>
     constexpr static dir<D, ScalarT> uniform(Rng& rng)
     {
-        auto ub = tg::aabb<D, ScalarT>::minus_one_to_one;
+        auto ub = aabb<D, ScalarT>::minus_one_to_one;
         while (true)
         {
             auto p = uniform_vec(rng, ub);

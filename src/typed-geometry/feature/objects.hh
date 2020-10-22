@@ -3,6 +3,7 @@
 #include <typed-geometry/feature/basic.hh>
 
 #include <typed-geometry/functions/objects/aabb.hh>
+#include <typed-geometry/functions/objects/apex.hh>
 #include <typed-geometry/functions/objects/area.hh>
 #include <typed-geometry/functions/objects/boundary.hh>
 #include <typed-geometry/functions/objects/bounds.hh>

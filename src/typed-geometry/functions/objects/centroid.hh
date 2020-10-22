@@ -29,14 +29,14 @@ template <int D, class ScalarT>
     return (a + b) * fractional_result<ScalarT>(0.5);
 }
 
-template <int ObjectD, class ScalarT, int DomainD>
-[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid(box<ObjectD, ScalarT, DomainD> const& b)
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid(box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
 {
     return b.center;
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(aabb<D, ScalarT> const& b)
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(aabb<D, ScalarT, TraitsT> const& b)
 {
     return (b.min + b.max) * fractional_result<ScalarT>(0.5);
 }
@@ -60,20 +60,20 @@ template <int D, class ScalarT>
     return (q.pos00 + q.pos01 + q.pos10 + q.pos11) * fractional_result<ScalarT>(0.25);
 }
 
-template <int ObjectD, class ScalarT, int DomainD>
-[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid(sphere<ObjectD, ScalarT, DomainD> const& p)
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid(sphere<ObjectD, ScalarT, DomainD, TraitsT> const& p)
 {
     return p.center;
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(cylinder<D, ScalarT> const& c)
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(cylinder<D, ScalarT, TraitsT> const& c)
 {
     return centroid(c.axis);
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(capsule<D, ScalarT> const& c)
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid(capsule<D, ScalarT, TraitsT> const& c)
 {
     return centroid(c.axis);
 }
