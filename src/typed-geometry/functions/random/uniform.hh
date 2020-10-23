@@ -273,8 +273,8 @@ constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&..
     ScalarT areaSum = ScalarT(0);
     { // compute cumulative areas
         auto i = 0;
-        areaSums[i++] = areaSum += area(obj);
-        ((areaSums[i++] = areaSum += area(rest)), ...);
+        areaSums[i++] = areaSum += area_of(obj);
+        ((areaSums[i++] = areaSum += area_of(rest)), ...);
     }
 
     auto part = uniform(rng, ScalarT(0), areaSum);
@@ -308,8 +308,8 @@ constexpr auto uniform_by_volume(rng& rng, ObjectA const& obj, ObjectRest const&
     ScalarT volumeSum = ScalarT(0);
     { // compute cumulative volumes
         auto i = 0;
-        volumeSums[i++] = volumeSum += volume(obj);
-        ((volumeSums[i++] = volumeSum += volume(rest)), ...);
+        volumeSums[i++] = volumeSum += volume_of(obj);
+        ((volumeSums[i++] = volumeSum += volume_of(rest)), ...);
     }
 
     auto part = uniform(rng, ScalarT(0), volumeSum);
@@ -638,10 +638,10 @@ template <class ScalarT, class Rng>
 template <class BaseT, class Rng>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT> const& p)
 {
-    const auto n = normal(p.base);
-    const auto h = tg::pow2(detail::uniform01<BaseT::scalar_t>(rng));
+    const auto n = normal_of(p.base);
+    const auto h = tg::pow2(detail::uniform01<typename BaseT::scalar_t>(rng));
     const auto pBase = uniform(rng, p.base);
-    return mix(pBase, centroid(p.base), h) + h * p.height * n;
+    return mix(pBase, centroid_of(p.base), h) + h * p.height * n;
 }
 
 // All boundary and boundary_no_caps pyramid variants except cones
@@ -649,7 +649,7 @@ template <class BaseT, class TraitsT, class Rng>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT, TraitsT> const& py)
 {
     const auto apex = apex_of(py);
-    const auto verts = vertices(py.base);
+    const auto verts = vertices_of(py.base);
     auto triangles = array<triangle<3, typename BaseT::scalar_t>, verts.size()>();
     for (size_t i = 0; i < verts.size(); ++i)
         triangles[i] = {apex, verts[i], verts[(i+1) % verts.size()]};

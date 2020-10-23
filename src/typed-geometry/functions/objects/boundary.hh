@@ -150,6 +150,69 @@ template <int D, class ScalarT, class TraitsT>
         return array<sphere<D-1, ScalarT, D>, 2>{{{v.axis.pos0, v.radius, -normal}, {v.axis.pos1, v.radius, normal}}};
 }
 
+// === solid version ===
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<D, ScalarT> solid_of(aabb<D, ScalarT, TraitsT> const& v)
+{
+    return {v.min, v.max};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr box<D, ScalarT> solid_of(box<D, ScalarT, D, TraitsT> const& v)
+{
+    return {v.center, v.half_extents};
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr box<2, ScalarT, 3> solid_of(box<2, ScalarT, 3, TraitsT> const& v)
+{
+    return {v.center, v.half_extents, v.normal};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr capsule<D, ScalarT> solid_of(capsule<D, ScalarT, TraitsT> const& v)
+{
+    return {v.axis, v.radius};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr cylinder<D, ScalarT> solid_of(cylinder<D, ScalarT, TraitsT> const& v)
+{
+    return {v.axis, v.radius};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr hemisphere<D, ScalarT> solid_of(hemisphere<D, ScalarT, TraitsT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr inf_cone<D, ScalarT> solid_of(inf_cone<D, ScalarT, TraitsT> const& v)
+{
+    return {v.apex, v.opening_dir, v.opening_angle};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr inf_cylinder<D, ScalarT> solid_of(inf_cylinder<D, ScalarT, TraitsT> const& v)
+{
+    return {v.axis, v.radius};
+}
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr pyramid<BaseT> solid_of(pyramid<BaseT, TraitsT> const& v)
+{
+    return {v.base, v.height};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr sphere<D, ScalarT> solid_of(sphere<D, ScalarT, D, TraitsT> const& v)
+{
+    return {v.center, v.radius};
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr sphere<1, ScalarT, 2> solid_of(sphere<1, ScalarT, 2, TraitsT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr sphere<2, ScalarT, 3> solid_of(sphere<2, ScalarT, 3, TraitsT> const& v)
+{
+    return {v.center, v.radius, v.normal};
+}
+
 // === infinite versions ===
 
 template <int D, class ScalarT>

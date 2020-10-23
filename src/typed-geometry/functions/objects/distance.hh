@@ -129,16 +129,16 @@ template <class ScalarT>
     auto d = tg::max<ScalarT>();
 
     // tri vertices to bb
-    for (auto p : vertices(t))
+    for (auto p : vertices_of(t))
         d = min(d, distance(bb, p));
 
     // bb vertices to tri
-    for (auto p : vertices(bb))
+    for (auto p : vertices_of(bb))
         d = min(d, distance(t, p));
 
     // edges to edges
-    for (auto e0 : edges(t))
-        for (auto e1 : edges(bb))
+    for (auto e0 : edges_of(t))
+        for (auto e1 : edges_of(bb))
             d = min(d, distance(e0, e1));
 
     return d;

@@ -125,7 +125,7 @@ template <class ScalarT>
 {
     auto r = p - b.center;
 
-    if (abs(dot(normal(b), r)) > eps)
+    if (abs(dot(normal_of(b), r)) > eps)
         return false; // Not in the spanned plane
 
     if (abs(dot(b.half_extents[0], r)) > length_sqr(b.half_extents[0]) + eps || abs(dot(b.half_extents[1], r)) > length_sqr(b.half_extents[1]) + eps)
@@ -138,7 +138,7 @@ template <class ScalarT>
 {
     auto r = p - b.center;
 
-    if (abs(dot(normal(b), r)) > eps)
+    if (abs(dot(normal_of(b), r)) > eps)
         return false; // Not in the spanned plane
 
     // Rest is the same as for box2
@@ -223,21 +223,21 @@ template <class ScalarT>
 {
     // TODO: does this also work for triangles where vertices are not ordered cc? should it?
 
-    auto n = normal(t);
+    auto n = normal_of(t);
 
     if (!contains(plane<3, ScalarT>(n, t.pos0), p, eps))
         return false;
 
-    // checking whether point lies on left side of the given edge
-    auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge) {
+    // checking whether point lies on left side of all edges
+    auto edges = edges_of(t);
+    for (const auto& edge : edges)
+    {
         auto pEdge = project(p, edge);
         auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
-        return dot(edgeNormal, p - pEdge) <= eps;
-    };
-
-    // Check if the point is on the left side of all edges
-    return isLeftOfEdge(segment<3, ScalarT>(t.pos0, t.pos1)) && isLeftOfEdge(segment<3, ScalarT>(t.pos1, t.pos2))
-           && isLeftOfEdge(segment<3, ScalarT>(t.pos2, t.pos0));
+        if (dot(edgeNormal, p - pEdge) > eps)
+            return false;
+    }
+    return true;
 }
 
 template <class ScalarT>
@@ -281,15 +281,15 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
                                       dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
 {
     using ScalarT = typename BaseT::scalar_t;
-    const auto c = centroid(py.base);
-    auto n = normal(py.base);
+    const auto c = centroid_of(py.base);
+    auto n = normal_of(py.base);
 
     if (dot(p - c + eps * n, n) < ScalarT(0))
         return false; // Not inside if on the other side of the base
 
     // Check if inside for each pyramid side
     const auto apex = apex_of(py);
-    const auto verts = vertices(py.base);
+    const auto verts = vertices_of(py.base);
     for (size_t i = 0; i < verts.size(); ++i)
     {
         n = normalize(cross(apex - verts[i], verts[(i + 1) % verts.size()] - verts[i]));
@@ -306,7 +306,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
     // Check if contained in any pyramid side
     using tri_t = triangle<3, typename BaseT::scalar_t>;
     const auto apex = apex_of(py);
-    const auto verts = vertices(py.base);
+    const auto verts = vertices_of(py.base);
     for (size_t i = 0; i < verts.size(); ++i)
         if(contains(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]), p, eps))
             return true;

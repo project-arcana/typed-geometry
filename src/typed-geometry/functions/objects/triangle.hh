@@ -7,7 +7,7 @@
 namespace tg
 {
 template <class ScalarT>
-[[nodiscard]] sphere<2, ScalarT> circumcircle(triangle<2, ScalarT> const& t)
+[[nodiscard]] sphere<2, ScalarT> circumcircle_of(triangle<2, ScalarT> const& t)
 {
     auto const& a = t.pos0;
     auto const& b = t.pos1;
@@ -24,5 +24,12 @@ template <class ScalarT>
     auto const r = distance(center, a);
 
     return {center, r};
+}
+
+
+template <class ObjectT>
+[[deprecated("use circumcircle_of")]] [[nodiscard]] constexpr auto circumcircle(ObjectT const& o) -> decltype(circumcircle_of(o))
+{
+    return circumcircle_of(o);
 }
 }

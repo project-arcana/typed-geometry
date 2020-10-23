@@ -163,10 +163,10 @@ template <int ObjectD, class ScalarT, int DomainD>
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangle<3, ScalarT> const& t)
 {
-    auto pPlane = project(p, plane<3, ScalarT>(normal(t), t.pos0));
+    auto n = normal_of(t);
+    auto pPlane = project(p, plane<3, ScalarT>(n, t.pos0));
 
     // Check if projection is already in the triangle. Simplified version of contains(triangle3)
-    auto n = normal(t);
     auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge) {
         auto pEdge = project(p, edge);
         auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
@@ -450,7 +450,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid_boundary<BaseT> const& py)
 {
     auto closestOnBase = project(p, caps_of(py));
-    if (dot(p - closestOnBase, apex_of(py) - closestOnBase) <= BaseT::scalar_t(0)) // Base is closer than any point on the pyramid can be
+    if (dot(p - closestOnBase, apex_of(py) - closestOnBase) <= typename BaseT::scalar_t(0)) // Base is closer than any point on the pyramid can be
         return closestOnBase;
 
     // Return closer projection
@@ -475,7 +475,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
     };
 
     const auto apex = apex_of(py);
-    const auto verts = vertices(py.base);
+    const auto verts = vertices_of(py.base);
     for (size_t i = 0; i < verts.size(); ++i)
         checkBetterProj(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]));
 

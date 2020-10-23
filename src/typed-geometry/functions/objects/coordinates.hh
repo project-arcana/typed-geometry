@@ -93,7 +93,7 @@ template <int D, class ScalarT, class TraitsT>
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr comp<2, ScalarT> coordinates(box<2, ScalarT, 3, TraitsT> const& b, pos<3, ScalarT> const& p)
 {
-    auto pPlane = project(p, plane<3, ScalarT>(normal(b), b.center));
+    auto pPlane = project(p, plane<3, ScalarT>(normal_of(b), b.center));
     auto r = pPlane - b.center;
 
     comp<2, ScalarT> pLocal;
