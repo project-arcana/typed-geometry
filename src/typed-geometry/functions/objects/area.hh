@@ -39,13 +39,13 @@ template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr ScalarT area_of(aabb<3, ScalarT, TraitsT> const& b)
 {
     auto s = size<3, ScalarT>(b.max - b.min);
-    return 2 * (s.width * s.height + s.width * s.depth + s.height * s.depth);
+    return ScalarT(2) * (s.width * s.height + s.width * s.depth + s.height * s.depth);
 }
 
 template <class ScalarT, int D, class TraitsT>
 [[nodiscard]] constexpr ScalarT area_of(box<2, ScalarT, D, TraitsT> const& b)
 {
-    return 4 * sqrt(length_sqr(b.half_extents[0]) * length_sqr(b.half_extents[1]));
+    return ScalarT(4) * sqrt(length_sqr(b.half_extents[0]) * length_sqr(b.half_extents[1]));
 }
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr ScalarT area_of(box<3, ScalarT, 3, TraitsT> const& b)
@@ -53,7 +53,7 @@ template <class ScalarT, class TraitsT>
     auto w = length(b.half_extents[0]);
     auto h = length(b.half_extents[1]);
     auto d = length(b.half_extents[2]);
-    return 8 * (w * h + w * d + h * d);
+    return ScalarT(8) * (w * h + w * d + h * d);
 }
 
 template <class ScalarT>
@@ -77,25 +77,24 @@ template <class ScalarT>
 template <class ScalarT, int D, class TraitsT>
 [[nodiscard]] constexpr fractional_result<ScalarT> area_of(sphere<2, ScalarT, D, TraitsT> const& b)
 {
-    return tg::pi_scalar<fractional_result<ScalarT>> * tg::pow2(b.radius);
+    return tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
 }
 
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr fractional_result<ScalarT> area_of(sphere<3, ScalarT, 3, TraitsT> const& b)
 {
-    return (4 * tg::pi_scalar<fractional_result<ScalarT>>)*tg::pow2(b.radius);
+    return ScalarT(4) * tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
 }
 
 template <class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> area_of(cylinder<3, ScalarT> const& b)
 {
-    return tg::pi_scalar<fractional_result<ScalarT>> * tg::pow2(b.radius) * 2           // caps
-           + 2 * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis); // mantle
+    return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * (b.radius + length(b.axis)); // == 2 pi r^2 + 2 pi r h
 }
 template <class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> area_of(cylinder_boundary_no_caps<3, ScalarT> const& b)
 {
-    return 2 * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis); // mantle
+    return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis);
 }
 
 template <class ScalarT>

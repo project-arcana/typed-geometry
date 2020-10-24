@@ -639,7 +639,7 @@ template <class BaseT, class Rng>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT> const& p)
 {
     const auto n = normal_of(p.base);
-    const auto h = tg::pow2(detail::uniform01<typename BaseT::scalar_t>(rng));
+    const auto h = pow2(detail::uniform01<typename BaseT::scalar_t>(rng));
     const auto pBase = uniform(rng, p.base);
     return mix(pBase, centroid_of(p.base), h) + h * p.height * n;
 }

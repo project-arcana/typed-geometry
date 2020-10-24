@@ -39,7 +39,7 @@ template <int C, int R, class T>
     auto s = T(0);
     for (auto x = 0; x < C; ++x)
         for (auto y = 0; y < R; ++y)
-            s += tg::pow2(v[x][y]);
+            s += pow2(v[x][y]);
     return s;
 }
 
