@@ -23,6 +23,8 @@
 
 namespace tg
 {
+// ======== inner area of 2D objects ========
+
 template <class ScalarT>
 [[nodiscard]] constexpr ScalarT area_of(size<2, ScalarT> const& s)
 {
@@ -35,25 +37,10 @@ template <class ScalarT, class TraitsT>
     return area_of(size<2, ScalarT>(b.max - b.min));
 }
 
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr ScalarT area_of(aabb<3, ScalarT, TraitsT> const& b)
-{
-    auto s = size<3, ScalarT>(b.max - b.min);
-    return ScalarT(2) * (s.width * s.height + s.width * s.depth + s.height * s.depth);
-}
-
 template <class ScalarT, int D, class TraitsT>
 [[nodiscard]] constexpr ScalarT area_of(box<2, ScalarT, D, TraitsT> const& b)
 {
     return ScalarT(4) * sqrt(length_sqr(b.half_extents[0]) * length_sqr(b.half_extents[1]));
-}
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr ScalarT area_of(box<3, ScalarT, 3, TraitsT> const& b)
-{
-    auto w = length(b.half_extents[0]);
-    auto h = length(b.half_extents[1]);
-    auto d = length(b.half_extents[2]);
-    return ScalarT(8) * (w * h + w * d + h * d);
 }
 
 template <class ScalarT>
@@ -80,6 +67,8 @@ template <class ScalarT, int D, class TraitsT>
     return tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
 }
 
+// ======== surface area of 3D objects ========
+
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr fractional_result<ScalarT> area_of(sphere<3, ScalarT, 3, TraitsT> const& b)
 {
@@ -95,6 +84,22 @@ template <class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> area_of(cylinder_boundary_no_caps<3, ScalarT> const& b)
 {
     return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis);
+}
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT area_of(aabb<3, ScalarT, TraitsT> const& b)
+{
+    auto s = size<3, ScalarT>(b.max - b.min);
+    return ScalarT(2) * (s.width * s.height + s.width * s.depth + s.height * s.depth);
+}
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr ScalarT area_of(box<3, ScalarT, 3, TraitsT> const& b)
+{
+    auto w = length(b.half_extents[0]);
+    auto h = length(b.half_extents[1]);
+    auto d = length(b.half_extents[2]);
+    return ScalarT(8) * (w * h + w * d + h * d);
 }
 
 template <class ScalarT>
