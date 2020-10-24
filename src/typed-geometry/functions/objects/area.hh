@@ -81,15 +81,28 @@ template <class ScalarT, class TraitsT>
     return ScalarT(4) * tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> area_of(cylinder<3, ScalarT> const& b)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area_of(hemisphere<3, ScalarT, TraitsT> const& b)
 {
-    return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * (b.radius + length(b.axis)); // == 2 pi r^2 + 2 pi r h
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
+    else
+        return ScalarT(3) * tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
 }
-template <class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> area_of(cylinder_boundary_no_caps<3, ScalarT> const& b)
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area_of(cylinder<3, ScalarT, TraitsT> const& b)
 {
-    return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis);
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * length(b.axis);
+    else
+        return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * (b.radius + length(b.axis)); // == 2 pi r^2 + 2 pi r h
+}
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area_of(capsule<3, ScalarT, TraitsT> const& b)
+{
+    return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * b.radius * (ScalarT(2) * b.radius + length(b.axis)); // == 4 pi r^2 + 2 pi r h
 }
 
 template <class ScalarT, class TraitsT>
