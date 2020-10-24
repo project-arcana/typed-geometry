@@ -74,7 +74,7 @@ struct box<D, ScalarT, D, TraitsT>
 
     constexpr box() = default;
     constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
-    explicit constexpr box(aabb<D, ScalarT, TraitsT> const& b); // requires tg.hh
+    constexpr box(aabb<D, ScalarT, TraitsT> const& b); // requires tg.hh
 
     template <class OtherT, class OtherTraitsT>
     explicit constexpr box(box<D, OtherT, D, OtherTraitsT> const& v) : center(v.center), half_extents(v.half_extents)
