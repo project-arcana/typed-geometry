@@ -67,6 +67,12 @@ template <class ScalarT, int D, class TraitsT>
     return tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area_of(hemisphere<2, ScalarT> const& b)
+{
+    return tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius) * fractional_result<ScalarT>(0.5);
+}
+
 // ======== surface area of 3D objects ========
 
 template <class ScalarT, class TraitsT>
