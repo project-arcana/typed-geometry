@@ -460,24 +460,19 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
 template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid_boundary_no_caps<BaseT> const& py)
 {
-    using tri_t = triangle<3, typename BaseT::scalar_t>;
     auto bestDist = max<float>();
     auto bestProj = p;
-    const auto checkBetterProj = [&](tri_t const& tri)
+
+    for (const auto& face : faces_of(py.base))
     {
-        const auto proj = project(p, tri);
+        const auto proj = project(p, face);
         const auto dist = distance_sqr(p, proj);
         if (dist < bestDist)
         {
             bestDist = dist;
             bestProj = proj;
         }
-    };
-
-    const auto apex = apex_of(py);
-    const auto verts = vertices_of(py.base);
-    for (size_t i = 0; i < verts.size(); ++i)
-        checkBetterProj(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]));
+    }
 
     return bestProj;
 }

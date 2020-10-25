@@ -14,6 +14,7 @@
 #include <typed-geometry/functions/objects/direction.hh>
 #include <typed-geometry/functions/objects/distance.hh>
 #include <typed-geometry/functions/objects/edges.hh>
+#include <typed-geometry/functions/objects/faces.hh>
 #include <typed-geometry/functions/objects/intersection.hh>
 #include <typed-geometry/functions/objects/normal.hh>
 #include <typed-geometry/functions/objects/perimeter.hh>
