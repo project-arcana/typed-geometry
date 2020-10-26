@@ -5,10 +5,28 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
 
+#include "vertices.hh"
+
 namespace tg
 {
+// ======== pyramid faces struct ========
+template <class BaseT, int N>
+struct pyramid_faces
+{
+    using scalar_t = typename BaseT::scalar_t;
+    using mantle_t = array<triangle<3, scalar_t>, N>;
+
+    BaseT base;
+    mantle_t mantle;
+
+    constexpr pyramid_faces() = default;
+    constexpr pyramid_faces(BaseT const& base, mantle_t const& mantle) : base(base), mantle(mantle) {}
+};
+
+// ======== faces_of implementation ========
+
 template <class ScalarT, class TraitsT>
-[[nodiscard]] array<box<2, ScalarT, 3>, 6> faces_of(aabb<3, ScalarT, TraitsT> const& b)
+[[nodiscard]] constexpr array<box<2, ScalarT, 3>, 6> faces_of(aabb<3, ScalarT, TraitsT> const& b)
 {
     static_assert(is_floating_point<ScalarT>, "cannot be guaranteed for integers");
     using face_t = box<2, ScalarT, 3>;
@@ -28,7 +46,7 @@ template <class ScalarT, class TraitsT>
 }
 
 template <class ScalarT, class TraitsT>
-[[nodiscard]] array<box<2, ScalarT, 3>, 6> faces_of(box<3, ScalarT, 3, TraitsT> const& b)
+[[nodiscard]] constexpr array<box<2, ScalarT, 3>, 6> faces_of(box<3, ScalarT, 3, TraitsT> const& b)
 {
     using face_t = box<2, ScalarT, 3>;
     using mat_t = typename face_t::mat_t;
@@ -45,7 +63,7 @@ template <class ScalarT, class TraitsT>
 }
 
 template <class BaseT>
-[[nodiscard]] auto faces_of(pyramid_boundary_no_caps<BaseT> const& py)
+[[nodiscard]] constexpr auto faces_of(pyramid_boundary_no_caps<BaseT> const& py)
 {
     using ScalarT = typename BaseT::scalar_t;
     static_assert(is_floating_point<ScalarT>, "cannot be guaranteed for integers");
@@ -56,5 +74,11 @@ template <class BaseT>
     for (size_t i = 0; i < verts.size(); ++i)
         triangles[i] = {apex, verts[i], verts[(i + 1) % verts.size()]};
     return triangles;
+}
+
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr auto faces_of(pyramid<BaseT, TraitsT> const& py)
+{
+    return pyramid_faces(py.base, faces_of(boundary_no_caps_of(py)));
 }
 }
