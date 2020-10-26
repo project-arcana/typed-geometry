@@ -10,7 +10,7 @@
 namespace tg
 {
 // ======== pyramid faces struct ========
-template <class BaseT, int N>
+template <class BaseT, u64 N>
 struct pyramid_faces
 {
     using scalar_t = typename BaseT::scalar_t;
