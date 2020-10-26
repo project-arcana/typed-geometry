@@ -306,12 +306,12 @@ public:
     static constexpr mat from_data_colwise(span<ScalarT const> data)
     {
         TG_ASSERT(data.size() == C * R && "wrong amount of data");
-        return mat::from_data_rowwise(data.data());
+        return mat::from_data_colwise(data.data());
     }
     static constexpr mat from_data_colwise(std::initializer_list<ScalarT> data)
     {
         TG_ASSERT(data.size() == C * R && "wrong amount of data");
-        return mat::from_data_rowwise(data.begin());
+        return mat::from_data_colwise(data.begin());
     }
 
     template <class... Args>
