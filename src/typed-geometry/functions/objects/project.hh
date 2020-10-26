@@ -463,7 +463,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
     auto bestDist = max<float>();
     auto bestProj = p;
 
-    for (const auto& face : faces_of(py.base))
+    for (const auto& face : faces_of(py))
     {
         const auto proj = project(p, face);
         const auto dist = distance_sqr(p, proj);

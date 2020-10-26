@@ -288,11 +288,11 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
         return false; // Not inside if on the other side of the base
 
     // Check if inside for each pyramid side
-    const auto triangles = faces_of(py.base);
+    const auto triangles = faces_of(boundary_no_caps_of(py));
     for (size_t i = 0; i < triangles.size(); ++i)
     {
         n = normal_of(triangles[i]);
-        if (dot(p - triangles[i].pos0 + eps * n, n) < ScalarT(0))
+        if (dot(p - triangles[i].pos0 - eps * n, n) > ScalarT(0))
             return false;
     }
     return true;
