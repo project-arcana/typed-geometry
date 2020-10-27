@@ -92,6 +92,24 @@ template <int D, class ScalarT, class TraitsT>
     return h.center + offset * h.radius * h.normal;
 }
 
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr pos<3, fractional_result<typename BaseT::scalar_t>> centroid_of(pyramid<BaseT, TraitsT> const& py)
+{
+    using frac_t = fractional_result<typename BaseT::scalar_t>;
+    frac_t offset;
+    if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+        offset = frac_t(0.25); // == 1/4
+    else if constexpr (std::is_same_v<TraitsT, boundary_tag>)
+    {
+        const auto aBase = area_of(py.base);
+        const auto aMantle = area_of(boundary_no_caps_of(py));
+        offset = aMantle / (frac_t(3) * (aMantle + aBase)); // weighted average of aMantle * 1/3 + aBase * 0
+    }
+    else // boundary_no_caps_tag
+        offset = frac_t(1) / frac_t(3);
+    return centroid_of(py.base) + offset * py.height * normal_of(py.base);
+}
+
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid_of(cylinder<D, ScalarT, TraitsT> const& c)
 {
