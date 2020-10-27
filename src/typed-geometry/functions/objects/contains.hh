@@ -172,7 +172,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(sphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto d2 = distance_sqr(s.center, p);
-    return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
+    return pow2(max(ScalarT(0), s.radius - eps)) <= d2 && d2 <= pow2(s.radius + eps);
 }
 
 template <int D, class ScalarT>
@@ -192,7 +192,7 @@ template <int D, class ScalarT>
         return false;
 
     auto d2 = distance_sqr(s.center, p);
-    return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
+    return pow2(max(ScalarT(0), s.radius - eps)) <= d2 && d2 <= pow2(s.radius + eps);
 }
 // contains(hemisphere_boundary, ...) is not explicitly implemented here because it is not better than the default contains->distance->project implementation
 
@@ -273,7 +273,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cylinder_boundary<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto d2 = distance_sqr(p, c.axis);
-    return pow2(c.radius - eps) <= d2 && d2 <= pow2(c.radius + eps);
+    return pow2(max(ScalarT(0), c.radius - eps)) <= d2 && d2 <= pow2(c.radius + eps);
 }
 
 template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
