@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
+#include <typed-geometry/types/pos.hh>
 
 namespace tg
 {

@@ -145,9 +145,9 @@ template <int D, class ScalarT, class TraitsT>
 {
     const auto normal = normalize(v.axis.pos1 - v.axis.pos0);
     if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
-        return array<sphere<D-1, ScalarT, D, boundary_tag>, 2>{{{v.axis.pos0, v.radius, -normal}, {v.axis.pos1, v.radius, normal}}};
+        return array<sphere<D - 1, ScalarT, D, boundary_tag>, 2>{{{v.axis.pos0, v.radius, -normal}, {v.axis.pos1, v.radius, normal}}};
     else
-        return array<sphere<D-1, ScalarT, D>, 2>{{{v.axis.pos0, v.radius, -normal}, {v.axis.pos1, v.radius, normal}}};
+        return array<sphere<D - 1, ScalarT, D>, 2>{{{v.axis.pos0, v.radius, -normal}, {v.axis.pos1, v.radius, normal}}};
 }
 
 // === solid version ===

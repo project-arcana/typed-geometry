@@ -230,7 +230,8 @@ constexpr auto uniform_by_length(rng& rng, ObjectA const& obj, ObjectRest const&
 
     static_assert(object_traits<ObjectA>::object_dimension == 1, "objects must be 1D (but might be embedded in another dimension)");
     static_assert((... && (object_traits<ObjectRest>::object_dimension == 1)), "objects must be 1D (but might be embedded in another dimension)");
-    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same "
+                                                                                                                      "domain");
     static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
@@ -265,7 +266,8 @@ constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&..
 
     static_assert(object_traits<ObjectA>::object_dimension == 2, "objects must be 2D (but might be embedded in another dimension)");
     static_assert((... && (object_traits<ObjectRest>::object_dimension == 2)), "objects must be 2D (but might be embedded in another dimension)");
-    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same "
+                                                                                                                      "domain");
     static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
@@ -300,7 +302,8 @@ constexpr auto uniform_by_volume(rng& rng, ObjectA const& obj, ObjectRest const&
 
     static_assert(object_traits<ObjectA>::object_dimension == 3, "objects must be 3D (but might be embedded in another dimension)");
     static_assert((... && (object_traits<ObjectRest>::object_dimension == 3)), "objects must be 3D (but might be embedded in another dimension)");
-    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same "
+                                                                                                                      "domain");
     static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
@@ -652,7 +655,7 @@ template <class BaseT, class TraitsT, class Rng>
     const auto verts = vertices_of(py.base);
     auto triangles = array<triangle<3, typename BaseT::scalar_t>, verts.size()>();
     for (size_t i = 0; i < verts.size(); ++i)
-        triangles[i] = {apex, verts[i], verts[(i+1) % verts.size()]};
+        triangles[i] = {apex, verts[i], verts[(i + 1) % verts.size()]};
 
     if constexpr (std::is_same_v<TraitsT, boundary_tag>)
     {

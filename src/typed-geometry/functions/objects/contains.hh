@@ -277,7 +277,8 @@ template <int D, class ScalarT>
 }
 
 template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
-[[nodiscard]] constexpr bool contains(pyramid<BaseT> const& py, pos<3, typename BaseT::scalar_t> const& p,
+[[nodiscard]] constexpr bool contains(pyramid<BaseT> const& py,
+                                      pos<3, typename BaseT::scalar_t> const& p,
                                       dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
 {
     using ScalarT = typename BaseT::scalar_t;
@@ -300,7 +301,8 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
 }
 
 template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
-[[nodiscard]] constexpr bool contains(pyramid_boundary_no_caps<BaseT> const& py, pos<3, typename BaseT::scalar_t> const& p,
+[[nodiscard]] constexpr bool contains(pyramid_boundary_no_caps<BaseT> const& py,
+                                      pos<3, typename BaseT::scalar_t> const& p,
                                       dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
 {
     // Check if contained in any pyramid side
@@ -308,14 +310,15 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
     const auto apex = apex_of(py);
     const auto verts = vertices_of(py.base);
     for (size_t i = 0; i < verts.size(); ++i)
-        if(contains(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]), p, eps))
+        if (contains(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]), p, eps))
             return true;
 
     return false;
 }
 
 template <class BaseT>
-[[nodiscard]] constexpr bool contains(pyramid_boundary<BaseT> const& py, pos<3, typename BaseT::scalar_t> const& p,
+[[nodiscard]] constexpr bool contains(pyramid_boundary<BaseT> const& py,
+                                      pos<3, typename BaseT::scalar_t> const& p,
                                       dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
 {
     if (contains(caps_of(py), p, eps))

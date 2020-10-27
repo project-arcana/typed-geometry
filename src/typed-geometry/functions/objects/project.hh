@@ -463,8 +463,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
     using tri_t = triangle<3, typename BaseT::scalar_t>;
     auto bestDist = max<float>();
     auto bestProj = p;
-    const auto checkBetterProj = [&](tri_t const& tri)
-    {
+    const auto checkBetterProj = [&](tri_t const& tri) {
         const auto proj = project(p, tri);
         const auto dist = distance_sqr(p, proj);
         if (dist < bestDist)
