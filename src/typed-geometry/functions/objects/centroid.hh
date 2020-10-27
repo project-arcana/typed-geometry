@@ -50,7 +50,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid_of(triangle<D, ScalarT> const& t)
 {
-    return (t.pos0 + t.pos1 + t.pos2) / ScalarT(3);
+    return (t.pos0 + t.pos1 + t.pos2) / fractional_result<ScalarT>(3);
 }
 
 template <int D, class ScalarT>
@@ -61,9 +61,35 @@ template <int D, class ScalarT>
 }
 
 template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
-[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid_of(sphere<ObjectD, ScalarT, DomainD, TraitsT> const& p)
+[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid_of(sphere<ObjectD, ScalarT, DomainD, TraitsT> const& s)
 {
-    return p.center;
+    return s.center;
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid_of(hemisphere<D, ScalarT, TraitsT> const& h)
+{
+    using frac_t = fractional_result<ScalarT>;
+    frac_t offset;
+    if constexpr (D == 2)
+    {
+        if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+            offset = frac_t(4) / (frac_t(3) * tg::pi_scalar<frac_t>);
+        else if constexpr (std::is_same_v<TraitsT, boundary_tag>)
+            offset = frac_t(2) / (frac_t(2) + tg::pi_scalar<frac_t>);
+        else // boundary_no_caps_tag
+            offset = frac_t(2) / tg::pi_scalar<frac_t>;
+    }
+    else // D == 3
+    {
+        if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+            offset = frac_t(3) / frac_t(8);
+        else if constexpr (std::is_same_v<TraitsT, boundary_tag>)
+            offset = frac_t(1) / frac_t(3);
+        else // boundary_no_caps_tag
+            offset = frac_t(0.5);
+    }
+    return h.center + offset * h.radius * h.normal;
 }
 
 template <int D, class ScalarT, class TraitsT>
