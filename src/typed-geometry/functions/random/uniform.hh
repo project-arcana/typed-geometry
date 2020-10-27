@@ -223,8 +223,8 @@ template <class Rng, class Container>
 
 // ======== Uniform point on multiple objects ========
 
-template <class ObjectA, class... ObjectRest>
-constexpr auto uniform_by_length(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+template <class Rng, class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_length(Rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
 {
     using ScalarT = typename object_traits<ObjectA>::scalar_t;
 
@@ -259,8 +259,8 @@ constexpr auto uniform_by_length(rng& rng, ObjectA const& obj, ObjectRest const&
     return result;
 }
 
-template <class ObjectA, class... ObjectRest>
-constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+template <class Rng, class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_area(Rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
 {
     using ScalarT = typename object_traits<ObjectA>::scalar_t;
 
@@ -295,8 +295,8 @@ constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&..
     return result;
 }
 
-template <class ObjectA, class... ObjectRest>
-constexpr auto uniform_by_volume(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+template <class Rng, class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_volume(Rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
 {
     using ScalarT = typename object_traits<ObjectA>::scalar_t;
 
