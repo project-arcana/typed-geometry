@@ -19,15 +19,10 @@ template <int D, class ScalarT, class TraitsT>
 {
     return {v.min, v.max};
 }
-template <int D, class ScalarT, class TraitsT>
-[[nodiscard]] constexpr box_boundary<D, ScalarT> boundary_of(box<D, ScalarT, D, TraitsT> const& v)
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr box_boundary<ObjectD, ScalarT, DomainD> boundary_of(box<ObjectD, ScalarT, DomainD, TraitsT> const& v)
 {
     return {v.center, v.half_extents};
-}
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr box_boundary<2, ScalarT, 3> boundary_of(box<2, ScalarT, 3, TraitsT> const& v)
-{
-    return {v.center, v.half_extents, v.normal};
 }
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr capsule_boundary<D, ScalarT> boundary_of(capsule<D, ScalarT, TraitsT> const& v)
@@ -157,15 +152,10 @@ template <int D, class ScalarT, class TraitsT>
 {
     return {v.min, v.max};
 }
-template <int D, class ScalarT, class TraitsT>
-[[nodiscard]] constexpr box<D, ScalarT> solid_of(box<D, ScalarT, D, TraitsT> const& v)
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr box<ObjectD, ScalarT, DomainD> solid_of(box<ObjectD, ScalarT, DomainD, TraitsT> const& v)
 {
     return {v.center, v.half_extents};
-}
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr box<2, ScalarT, 3> solid_of(box<2, ScalarT, 3, TraitsT> const& v)
-{
-    return {v.center, v.half_extents, v.normal};
 }
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr capsule<D, ScalarT> solid_of(capsule<D, ScalarT, TraitsT> const& v)
