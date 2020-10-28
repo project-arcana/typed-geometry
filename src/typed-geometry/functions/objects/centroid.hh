@@ -56,8 +56,9 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, fractional_result<ScalarT>> centroid_of(quad<D, ScalarT> const& q)
 {
-    // TODO: The average of the four corners is not the same as the average of all points in the quad
-    return (q.pos00 + q.pos01 + q.pos10 + q.pos11) * fractional_result<ScalarT>(0.25);
+    const auto c1 = centroid_of(q.pos00, q.pos11);
+    const auto c2 = centroid_of(q.pos01, q.pos10);
+    return centroid_of(c1, c2);
 }
 
 template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
