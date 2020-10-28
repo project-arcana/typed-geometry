@@ -223,14 +223,15 @@ template <class Rng, class Container>
 
 // ======== Uniform point on multiple objects ========
 
-template <class ObjectA, class... ObjectRest>
-constexpr auto uniform_by_length(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+template <class Rng, class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_length(Rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
 {
     using ScalarT = typename object_traits<ObjectA>::scalar_t;
 
     static_assert(object_traits<ObjectA>::object_dimension == 1, "objects must be 1D (but might be embedded in another dimension)");
     static_assert((... && (object_traits<ObjectRest>::object_dimension == 1)), "objects must be 1D (but might be embedded in another dimension)");
-    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same "
+                                                                                                                      "domain");
     static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
@@ -258,14 +259,15 @@ constexpr auto uniform_by_length(rng& rng, ObjectA const& obj, ObjectRest const&
     return result;
 }
 
-template <class ObjectA, class... ObjectRest>
-constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+template <class Rng, class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_area(Rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
 {
     using ScalarT = typename object_traits<ObjectA>::scalar_t;
 
     static_assert(object_traits<ObjectA>::object_dimension == 2, "objects must be 2D (but might be embedded in another dimension)");
     static_assert((... && (object_traits<ObjectRest>::object_dimension == 2)), "objects must be 2D (but might be embedded in another dimension)");
-    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same "
+                                                                                                                      "domain");
     static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
@@ -293,14 +295,15 @@ constexpr auto uniform_by_area(rng& rng, ObjectA const& obj, ObjectRest const&..
     return result;
 }
 
-template <class ObjectA, class... ObjectRest>
-constexpr auto uniform_by_volume(rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
+template <class Rng, class ObjectA, class... ObjectRest>
+constexpr auto uniform_by_volume(Rng& rng, ObjectA const& obj, ObjectRest const&... rest) -> typename object_traits<ObjectA>::pos_t
 {
     using ScalarT = typename object_traits<ObjectA>::scalar_t;
 
     static_assert(object_traits<ObjectA>::object_dimension == 3, "objects must be 3D (but might be embedded in another dimension)");
     static_assert((... && (object_traits<ObjectRest>::object_dimension == 3)), "objects must be 3D (but might be embedded in another dimension)");
-    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same domain");
+    static_assert((... && (object_traits<ObjectA>::domain_dimension == object_traits<ObjectRest>::domain_dimension)), "objects must be in the same "
+                                                                                                                      "domain");
     static_assert((... && std::is_same_v<typename object_traits<ObjectRest>::scalar_t, ScalarT>), "objects must have same scalar type");
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
