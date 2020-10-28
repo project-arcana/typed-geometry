@@ -67,6 +67,7 @@ template <class BaseT>
 {
     using ScalarT = typename BaseT::scalar_t;
     static_assert(is_floating_point<ScalarT>, "cannot be guaranteed for integers");
+    static_assert(!std::is_same_v<BaseT, sphere<2, ScalarT, 3>>, "not possible for cones");
 
     const auto apex = apex_of(py);
     const auto verts = vertices_of(py.base);

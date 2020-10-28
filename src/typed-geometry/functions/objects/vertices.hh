@@ -3,6 +3,7 @@
 #include <typed-geometry/types/array.hh>
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/triangle.hh>
@@ -53,7 +54,7 @@ template <class ScalarT, class TraitsT>
     return {{p000, p001, p010, p011, p100, p101, p110, p111}};
 }
 
-template <int DomainD, class ScalarT, class TraitsT>
+template <class ScalarT, int DomainD, class TraitsT>
 [[nodiscard]] constexpr array<pos<DomainD, ScalarT>, 4> vertices_of(box<2, ScalarT, DomainD, TraitsT> const& b)
 {
     const auto p00 = b[comp<2, ScalarT>(-1, -1)];
@@ -64,8 +65,8 @@ template <int DomainD, class ScalarT, class TraitsT>
     return {{p00, p10, p11, p01}}; // in ccw order
 }
 
-template <int DomainD, class ScalarT, class TraitsT>
-[[nodiscard]] constexpr array<pos<DomainD, ScalarT>, 4> vertices_of(box<3, ScalarT, DomainD, TraitsT> const& b)
+template <class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr array<pos<DomainD, ScalarT>, 8> vertices_of(box<3, ScalarT, DomainD, TraitsT> const& b)
 {
     const auto p000 = b[comp<3, ScalarT>(-1, -1, -1)];
     const auto p100 = b[comp<3, ScalarT>(1, -1, -1)];
@@ -83,6 +84,8 @@ template <class BaseT, class TraitsT>
 [[nodiscard]] constexpr auto vertices_of(pyramid<BaseT, TraitsT> const& py)
 {
     using ScalarT = typename BaseT::scalar_t;
+    static_assert(!std::is_same_v<BaseT, sphere<2, ScalarT, 3>>, "not possible for cones");
+
     const auto vertsBase = vertices_of(py.base);
     auto res = array<pos<3, ScalarT>, vertsBase.size() + 1>();
     for (size_t i = 0; i < vertsBase.size(); ++i)
