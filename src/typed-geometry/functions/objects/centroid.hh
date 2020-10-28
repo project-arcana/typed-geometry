@@ -2,8 +2,11 @@
 
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/hemisphere.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
