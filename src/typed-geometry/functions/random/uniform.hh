@@ -642,35 +642,29 @@ template <class BaseT, class Rng>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT> const& p)
 {
     const auto n = normal_of(p.base);
-    const auto h = tg::pow2(detail::uniform01<typename BaseT::scalar_t>(rng));
+    const auto h = pow2(detail::uniform01<typename BaseT::scalar_t>(rng));
     const auto pBase = uniform(rng, p.base);
     return mix(pBase, centroid_of(p.base), h) + h * p.height * n;
 }
 
 // All boundary and boundary_no_caps pyramid variants except cones
-template <class BaseT, class TraitsT, class Rng>
-[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT, TraitsT> const& py)
+template <class BaseT, class Rng>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid_boundary<BaseT> const& py)
 {
-    const auto apex = apex_of(py);
-    const auto verts = vertices_of(py.base);
-    auto triangles = array<triangle<3, typename BaseT::scalar_t>, verts.size()>();
-    for (size_t i = 0; i < verts.size(); ++i)
-        triangles[i] = {apex, verts[i], verts[(i + 1) % verts.size()]};
-
-    if constexpr (std::is_same_v<TraitsT, boundary_tag>)
-    {
-        if constexpr (verts.size() == 3)
-            return uniform_by_area(rng, py.base, triangles[0], triangles[1], triangles[2]);
-        else // verts.size() == 4
-            return uniform_by_area(rng, py.base, triangles[0], triangles[1], triangles[2], triangles[3]);
-    }
-    else
-    {
-        if constexpr (verts.size() == 3)
-            return uniform_by_area(rng, triangles[0], triangles[1], triangles[2]);
-        else // verts.size() == 4
-            return uniform_by_area(rng, triangles[0], triangles[1], triangles[2], triangles[3]);
-    }
+    const auto triangles = faces_of(boundary_no_caps_of(py));
+    if constexpr (triangles.size() == 3)
+        return uniform_by_area(rng, py.base, triangles[0], triangles[1], triangles[2]);
+    else // verts.size() == 4
+        return uniform_by_area(rng, py.base, triangles[0], triangles[1], triangles[2], triangles[3]);
+}
+template <class BaseT, class Rng>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid_boundary_no_caps<BaseT> const& py)
+{
+    const auto triangles = faces_of(py);
+    if constexpr (triangles.size() == 3)
+        return uniform_by_area(rng, triangles[0], triangles[1], triangles[2]);
+    else // verts.size() == 4
+        return uniform_by_area(rng, triangles[0], triangles[1], triangles[2], triangles[3]);
 }
 
 template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>

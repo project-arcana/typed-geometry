@@ -10,25 +10,25 @@
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] array<pos<D, ScalarT>, 2> vertices_of(segment<D, ScalarT> const& s)
+[[nodiscard]] constexpr array<pos<D, ScalarT>, 2> vertices_of(segment<D, ScalarT> const& s)
 {
     return {{s.pos0, s.pos1}};
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] array<pos<D, ScalarT>, 3> vertices_of(triangle<D, ScalarT> const& t)
+[[nodiscard]] constexpr array<pos<D, ScalarT>, 3> vertices_of(triangle<D, ScalarT> const& t)
 {
     return {{t.pos0, t.pos1, t.pos2}};
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] array<pos<D, ScalarT>, 4> vertices_of(quad<D, ScalarT> const& q)
+[[nodiscard]] constexpr array<pos<D, ScalarT>, 4> vertices_of(quad<D, ScalarT> const& q)
 {
     return {{q.pos00, q.pos10, q.pos11, q.pos01}}; // in ccw order
 }
 
-template <class ScalarT>
-[[nodiscard]] array<pos<2, ScalarT>, 4> vertices_of(aabb<2, ScalarT> const& bb)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr array<pos<2, ScalarT>, 4> vertices_of(aabb<2, ScalarT, TraitsT> const& bb)
 {
     auto p00 = pos<3, ScalarT>(bb.min.x, bb.min.y);
     auto p10 = pos<3, ScalarT>(bb.max.x, bb.min.y);
@@ -38,8 +38,8 @@ template <class ScalarT>
     return {{p00, p10, p11, p01}}; // in ccw order
 }
 
-template <class ScalarT>
-[[nodiscard]] array<pos<3, ScalarT>, 8> vertices_of(aabb<3, ScalarT> const& bb)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr array<pos<3, ScalarT>, 8> vertices_of(aabb<3, ScalarT, TraitsT> const& bb)
 {
     auto p000 = pos<3, ScalarT>(bb.min.x, bb.min.y, bb.min.z);
     auto p001 = pos<3, ScalarT>(bb.min.x, bb.min.y, bb.max.z);
@@ -53,8 +53,8 @@ template <class ScalarT>
     return {{p000, p001, p010, p011, p100, p101, p110, p111}};
 }
 
-template <int DomainD, class ScalarT>
-[[nodiscard]] array<pos<DomainD, ScalarT>, 4> vertices_of(box<2, ScalarT, DomainD> const& b)
+template <int DomainD, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr array<pos<DomainD, ScalarT>, 4> vertices_of(box<2, ScalarT, DomainD, TraitsT> const& b)
 {
     const auto p00 = b[comp<2, ScalarT>(-1, -1)];
     const auto p10 = b[comp<2, ScalarT>(1, -1)];
@@ -62,6 +62,33 @@ template <int DomainD, class ScalarT>
     const auto p01 = b[comp<2, ScalarT>(-1, 1)];
 
     return {{p00, p10, p11, p01}}; // in ccw order
+}
+
+template <int DomainD, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr array<pos<DomainD, ScalarT>, 4> vertices_of(box<3, ScalarT, DomainD, TraitsT> const& b)
+{
+    const auto p000 = b[comp<3, ScalarT>(-1, -1, -1)];
+    const auto p100 = b[comp<3, ScalarT>(1, -1, -1)];
+    const auto p110 = b[comp<3, ScalarT>(1, 1, -1)];
+    const auto p010 = b[comp<3, ScalarT>(-1, 1, -1)];
+    const auto p001 = b[comp<3, ScalarT>(-1, -1, 1)];
+    const auto p101 = b[comp<3, ScalarT>(1, -1, 1)];
+    const auto p111 = b[comp<3, ScalarT>(1, 1, 1)];
+    const auto p011 = b[comp<3, ScalarT>(-1, 1, 1)];
+
+    return {{p000, p100, p110, p010, p001, p101, p111, p011}};
+}
+
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr auto vertices_of(pyramid<BaseT, TraitsT> const& py)
+{
+    using ScalarT = typename BaseT::scalar_t;
+    const auto vertsBase = vertices_of(py.base);
+    auto res = array<pos<3, ScalarT>, vertsBase.size() + 1>();
+    for (size_t i = 0; i < vertsBase.size(); ++i)
+        res[i] = vertsBase[i];
+    res[vertsBase.size()] = apex_of(py);
+    return res;
 }
 
 

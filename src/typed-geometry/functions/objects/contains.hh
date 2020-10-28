@@ -172,7 +172,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(sphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto d2 = distance_sqr(s.center, p);
-    return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
+    return pow2(max(ScalarT(0), s.radius - eps)) <= d2 && d2 <= pow2(s.radius + eps);
 }
 
 template <int D, class ScalarT>
@@ -192,7 +192,7 @@ template <int D, class ScalarT>
         return false;
 
     auto d2 = distance_sqr(s.center, p);
-    return pow2(s.radius - eps) <= d2 && d2 <= pow2(s.radius + eps);
+    return pow2(max(ScalarT(0), s.radius - eps)) <= d2 && d2 <= pow2(s.radius + eps);
 }
 // contains(hemisphere_boundary, ...) is not explicitly implemented here because it is not better than the default contains->distance->project implementation
 
@@ -273,7 +273,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(inf_cylinder_boundary<D, ScalarT> const& c, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     auto d2 = distance_sqr(p, c.axis);
-    return pow2(c.radius - eps) <= d2 && d2 <= pow2(c.radius + eps);
+    return pow2(max(ScalarT(0), c.radius - eps)) <= d2 && d2 <= pow2(c.radius + eps);
 }
 
 template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
@@ -289,12 +289,11 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
         return false; // Not inside if on the other side of the base
 
     // Check if inside for each pyramid side
-    const auto apex = apex_of(py);
-    const auto verts = vertices_of(py.base);
-    for (size_t i = 0; i < verts.size(); ++i)
+    const auto triangles = faces_of(boundary_no_caps_of(py));
+    for (size_t i = 0; i < triangles.size(); ++i)
     {
-        n = normalize(cross(apex - verts[i], verts[(i + 1) % verts.size()] - verts[i]));
-        if (dot(p - apex + eps * n, n) < ScalarT(0))
+        n = normal_of(triangles[i]);
+        if (dot(p - triangles[i].pos0 - eps * n, n) > ScalarT(0))
             return false;
     }
     return true;
@@ -306,11 +305,9 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
                                       dont_deduce<typename BaseT::scalar_t> eps = typename BaseT::scalar_t(0))
 {
     // Check if contained in any pyramid side
-    using tri_t = triangle<3, typename BaseT::scalar_t>;
-    const auto apex = apex_of(py);
-    const auto verts = vertices_of(py.base);
-    for (size_t i = 0; i < verts.size(); ++i)
-        if (contains(tri_t(apex, verts[i], verts[(i + 1) % verts.size()]), p, eps))
+    const auto faces = faces_of(py);
+    for (const auto& face : faces)
+        if (contains(face, p, eps))
             return true;
 
     return false;
