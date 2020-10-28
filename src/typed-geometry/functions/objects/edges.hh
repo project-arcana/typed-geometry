@@ -71,9 +71,11 @@ template <class ScalarT, int DomainD, class TraitsT>
 {
     const auto vs = vertices_of(b);
     return {{
+        // clang-format off
         {vs[0], vs[1]}, {vs[1], vs[2]}, {vs[2], vs[3]}, {vs[3], vs[0]}, // lower face
         {vs[4], vs[5]}, {vs[5], vs[6]}, {vs[6], vs[7]}, {vs[7], vs[4]}, // upper face
         {vs[0], vs[4]}, {vs[1], vs[5]}, {vs[2], vs[6]}, {vs[3], vs[7]}  // vertical edges
+        // clang-format on
     }};
 }
 
