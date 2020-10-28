@@ -64,6 +64,18 @@ template <int DomainD, class ScalarT>
     return {{p00, p10, p11, p01}}; // in ccw order
 }
 
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr auto vertices_of(pyramid<BaseT, TraitsT> const& py)
+{
+    using ScalarT = typename BaseT::scalar_t;
+    const auto vertsBase = vertices_of(py.base);
+    auto res = array<pos<3, ScalarT>, vertsBase.size() + 1>();
+    for (size_t i = 0; i < vertsBase.size(); ++i)
+        res[i] = vertsBase[i];
+    res[vertsBase.size()] = apex_of(py);
+    return res;
+}
+
 
 template <class ObjectT>
 [[deprecated("use vertices_of")]] [[nodiscard]] constexpr auto vertices(ObjectT const& o) -> decltype(vertices_of(o))
