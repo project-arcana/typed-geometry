@@ -196,6 +196,12 @@ template <int D, class ScalarT>
 }
 // contains(hemisphere_boundary, ...) is not explicitly implemented here because it is not better than the default contains->distance->project implementation
 
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(halfspace<D, ScalarT> const& h, pos<2, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    return signed_distance(p, h) <= eps;
+}
+
 // Note that eps is used to compare 2D areas, not 1D lengths
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(triangle<2, ScalarT> const& t, pos<2, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
