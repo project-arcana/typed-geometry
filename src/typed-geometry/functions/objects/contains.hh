@@ -194,7 +194,11 @@ template <int D, class ScalarT>
     auto d2 = distance_sqr(s.center, p);
     return pow2(max(ScalarT(0), s.radius - eps)) <= d2 && d2 <= pow2(s.radius + eps);
 }
-// contains(hemisphere_boundary, ...) is not explicitly implemented here because it is not better than the default contains->distance->project implementation
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(hemisphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    return contains(boundary_no_caps_of(s), p , eps) || contains(caps_of(s), p, eps);
+}
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(halfspace<D, ScalarT> const& h, pos<2, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))

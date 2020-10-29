@@ -125,6 +125,11 @@ template <class ScalarT, class TraitsT>
         return segment<2, ScalarT>(v.center - half, v.center + half);
     }
 }
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<1, ScalarT> caps_of(hemisphere<1, ScalarT, TraitsT> const& v)
+{
+    return v.center;
+}
 
 template <class BaseT, class TraitsT>
 [[nodiscard]] constexpr auto caps_of(pyramid<BaseT, TraitsT> const& v)
