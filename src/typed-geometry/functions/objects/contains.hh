@@ -298,8 +298,7 @@ template <class ScalarT>
         return false;
 
     // checking whether point lies on left side of all edges
-    auto edges = edges_of(t);
-    for (const auto& edge : edges)
+    for (const auto& edge : edges_of(t))
     {
         auto pEdge = project(p, edge);
         auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
