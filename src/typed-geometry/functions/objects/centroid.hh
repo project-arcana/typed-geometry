@@ -5,6 +5,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/quad.hh>
@@ -68,6 +69,12 @@ template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
 [[nodiscard]] constexpr pos<DomainD, ScalarT> centroid_of(sphere<ObjectD, ScalarT, DomainD, TraitsT> const& s)
 {
     return s.center;
+}
+
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> centroid_of(ellipse<ObjectD, ScalarT, DomainD, TraitsT> const& e)
+{
+    return e.center;
 }
 
 template <int D, class ScalarT, class TraitsT>

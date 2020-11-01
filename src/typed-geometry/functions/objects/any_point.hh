@@ -7,6 +7,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
@@ -59,6 +60,15 @@ template <class ScalarT, class TraitsT>
         return c.axis.pos1;
     else
         return c.axis.pos1 + c.radius * any_normal(c.axis.pos1 - c.axis.pos0);
+}
+
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> any_point(ellipse<ObjectD, ScalarT, DomainD, TraitsT> const& e)
+{
+    if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+        return e.center;
+    else
+        return e.center + e.semi_axes[0];
 }
 
 template <int D, class ScalarT>

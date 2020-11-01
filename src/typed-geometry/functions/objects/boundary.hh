@@ -4,6 +4,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
 #include <typed-geometry/types/objects/inf_cylinder.hh>
@@ -33,6 +34,11 @@ template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr cylinder_boundary<D, ScalarT> boundary_of(cylinder<D, ScalarT, TraitsT> const& v)
 {
     return {v.axis, v.radius};
+}
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr ellipse_boundary<ObjectD, ScalarT, DomainD> boundary_of(ellipse<ObjectD, ScalarT, DomainD, TraitsT> const& v)
+{
+    return {v.center, v.semi_axes};
 }
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr hemisphere_boundary<D, ScalarT> boundary_of(hemisphere<D, ScalarT, TraitsT> const& v)
@@ -171,6 +177,11 @@ template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr cylinder<D, ScalarT> solid_of(cylinder<D, ScalarT, TraitsT> const& v)
 {
     return {v.axis, v.radius};
+}
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr ellipse<ObjectD, ScalarT, DomainD> solid_of(ellipse<ObjectD, ScalarT, DomainD, TraitsT> const& v)
+{
+    return {v.center, v.semi_axes};
 }
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr hemisphere<D, ScalarT> solid_of(hemisphere<D, ScalarT, TraitsT> const& v)
