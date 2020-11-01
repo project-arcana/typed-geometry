@@ -18,6 +18,7 @@
 #include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
+#include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -436,6 +437,21 @@ template <int D, class ScalarT, class Rng>
     return mix(s.pos0, s.pos1, detail::uniform01<ScalarT>(rng));
 }
 
+template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> const& t)
+{
+    auto e0 = t.pos1 - t.pos0;
+    auto e1 = t.pos2 - t.pos0;
+    auto u0 = uniform(rng, ScalarT(0), ScalarT(1));
+    auto u1 = uniform(rng, ScalarT(0), ScalarT(1));
+    if (u0 + u1 > ScalarT(1))
+    {
+        u0 = ScalarT(1) - u0;
+        u1 = ScalarT(1) - u1;
+    }
+    return t.pos0 + u0 * e0 + u1 * e1;
+}
+
 template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class Rng>
 [[nodiscard]] constexpr pos<DomainD, ScalarT> uniform(Rng& rng, box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
 {
@@ -724,21 +740,6 @@ template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<S
 uniform(Rng& rng, pos<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     return mix(a, b, detail::uniform01<ScalarT>(rng));
-}
-
-template <int D, class ScalarT, class Rng, class = enable_if<is_floating_point<ScalarT>>>
-[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, triangle<D, ScalarT> const& t)
-{
-    auto e0 = t.pos1 - t.pos0;
-    auto e1 = t.pos2 - t.pos0;
-    auto u0 = uniform(rng, ScalarT(0), ScalarT(1));
-    auto u1 = uniform(rng, ScalarT(0), ScalarT(1));
-    if (u0 + u1 > ScalarT(1))
-    {
-        u0 = ScalarT(1) - u0;
-        u1 = ScalarT(1) - u1;
-    }
-    return t.pos0 + u0 * e0 + u1 * e1;
 }
 
 template <class Rng, class... Args>
