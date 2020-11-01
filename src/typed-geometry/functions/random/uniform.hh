@@ -15,7 +15,9 @@
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -236,7 +238,7 @@ constexpr auto uniform_by_length(Rng& rng, ObjectA const& obj, ObjectRest const&
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
     ScalarT lengthSums[1 + sizeof...(rest)];
-    ScalarT lengthSum = ScalarT(0);
+    auto lengthSum = ScalarT(0);
     { // compute cumulative areas
         auto i = 0;
         lengthSums[i++] = lengthSum += length(obj);
@@ -272,7 +274,7 @@ constexpr auto uniform_by_area(Rng& rng, ObjectA const& obj, ObjectRest const&..
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
     ScalarT areaSums[1 + sizeof...(rest)];
-    ScalarT areaSum = ScalarT(0);
+    auto areaSum = ScalarT(0);
     { // compute cumulative areas
         auto i = 0;
         areaSums[i++] = areaSum += area_of(obj);
@@ -308,7 +310,7 @@ constexpr auto uniform_by_volume(Rng& rng, ObjectA const& obj, ObjectRest const&
     static_assert(!std::is_integral_v<ScalarT>, "sampling from integer objects not supported (yet)");
 
     ScalarT volumeSums[1 + sizeof...(rest)];
-    ScalarT volumeSum = ScalarT(0);
+    auto volumeSum = ScalarT(0);
     { // compute cumulative volumes
         auto i = 0;
         volumeSums[i++] = volumeSum += volume_of(obj);
@@ -404,7 +406,7 @@ template <class ScalarT, class Rng>
     auto areaY = extends.x * extends.z;
     auto areaZ = extends.x * extends.y;
 
-    auto res = uniform(rng, aabb<3, ScalarT, default_object_tag>(b.min, b.max)); // Sample a random point inside the aabb
+    auto res = uniform(rng, solid_of(b)); // Sample a random point inside the aabb
     // Project to one of the sides, proportional to their area
     auto part = uniform(rng, ScalarT(0), areaX + areaY + areaZ);
     int i = part < areaX ? 0 : part < areaX + areaY ? 1 : 2;
@@ -420,7 +422,7 @@ template <class ScalarT, class Rng>
     auto volZ = extends.x * extends.y * extends.w;
     auto volW = extends.x * extends.y * extends.z;
 
-    auto res = uniform(rng, aabb<4, ScalarT, default_object_tag>(b.min, b.max)); // Sample a random point inside the aabb
+    auto res = uniform(rng, solid_of(b)); // Sample a random point inside the aabb
     // Project to one of the borders, proportional to their volume
     auto part = uniform(rng, ScalarT(0), volX + volY + volZ + volW);
     int i = part < volX + volY ? (part < volX ? 0 : 1) : (part < volX + volY + volZ ? 2 : 3);
@@ -438,6 +440,48 @@ template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class Rng>
 [[nodiscard]] constexpr pos<DomainD, ScalarT> uniform(Rng& rng, box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
 {
     return b.center + b.half_extents * uniform_vec(rng, aabb<ObjectD, ScalarT, TraitsT>::minus_one_to_one);
+}
+
+template <int ObjectD, class ScalarT, int DomainD, class Rng>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> uniform(Rng& rng, ellipse<ObjectD, ScalarT, DomainD> const& e)
+{
+    // Note: The transformation preserves the uniform distribution in the interior. This is not the case for the boundary_tag variant.
+    return e.center + e.semi_axes * uniform_vec(rng, sphere<ObjectD, ScalarT>::unit);
+}
+
+template <class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<1, ScalarT> uniform(Rng& rng, ellipse_boundary<1, ScalarT> const& e)
+{
+    return e.center + (uniform<bool>(rng) ? e.semi_axes[0][0] : -e.semi_axes[0][0]);
+}
+template <int ObjectD, class ScalarT, int DomainD, class Rng>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> uniform(Rng& rng, ellipse_boundary<ObjectD, ScalarT, DomainD> const& e)
+{
+    // based on https://math.stackexchange.com/a/982833
+    auto ls = vec<ObjectD, ScalarT>();
+    auto coeffs = comp<ObjectD, ScalarT>();
+    for (auto i = 0; i < ObjectD; ++i)
+        ls[i] = length(e.semi_axes[i]);
+
+    if constexpr (ObjectD == 2)
+        coeffs = {ls.x, ls.y};
+    else if constexpr (ObjectD == 3)
+        coeffs = {ls.y * ls.z, ls.x * ls.z, ls.x * ls.y};
+    else if constexpr (ObjectD == 4)
+        coeffs = {ls.y * ls.z * ls.w, ls.x * ls.z * ls.w, ls.x * ls.y * ls.w, ls.x * ls.y * ls.z};
+    else
+        static_assert(always_false<ObjectD>, "dimension not supported");
+
+    auto probMax = max_element(coeffs);
+
+    // sample transformed sphere_boundary with rejection of some samples for uniform distribution
+    while (true)
+    {
+        auto v = uniform_vec(rng, sphere_boundary<ObjectD, ScalarT>::unit);
+        auto prob = length(coeffs * v); // == sqrt(pow2(coeffs.x * v.x) + pow2(coeffs.y * v.y) + ...)
+        if (detail::uniform01<ScalarT>(rng) <= prob / probMax)
+            return e.center + e.semi_axes * v;
+    }
 }
 
 template <int D, class ScalarT, class Rng>
