@@ -6,6 +6,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/quad.hh>
@@ -32,20 +33,41 @@ template <int D, class ScalarT, class TraitsT>
 {
     return {s.center - s.radius, s.center + s.radius};
 }
-
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr aabb<2, ScalarT> aabb_of(sphere<1, ScalarT, 2, TraitsT> const& s)
 {
     const auto v = perpendicular(s.normal) * s.radius;
     return aabb_of(s.center - v, s.center + v);
 }
-
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(sphere<2, ScalarT, 3, TraitsT> const& s)
 {
     // See http://www.iquilezles.org/www/articles/diskbbox/diskbbox.htm
     const auto e = abs(s.radius) * sqrt(ScalarT(1) - comp(s.normal) * comp(s.normal));
     return {s.center - e, s.center + e};
+}
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<1, ScalarT> aabb_of(ellipse<1, ScalarT, 1, TraitsT> const& e)
+{
+    const auto ex = abs(e.semi_axes[0]);
+    return {e.center - ex, e.center + ex};
+}
+template <class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr aabb<DomainD, ScalarT> aabb_of(ellipse<2, ScalarT, DomainD, TraitsT> const& e)
+{
+    // See https://www.iquilezles.org/www/articles/ellipses/ellipses.htm
+    const auto u = comp(e.semi_axes[0]);
+    const auto v = comp(e.semi_axes[1]);
+    const auto ex = sqrt(u * u + v * v);
+    return {e.center - ex, e.center + ex};
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr aabb<3, ScalarT> aabb_of(ellipse<3, ScalarT, 3, TraitsT> const& e)
+{
+    // See https://members.loria.fr/SHornus/ellipsoid-bbox.html
+    const auto ex = vec<3, ScalarT>(length(e.semi_axes.row(0)), length(e.semi_axes.row(1)), length(e.semi_axes.row(2)));
+    return {e.center - ex, e.center + ex};
 }
 
 template <class ScalarT, class TraitsT>
