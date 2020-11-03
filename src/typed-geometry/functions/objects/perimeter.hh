@@ -2,6 +2,7 @@
 
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/sphere.hh>
