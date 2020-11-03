@@ -33,6 +33,17 @@ template <class ScalarT, class TraitsT>
         return tg::pi_scalar<ScalarT> * s.radius + ScalarT(2) * s.radius;
 }
 
+// Only an approximation, but a good one
+template <class ScalarT, int D, class TraitsT>
+[[nodiscard]] constexpr ScalarT perimeter_of(ellipse<2, ScalarT, D, TraitsT> const& e)
+{
+    // see Approximation 3 of https://www.mathsisfun.com/geometry/ellipse-perimeter.html
+    const auto a = length(e.semi_axes[0]);
+    const auto b = length(e.semi_axes[1]);
+    const auto h = ScalarT(3) * pow2(a - b) / pow2(a + b);
+    return tg::pi_scalar<ScalarT> * (a + b) * (ScalarT(1) + h / (ScalarT(10 + sqrt(ScalarT(4) - h))));
+}
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr ScalarT perimeter_of(triangle<D, ScalarT> const& t)
 {
