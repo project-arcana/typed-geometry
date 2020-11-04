@@ -63,7 +63,7 @@ template <int D, class ScalarT>
 // ============== project to point ==============
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, pos<D, ScalarT> const& q)
+[[nodiscard]] constexpr pos<D, ScalarT> project([[maybe_unused]] pos<D, ScalarT> const& p, pos<D, ScalarT> const& q)
 {
     return q;
 }
