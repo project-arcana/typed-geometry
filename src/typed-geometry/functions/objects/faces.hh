@@ -63,7 +63,7 @@ template <class ScalarT, class TraitsT>
 }
 
 template <class BaseT>
-[[nodiscard]] constexpr auto faces_of(pyramid_boundary_no_caps<BaseT> const& py)
+[[nodiscard]] constexpr auto faces_of(pyramid<BaseT, boundary_no_caps_tag> const& py)
 {
     using ScalarT = typename BaseT::scalar_t;
     static_assert(is_floating_point<ScalarT>, "cannot be guaranteed for integers");
@@ -80,6 +80,7 @@ template <class BaseT>
 template <class BaseT, class TraitsT>
 [[nodiscard]] constexpr auto faces_of(pyramid<BaseT, TraitsT> const& py)
 {
-    return pyramid_faces(py.base, faces_of(boundary_no_caps_of(py)));
+    auto mantle = faces_of(boundary_no_caps_of(py));
+    return pyramid_faces<BaseT, mantle.size()>(py.base, mantle);
 }
 }
