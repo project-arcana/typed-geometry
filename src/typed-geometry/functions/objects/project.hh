@@ -2,13 +2,22 @@
 
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/functions/tests/vec_tests.hh>
+#include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
+#include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/halfspace.hh>
+#include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
 #include <typed-geometry/types/objects/inf_cylinder.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
+#include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
+#include <typed-geometry/types/objects/sphere.hh>
+#include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
 
@@ -165,32 +174,29 @@ template <class ScalarT>
 {
     auto n = normal_of(t);
     auto pPlane = project(p, plane<3, ScalarT>(n, t.pos0));
+    auto edges = edges_of(t);
 
-    // Check if projection is already in the triangle. Simplified version of contains(triangle3)
-    auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge) {
-        auto pEdge = project(p, edge);
-        auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
-        return dot(edgeNormal, p - pEdge) <= ScalarT(0);
-    };
-    if (isLeftOfEdge(segment<3, ScalarT>(t.pos0, t.pos1)) && isLeftOfEdge(segment<3, ScalarT>(t.pos1, t.pos2))
-        && isLeftOfEdge(segment<3, ScalarT>(t.pos2, t.pos0)))
-        return pPlane;
+    // Check if projection is already in the triangle. Additionally find closest projection to one of the edges.
+    pos<3, ScalarT> closestProj;
+    auto minDist = tg::max<ScalarT>();
+    auto leftOfAllEdges = true;
+    for (const auto& edge : edges)
+    {
+        auto pEdge = project(pPlane, edge);
+        if (leftOfAllEdges)
+        {
+            auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
+            leftOfAllEdges = dot(edgeNormal, pPlane - pEdge) <= ScalarT(0);
+        }
 
-    // Projection is outside of the triangle. Choose closest projection onto one of the edges
-    auto p0 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos1));
-    auto p1 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos2));
-    auto p2 = project(pPlane, segment<3, ScalarT>(t.pos1, t.pos2));
-
-    auto d0 = distance_sqr(p0, pPlane);
-    auto d1 = distance_sqr(p1, pPlane);
-    auto d2 = distance_sqr(p2, pPlane);
-
-    if (d0 <= d1 && d0 <= d2)
-        return p0;
-    else if (d1 <= d2)
-        return p1;
-    else
-        return p2;
+        auto dist = distance_sqr(p, pEdge);
+        if (dist < minDist)
+        {
+            minDist = dist;
+            closestProj = pEdge;
+        }
+    }
+    return leftOfAllEdges ? pPlane : closestProj;
 }
 
 template <class ScalarT>

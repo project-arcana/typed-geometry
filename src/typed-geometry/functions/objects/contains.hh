@@ -4,7 +4,14 @@
 
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
+#include <typed-geometry/types/objects/halfspace.hh>
+#include <typed-geometry/types/objects/hemisphere.hh>
+#include <typed-geometry/types/objects/inf_cone.hh>
+#include <typed-geometry/types/objects/inf_cylinder.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
@@ -19,15 +26,7 @@
 //   NOTE: some functions interpret eps differently for performance reasons
 //         if you really want an epsilon environment, use distance(a, p) <= eps
 
-// Contained functions:
-// - contains
-//      - aabb
-//      - box
-//      - cone
-//      - inf_cone
-//      - cylinder
-//      - sphere
-//      - triangle
+// See included types for all supported objects for contains(object, point)
 
 namespace tg
 {
@@ -90,6 +89,12 @@ template <int D, class ScalarT>
             onSomeBoundary = true;
     }
     return onSomeBoundary; // True, if at on the boundary in at least one dimension
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(aabb<D, ScalarT> const& b, aabb<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    return contains(b, o.min, eps) && contains(b, o.max, eps);
 }
 
 template <int D, class ScalarT>
@@ -156,10 +161,64 @@ template <class ScalarT>
     return onSomeBoundary;
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(aabb<D, ScalarT> const& b, aabb<D, ScalarT> const& o, dont_deduce<ScalarT> eps = ScalarT(0))
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr bool contains(ellipse<1, ScalarT, 1, TraitsT> const& e, pos<1, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
-    return contains(b, o.min, eps) && contains(b, o.max, eps);
+    auto dist = abs(p.x - e.center.x);
+    auto r = abs(e.semi_axes[0][0]);
+    if constexpr (std::is_same_v<TraitsT, default_object_tag>)
+        return dist <= r + eps;
+    else
+        return r - eps <= dist && dist <= r + eps;
+}
+// interprets eps as extending the semi_axes by eps, which is very close to the actual distance. It is accurate at the vertices and with less eccentricity.
+template <class ScalarT, int D, class TraitsT>
+[[nodiscard]] constexpr bool contains(ellipse<2, ScalarT, D, TraitsT> const& e, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto a = length(e.semi_axes[0]);
+    auto b = length(e.semi_axes[1]);
+    auto dirA = e.semi_axes[0] / a;
+    auto dirB = e.semi_axes[1] / b;
+
+    if constexpr (D == 3)
+    {
+        auto plane = tg::plane<D, ScalarT>(dir(cross(dirA, dirB)), e.center);
+        if (!contains(plane, p, eps))
+            return false;
+    }
+
+    auto pc = p - e.center;
+    auto x2 = pow2(dot(pc, dirA));
+    auto y2 = pow2(dot(pc, dirB));
+
+    if constexpr (std::is_same_v<TraitsT, boundary_tag>)
+    {
+        if (a - eps > ScalarT(0) && b - eps > ScalarT(0) && x2 / pow2(a - eps) + y2 / pow2(b - eps) < ScalarT(1))
+            return false;
+    }
+
+    return x2 / pow2(a + eps) + y2 / pow2(b + eps) <= ScalarT(1);
+}
+// interprets eps as extending the semi_axes by eps, which is very close to the actual distance. It is accurate at the vertices and with less eccentricity.
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr bool contains(ellipse<3, ScalarT, 3, TraitsT> const& e, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto pc = p - e.center;
+    auto a = length(e.semi_axes[0]);
+    auto b = length(e.semi_axes[1]);
+    auto c = length(e.semi_axes[2]);
+    auto x2 = pow2(dot(pc, e.semi_axes[0]) / a);
+    auto y2 = pow2(dot(pc, e.semi_axes[1]) / b);
+    auto z2 = pow2(dot(pc, e.semi_axes[2]) / c);
+
+    if constexpr (std::is_same_v<TraitsT, boundary_tag>)
+    {
+        if (a - eps > ScalarT(0) && b - eps > ScalarT(0) && c - eps > ScalarT(0)
+            && x2 / pow2(a - eps) + y2 / pow2(b - eps) + z2 / pow2(c - eps) < ScalarT(1))
+            return false;
+    }
+
+    return x2 / pow2(a + eps) + y2 / pow2(b + eps) + z2 / pow2(c + eps) <= ScalarT(1);
 }
 
 template <int D, class ScalarT>
@@ -194,7 +253,17 @@ template <int D, class ScalarT>
     auto d2 = distance_sqr(s.center, p);
     return pow2(max(ScalarT(0), s.radius - eps)) <= d2 && d2 <= pow2(s.radius + eps);
 }
-// contains(hemisphere_boundary, ...) is not explicitly implemented here because it is not better than the default contains->distance->project implementation
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(hemisphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    return contains(boundary_no_caps_of(s), p , eps) || contains(caps_of(s), p, eps);
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool contains(halfspace<D, ScalarT> const& h, pos<2, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    return signed_distance(p, h) <= eps;
+}
 
 // Note that eps is used to compare 2D areas, not 1D lengths
 template <class ScalarT>
@@ -229,8 +298,7 @@ template <class ScalarT>
         return false;
 
     // checking whether point lies on left side of all edges
-    auto edges = edges_of(t);
-    for (const auto& edge : edges)
+    for (const auto& edge : edges_of(t))
     {
         auto pEdge = project(p, edge);
         auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));

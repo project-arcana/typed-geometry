@@ -9,6 +9,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -44,6 +45,12 @@ template <class ScalarT>
 [[nodiscard]] constexpr ScalarT volume_of(hemisphere<3, ScalarT> const& h)
 {
     return ScalarT(2) / ScalarT(3) * tg::pi_scalar<ScalarT> * pow3(h.radius);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT volume_of(ellipse<3, ScalarT> const& e)
+{
+    return ScalarT(4) / ScalarT(3) * tg::pi_scalar<ScalarT> * length(e.semi_axes[0]) * length(e.semi_axes[1]) * length(e.semi_axes[2]);
 }
 
 template <class ScalarT>

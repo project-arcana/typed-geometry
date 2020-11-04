@@ -4,6 +4,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -70,6 +71,12 @@ template <class ScalarT>
     return tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius) * fractional_result<ScalarT>(0.5);
 }
 
+template <class ScalarT, int D, class TraitsT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area_of(ellipse<2, ScalarT, D, TraitsT> const& e)
+{
+    return tg::pi_scalar<fractional_result<ScalarT>> * length(e.semi_axes[0]) * length(e.semi_axes[1]);
+}
+
 // ======== surface area of 3D objects ========
 
 template <class ScalarT, class TraitsT>
@@ -85,6 +92,20 @@ template <class ScalarT, class TraitsT>
         return ScalarT(2) * tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
     else
         return ScalarT(3) * tg::pi_scalar<fractional_result<ScalarT>> * pow2(b.radius);
+}
+
+// Only an approximation, but with a relative error of at most 1.061%
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr fractional_result<ScalarT> area_of(ellipse<3, ScalarT, 3, TraitsT> const& e)
+{
+    // see https://en.wikipedia.org/wiki/Ellipsoid#Surface_area
+    using frac_t = fractional_result<ScalarT>;
+    constexpr auto p = frac_t(1.6075);
+    const auto a = length(e.semi_axes[0]);
+    const auto b = length(e.semi_axes[1]);
+    const auto c = length(e.semi_axes[2]);
+    const auto base = (tg::pow(a * b, p) + tg::pow(a * c, p) + tg::pow(b * c, p)) / frac_t(3);
+    return ScalarT(4) * tg::pi_scalar<frac_t> * tg::pow(base, frac_t(1) / p);
 }
 
 template <class ScalarT, class TraitsT>
@@ -119,9 +140,9 @@ template <class ScalarT, class TraitsT>
 }
 
 template <class BaseT, class TraitsT>
-[[nodiscard]] constexpr typename BaseT::scalar_t area_of(pyramid<BaseT, TraitsT> const& py)
+[[nodiscard]] constexpr fractional_result<typename BaseT::scalar_t> area_of(pyramid<BaseT, TraitsT> const& py)
 {
-    using ScalarT = typename BaseT::scalar_t;
+    using ScalarT = fractional_result<typename BaseT::scalar_t>;
     if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
     {
         if constexpr (std::is_same_v<BaseT, sphere<2, ScalarT, 3>>)

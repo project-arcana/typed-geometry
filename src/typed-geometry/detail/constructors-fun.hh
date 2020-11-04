@@ -8,6 +8,7 @@
 #include <typed-geometry/types/vec.hh>
 
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
@@ -31,6 +32,21 @@ constexpr box<D, ScalarT, D, TraitsT>::box(aabb<D, ScalarT, TraitsT> const& b)
         v[i] = ScalarT(1);
         half_extents[i] = v * half_e[i];
     }
+}
+
+template <int D, class ScalarT, class TraitsT>
+constexpr ellipse<D, ScalarT, D, TraitsT>::ellipse(sphere<D, ScalarT, D, TraitsT> const& s)
+{
+    center = s.center;
+    semi_axes = mat_t::diag(s.radius);
+}
+template <class ScalarT, class TraitsT>
+constexpr ellipse<2, ScalarT, 3, TraitsT>::ellipse(sphere<2, ScalarT, 3, TraitsT> const& s)
+{
+    center = s.center;
+    const auto axis1 = any_normal(s.normal);
+    const auto axis2 = normalize(cross(s.normal, axis1));
+    semi_axes = mat_t::from_cols(s.radius * axis1, s.radius * axis2);
 }
 
 template <int D, class ScalarT>
