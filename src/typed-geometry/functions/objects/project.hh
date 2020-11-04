@@ -60,6 +60,15 @@ template <int D, class ScalarT>
 }
 
 
+// ============== project to point ==============
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, pos<D, ScalarT> const& q)
+{
+    return q;
+}
+
+
 // ============== project to line / ray / segment ==============
 
 template <int D, class ScalarT>
