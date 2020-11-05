@@ -67,7 +67,7 @@ struct aabb
     }
 
     template <class OtherT, class OtherTraitsT>
-    constexpr aabb(aabb<D, OtherT, OtherTraitsT> const& v) : min(v.min), max(v.max)
+    explicit constexpr aabb(aabb<D, OtherT, OtherTraitsT> const& v) : min(v.min), max(v.max)
     {
     }
 

@@ -8,6 +8,7 @@
 #include <typed-geometry/functions/objects/edges.hh>
 #include <typed-geometry/functions/objects/vertices.hh>
 #include <typed-geometry/functions/vector/distance.hh>
+#include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/segment.hh>
@@ -55,13 +56,25 @@ template <class Obj>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> signed_distance(pos<D, ScalarT> const& p, plane<D, ScalarT> const& pl)
 {
-    return dot(p - pos<D, ScalarT>::zero, pl.normal) - pl.dis;
+    return dot(p, pl.normal) - pl.dis;
 }
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> distance(pos<D, ScalarT> const& p, plane<D, ScalarT> const& pl)
 {
     return abs(signed_distance(p, pl));
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> signed_distance(pos<D, ScalarT> const& p, halfspace<D, ScalarT> const& h)
+{
+    return dot(p, h.normal) - h.dis;
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance(pos<D, ScalarT> const& p, halfspace<D, ScalarT> const& h)
+{
+    return max(ScalarT(0), signed_distance(p, h));
 }
 
 template <int D, class ScalarT>
@@ -80,8 +93,8 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> distance(segment<2, ScalarT> const& s0, segment<2, ScalarT> const& s1)
 {
-    auto l0 = tg::line<2, ScalarT>::from_points(s0.pos0, s0.pos1);
-    auto l1 = tg::line<2, ScalarT>::from_points(s1.pos0, s1.pos1);
+    auto l0 = line<2, ScalarT>::from_points(s0.pos0, s0.pos1);
+    auto l1 = line<2, ScalarT>::from_points(s1.pos0, s1.pos1);
 
     auto sl0 = distance(s0.pos0, s0.pos1);
     auto sl1 = distance(s1.pos0, s1.pos1);
@@ -101,8 +114,8 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> distance(segment<3, ScalarT> const& s0, segment<3, ScalarT> const& s1)
 {
-    auto l0 = tg::line<3, ScalarT>::from_points(s0.pos0, s0.pos1);
-    auto l1 = tg::line<3, ScalarT>::from_points(s1.pos0, s1.pos1);
+    auto l0 = line<3, ScalarT>::from_points(s0.pos0, s0.pos1);
+    auto l1 = line<3, ScalarT>::from_points(s1.pos0, s1.pos1);
 
     auto sl0 = distance(s0.pos0, s0.pos1);
     auto sl1 = distance(s1.pos0, s1.pos1);
@@ -129,16 +142,16 @@ template <class ScalarT>
     auto d = tg::max<ScalarT>();
 
     // tri vertices to bb
-    for (auto p : vertices(t))
+    for (auto p : vertices_of(t))
         d = min(d, distance(bb, p));
 
     // bb vertices to tri
-    for (auto p : vertices(bb))
+    for (auto p : vertices_of(bb))
         d = min(d, distance(t, p));
 
     // edges to edges
-    for (auto e0 : edges(t))
-        for (auto e1 : edges(bb))
+    for (auto e0 : edges_of(t))
+        for (auto e1 : edges_of(bb))
             d = min(d, distance(e0, e1));
 
     return d;

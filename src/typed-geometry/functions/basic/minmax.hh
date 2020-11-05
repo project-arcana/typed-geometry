@@ -3,6 +3,7 @@
 #include <typed-geometry/functions/basic/limits.hh>
 #include <typed-geometry/functions/basic/scalar_math.hh>
 
+#include <typed-geometry/types/comp.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/size.hh>
 #include <typed-geometry/types/span.hh>
@@ -44,6 +45,27 @@ template <class T, class... Ts>
     return max(max(a, b), c, rest...);
 }
 
+
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT min_element(comp<1, ScalarT> const& p)
+{
+    return p.comp0;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT min_element(comp<2, ScalarT> const& p)
+{
+    return min(p.comp0, p.comp1);
+}
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT min_element(comp<3, ScalarT> const& p)
+{
+    return min(p.comp0, p.comp1, p.comp2);
+}
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT min_element(comp<4, ScalarT> const& p)
+{
+    return min(min(p.comp0, p.comp1), min(p.comp2, p.comp3));
+}
 
 template <class ScalarT>
 [[nodiscard]] constexpr ScalarT min_element(pos<1, ScalarT> const& p)
@@ -106,6 +128,28 @@ template <class ScalarT>
 [[nodiscard]] constexpr ScalarT min_element(size<4, ScalarT> const& p)
 {
     return min(min(p.width, p.height), min(p.depth, p.w));
+}
+
+
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT max_element(comp<1, ScalarT> const& p)
+{
+    return p.comp0;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT max_element(comp<2, ScalarT> const& p)
+{
+    return max(p.comp0, p.comp1);
+}
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT max_element(comp<3, ScalarT> const& p)
+{
+    return max(p.comp0, p.comp1, p.comp2);
+}
+template <class ScalarT>
+[[nodiscard]] constexpr ScalarT max_element(comp<4, ScalarT> const& p)
+{
+    return max(max(p.comp0, p.comp1), max(p.comp2, p.comp3));
 }
 
 template <class ScalarT>

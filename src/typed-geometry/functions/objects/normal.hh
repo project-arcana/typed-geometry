@@ -22,58 +22,58 @@
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] constexpr dir<D, ScalarT> normal(plane<D, ScalarT> const& p)
+[[nodiscard]] constexpr dir<D, ScalarT> normal_of(plane<D, ScalarT> const& p)
 {
     return p.normal;
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr dir<D, ScalarT> normal(halfspace<D, ScalarT> const& h)
+[[nodiscard]] constexpr dir<D, ScalarT> normal_of(halfspace<D, ScalarT> const& h)
 {
     return h.normal;
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr dir<3, ScalarT> normal(sphere<2, ScalarT, 3> const& d)
+[[nodiscard]] constexpr dir<3, ScalarT> normal_of(sphere<2, ScalarT, 3> const& d)
 {
     return d.normal;
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr dir<2, ScalarT> normal(line<2, ScalarT> const& l)
+[[nodiscard]] constexpr dir<2, ScalarT> normal_of(line<2, ScalarT> const& l)
 {
     return perpendicular(l.dir);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr dir<2, ScalarT> normal(ray<2, ScalarT> const& r)
+[[nodiscard]] constexpr dir<2, ScalarT> normal_of(ray<2, ScalarT> const& r)
 {
     return perpendicular(r.dir);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr dir<2, fractional_result<ScalarT>> normal(segment<2, ScalarT> const& s)
+[[nodiscard]] constexpr dir<2, fractional_result<ScalarT>> normal_of(segment<2, ScalarT> const& s)
 {
     return normalize(perpendicular(s.pos1 - s.pos0));
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal(triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal_of(triangle<3, ScalarT> const& t)
 {
     return normalize(cross(t.pos1 - t.pos0, t.pos2 - t.pos0));
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal(quad<3, ScalarT> const& q)
+[[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal_of(quad<3, ScalarT> const& q)
 {
     // Assumes the quad is planar, as it is a requirement for pyramid<quad>
     const auto res = normalize(cross(q.pos01 - q.pos00, q.pos10 - q.pos00));
-    TG_ASSERT(tg::are_orthogonal(q.pos11 - q.pos00, res)); // Checks that the four points are indeed coplanar
+    TG_ASSERT(tg::are_orthogonal(q.pos11 - q.pos00, vec(res))); // Checks that the four points are indeed coplanar
     return res;
 }
 
 template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal(box<2, ScalarT, 3, TraitsT> const& b)
+[[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal_of(box<2, ScalarT, 3, TraitsT> const& b)
 {
     return normalize(cross(b.half_extents[0], b.half_extents[1]));
 }
@@ -93,5 +93,12 @@ template <class ScalarT>
 [[nodiscard]] constexpr dir<3, ScalarT> any_normal(dir<3, ScalarT> const& d)
 {
     return any_normal(vec<3, ScalarT>(d));
+}
+
+
+template <class ObjectT>
+[[deprecated("use normal_of")]] [[nodiscard]] constexpr auto normal(ObjectT const& o) -> decltype(normal_of(o))
+{
+    return normal_of(o);
 }
 } // namespace tg

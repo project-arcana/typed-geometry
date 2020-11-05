@@ -2,17 +2,25 @@
 
 #include <typed-geometry/detail/special_values.hh>
 #include <typed-geometry/functions/tests/vec_tests.hh>
+#include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
+#include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/halfspace.hh>
+#include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
 #include <typed-geometry/types/objects/inf_cylinder.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
+#include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
+#include <typed-geometry/types/objects/sphere.hh>
+#include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
 
-#include <typed-geometry/functions/matrix/inverse.hh>
 #include <typed-geometry/functions/vector/project.hh>
 
 #include "boundary.hh"
@@ -138,11 +146,24 @@ template <int D, class ScalarT>
 
 // ============== project to box ==============
 
-template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
-[[nodiscard]] constexpr pos<DomainD, ScalarT> project(pos<DomainD, ScalarT> const& p, box<ObjectD, ScalarT, DomainD, TraitsT> const& b)
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> project(pos<DomainD, ScalarT> const& p, box<ObjectD, ScalarT, DomainD> const& b)
 {
+    auto localAabb = aabb<ObjectD, ScalarT>::minus_one_to_one;
     auto pLocal = pos(coordinates(b, p));
-    return b.center + b.half_extents * vec(project(pLocal, aabb<ObjectD, ScalarT, TraitsT>::minus_one_to_one));
+    return b.center + b.half_extents * vec(project(pLocal, localAabb));
+}
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr pos<DomainD, ScalarT> project(pos<DomainD, ScalarT> const& p, box_boundary<ObjectD, ScalarT, DomainD> const& b)
+{
+    auto boxSize = pos<ObjectD, ScalarT>();
+    for (auto i = 0; i < ObjectD; ++i)
+        boxSize[i] = length(b.half_extents[i]);
+    auto localAabb = aabb_boundary<ObjectD, ScalarT>(-boxSize, boxSize);
+
+    auto pLocal = pos(coordinates(b, p));
+    auto projLocal = project(pLocal * comp(boxSize), localAabb) / comp(boxSize); // Up-scaling and down-scaling handles stretched boxes
+    return b.center + b.half_extents * vec(projLocal);
 }
 
 
@@ -151,34 +172,31 @@ template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, triangle<3, ScalarT> const& t)
 {
-    auto pPlane = project(p, plane<3, ScalarT>(normal(t), t.pos0));
+    auto n = normal_of(t);
+    auto pPlane = project(p, plane<3, ScalarT>(n, t.pos0));
+    auto edges = edges_of(t);
 
-    // Check if projection is already in the triangle. Simplified version of contains(triangle3)
-    auto n = normal(t);
-    auto isLeftOfEdge = [&](segment<3, ScalarT> const& edge) {
-        auto pEdge = project(p, edge);
-        auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
-        return dot(edgeNormal, p - pEdge) <= ScalarT(0);
-    };
-    if (isLeftOfEdge(segment<3, ScalarT>(t.pos0, t.pos1)) && isLeftOfEdge(segment<3, ScalarT>(t.pos1, t.pos2))
-        && isLeftOfEdge(segment<3, ScalarT>(t.pos2, t.pos0)))
-        return pPlane;
+    // Check if projection is already in the triangle. Additionally find closest projection to one of the edges.
+    pos<3, ScalarT> closestProj;
+    auto minDist = tg::max<ScalarT>();
+    auto leftOfAllEdges = true;
+    for (const auto& edge : edges)
+    {
+        auto pEdge = project(pPlane, edge);
+        if (leftOfAllEdges)
+        {
+            auto edgeNormal = normalize(cross(edge.pos1 - edge.pos0, n));
+            leftOfAllEdges = dot(edgeNormal, pPlane - pEdge) <= ScalarT(0);
+        }
 
-    // Projection is outside of the triangle. Choose closest projection onto one of the edges
-    auto p0 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos1));
-    auto p1 = project(pPlane, segment<3, ScalarT>(t.pos0, t.pos2));
-    auto p2 = project(pPlane, segment<3, ScalarT>(t.pos1, t.pos2));
-
-    auto d0 = distance_sqr(p0, pPlane);
-    auto d1 = distance_sqr(p1, pPlane);
-    auto d2 = distance_sqr(p2, pPlane);
-
-    if (d0 <= d1 && d0 <= d2)
-        return p0;
-    else if (d1 <= d2)
-        return p1;
-    else
-        return p2;
+        auto dist = distance_sqr(p, pEdge);
+        if (dist < minDist)
+        {
+            minDist = dist;
+            closestProj = pEdge;
+        }
+    }
+    return leftOfAllEdges ? pPlane : closestProj;
 }
 
 template <class ScalarT>
@@ -251,11 +269,26 @@ template <class ScalarT>
     return c.center + dir * c.radius;
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, sphere<1, ScalarT, 2> const& s)
+{
+    auto v = perpendicular(s.normal) * s.radius;
+    auto seg = segment<2, ScalarT>(s.center - v, s.center + v); // sphere1in2 is the same as segment2
+    return project(p, seg);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, sphere_boundary<1, ScalarT, 2> const& s)
+{
+    auto v = perpendicular(s.normal) * s.radius;
+    return dot(p - s.center, v) >= ScalarT(0) ? s.center + v : s.center - v;
+}
+
 
 // ============== project to hemisphere ==============
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere<3, ScalarT> const& h)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hemisphere<D, ScalarT> const& h)
 {
     auto toP = p - h.center;
     if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
@@ -266,16 +299,16 @@ template <class ScalarT>
             return h.center + normalize(toP) * h.radius;
     }
     // On the flat side of the hemisphere
-    return project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
+    return project(p, caps_of(h));
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, hemisphere_boundary<3, ScalarT> const& h)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hemisphere_boundary<D, ScalarT> const& h)
 {
-    auto closestOnFlat = project(p, sphere<2, ScalarT, 3>(h.center, h.radius, h.normal));
+    auto closestOnFlat = project(p, caps_of(h));
 
     auto dirToP = tg::normalize_safe(p - h.center);
-    if (dot(dirToP, h.normal) >= ScalarT(0))
+    if (dot(dirToP, h.normal) > ScalarT(0))
     {
         auto closestOnRound = h.center + dirToP * h.radius;
         return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
@@ -283,36 +316,14 @@ template <class ScalarT>
     return closestOnFlat;
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere<2, ScalarT> const& h)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, hemisphere_boundary_no_caps<D, ScalarT> const& h)
 {
-    auto toP = p - h.center;
-    if (dot(toP, h.normal) >= ScalarT(0)) // On the round side of the hemisphere or inside
-    {
-        if (length_sqr(toP) <= h.radius * h.radius)
-            return p;
-        else
-            return h.center + normalize(toP) * h.radius;
-    }
-
-    // On the flat side of the hemisphere
-    auto v = perpendicular(h.normal) * h.radius;
-    return project(p, segment<2, ScalarT>(h.center - v, h.center + v));
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, hemisphere_boundary<2, ScalarT> const& h) // boundary, including caps
-{
-    auto v = perpendicular(h.normal) * h.radius;
-    auto closestOnFlat = project(p, segment<2, ScalarT>(h.center - v, h.center + v));
-
     auto dirToP = tg::normalize_safe(p - h.center);
-    if (dot(dirToP, h.normal) >= ScalarT(0))
-    {
-        auto closestOnRound = h.center + dirToP * h.radius;
-        return length_sqr(p - closestOnRound) >= length_sqr(p - closestOnFlat) ? closestOnFlat : closestOnRound;
-    }
-    return closestOnFlat;
+    if (dot(dirToP, h.normal) > ScalarT(0))
+        return h.center + dirToP * h.radius;
+
+    return project(p, caps_of(h));
 }
 
 
@@ -367,8 +378,8 @@ template <class ScalarT>
 
 // ============== project to inf_cylinder ==============
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cylinder<3, ScalarT> const& c)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cylinder<D, ScalarT> const& c)
 {
     if (contains(c, p))
         return p;
@@ -417,41 +428,66 @@ template <class ScalarT>
 }
 
 
-// ============== project to cone ==============
+// ============== project to pyramids ==============
 
-template <class ScalarT, class TraitsT, class = enable_if<!std::is_same<TraitsT, boundary_no_caps_tag>::value>>
+// all cone variants
+template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone<3, ScalarT, TraitsT> const& c)
-{ // enable_if is not necessary as long as project(cone_boundary_no_caps) is defined separately. But it is kept to prevent misusing the function.
-    auto closestOnBase = project(p, c.base);
-    auto apex = c.base.center + c.height * c.base.normal;
-    if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
+{
+    auto closestOnBase = project(p, caps_of(c));
+    if (dot(p - closestOnBase, apex_of(c) - closestOnBase) <= ScalarT(0)) // Base is closer than any point on the cone can be
         return closestOnBase;
 
     // Return closer projection
-    auto closestOnCone = project(p, inf_cone<3, ScalarT, TraitsT>(c));
-    return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
+    auto closestOnSide = project(p, inf_of<3, ScalarT>(c));
+    return distance_sqr(p, closestOnSide) >= distance_sqr(p, closestOnBase) ? closestOnBase : closestOnSide;
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, cone_boundary_no_caps<3, ScalarT> const& c)
+// other pyramids
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid<BaseT> const& py)
 {
-    auto baseCircle = sphere_boundary<2, ScalarT, 3>(c.base.center, c.base.radius, c.base.normal);
-    auto closestOnBase = project(p, baseCircle);
-    auto apex = c.base.center + c.height * c.base.normal;
-    if (dot(p - closestOnBase, closestOnBase - apex) >= ScalarT(0)) // Base is closer than any point on the cone can be
+    if (contains(py, p))
+        return p;
+
+    return project(p, boundary_of(py));
+}
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid_boundary<BaseT> const& py)
+{
+    auto closestOnBase = project(p, caps_of(py));
+    if (dot(p - closestOnBase, apex_of(py) - closestOnBase) <= typename BaseT::scalar_t(0)) // Base is closer than any point on the pyramid can be
         return closestOnBase;
 
     // Return closer projection
-    auto infCone = inf_cone<3, ScalarT, boundary_tag>(cone<3, ScalarT, boundary_tag>(c.base, c.height));
-    auto closestOnCone = project(p, infCone);
-    return length_sqr(p - closestOnCone) >= length_sqr(p - closestOnBase) ? closestOnBase : closestOnCone;
+    auto closestOnSide = project(p, boundary_no_caps_of(py));
+    return distance_sqr(p, closestOnSide) >= distance_sqr(p, closestOnBase) ? closestOnBase : closestOnSide;
+}
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> project(pos<3, typename BaseT::scalar_t> const& p, pyramid_boundary_no_caps<BaseT> const& py)
+{
+    auto bestDist = max<float>();
+    auto bestProj = p;
+
+    for (const auto& face : faces_of(py))
+    {
+        const auto proj = project(p, face);
+        const auto dist = distance_sqr(p, proj);
+        if (dist < bestDist)
+        {
+            bestDist = dist;
+            bestProj = proj;
+        }
+    }
+
+    return bestProj;
 }
 
 
 // ============== project to inf_cone ==============
 
-template <class ScalarT>
-[[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone<3, ScalarT> const& icone)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, inf_cone<D, ScalarT> const& icone)
 {
     if (contains(icone, p))
         return p;
@@ -517,5 +553,14 @@ template <class ScalarT>
     }
     else
         return icone.apex;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr pos<2, ScalarT> project(pos<2, ScalarT> const& p, inf_cone_boundary<2, ScalarT> const& icone)
+{
+    auto ray1 = ray<2, ScalarT>(icone.apex, rotate(icone.opening_dir, icone.opening_angle / ScalarT(2)));
+    auto ray2 = ray<2, ScalarT>(icone.apex, rotate(icone.opening_dir, -icone.opening_angle / ScalarT(2)));
+    auto proj1 = project(p, ray1);
+    auto proj2 = project(p, ray2);
+    return distance_sqr(p, proj1) <= distance_sqr(p, proj2) ? proj1 : proj2;
 }
 } // namespace tg

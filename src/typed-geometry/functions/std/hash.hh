@@ -135,6 +135,10 @@ struct hash<tg::box<ObjectD, ScalarT, DomainD, TraitsT>> : tg::hash
 {
 };
 template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
+struct hash<tg::ellipse<ObjectD, ScalarT, DomainD, TraitsT>> : tg::hash
+{
+};
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
 struct hash<tg::sphere<ObjectD, ScalarT, DomainD, TraitsT>> : tg::hash
 {
 };

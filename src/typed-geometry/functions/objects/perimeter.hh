@@ -1,6 +1,9 @@
 #pragma once
 
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
+#include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
@@ -16,40 +19,61 @@
 
 namespace tg
 {
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr ScalarT perimeter(sphere<2, ScalarT, 2, TraitsT> const& v)
+template <class ScalarT, int D, class TraitsT>
+[[nodiscard]] constexpr ScalarT perimeter_of(sphere<2, ScalarT, D, TraitsT> const& s)
 {
-    return ScalarT(2) * tg::pi<ScalarT>.radians() * v.radius;
+    return ScalarT(2) * tg::pi_scalar<ScalarT> * s.radius;
 }
 
 template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr ScalarT perimeter(sphere<2, ScalarT, 3, TraitsT> const& v)
+[[nodiscard]] constexpr ScalarT perimeter_of(hemisphere<2, ScalarT, TraitsT> const& s)
 {
-    return ScalarT(2) * tg::pi<ScalarT>.radians() * v.radius;
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return tg::pi_scalar<ScalarT> * s.radius;
+    else
+        return tg::pi_scalar<ScalarT> * s.radius + ScalarT(2) * s.radius;
+}
+
+// Only an approximation, but a good one
+template <class ScalarT, int D, class TraitsT>
+[[nodiscard]] constexpr ScalarT perimeter_of(ellipse<2, ScalarT, D, TraitsT> const& e)
+{
+    // see Approximation 3 of https://www.mathsisfun.com/geometry/ellipse-perimeter.html
+    const auto a = length(e.semi_axes[0]);
+    const auto b = length(e.semi_axes[1]);
+    const auto h = ScalarT(3) * pow2(a - b) / pow2(a + b);
+    return tg::pi_scalar<ScalarT> * (a + b) * (ScalarT(1) + h / (ScalarT(10 + sqrt(ScalarT(4) - h))));
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ScalarT perimeter(triangle<D, ScalarT> const& v)
+[[nodiscard]] constexpr ScalarT perimeter_of(triangle<D, ScalarT> const& t)
 {
-    return distance(v.pos0, v.pos1) + distance(v.pos1, v.pos2) + distance(v.pos2, v.pos0);
+    return distance(t.pos0, t.pos1) + distance(t.pos1, t.pos2) + distance(t.pos2, t.pos0);
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ScalarT perimeter(quad<D, ScalarT> const& v)
+[[nodiscard]] constexpr ScalarT perimeter_of(quad<D, ScalarT> const& q)
 {
-    return distance(v.pos00, v.pos10) + distance(v.pos10, v.pos11) + distance(v.pos11, v.pos01) + distance(v.pos01, v.pos00);
+    return distance(q.pos00, q.pos10) + distance(q.pos10, q.pos11) + distance(q.pos11, q.pos01) + distance(q.pos01, q.pos00);
+}
+
+template <class ScalarT, int D, class TraitsT>
+[[nodiscard]] constexpr ScalarT perimeter_of(box<2, ScalarT, D, TraitsT> const& b)
+{
+    return (length(b.half_extents[0]) + length(b.half_extents[1])) * ScalarT(4);
 }
 
 template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr ScalarT perimeter(box<2, ScalarT, 2, TraitsT> const& v)
+[[nodiscard]] constexpr ScalarT perimeter_of(aabb<2, ScalarT, TraitsT> const& b)
 {
-    return (length(v.half_extents[0]) + length(v.half_extents[1])) * ScalarT(4);
+    const auto s = size<2, ScalarT>(b.max - b.min);
+    return ScalarT(2) * (s.width + s.height);
 }
 
-template <class ScalarT, class TraitsT>
-[[nodiscard]] constexpr ScalarT perimeter(box<2, ScalarT, 3, TraitsT> const& v)
-{
-    return (length(v.half_extents[0]) + length(v.half_extents[1])) * ScalarT(4);
-}
 
+template <class ObjectT>
+[[deprecated("use perimeter_of")]] [[nodiscard]] constexpr auto perimeter(ObjectT const& o) -> decltype(perimeter_of(o))
+{
+    return perimeter_of(o);
+}
 } // namespace tg

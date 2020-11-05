@@ -2,30 +2,35 @@
 
 #include <typed-geometry/types/array.hh>
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
+#include <typed-geometry/types/objects/quad.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] array<segment<D, ScalarT>, 3> edges(triangle<D, ScalarT> const& t)
+[[nodiscard]] constexpr array<segment<D, ScalarT>, 3> edges_of(triangle<D, ScalarT> const& t)
 {
     return {{{t.pos0, t.pos1}, {t.pos1, t.pos2}, {t.pos2, t.pos0}}};
 }
 
-template <class ScalarT>
-[[nodiscard]] array<segment<2, ScalarT>, 4> edges(aabb<2, ScalarT> const& bb)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr array<segment<2, ScalarT>, 4> edges_of(quad<D, ScalarT> const& q)
 {
-    auto p00 = pos<3, ScalarT>(bb.min.x, bb.min.y);
-    auto p01 = pos<3, ScalarT>(bb.min.x, bb.max.y);
-    auto p10 = pos<3, ScalarT>(bb.max.x, bb.min.y);
-    auto p11 = pos<3, ScalarT>(bb.max.x, bb.max.y);
-
-    return {{{p00, p01}, {p01, p10}, {p10, p11}, {p11, p00}}};
+    return {{{q.pos00, q.pos10}, {q.pos10, q.pos11}, {q.pos11, q.pos01}, {q.pos01, q.pos00}}};
 }
 
-template <class ScalarT>
-[[nodiscard]] array<segment<3, ScalarT>, 12> edges(aabb<3, ScalarT> const& bb)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr array<segment<2, ScalarT>, 4> edges_of(aabb<2, ScalarT, TraitsT> const& bb)
+{
+    const auto vs = vertices_of(bb);
+    return {{{vs[0], vs[1]}, {vs[1], vs[2]}, {vs[2], vs[3]}, {vs[3], vs[0]}}};
+}
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr array<segment<3, ScalarT>, 12> edges_of(aabb<3, ScalarT, TraitsT> const& bb)
 {
     auto p000 = pos<3, ScalarT>(bb.min.x, bb.min.y, bb.min.z);
     auto p001 = pos<3, ScalarT>(bb.min.x, bb.min.y, bb.max.z);
@@ -52,5 +57,49 @@ template <class ScalarT>
         {p100, p101},
         {p110, p111}, // z dir
     }};
+}
+
+template <class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr array<segment<2, ScalarT>, 4> edges_of(box<2, ScalarT, DomainD, TraitsT> const& b)
+{
+    const auto vs = vertices_of(b);
+    return {{{vs[0], vs[1]}, {vs[1], vs[2]}, {vs[2], vs[3]}, {vs[3], vs[0]}}};
+}
+
+template <class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr array<segment<3, ScalarT>, 12> edges_of(box<3, ScalarT, DomainD, TraitsT> const& b)
+{
+    const auto vs = vertices_of(b);
+    return {{
+        // clang-format off
+        {vs[0], vs[1]}, {vs[1], vs[2]}, {vs[2], vs[3]}, {vs[3], vs[0]}, // lower face
+        {vs[4], vs[5]}, {vs[5], vs[6]}, {vs[6], vs[7]}, {vs[7], vs[4]}, // upper face
+        {vs[0], vs[4]}, {vs[1], vs[5]}, {vs[2], vs[6]}, {vs[3], vs[7]}  // vertical edges
+        // clang-format on
+    }};
+}
+
+template <class BaseT, class TraitsT>
+[[nodiscard]] constexpr auto edges_of(pyramid<BaseT, TraitsT> const& py)
+{
+    using ScalarT = typename BaseT::scalar_t;
+    static_assert(!std::is_same_v<BaseT, sphere<2, ScalarT, 3>>, "not possible for cones");
+
+    const auto apex = apex_of(py);
+    const auto edgesBase = edges_of(py.base);
+    auto res = array<segment<3, ScalarT>, edgesBase.size() * 2>();
+    for (size_t i = 0; i < edgesBase.size(); ++i)
+    {
+        res[i] = edgesBase[i];
+        res[i + edgesBase.size()] = segment<3, ScalarT>(edgesBase[i].pos0, apex);
+    }
+    return res;
+}
+
+
+template <class ObjectT>
+[[deprecated("use edges_of")]] [[nodiscard]] constexpr auto edges(ObjectT const& o) -> decltype(edges_of(o))
+{
+    return edges_of(o);
 }
 }

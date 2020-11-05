@@ -33,12 +33,12 @@ template <int D, class ScalarT>
 
 // returns the angle between any two objects with unambiguous normals. The result is in 0..pi (0°..180°)
 template <class A, class B>
-[[nodiscard]] constexpr auto angle_between(A const& a, B const& b) -> decltype(acos(dot(normal(a), normal(b))))
+[[nodiscard]] constexpr auto angle_between(A const& a, B const& b) -> decltype(acos(dot(normal_of(a), normal_of(b))))
 {
     // TODO(ks): call to angle_between(dir, dir)?
-    constexpr auto lower = decltype(dot(normal(a), normal(b)))(-1);
-    constexpr auto upper = decltype(dot(normal(a), normal(b)))(1);
-    return acos(clamp(dot(normal(a), normal(b))), lower, upper);
+    constexpr auto lower = decltype(dot(normal_of(a), normal_of(b)))(-1);
+    constexpr auto upper = decltype(dot(normal_of(a), normal_of(b)))(1);
+    return acos(clamp(dot(normal_of(a), normal_of(b))), lower, upper);
 }
 
 // Returns the angle of a rotation of a towards b about the orthogonal_axis

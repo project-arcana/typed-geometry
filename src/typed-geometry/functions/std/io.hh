@@ -299,6 +299,18 @@ std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, St
 }
 
 template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class CharT, class StreamTraits>
+std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, ellipse<ObjectD, ScalarT, DomainD, TraitsT> const& val)
+{
+    auto ss = detail::temp_sstream(out);
+    ss << type_name_prefix<ScalarT> << "ellipse" << char('0' + ObjectD);
+    if constexpr (ObjectD != DomainD)
+        ss << "in" << char('0' + DomainD);
+    ss << TraitsT::suffix;
+    ss << "(" << val.center << ", " << val.semi_axes << ")";
+    return out << ss.str();
+}
+
+template <int ObjectD, class ScalarT, int DomainD, class TraitsT, class CharT, class StreamTraits>
 std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, sphere<ObjectD, ScalarT, DomainD, TraitsT> const& val)
 {
     auto ss = detail::temp_sstream(out);

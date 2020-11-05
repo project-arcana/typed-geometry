@@ -8,9 +8,8 @@
 #include <typed-geometry/types/vec.hh>
 
 #include <typed-geometry/types/objects/box.hh>
-#include <typed-geometry/types/objects/cone.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
-#include <typed-geometry/types/objects/inf_cone.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 
@@ -35,6 +34,21 @@ constexpr box<D, ScalarT, D, TraitsT>::box(aabb<D, ScalarT, TraitsT> const& b)
     }
 }
 
+template <int D, class ScalarT, class TraitsT>
+constexpr ellipse<D, ScalarT, D, TraitsT>::ellipse(sphere<D, ScalarT, D, TraitsT> const& s)
+{
+    center = s.center;
+    semi_axes = mat_t::diag(s.radius);
+}
+template <class ScalarT, class TraitsT>
+constexpr ellipse<2, ScalarT, 3, TraitsT>::ellipse(sphere<2, ScalarT, 3, TraitsT> const& s)
+{
+    center = s.center;
+    const auto axis1 = any_normal(s.normal);
+    const auto axis2 = normalize(cross(s.normal, axis1));
+    semi_axes = mat_t::from_cols(s.radius * axis1, s.radius * axis2);
+}
+
 template <int D, class ScalarT>
 constexpr plane<D, ScalarT>::plane(dir_t n, pos_t p) : normal(n), dis(dot(vec<D, ScalarT>(p), n))
 {
@@ -48,13 +62,5 @@ template <int D, class ScalarT>
 constexpr line<D, ScalarT> line<D, ScalarT>::from_points(pos_t a, pos_t b)
 {
     return line(a, normalize(b - a));
-}
-
-template <int D, class ScalarT, class TraitsT>
-constexpr inf_cone<D, ScalarT, TraitsT>::inf_cone(cone<D, ScalarT, TraitsT> const& c)
-{
-    apex = c.base.center + c.height * c.base.normal;
-    opening_dir = -c.base.normal;
-    opening_angle = ScalarT(2) * angle_between(normalize(c.base.center + any_normal(c.base.normal) * c.base.radius - apex), opening_dir);
 }
 }

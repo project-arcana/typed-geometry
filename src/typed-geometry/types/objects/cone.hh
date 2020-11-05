@@ -8,7 +8,7 @@ namespace tg
 {
 /**
  * right circular cone
- * apex not stored explicitly, can be deduced from height and normal of base
+ * apex not stored explicitly, can be deduced from height and normal of base in apex_of(cone)
  * (not yet) can construct cone from given apex and center of base (TODO would require extra functions here, do we want that?)
  */
 template <int D, class ScalarT, class TraitsT = default_object_tag>

@@ -3,6 +3,8 @@
 #include <typed-geometry/feature/basic.hh>
 
 #include <typed-geometry/functions/objects/aabb.hh>
+#include <typed-geometry/functions/objects/any_point.hh>
+#include <typed-geometry/functions/objects/apex.hh>
 #include <typed-geometry/functions/objects/area.hh>
 #include <typed-geometry/functions/objects/boundary.hh>
 #include <typed-geometry/functions/objects/bounds.hh>
@@ -13,6 +15,7 @@
 #include <typed-geometry/functions/objects/direction.hh>
 #include <typed-geometry/functions/objects/distance.hh>
 #include <typed-geometry/functions/objects/edges.hh>
+#include <typed-geometry/functions/objects/faces.hh>
 #include <typed-geometry/functions/objects/intersection.hh>
 #include <typed-geometry/functions/objects/normal.hh>
 #include <typed-geometry/functions/objects/perimeter.hh>

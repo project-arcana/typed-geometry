@@ -61,7 +61,7 @@ struct halfspace
     constexpr halfspace(dir_t n, pos_t p);
 
     template <class OtherT>
-    constexpr halfspace(halfspace<D, OtherT> const& v) : normal(v.normal), dis(v.dis)
+    explicit constexpr halfspace(halfspace<D, OtherT> const& v) : normal(v.normal), dis(v.dis)
     {
     }
 

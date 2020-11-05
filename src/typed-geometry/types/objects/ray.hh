@@ -54,7 +54,7 @@ struct ray
     constexpr ray(pos_t origin, dir_t dir) : origin(origin), dir(dir) {}
 
     template <class OtherT>
-    constexpr ray(ray<D, OtherT> const& v) : origin(v.origin), dir(v.dir)
+    explicit constexpr ray(ray<D, OtherT> const& v) : origin(v.origin), dir(v.dir)
     {
     }
 

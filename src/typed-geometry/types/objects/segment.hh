@@ -53,7 +53,7 @@ struct segment
     constexpr segment(pos_t p0, pos_t p1) : pos0(p0), pos1(p1) {}
 
     template <class OtherT>
-    constexpr segment(segment<D, OtherT> const& v) : pos0(v.pos0), pos1(v.pos1)
+    explicit constexpr segment(segment<D, OtherT> const& v) : pos0(v.pos0), pos1(v.pos1)
     {
     }
 
