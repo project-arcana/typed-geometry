@@ -100,4 +100,16 @@ template <class ObjectT>
 {
     return vertices_of(o);
 }
+
+namespace detail
+{
+template <class T>
+auto test_has_vertices(int) -> decltype(vertices_of(std::declval<T>()), std::true_type{});
+template <class T>
+std::false_type test_has_vertices(char);
+}
+
+/// true if vertices(obj) exists
+template <class T>
+constexpr bool has_vertices_of = decltype(detail::test_has_vertices<T>(0))::value;
 }

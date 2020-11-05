@@ -102,4 +102,16 @@ template <class ObjectT>
 {
     return edges_of(o);
 }
+
+namespace detail
+{
+template <class T>
+auto test_has_edges(int) -> decltype(edges_of(std::declval<T>()), std::true_type{});
+template <class T>
+std::false_type test_has_edges(char);
+}
+
+/// true if edges(obj) exists
+template <class T>
+constexpr bool has_edges_of = decltype(detail::test_has_edges<T>(0))::value;
 }
