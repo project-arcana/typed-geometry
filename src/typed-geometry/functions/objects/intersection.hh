@@ -385,6 +385,111 @@ template <class ScalarT>
     return t;
 }
 
+// ray - triangle
+template <class ScalarT>
+[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r,
+                                                                 triangle<3, ScalarT> const& t,
+                                                                 dont_deduce<ScalarT> eps = 100 * tg::epsilon<ScalarT>)
+{
+    auto e1 = t.pos1 - t.pos0;
+    auto e2 = t.pos2 - t.pos0;
+
+    auto pvec = tg::cross(r.dir, e2);
+    auto det = dot(pvec, e1);
+
+    if (det < ScalarT(0))
+    {
+        std::swap(e1, e2);
+        pvec = tg::cross(r.dir, e2);
+        det = -det;
+    }
+
+    if (det < eps)
+        return {};
+
+    auto tvec = r.origin - t.pos0;
+    auto u = dot(tvec, pvec);
+    if (u < ScalarT(0) || u > det)
+        return {};
+
+    auto qvec = cross(tvec, e1);
+    auto v = dot(r.dir, qvec);
+    if (v < ScalarT(0) || v + u > det)
+        return {};
+
+    auto lambda = (ScalarT(1) / det) * dot(e2, qvec);
+    return (lambda > ScalarT(0)) ? lambda : tg::optional<ScalarT>();
+}
+
+// ray - box
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
+{
+    // see https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp
+
+    auto const p = b.center - r.origin;
+
+    // TODO: without normalize
+    auto const X = normalize(b.half_extents[0]);
+    auto const Y = normalize(b.half_extents[1]);
+    auto const Z = normalize(b.half_extents[2]);
+
+    auto f = tg::vec3(dot(X, r.dir), //
+                      dot(Y, r.dir), //
+                      dot(Z, r.dir));
+
+    auto const e = tg::vec3(dot(X, p), //
+                            dot(Y, p), //
+                            dot(Z, p));
+
+    auto const size = tg::vec3(length(b.half_extents[0]), //
+                               length(b.half_extents[1]), //
+                               length(b.half_extents[2]));
+
+    float t[6] = {0, 0, 0, 0, 0, 0};
+    for (int i = 0; i < 3; ++i)
+    {
+        if (abs(f[i]) < tg::epsilon<ScalarT> / 1000)
+        {
+            if (-e[i] - size[i] > 0 || -e[i] + size[i] < 0)
+                return {};
+
+            f[i] = tg::epsilon<ScalarT>; // Avoid div by 0!
+        }
+
+        t[i * 2 + 0] = (e[i] + size[i]) / f[i]; // tmin[x, y, z]
+        t[i * 2 + 1] = (e[i] - size[i]) / f[i]; // tmax[x, y, z]
+    }
+
+    auto const tmin = tg::max(tg::max(tg::min(t[0], t[1]), tg::min(t[2], t[3])), tg::min(t[4], t[5]));
+    auto const tmax = tg::min(tg::min(tg::max(t[0], t[1]), tg::max(t[2], t[3])), tg::max(t[4], t[5]));
+
+    // if tmax < 0, ray is intersecting AABB
+    // but entire AABB is behing it's origin
+    if (tmax < 0)
+        return {};
+
+    // if tmin > tmax, ray doesn't intersect AABB
+    if (tmin > tmax)
+        return {};
+
+    ScalarT hits[2];
+
+    if (tmin >= 0) // two valid intersections
+    {
+        hits[0] = tmin;
+        hits[1] = tmax;
+        return {hits, 2};
+    }
+    else // one valid intersection
+    {
+        hits[0] = tmax;
+        return {hits, 1};
+    }
+}
+
+
+// ====================================== Object - Object Intersections ======================================
 
 // returns intersection circle of sphere and sphere (normal points from a to b)
 // for now does not work if spheres are identical (result would be a sphere3 again)
@@ -613,106 +718,23 @@ template <int D, class ScalarT>
     return t;
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r,
-                                                                 triangle<3, ScalarT> const& t,
-                                                                 dont_deduce<ScalarT> eps = 100 * tg::epsilon<ScalarT>)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(segment<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
 {
-    auto e1 = t.pos1 - t.pos0;
-    auto e2 = t.pos2 - t.pos0;
-
-    auto pvec = tg::cross(r.dir, e2);
-    auto det = dot(pvec, e1);
-
-    if (det < ScalarT(0))
-    {
-        std::swap(e1, e2);
-        pvec = tg::cross(r.dir, e2);
-        det = -det;
-    }
-
-    if (det < eps)
-        return {};
-
-    auto tvec = r.origin - t.pos0;
-    auto u = dot(tvec, pvec);
-    if (u < ScalarT(0) || u > det)
-        return {};
-
-    auto qvec = cross(tvec, e1);
-    auto v = dot(r.dir, qvec);
-    if (v < ScalarT(0) || v + u > det)
-        return {};
-
-    auto lambda = (ScalarT(1) / det) * dot(e2, qvec);
-    return (lambda > ScalarT(0)) ? lambda : tg::optional<ScalarT>();
+    static_assert(always_false<ScalarT>, "not implemented");
+    (void)a;
+    (void)b;
+    return {}; // TODO
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(sphere<D, ScalarT> const& b, segment<D, ScalarT> const& a)
 {
-    // see https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp
-
-    auto const p = b.center - r.origin;
-
-    // TODO: without normalize
-    auto const X = normalize(b.half_extents[0]);
-    auto const Y = normalize(b.half_extents[1]);
-    auto const Z = normalize(b.half_extents[2]);
-
-    auto f = tg::vec3(dot(X, r.dir), //
-                      dot(Y, r.dir), //
-                      dot(Z, r.dir));
-
-    auto const e = tg::vec3(dot(X, p), //
-                            dot(Y, p), //
-                            dot(Z, p));
-
-    auto const size = tg::vec3(length(b.half_extents[0]), //
-                               length(b.half_extents[1]), //
-                               length(b.half_extents[2]));
-
-    float t[6] = {0, 0, 0, 0, 0, 0};
-    for (int i = 0; i < 3; ++i)
-    {
-        if (abs(f[i]) < tg::epsilon<ScalarT> / 1000)
-        {
-            if (-e[i] - size[i] > 0 || -e[i] + size[i] < 0)
-                return {};
-
-            f[i] = tg::epsilon<ScalarT>; // Avoid div by 0!
-        }
-
-        t[i * 2 + 0] = (e[i] + size[i]) / f[i]; // tmin[x, y, z]
-        t[i * 2 + 1] = (e[i] - size[i]) / f[i]; // tmax[x, y, z]
-    }
-
-    auto const tmin = tg::max(tg::max(tg::min(t[0], t[1]), tg::min(t[2], t[3])), tg::min(t[4], t[5]));
-    auto const tmax = tg::min(tg::min(tg::max(t[0], t[1]), tg::max(t[2], t[3])), tg::max(t[4], t[5]));
-
-    // if tmax < 0, ray is intersecting AABB
-    // but entire AABB is behing it's origin
-    if (tmax < 0)
-        return {};
-
-    // if tmin > tmax, ray doesn't intersect AABB
-    if (tmin > tmax)
-        return {};
-
-    ScalarT hits[2];
-
-    if (tmin >= 0) // two valid intersections
-    {
-        hits[0] = tmin;
-        hits[1] = tmax;
-        return {hits, 2};
-    }
-    else // one valid intersection
-    {
-        hits[0] = tmax;
-        return {hits, 1};
-    }
+    return intersection(b, a);
 }
+
+
+// ====================================== Checks if Object Intersects aabb ======================================
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(sphere<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
@@ -757,21 +779,6 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
 {
     return intersects(b, a);
-}
-
-template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(segment<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
-{
-    static_assert(always_false<ScalarT>, "not implemented");
-    (void)a;
-    (void)b;
-    return {}; // TODO
-}
-
-template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(sphere<D, ScalarT> const& b, segment<D, ScalarT> const& a)
-{
-    return intersection(b, a);
 }
 
 template <class ScalarT>
