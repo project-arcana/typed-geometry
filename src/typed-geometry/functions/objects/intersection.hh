@@ -191,7 +191,7 @@ template <int D, class ScalarT>
     // <r.origin + t * r.dir, p.normal> = p.dis
     // t = (p.dis - <r.origin, p.normal>) / <r.dir, p.normal>
 
-    auto t = (p.dis - dot(p.normal, vec<D, ScalarT>(r.origin))) / dotND;
+    auto t = (p.dis - dot(p.normal, r.origin)) / dotND;
 
     // check whether plane lies behind ray
     if (t < 0)
@@ -364,10 +364,10 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
 {
-    auto const dir = direction(c);
-    auto const t_cyl = closest_intersection_parameter(r, cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
-    auto const t_cap0 = intersection_parameter(r, sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, dir));
-    auto const t_cap1 = intersection_parameter(r, sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, dir));
+    const auto caps = caps_of(c);
+    const auto t_cap0 = intersection_parameter(r, caps[0]);
+    const auto t_cap1 = intersection_parameter(r, caps[1]);
+    const auto t_cyl = closest_intersection_parameter(r, boundary_no_caps_of(c));
 
     optional<ScalarT> t;
 
@@ -696,7 +696,7 @@ template <int D, class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr ScalarT intersection_parameter(line<3, ScalarT> const& l, plane<3, ScalarT> const& p)
 {
-    return (p.dis - dot(l.pos - pos<3, ScalarT>::zero, p.normal)) / dot(l.dir, p.normal);
+    return (p.dis - dot(l.pos, p.normal)) / dot(l.dir, p.normal);
 }
 
 template <class ScalarT>
@@ -712,7 +712,7 @@ template <int D, class ScalarT>
     if (denom == ScalarT(0))
         return {};
 
-    auto t = (p.dis - dot(p.normal, a.pos0 - tg::pos<D, ScalarT>::zero)) / denom;
+    auto t = (p.dis - dot(p.normal, a.pos0)) / denom;
     if (t < 0 || t > 1)
         return {};
     return t;
@@ -784,23 +784,16 @@ template <int D, class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(triangle<2, ScalarT> const& a, aabb<2, ScalarT> const& b)
 {
+    if (!intersects(aabb_of(a), b))
+        return false;
+
     auto p0 = a.pos0;
     auto p1 = a.pos1;
     auto p2 = a.pos2;
-
-    auto bb_t = aabb_of(p0, p1, p2);
-    if (!intersects(bb_t, b))
-        return false;
-
     if (contains(b, p0) || contains(b, p1) || contains(b, p2))
         return true;
 
-    pos<2, ScalarT> aabb_pts[] = {
-        {b.min.x, b.min.y}, //
-        {b.min.x, b.max.y}, //
-        {b.max.x, b.min.y}, //
-        {b.max.x, b.max.y}, //
-    };
+    auto aabb_pts = vertices_of(b);
 
     auto const is_separate = [&](pos<2, ScalarT> pa, vec<2, ScalarT> n, pos<2, ScalarT> pb) {
         auto da = dot(n, pa);
@@ -847,7 +840,7 @@ template <class ScalarT>
     using pos_t = pos<3, ScalarT>;
     using vec_t = vec<3, ScalarT>;
 
-    auto const center = (bb_in.max + bb_in.min) / ScalarT(2);
+    auto const center = centroid_of(bb_in);
     auto const amin = pos_t(bb_in.min - center);
     auto const amax = pos_t(bb_in.max - center);
     auto const bb = aabb<3, ScalarT>(amin, amax);
@@ -868,12 +861,8 @@ template <class ScalarT>
                b.min.z < p.z && p.z < b.max.z;
     };
 
-    auto const contains_p0 = proper_contains(bb, p0);
-    auto const contains_p1 = proper_contains(bb, p1);
-    auto const contains_p2 = proper_contains(bb, p2);
-
     // early in: tri points vs AABB
-    if (contains_p0 || contains_p1 || contains_p2)
+    if (proper_contains(bb, p0) || proper_contains(bb, p1) || proper_contains(bb, p2))
         return true;
 
     // get adjusted tri base plane
