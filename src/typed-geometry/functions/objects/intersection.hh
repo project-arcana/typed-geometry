@@ -252,56 +252,6 @@ template <int D, class ScalarT>
     return {};
 }
 
-// ray - tube
-template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, cylinder_boundary_no_caps<3, ScalarT> const& c)
-{
-    auto cdir = direction(c);
-    auto cosA = dot(cdir, r.dir);
-    auto sinA_sqr = 1 - cosA * cosA;
-
-    if (sinA_sqr <= 0)
-        return {};
-
-    // compute closest points of the two lines
-    auto origDiff = r.origin - c.axis.pos0;
-    auto fRay = dot(r.dir, origDiff);
-    auto fLine = dot(cdir, origDiff);
-    auto tRay = (cosA * fLine - fRay) / sinA_sqr;
-    auto tLine = (fLine - cosA * fRay) / sinA_sqr;
-
-    auto closest_on_ray = r.origin + tRay * r.dir;
-    auto closest_on_line = c.axis.pos0 + tLine * cdir;
-    auto line_ray_dist_sqr = distance_sqr(closest_on_ray, closest_on_line);
-    auto cyl_radius_sqr = c.radius * c.radius;
-
-    if (line_ray_dist_sqr > cyl_radius_sqr)
-        return {};
-
-    // radius in 2D slice
-    auto r_2D = sqrt(cyl_radius_sqr - line_ray_dist_sqr);
-
-    // infinite tube intersection
-    auto s = r_2D / sqrt(sinA_sqr);
-    auto cyl_intersection_0 = closest_on_ray - s * r.dir;
-    auto cyl_intersection_1 = closest_on_ray + s * r.dir;
-
-    // project onto line segment
-    auto line_length = length(c.axis);
-    auto lambda_0 = dot(cyl_intersection_0 - c.axis.pos0, cdir);
-    auto lambda_1 = dot(cyl_intersection_1 - c.axis.pos0, cdir);
-
-    ScalarT hits[2];
-    int hit_cnt = 0;
-
-    if (tRay - s >= 0 && 0 <= lambda_0 && lambda_0 < line_length)
-        hits[hit_cnt++] = tRay - s;
-    if (tRay + s >= 0 && 0 <= lambda_1 && lambda_1 < line_length)
-        hits[hit_cnt++] = tRay + s;
-
-    return {hits, hit_cnt};
-}
-
 // ray - disk
 template <class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, sphere<2, ScalarT, 3> const& d)
@@ -383,6 +333,56 @@ template <class ScalarT>
     TG_INTERNAL_ASSERT(!t.has_value() || t.value() >= 0);
 
     return t;
+}
+
+// ray - tube
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, cylinder_boundary_no_caps<3, ScalarT> const& c)
+{
+    auto cdir = direction(c);
+    auto cosA = dot(cdir, r.dir);
+    auto sinA_sqr = 1 - cosA * cosA;
+
+    if (sinA_sqr <= 0)
+        return {};
+
+    // compute closest points of the two lines
+    auto origDiff = r.origin - c.axis.pos0;
+    auto fRay = dot(r.dir, origDiff);
+    auto fLine = dot(cdir, origDiff);
+    auto tRay = (cosA * fLine - fRay) / sinA_sqr;
+    auto tLine = (fLine - cosA * fRay) / sinA_sqr;
+
+    auto closest_on_ray = r.origin + tRay * r.dir;
+    auto closest_on_line = c.axis.pos0 + tLine * cdir;
+    auto line_ray_dist_sqr = distance_sqr(closest_on_ray, closest_on_line);
+    auto cyl_radius_sqr = c.radius * c.radius;
+
+    if (line_ray_dist_sqr > cyl_radius_sqr)
+        return {};
+
+    // radius in 2D slice
+    auto r_2D = sqrt(cyl_radius_sqr - line_ray_dist_sqr);
+
+    // infinite tube intersection
+    auto s = r_2D / sqrt(sinA_sqr);
+    auto cyl_intersection_0 = closest_on_ray - s * r.dir;
+    auto cyl_intersection_1 = closest_on_ray + s * r.dir;
+
+    // project onto line segment
+    auto line_length = length(c.axis);
+    auto lambda_0 = dot(cyl_intersection_0 - c.axis.pos0, cdir);
+    auto lambda_1 = dot(cyl_intersection_1 - c.axis.pos0, cdir);
+
+    ScalarT hits[2];
+    int hit_cnt = 0;
+
+    if (tRay - s >= 0 && 0 <= lambda_0 && lambda_0 < line_length)
+        hits[hit_cnt++] = tRay - s;
+    if (tRay + s >= 0 && 0 <= lambda_1 && lambda_1 < line_length)
+        hits[hit_cnt++] = tRay + s;
+
+    return {hits, hit_cnt};
 }
 
 // ray - triangle
