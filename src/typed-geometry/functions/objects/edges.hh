@@ -106,7 +106,7 @@ template <class ObjectT>
 namespace detail
 {
 template <class T>
-auto test_has_edges(int) -> decltype(edges_of(std::declval<T>()), std::true_type{});
+auto test_has_edges(int) -> decltype(void(edges_of(std::declval<T>())), std::true_type{});
 template <class T>
 std::false_type test_has_edges(char);
 }

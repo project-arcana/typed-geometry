@@ -104,7 +104,7 @@ template <class ObjectT>
 namespace detail
 {
 template <class T>
-auto test_has_vertices(int) -> decltype(vertices_of(std::declval<T>()), std::true_type{});
+auto test_has_vertices(int) -> decltype(void(vertices_of(std::declval<T>())), std::true_type{});
 template <class T>
 std::false_type test_has_vertices(char);
 }
