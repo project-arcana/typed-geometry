@@ -197,6 +197,17 @@ constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT>
 
 // ====================================== Ray - Object Intersections ======================================
 
+// ray - line
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<2, ScalarT> const& r, line<2, ScalarT> const& l)
+{
+    auto M = mat<2, 2, ScalarT>::from_cols(r.dir, -l.dir);
+    auto t = inverse(M) * (l.pos - r.origin);
+    if (t.x < ScalarT(0))
+        return {};
+    return t.x;
+}
+
 // ray - ray
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<2, ScalarT> const& r0, ray<2, ScalarT> const& r1)
@@ -204,6 +215,17 @@ template <class ScalarT>
     auto M = mat<2, 2, ScalarT>::from_cols(r0.dir, -r1.dir);
     auto t = inverse(M) * (r1.origin - r0.origin);
     if (t.x < ScalarT(0) || t.y < ScalarT(0))
+        return {};
+    return t.x;
+}
+
+// ray - segment
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<2, ScalarT> const& r, segment<2, ScalarT> const& s)
+{
+    auto M = mat<2, 2, ScalarT>::from_cols(r.dir, s.pos0 - s.pos1);
+    auto t = inverse(M) * (s.pos0 - r.origin);
+    if (t.x < ScalarT(0) || t.y < ScalarT(0) || t.y > ScalarT(1))
         return {};
     return t.x;
 }
