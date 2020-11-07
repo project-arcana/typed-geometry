@@ -197,6 +197,17 @@ constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT>
 
 // ====================================== Ray - Object Intersections ======================================
 
+// ray - ray
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<2, ScalarT> const& r0, ray<2, ScalarT> const& r1)
+{
+    auto M = mat<2, 2, ScalarT>::from_cols(r0.dir, -r1.dir);
+    auto t = inverse(M) * (r1.origin - r0.origin);
+    if (t.x < ScalarT(0) || t.y < ScalarT(0))
+        return {};
+    return t.x;
+}
+
 // ray - plane
 template <int D, class ScalarT>
 [[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, plane<D, ScalarT> const& p)
