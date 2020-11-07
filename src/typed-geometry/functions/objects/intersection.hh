@@ -27,16 +27,16 @@
 // intersects(a, b)              -> bool
 // intersection(a, b)            -> ???
 // intersection_safe(a, b)       -> optional<???>
-// intersection_parameter(a, b)  -> coords?
+// intersection_parameter(a, b)  -> coords? (for a ray: ray_hits<N, ScalarT>)
 // intersection_parameters(a, b) -> pair<coords, coords>?
 // intersection_exact(a, b)      -> variant
-// closest_intersection(a, b)            -> ???
-// closest_intersection_parameter(a, b)  -> coords?
+// closest_intersection(a, b)            -> position/object (for a ray: optional<pos>)
+// closest_intersection_parameter(a, b)  -> coords (for a ray: optional<ScalarT>)
 
 // "intersects" returns true iff any point lies in a and in b
 // "intersection" returns an object describing the intersection (NOTE: does NOT handle degenerate cases)
 // "intersection_safe" is the same as "intersection" but returns nullopt for degenerate cases
-// "intersection_parameter" returns a coordinates for the first object such that a[coords] == intersection(a, b)
+// "intersection_parameter" returns coordinates for the first object such that a[coords] == intersection(a, b)
 // "intersection_parameters" returns coordinates for both objects
 // "intersection_exact" returns a variant type describing all possible intersections, including degenerate cases
 // the "closest_" variants only return the closest intersection for objects where that concept is applicable (e.g. for rays)
@@ -45,6 +45,11 @@
 //  - intersection_exact is currently unsupported
 //  - intersection_safe is currently unsupported
 //  - for more elaborate ray-tracing, a future ray_cast function will exist (which also returns the intersection normal)
+
+// Implementation guidelines:
+// explicit intersection_parameter(ray, obj), which gives closest_intersection_parameter and intersection position
+// explicit closest_intersection_parameter(ray, obj) if this is faster than computing all intersections
+// explicit intersects(obj, aabb), which gives intersects(aabb, obj)
 
 
 namespace tg
@@ -65,23 +70,32 @@ struct ray_hits
     template <class OtherT>
     using as_ray_hits = ray_hits<MaxHits, OtherT>;
 
-    int size() const { return _size; }
-    bool any() const { return _size > 0; }
+    [[nodiscard]] int size() const { return _size; }
+    [[nodiscard]] bool any() const { return _size > 0; }
 
-    HitT const& operator[](int idx)
+    HitT const& operator[](int idx) const
     {
         TG_ASSERT(0 <= idx && idx < _size);
         return _hit[idx];
     }
+    [[nodiscard]] HitT const& first() const
+    {
+        TG_ASSERT(_size > 0);
+        return _hit[0];
+    }
 
-    HitT const* begin() const { return _hit; }
-    HitT const* end() const { return _hit + _size; }
+    [[nodiscard]] HitT const* begin() const { return _hit; }
+    [[nodiscard]] HitT const* end() const { return _hit + _size; }
 
     ray_hits() = default;
     ray_hits(HitT* hits, int size) : _size(size)
     {
         for (auto i = 0; i < size; ++i)
             _hit[i] = hits[i];
+    }
+    template <typename... HitTs>
+    ray_hits(HitTs... hits) : _size(sizeof...(HitTs)), _hit{hits...}
+    {
     }
 
 private:
@@ -98,6 +112,13 @@ template <class A, class B>
 [[nodiscard]] constexpr auto intersects(A const& a, B const& b) -> decltype(intersection(a, b).has_value())
 {
     return intersection(a, b).has_value();
+}
+
+// if ray_hits intersection parameter is available and applicable, use that
+template <int D, class ScalarT, class Obj>
+[[nodiscard]] constexpr auto intersects(ray<D, ScalarT> const& r, Obj const& obj) -> decltype(intersection_parameter(r, obj).any())
+{
+    return intersection_parameter(r, obj).any();
 }
 
 // if a value-typed intersection parameter is available and applicable, use that
@@ -151,7 +172,7 @@ template <int D, class ScalarT, class Obj>
 {
     auto hits = intersection_parameter(r, obj);
     if (hits.any())
-        return hits[0];
+        return hits.first();
     return {};
 }
 
@@ -178,7 +199,7 @@ constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT>
 
 // ray - plane
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<D, ScalarT> const& r, plane<D, ScalarT> const& p)
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, plane<D, ScalarT> const& p)
 {
     // if plane normal and ray direction are parallel there is no intersection
     auto dotND = dot(p.normal, r.dir);
@@ -194,7 +215,7 @@ template <int D, class ScalarT>
     auto t = (p.dis - dot(p.normal, r.origin)) / dotND;
 
     // check whether plane lies behind ray
-    if (t < 0)
+    if (t < ScalarT(0))
         return {};
 
     return t;
@@ -234,33 +255,24 @@ template <int D, class ScalarT>
 
     auto dt = sqrt(r_sqr - d_sqr);
 
-    ScalarT hits[2];
-
     if (t - dt >= 0)
-    {
-        hits[0] = t - dt;
-        hits[1] = t + dt;
-        return {hits, 2};
-    }
+        return {t - dt, t + dt};
 
     if (t + dt >= 0)
-    {
-        hits[0] = t + dt;
-        return {hits, 1};
-    }
+        return {t + dt};
 
     return {};
 }
 
 // ray - disk
 template <class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r, sphere<2, ScalarT, 3> const& d)
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, sphere<2, ScalarT, 3> const& d)
 {
     auto const t = intersection_parameter(r, plane<3, ScalarT>(d.normal, d.center));
-    if (!t.has_value())
+    if (!t.any())
         return {};
 
-    auto const p = r[t.value()];
+    auto const p = r[t.first()];
     if (distance_sqr(p, d.center) > d.radius * d.radius)
         return {};
 
@@ -292,27 +304,18 @@ template <class ScalarT>
     auto tMin = min(t1, t2);
     auto tMax = max(t1, t2);
 
-    ScalarT hits[2];
-
     if (tMin >= ScalarT(0))
-    {
-        hits[0] = tMin;
-        hits[1] = tMax;
-        return {hits, 2};
-    }
+        return {tMin, tMax};
 
     if (tMax >= ScalarT(0))
-    {
-        hits[0] = tMax;
-        return {hits, 1};
-    }
+        return tMax;
 
     return {};
 }
 
 // ray - cylinder
 template <class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder<3, ScalarT> const& c)
+[[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder_boundary<3, ScalarT> const& c)
 {
     const auto caps = caps_of(c);
     const auto t_cap0 = intersection_parameter(r, caps[0]);
@@ -324,11 +327,11 @@ template <class ScalarT>
     if (t_cyl.has_value())
         t = t_cyl.value();
 
-    if (t_cap0.has_value() && (!t.has_value() || t.value() > t_cap0.value()))
-        t = t_cap0;
+    if (t_cap0.any() && (!t.has_value() || t.value() > t_cap0.first()))
+        t = t_cap0.first();
 
-    if (t_cap1.has_value() && (!t.has_value() || t.value() > t_cap1.value()))
-        t = t_cap1;
+    if (t_cap1.any() && (!t.has_value() || t.value() > t_cap1.first()))
+        t = t_cap1.first();
 
     TG_INTERNAL_ASSERT(!t.has_value() || t.value() >= 0);
 
@@ -387,7 +390,7 @@ template <class ScalarT>
 
 // ray - triangle
 template <class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(ray<3, ScalarT> const& r,
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<3, ScalarT> const& r,
                                                                  triangle<3, ScalarT> const& t,
                                                                  dont_deduce<ScalarT> eps = 100 * tg::epsilon<ScalarT>)
 {
@@ -418,7 +421,7 @@ template <class ScalarT>
         return {};
 
     auto lambda = (ScalarT(1) / det) * dot(e2, qvec);
-    return (lambda > ScalarT(0)) ? lambda : tg::optional<ScalarT>();
+    return (lambda > ScalarT(0)) ? lambda : ray_hits<1, ScalarT>();
 }
 
 // ray - box
@@ -473,19 +476,10 @@ template <class ScalarT>
     if (tmin > tmax)
         return {};
 
-    ScalarT hits[2];
-
     if (tmin >= 0) // two valid intersections
-    {
-        hits[0] = tmin;
-        hits[1] = tmax;
-        return {hits, 2};
-    }
+        return {tmin, tmax};
     else // one valid intersection
-    {
-        hits[0] = tmax;
-        return {hits, 1};
-    }
+        return tmax;
 }
 
 
