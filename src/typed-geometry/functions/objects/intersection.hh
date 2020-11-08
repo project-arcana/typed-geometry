@@ -214,6 +214,7 @@ constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<2, ScalarT> const& r, line<2, ScalarT> const& l)
 {
+    // r.origin + r.dir * t.x == l.pos + l.dir * t.y  <=>  (r.dir | -l.dir) * (t.x | t.y)^T == l.pos - r.origin
     auto M = mat<2, 2, ScalarT>::from_cols(r.dir, -l.dir);
     auto t = inverse(M) * (l.pos - r.origin);
     if (t.x < ScalarT(0))
@@ -265,6 +266,23 @@ template <int D, class ScalarT>
         return {};
 
     return t;
+}
+
+// ray - halfspace
+template <int D, class ScalarT>
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, halfspace<D, ScalarT> const& h)
+{
+    // check if ray origin is already contained in the halfspace
+    const auto dist = signed_distance(r.origin, h);
+    if (dist <= ScalarT(0))
+        return ScalarT(0);
+
+    // if ray points away from the halfspace there is no intersection
+    auto dotND = dot(h.normal, r.dir);
+    if (dotND >= ScalarT(0))
+        return {};
+
+    return - dist / dotND;
 }
 
 // returns closest intersection point(s) of ray and sphere
