@@ -47,7 +47,7 @@
 //  - for more elaborate ray-tracing, a future ray_cast function will exist (which also returns the intersection normal)
 
 // Implementation guidelines:
-// explicit intersection_parameter(ray, obj), which gives closest_intersection_parameter and intersection position
+// explicit intersection_parameter(ray, obj), which gives closest_intersection_parameter and intersection position(s)
 // explicit closest_intersection_parameter(ray, obj) if this is faster than computing all intersections
 // explicit intersects(obj, aabb), which gives intersects(aabb, obj)
 
@@ -119,6 +119,19 @@ template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto intersects(ray<D, ScalarT> const& r, Obj const& obj) -> decltype(intersection_parameter(r, obj).any())
 {
     return intersection_parameter(r, obj).any();
+}
+
+// parameters for intersects with aabb can switch order
+template <int D, class ScalarT, class Obj>
+[[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& b, Obj const& obj)
+{
+    return intersects(obj, b);
+}
+// Explicit intersects aabb aabb to prevent infinite recursion
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
+{
+    return intersection(a, b).has_value();
 }
 
 // if a value-typed intersection parameter is available and applicable, use that
@@ -802,11 +815,6 @@ template <int D, class ScalarT>
 
     return d_min <= a.radius * a.radius;
 }
-template <int D, class ScalarT>
-[[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
-{
-    return intersects(b, a);
-}
 
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(triangle<2, ScalarT> const& a, aabb<2, ScalarT> const& b)
@@ -853,11 +861,6 @@ template <class ScalarT>
         return false;
 
     return true;
-}
-template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(aabb<2, ScalarT> const& a, triangle<2, ScalarT> const& b)
-{
-    return intersects(b, a);
 }
 
 // NOTE: does NOT work for integer objects
@@ -959,11 +962,6 @@ template <class ScalarT>
 
     // found no separating axis? -> intersection
     return true;
-}
-template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(aabb<3, ScalarT> const& a, triangle<3, ScalarT> const& b)
-{
-    return intersects(b, a);
 }
 
 } // namespace tg
