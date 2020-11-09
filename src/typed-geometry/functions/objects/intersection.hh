@@ -452,7 +452,34 @@ template <class ScalarT>
     return {hits, hit_cnt};
 }
 
-// ray - triangle
+// ray - triangle2
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<2, ScalarT> const& r, triangle<2, ScalarT> const& t)
+{
+    ScalarT closestIntersection = tg::max<ScalarT>();
+    auto numIntersections = 0;
+    for (const auto& edge : edges_of(t))
+    {
+        const auto inter = intersection_parameter(r, edge);
+        if (inter.any())
+        {
+            numIntersections++;
+            closestIntersection = min(closestIntersection, inter.first());
+        }
+    }
+
+    if (numIntersections == 0)
+        return {}; // No intersection
+    if (numIntersections == 1)
+    {
+        // ray started within the triangle
+        TG_ASSERT(contains(t, r.origin));
+        return ScalarT(0);
+    }
+    return closestIntersection;
+}
+
+// ray - triangle3
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<3, ScalarT> const& r,
                                                                  triangle<3, ScalarT> const& t,
