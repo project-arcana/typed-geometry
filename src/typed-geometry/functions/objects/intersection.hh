@@ -4,8 +4,10 @@
 #include <typed-geometry/feature/assert.hh>
 #include <typed-geometry/functions/basic/scalar_math.hh>
 
-#include <typed-geometry/types/objects/capsule.hh>
+#include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/halfspace.hh>
+#include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
@@ -17,7 +19,6 @@
 #include <typed-geometry/functions/vector/length.hh>
 
 #include "aabb.hh"
-#include "closest_points.hh"
 #include "contains.hh"
 #include "direction.hh"
 #include "normal.hh"
@@ -361,15 +362,17 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, aabb_boundary<D, ScalarT> const& b)
 {
-    const auto tMin = (b.min - r.origin) / comp(r.dir);
-    const auto tMax = (b.max - r.origin) / comp(r.dir);
-    auto tFirst = max(min(tMin.x, tMax.x), min(tMin.y, tMax.y));
-    auto tSecond = min(max(tMin.x, tMax.x), max(tMin.y, tMax.y));
-
-    if constexpr (D >= 3)
+    auto tFirst = tg::min<ScalarT>();
+    auto tSecond = tg::max<ScalarT>();
+    for (auto i = 0; i < D; ++i)
     {
-        tFirst = max(tFirst, min(tMin.z, tMax.z));
-        tSecond = min(tSecond, max(tMin.z, tMax.z));
+        if (abs(r.dir[i]) > ScalarT(100) * tg::epsilon<ScalarT>)
+        {
+            const auto tMin = (b.min[i] - r.origin[i]) / r.dir[i];
+            const auto tMax = (b.max[i] - r.origin[i]) / r.dir[i];
+            tFirst = max(tFirst, min(tMin, tMax));
+            tSecond = min(tSecond, max(tMin, tMax));
+        }
     }
 
     // No intersection if ray starts behind aabb or if it misses the aabb
