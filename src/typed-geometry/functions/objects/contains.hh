@@ -260,7 +260,7 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool contains(halfspace<D, ScalarT> const& h, pos<2, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+[[nodiscard]] constexpr bool contains(halfspace<D, ScalarT> const& h, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     return signed_distance(p, h) <= eps;
 }
