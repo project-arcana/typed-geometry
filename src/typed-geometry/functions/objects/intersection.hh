@@ -27,7 +27,7 @@
 // intersects(a, b)              -> bool
 // intersection(a, b)            -> ???
 // intersection_safe(a, b)       -> optional<???>
-// intersection_parameter(a, b)  -> coords? (for a ray: ray_hits<N, ScalarT>)
+// intersection_parameter(a, b)  -> coords? (for a ray: ray_hits<N, ScalarT> or optional<ray_interval> (when b is solid))
 // intersection_parameters(a, b) -> pair<coords, coords>?
 // intersection_exact(a, b)      -> variant
 // closest_intersection(a, b)            -> position/object (for a ray: optional<pos>)
@@ -48,6 +48,7 @@
 
 // Implementation guidelines:
 // explicit intersection_parameter(ray, obj), which gives closest_intersection_parameter and intersection position(s)
+//          intersection_parameter(ray, obj_boundary) already gives intersection_parameter(ray, obj) when boundary_of(obj) is defined and object is convex
 // explicit closest_intersection_parameter(ray, obj) if this is faster than computing all intersections
 // explicit intersects(obj, aabb), which gives intersects(aabb, obj)
 
@@ -103,6 +104,16 @@ private:
     HitT _hit[MaxHits];
 };
 
+/// describes a continuous interval on a ray between start and end
+template <class ScalarT>
+struct ray_interval
+{
+    ScalarT start;
+    ScalarT end;
+
+    [[nodiscard]] constexpr bool is_unbounded() const { return end == tg::max<ScalarT>(); }
+};
+
 
 // ====================================== Default Implementations ======================================
 // TODO: intersection_parameter from intersection_parameters
@@ -114,11 +125,11 @@ template <class A, class B>
     return intersection(a, b).has_value();
 }
 
-// if ray_hits intersection parameter is available and applicable, use that
+// if closest intersection parameter is available and applicable, use that
 template <int D, class ScalarT, class Obj>
-[[nodiscard]] constexpr auto intersects(ray<D, ScalarT> const& r, Obj const& obj) -> decltype(intersection_parameter(r, obj).any())
+[[nodiscard]] constexpr auto intersects(ray<D, ScalarT> const& r, Obj const& obj) -> decltype(closest_intersection_parameter(r, obj).has_value())
 {
-    return intersection_parameter(r, obj).any();
+    return closest_intersection_parameter(r, obj).has_value();
 }
 
 // parameters for intersects with aabb can switch order
@@ -178,6 +189,17 @@ template <int D, class ScalarT, class Obj>
     return {hits, ts.size()};
 }
 
+// if an optional ray_interval intersection parameter is available, use that
+template <int D, class ScalarT, class Obj, typename = std::enable_if_t<std::is_same_v<decltype(
+    intersection_parameter(std::declval<ray<D, ScalarT>>(), std::declval<Obj>())), optional<ray_interval<ScalarT>>>>>
+[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(ray<D, ScalarT> const& r, Obj const& obj)
+{
+    auto ts = intersection_parameter(r, obj);
+    if (ts.has_value())
+        return {r[ts.value().start], r[ts.value().end]};
+    return {};
+}
+
 // if ray_hits intersection parameter is available, use that
 template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto closest_intersection_parameter(ray<D, ScalarT> const& r, Obj const& obj)
@@ -187,6 +209,37 @@ template <int D, class ScalarT, class Obj>
     if (hits.any())
         return hits.first();
     return {};
+}
+
+// if ray_interval intersection parameter is available, use that
+template <int D, class ScalarT, class Obj>
+[[nodiscard]] constexpr auto closest_intersection_parameter(ray<D, ScalarT> const& r, Obj const& obj)
+    -> enable_if<std::is_same_v<decltype(intersection_parameter(r, obj)), optional<ray_interval<ScalarT>>>, optional<ScalarT>>
+{
+    auto hits = intersection_parameter(r, obj);
+    if (hits.has_value())
+        return hits.value().start;
+    return {};
+}
+
+// if boundary_of a solid object returns ray_hits, use this to construct the ray_interval result of the solid intersection
+template <int D, class ScalarT, class Obj>
+[[nodiscard]] constexpr auto intersection_parameter(ray<D, ScalarT> const& r, Obj const& obj)
+    -> enable_if<std::is_same_v<decltype(intersection_parameter(r, boundary_of(obj))), ray_hits<2, ScalarT>>, optional<ray_interval<ScalarT>>>
+{
+    const auto inter = intersection_parameter(r, boundary_of(obj));
+
+    if (inter.size() == 0)
+        return {};
+
+    if (inter.size() == 1)
+    {
+        TG_ASSERT(contains(obj, r.origin));
+        return {{typename Obj::scalar_t(0), inter.first()}};
+    }
+
+    TG_ASSERT(inter.size() == 2);
+    return {{inter[0], inter[1]}};
 }
 
 // intersection between point and obj is same as contains
@@ -248,8 +301,8 @@ template <class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, plane<D, ScalarT> const& p)
 {
-    // if plane normal and ray direction are parallel there is no intersection
-    auto dotND = dot(p.normal, r.dir);
+    // if plane normal and ray direction are orthogonal there is no intersection
+    const auto dotND = dot(p.normal, r.dir);
     if (dotND == ScalarT(0))
         return {};
 
@@ -259,7 +312,7 @@ template <int D, class ScalarT>
     // <r.origin + t * r.dir, p.normal> = p.dis
     // t = (p.dis - <r.origin, p.normal>) / <r.dir, p.normal>
 
-    auto t = (p.dis - dot(p.normal, r.origin)) / dotND;
+    const auto t = (p.dis - dot(p.normal, r.origin)) / dotND;
 
     // check whether plane lies behind ray
     if (t < ScalarT(0))
@@ -270,7 +323,26 @@ template <int D, class ScalarT>
 
 // ray - halfspace
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, halfspace<D, ScalarT> const& h)
+[[nodiscard]] constexpr optional<ray_interval<ScalarT>> intersection_parameter(ray<D, ScalarT> const& r, halfspace<D, ScalarT> const& h)
+{
+    // check if ray origin is already contained in the halfspace
+    const auto dotND = dot(h.normal, r.dir);
+    const auto dist = signed_distance(r.origin, h);
+    if (dist <= ScalarT(0))
+    {
+        if (dotND <= ScalarT(0)) // if ray point away from the surface, the entire ray intersects
+            return {{ScalarT(0), tg::max<ScalarT>()}};
+        return {{ScalarT(0), -dist / dotND}}; // otherwise the segment from ray origin until surface intersection is contained
+    }
+
+    // if ray points away from the halfspace there is no intersection
+    if (dotND >= ScalarT(0))
+        return {};
+
+    return {{-dist / dotND, tg::max<ScalarT>()}};
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<D, ScalarT> const& r, halfspace<D, ScalarT> const& h)
 {
     // check if ray origin is already contained in the halfspace
     const auto dist = signed_distance(r.origin, h);
@@ -278,37 +350,41 @@ template <int D, class ScalarT>
         return ScalarT(0);
 
     // if ray points away from the halfspace there is no intersection
-    auto dotND = dot(h.normal, r.dir);
+    const auto dotND = dot(h.normal, r.dir);
     if (dotND >= ScalarT(0))
         return {};
 
-    return - dist / dotND;
+    return -dist / dotND;
 }
 
-// returns closest intersection point(s) of ray and sphere
+// ray - aabb
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<D, ScalarT> const& r, sphere<D, ScalarT> const& s)
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, aabb_boundary<D, ScalarT> const& b)
 {
-    auto t = dot(s.center - r.origin, r.dir);
+    const auto tMin = (b.min - r.origin) / comp(r.dir);
+    const auto tMax = (b.max - r.origin) / comp(r.dir);
+    auto tFirst = max(min(tMin.x, tMax.x), min(tMin.y, tMax.y));
+    auto tSecond = min(max(tMin.x, tMax.x), max(tMin.y, tMax.y));
 
-    auto d_sqr = distance_sqr(r[t], s.center);
-    auto r_sqr = s.radius * s.radius;
-    if (d_sqr > r_sqr)
+    if constexpr (D >= 3)
+    {
+        tFirst = max(tFirst, min(tMin.z, tMax.z));
+        tSecond = min(tSecond, max(tMin.z, tMax.z));
+    }
+
+    // No intersection if ray starts behind aabb or if it misses the aabb
+    if (tSecond < ScalarT(0) || tFirst > tSecond)
         return {};
 
-    auto dt = sqrt(r_sqr - d_sqr);
+    if (tFirst < ScalarT(0))
+        return tSecond;
 
-    if (t - dt >= 0)
-        return t - dt;
-    if (t + dt >= 0)
-        return t + dt;
-
-    return {};
+    return {tFirst, tSecond};
 }
 
 // returns intersection point(s) of ray and sphere
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, sphere<D, ScalarT> const& s)
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, sphere_boundary<D, ScalarT> const& s)
 {
     auto t = dot(s.center - r.origin, r.dir);
 
@@ -454,9 +530,10 @@ template <class ScalarT>
 
 // ray - triangle2
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<2, ScalarT> const& r, triangle<2, ScalarT> const& t)
+[[nodiscard]] constexpr optional<ray_interval<ScalarT>> intersection_parameter(ray<2, ScalarT> const& r, triangle<2, ScalarT> const& t)
 {
     ScalarT closestIntersection = tg::max<ScalarT>();
+    ScalarT furtherIntersection = tg::min<ScalarT>();
     auto numIntersections = 0;
     for (const auto& edge : edges_of(t))
     {
@@ -465,6 +542,7 @@ template <class ScalarT>
         {
             numIntersections++;
             closestIntersection = min(closestIntersection, inter.first());
+            furtherIntersection = max(furtherIntersection, inter.first());
         }
     }
 
@@ -474,9 +552,9 @@ template <class ScalarT>
     {
         // ray started within the triangle
         TG_ASSERT(contains(t, r.origin));
-        return ScalarT(0);
+        return {{ScalarT(0), furtherIntersection}};
     }
-    return closestIntersection;
+    return {{closestIntersection, furtherIntersection}};
 }
 
 // ray - triangle3
@@ -517,7 +595,7 @@ template <class ScalarT>
 
 // ray - box
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, box<3, ScalarT> const& b)
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, box_boundary<3, ScalarT> const& b)
 {
     // see https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp
 
