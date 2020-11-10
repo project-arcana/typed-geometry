@@ -5,6 +5,7 @@
 #include <typed-geometry/functions/basic/scalar_math.hh>
 
 #include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/line.hh>
@@ -374,10 +375,42 @@ template <int D, class ScalarT>
             tSecond = min(tSecond, max(tMin, tMax));
         }
         else if (r.origin[i] < b.min[i] || r.origin[i] > b.max[i])
-            return {}; // ray parallel to this axis and outside of aabb
+            return {}; // ray parallel to this axis and outside of the aabb
     }
 
-    // no intersection if ray starts behind aabb or if it misses the aabb
+    // no intersection if ray starts behind the aabb or if it misses the aabb
+    if (tSecond < ScalarT(0) || tFirst > tSecond)
+        return {};
+
+    if (tFirst < ScalarT(0))
+        return tSecond;
+
+    return {tFirst, tSecond};
+}
+
+// ray - box
+template <int D, class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, box_boundary<D, ScalarT> const& b)
+{
+    const auto bMin = b[comp<D, ScalarT>(-1)] - r.origin;
+    const auto bMax = b[comp<D, ScalarT>(1)] - r.origin;
+    auto tFirst = tg::min<ScalarT>();
+    auto tSecond = tg::max<ScalarT>();
+    for (auto i = 0; i < D; ++i)
+    {
+        const auto rDir = dot(r.dir, b.half_extents[i]);
+        if (abs(rDir) > ScalarT(100) * tg::epsilon<ScalarT>)
+        {
+            const auto tMin = dot(bMin, b.half_extents[i]) / rDir;
+            const auto tMax = dot(bMax, b.half_extents[i]) / rDir;
+            tFirst = max(tFirst, min(tMin, tMax));
+            tSecond = min(tSecond, max(tMin, tMax));
+        }
+        else if (dot(bMin, b.half_extents[i]) > ScalarT(0) || dot(bMax, b.half_extents[i]) < ScalarT(0))
+            return {}; // ray parallel to this half_extents axis and outside of the box
+    }
+
+    // no intersection if ray starts behind the box or if it misses the box
     if (tSecond < ScalarT(0) || tFirst > tSecond)
         return {};
 
@@ -596,64 +629,6 @@ template <class ScalarT>
 
     auto lambda = (ScalarT(1) / det) * dot(e2, qvec);
     return (lambda > ScalarT(0)) ? lambda : ray_hits<1, ScalarT>();
-}
-
-// ray - box
-template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, box_boundary<3, ScalarT> const& b)
-{
-    // see https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp
-
-    auto const p = b.center - r.origin;
-
-    // TODO: without normalize
-    auto const X = normalize(b.half_extents[0]);
-    auto const Y = normalize(b.half_extents[1]);
-    auto const Z = normalize(b.half_extents[2]);
-
-    auto f = tg::vec3(dot(X, r.dir), //
-                      dot(Y, r.dir), //
-                      dot(Z, r.dir));
-
-    auto const e = tg::vec3(dot(X, p), //
-                            dot(Y, p), //
-                            dot(Z, p));
-
-    auto const size = tg::vec3(length(b.half_extents[0]), //
-                               length(b.half_extents[1]), //
-                               length(b.half_extents[2]));
-
-    float t[6] = {0, 0, 0, 0, 0, 0};
-    for (int i = 0; i < 3; ++i)
-    {
-        if (abs(f[i]) < tg::epsilon<ScalarT> / 1000)
-        {
-            if (-e[i] - size[i] > 0 || -e[i] + size[i] < 0)
-                return {};
-
-            f[i] = tg::epsilon<ScalarT>; // Avoid div by 0!
-        }
-
-        t[i * 2 + 0] = (e[i] + size[i]) / f[i]; // tmin[x, y, z]
-        t[i * 2 + 1] = (e[i] - size[i]) / f[i]; // tmax[x, y, z]
-    }
-
-    auto const tmin = tg::max(tg::max(tg::min(t[0], t[1]), tg::min(t[2], t[3])), tg::min(t[4], t[5]));
-    auto const tmax = tg::min(tg::min(tg::max(t[0], t[1]), tg::max(t[2], t[3])), tg::max(t[4], t[5]));
-
-    // if tmax < 0, ray is intersecting AABB
-    // but entire AABB is behing it's origin
-    if (tmax < 0)
-        return {};
-
-    // if tmin > tmax, ray doesn't intersect AABB
-    if (tmin > tmax)
-        return {};
-
-    if (tmin >= 0) // two valid intersections
-        return {tmin, tmax};
-    else // one valid intersection
-        return tmax;
 }
 
 
