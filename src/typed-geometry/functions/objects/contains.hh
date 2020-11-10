@@ -4,6 +4,7 @@
 
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/ellipse.hh>
@@ -219,6 +220,19 @@ template <class ScalarT, class TraitsT>
     }
 
     return x2 / pow2(a + eps) + y2 / pow2(b + eps) + z2 / pow2(c + eps) <= ScalarT(1);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(capsule<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto r = c.radius + eps;
+    return distance_sqr(c.axis, p) <= pow2(r);
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(capsule_boundary<3, ScalarT> const& c, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    auto d2 = distance_sqr(c.axis, p);
+    return pow2(max(ScalarT(0), c.radius - eps)) <= d2 && d2 <= pow2(c.radius + eps);
 }
 
 template <int D, class ScalarT>
