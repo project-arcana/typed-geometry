@@ -373,9 +373,11 @@ template <int D, class ScalarT>
             tFirst = max(tFirst, min(tMin, tMax));
             tSecond = min(tSecond, max(tMin, tMax));
         }
+        else if (r.origin[i] < b.min[i] || r.origin[i] > b.max[i])
+            return {}; // ray parallel to this axis and outside of aabb
     }
 
-    // No intersection if ray starts behind aabb or if it misses the aabb
+    // no intersection if ray starts behind aabb or if it misses the aabb
     if (tSecond < ScalarT(0) || tFirst > tSecond)
         return {};
 
