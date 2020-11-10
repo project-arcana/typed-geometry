@@ -53,6 +53,10 @@
 //          intersection_parameter(ray, obj_boundary) already gives intersection_parameter(ray, obj) when boundary_of(obj) is defined and object is convex
 // explicit closest_intersection_parameter(ray, obj) if this is faster than computing all intersections
 // explicit intersects(obj, aabb), which gives intersects(aabb, obj)
+//
+// for convex compound objects (like cylinder or pyramids), decompose the object into primitive shapes and pass them to a helper function:
+// - call merge_hits(ray, objPart1, objPart2, ...) in the implementation of intersection_parameter(ray, obj_boundary)
+// - call intersects_any(ray, objPart1, objPart2, ...) in the implementation of intersects(ray, obj<TraitsT>), which can shortcut and be faster than the default
 
 
 namespace tg
@@ -262,6 +266,42 @@ constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT>
     return {};
 }
 
+
+// ====================================== Helper functions ======================================
+
+namespace detail
+{
+// intersects the given ray with all given objects and returns the concatenated intersections. A maximal number of 2 intersections is assumed.
+template <int D, class ScalarT, class... ObjsT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> merge_hits(ray<D, ScalarT> const& ray, ObjsT const&... objs)
+{
+    ScalarT hits[2];
+    hits[0] = tg::max<ScalarT>();
+    hits[1] = tg::min<ScalarT>();
+    auto numHits = 0;
+
+    const auto find_hits = [&](const auto& obj) {
+        const auto inters = intersection_parameter(ray, obj);
+        for (const auto& inter : inters)
+        {
+            hits[0] = tg::min(hits[0], inter);
+            hits[1] = tg::max(hits[1], inter);
+            numHits++;
+        }
+    };
+    (find_hits(objs), ...);
+
+    TG_ASSERT(numHits <= 2);
+    return {hits, numHits};
+}
+
+// returns true, iff the given ray intersects any of the given objects (with short-circuiting after the first intersection)
+template <int D, class ScalarT, class... ObjsT>
+[[nodiscard]] constexpr bool intersects_any(ray<D, ScalarT> const& ray, ObjsT const&... objs)
+{
+    return (intersects(ray, objs) || ...);
+}
+}
 
 // ====================================== Ray - Object Intersections ======================================
 
@@ -493,27 +533,21 @@ template <class ScalarT>
 
 // ray - cylinder
 template <class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<3, ScalarT> const& r, cylinder_boundary<3, ScalarT> const& c)
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, cylinder_boundary<3, ScalarT> const& c)
 {
     const auto caps = caps_of(c);
-    const auto t_cap0 = intersection_parameter(r, caps[0]);
-    const auto t_cap1 = intersection_parameter(r, caps[1]);
-    const auto t_cyl = closest_intersection_parameter(r, boundary_no_caps_of(c));
-
-    optional<ScalarT> t;
-
-    if (t_cyl.has_value())
-        t = t_cyl.value();
-
-    if (t_cap0.any() && (!t.has_value() || t.value() > t_cap0.first()))
-        t = t_cap0.first();
-
-    if (t_cap1.any() && (!t.has_value() || t.value() > t_cap1.first()))
-        t = t_cap1.first();
-
-    TG_INTERNAL_ASSERT(!t.has_value() || t.value() >= 0);
-
-    return t;
+    return detail::merge_hits(r, caps[0], caps[1], boundary_no_caps_of(c));
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr bool intersects(ray<3, ScalarT> const& r, cylinder<3, ScalarT, TraitsT> const& c)
+{
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return intersection_parameter(r, c).any();
+    else
+    {
+        const auto caps = caps_of(c);
+        return detail::intersects_any(r, boundary_no_caps_of(c), caps[0], caps[1]);
+    }
 }
 
 // ray - tube
