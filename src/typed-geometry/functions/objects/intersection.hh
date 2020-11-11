@@ -538,40 +538,6 @@ template <int D, class ScalarT, class TraitsT>
         return detail::intersects_any(r, caps_of(h), boundary_no_caps_of(h));
 }
 
-// ray - quadric (as an isosurface, not error quadric)
-template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, quadric<3, ScalarT> const& q)
-{
-    const auto Ad = q.A() * r.dir;
-    const auto p = r.origin;
-
-    // Substituting x in Quadric equation x^TAx + 2b^Tx + c = 0 by ray equation x = t * dir + p yields
-    // d^TAd t^2 + (2p^TAd + 2bd) t + p^TAp + 2bp + c = 0
-    const auto a = dot(r.dir, Ad);
-    const auto b = ScalarT(2) * (dot(p, Ad) + dot(q.b(), r.dir));
-    const auto c = dot(p, q.A() * vec3(p)) + ScalarT(2) * dot(q.b(), p) + q.c;
-
-    // Solve the quadratic equation ax^2 + bx + c = 0
-    const auto discriminant = b * b - ScalarT(4) * a * c;
-    if (discriminant < ScalarT(0))
-        return {}; // No solution
-
-    const auto sqrtD = sqrt(discriminant);
-    const auto t1 = (-b - sqrtD) / (ScalarT(2) * a);
-    const auto t2 = (-b + sqrtD) / (ScalarT(2) * a);
-
-    auto tMin = min(t1, t2);
-    auto tMax = max(t1, t2);
-
-    if (tMin >= ScalarT(0))
-        return {tMin, tMax};
-
-    if (tMax >= ScalarT(0))
-        return tMax;
-
-    return {};
-}
-
 // ray - capsule
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, capsule_boundary<3, ScalarT> const& c)
@@ -721,6 +687,40 @@ template <class ScalarT>
 
     auto lambda = (ScalarT(1) / det) * dot(e2, qvec);
     return (lambda > ScalarT(0)) ? lambda : ray_hits<1, ScalarT>();
+}
+
+// ray - quadric_boundary (as an isosurface, not error quadric)
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, quadric<3, ScalarT> const& q)
+{
+    const auto Ad = q.A() * r.dir;
+    const auto p = r.origin;
+
+    // Substituting x in Quadric equation x^TAx + 2b^Tx + c = 0 by ray equation x = t * dir + p yields
+    // d^TAd t^2 + (2p^TAd + 2bd) t + p^TAp + 2bp + c = 0
+    const auto a = dot(r.dir, Ad);
+    const auto b = ScalarT(2) * (dot(p, Ad) + dot(q.b(), r.dir));
+    const auto c = dot(p, q.A() * vec3(p)) + ScalarT(2) * dot(q.b(), p) + q.c;
+
+    // Solve the quadratic equation ax^2 + bx + c = 0
+    const auto discriminant = b * b - ScalarT(4) * a * c;
+    if (discriminant < ScalarT(0))
+        return {}; // No solution
+
+    const auto sqrtD = sqrt(discriminant);
+    const auto t1 = (-b - sqrtD) / (ScalarT(2) * a);
+    const auto t2 = (-b + sqrtD) / (ScalarT(2) * a);
+
+    auto tMin = min(t1, t2);
+    auto tMax = max(t1, t2);
+
+    if (tMin >= ScalarT(0))
+        return {tMin, tMax};
+
+    if (tMax >= ScalarT(0))
+        return tMax;
+
+    return {};
 }
 
 
