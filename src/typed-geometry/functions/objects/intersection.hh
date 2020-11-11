@@ -6,8 +6,10 @@
 
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
+#include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/ray.hh>
@@ -21,6 +23,7 @@
 
 #include "aabb.hh"
 #include "contains.hh"
+#include "coordinates.hh"
 #include "direction.hh"
 #include "normal.hh"
 
@@ -305,6 +308,16 @@ template <int D, class ScalarT, class... ObjsT>
 
 // ====================================== Ray - Object Intersections ======================================
 
+// ray - point
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<1, ScalarT> const& r, pos<1, ScalarT> const& p)
+{
+    const auto t = coordinates(r, p);
+    if (t >= ScalarT(0))
+        return t;
+    return {};
+}
+
 // ray - line
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<2, ScalarT> const& r, line<2, ScalarT> const& l)
@@ -497,6 +510,34 @@ template <class ScalarT>
     return t;
 }
 
+// ray - hemisphere
+template <int D, class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, hemisphere_boundary<D, ScalarT> const& h)
+{
+    return detail::merge_hits(r, caps_of(h), boundary_no_caps_of(h));
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, hemisphere_boundary_no_caps<D, ScalarT> const& h)
+{
+    ScalarT hits[2];
+    auto numHits = 0;
+    const auto sphereHits = intersection_parameter(r, sphere_boundary<D, ScalarT>(h.center, h.radius));
+    const auto halfSpace = halfspace<D, ScalarT>(-h.normal, h.center); // the intersection of this halfspace and the sphere is exactly the hemisphere
+    for (const auto& hit : sphereHits)
+        if (contains(halfSpace, r[hit]))
+            hits[numHits++] = hit;
+
+    return {hits, numHits};
+}
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr bool intersects(ray<D, ScalarT> const& r, hemisphere<D, ScalarT, TraitsT> const& h)
+{
+    if constexpr (std::is_same_v<TraitsT, boundary_no_caps_tag>)
+        return intersection_parameter(r, h).any();
+    else
+        return detail::intersects_any(r, caps_of(h), boundary_no_caps_of(h));
+}
+
 // ray - quadric (as an isosurface, not error quadric)
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, quadric<3, ScalarT> const& q)
@@ -531,6 +572,23 @@ template <class ScalarT>
     return {};
 }
 
+// ray - capsule
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, capsule_boundary<3, ScalarT> const& c)
+{
+    using caps_t = hemisphere_boundary_no_caps<3, ScalarT>;
+    const auto n = direction(c);
+    return detail::merge_hits(r, caps_t(c.axis.pos0, c.radius, -n), caps_t(c.axis.pos1, c.radius, n),
+                              cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
+}
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr bool intersects(ray<3, ScalarT> const& r, capsule<3, ScalarT, TraitsT> const& c)
+{
+    using caps_t = sphere_boundary<3, ScalarT>; // spheres are faster than hemispheres and equivalent for the yes/no decision
+    return detail::intersects_any(r, caps_t(c.axis.pos0, c.radius), caps_t(c.axis.pos1, c.radius),
+                                  cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
+}
+
 // ray - cylinder
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, cylinder_boundary<3, ScalarT> const& c)
@@ -546,7 +604,7 @@ template <class ScalarT, class TraitsT>
     else
     {
         const auto caps = caps_of(c);
-        return detail::intersects_any(r, boundary_no_caps_of(c), caps[0], caps[1]);
+        return detail::intersects_any(r, caps[0], caps[1], boundary_no_caps_of(c));
     }
 }
 
