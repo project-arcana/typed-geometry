@@ -47,6 +47,9 @@ public:
 template <class T, class Stream>
 auto operator<<(Stream& os, optional<T> const& o) -> decltype(os << o.value(), os << "", os)
 {
-    return o.has_value() ? (os << o.value()) : (os << "[empty]");
+    if (o.has_value())
+        return (os << o.value());
+    else
+        return (os << "[empty]");
 }
 }
