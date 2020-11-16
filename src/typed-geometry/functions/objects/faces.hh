@@ -83,4 +83,16 @@ template <class BaseT, class TraitsT>
     auto mantle = faces_of(boundary_no_caps_of(py));
     return pyramid_faces<BaseT, mantle.size()>(py.base, mantle);
 }
+
+namespace detail
+{
+template <class T>
+auto test_has_faces(int) -> decltype(void(faces_of(std::declval<T>())), std::true_type{});
+template <class T>
+std::false_type test_has_faces(char);
+}
+
+/// true if faces_of(obj) exists
+template <class T>
+constexpr bool has_faces_of = decltype(detail::test_has_faces<T>(0))::value;
 }

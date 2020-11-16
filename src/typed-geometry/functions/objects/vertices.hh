@@ -109,7 +109,7 @@ template <class T>
 std::false_type test_has_vertices(char);
 }
 
-/// true if vertices(obj) exists
+/// true if vertices_of(obj) exists
 template <class T>
 constexpr bool has_vertices_of = decltype(detail::test_has_vertices<T>(0))::value;
 }
