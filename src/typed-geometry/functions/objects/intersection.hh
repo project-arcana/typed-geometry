@@ -235,7 +235,7 @@ template <int D, class ScalarT, class Obj>
 // if boundary_of a solid object returns ray_hits, use this to construct the ray_interval result of the solid intersection
 template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto intersection_parameter(ray<D, ScalarT> const& r, Obj const& obj)
-    -> enable_if<std::conjunction_v<std::negation<std::is_same<Obj, decltype(boundary_of(obj))>>, std::is_same<decltype(intersection_parameter(r, boundary_of(obj))), ray_hits<2, ScalarT>>>, optional<ray_interval<ScalarT>>>
+    -> enable_if<!std::is_same_v<Obj, decltype(boundary_of(obj))>, optional<ray_interval<ScalarT>>>
 {
     const auto inter = intersection_parameter(r, boundary_of(obj));
 
