@@ -587,8 +587,6 @@ template <class ScalarT, class TraitsT>
         return detail::intersects_any(r, caps[0], caps[1], boundary_no_caps_of(c));
     }
 }
-
-// ray - tube
 template <class ScalarT>
 [[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, cylinder_boundary_no_caps<3, ScalarT> const& c)
 {
@@ -636,6 +634,27 @@ template <class ScalarT>
         hits[hit_cnt++] = tRay + s;
 
     return {hits, hit_cnt};
+}
+
+// ray - inf_cylinder
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<2, ScalarT> const& r, inf_cylinder_boundary<2, ScalarT> const& c)
+{
+    const auto n = perpendicular(c.axis.dir);
+    const auto d = dot(r.dir, n);
+    if (d == ScalarT(0)) // ray parallel to inf_cylinder
+        return {};
+
+    const auto dist = dot(c.axis.pos - r.origin, n);
+    const auto [tMin, tMax] = minmax((dist - c.radius) / d, (dist + c.radius) / d);
+
+    if (tMin >= ScalarT(0))
+        return {tMin, tMax};
+
+    if (tMax >= ScalarT(0))
+        return tMax;
+
+    return {};
 }
 
 // ray - triangle2
@@ -725,8 +744,7 @@ template <class ScalarT>
     const auto t1 = (-b - sqrtD) / (ScalarT(2) * a);
     const auto t2 = (-b + sqrtD) / (ScalarT(2) * a);
 
-    auto tMin = min(t1, t2);
-    auto tMax = max(t1, t2);
+    const auto [tMin, tMax] = minmax(t1, t2);
 
     if (tMin >= ScalarT(0))
         return {tMin, tMax};

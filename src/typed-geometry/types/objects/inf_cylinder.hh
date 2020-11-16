@@ -29,6 +29,7 @@ using inf_cylinder_boundary = inf_cylinder<D, ScalarT, boundary_tag>;
 template <int D, class ScalarT, class TraitsT>
 struct inf_cylinder
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<D, ScalarT>;
     using dir_t = dir<D, ScalarT>;
     using line_t = line<D, ScalarT>;

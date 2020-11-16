@@ -144,6 +144,14 @@ template <class A, class B>
     return a < b ? b : a;
 }
 
+template <class T>
+[[nodiscard]] constexpr pair<T, T> minmax(T const& a, T const& b)
+{
+    if (b < a)
+        return {b, a};
+    return {a, b};
+}
+
 template <class A, class B, class C>
 [[nodiscard]] constexpr auto clamp(A const& a, B const& min_value, C const& max_value) -> decltype(min(max(a, min_value), max_value))
 {
