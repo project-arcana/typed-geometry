@@ -473,8 +473,36 @@ template <int D, class ScalarT>
 
     return {tFirst, tSecond};
 }
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, box<2, ScalarT, 3> const& b)
+{
+    const auto t = intersection_parameter(r, plane<3, ScalarT>(normal_of(b), b.center));
+    if (!t.any())
+        return {};
 
-// returns intersection point(s) of ray and sphere
+    const auto p = r[t.first()] - b.center;
+    if (abs(dot(b.half_extents[0], p)) > length_sqr(b.half_extents[0]) || abs(dot(b.half_extents[1], p)) > length_sqr(b.half_extents[1]))
+        return {};
+
+    return t;
+}
+
+// ray - disk
+template <class ScalarT>
+[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, sphere<2, ScalarT, 3> const& d)
+{
+    const auto t = intersection_parameter(r, plane<3, ScalarT>(d.normal, d.center));
+    if (!t.any())
+        return {};
+
+    const auto p = r[t.first()];
+    if (distance_sqr(p, d.center) > d.radius * d.radius)
+        return {};
+
+    return t;
+}
+
+// ray - sphere
 template <int D, class ScalarT>
 [[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(ray<D, ScalarT> const& r, sphere_boundary<D, ScalarT> const& s)
 {
@@ -494,21 +522,6 @@ template <int D, class ScalarT>
         return {t + dt};
 
     return {};
-}
-
-// ray - disk
-template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(ray<3, ScalarT> const& r, sphere<2, ScalarT, 3> const& d)
-{
-    auto const t = intersection_parameter(r, plane<3, ScalarT>(d.normal, d.center));
-    if (!t.any())
-        return {};
-
-    auto const p = r[t.first()];
-    if (distance_sqr(p, d.center) > d.radius * d.radius)
-        return {};
-
-    return t;
 }
 
 // ray - hemisphere
