@@ -206,7 +206,7 @@ template <int D, class ScalarT, class Obj, typename = std::enable_if_t<std::is_s
 {
     auto ts = intersection_parameter(r, obj);
     if (ts.has_value())
-        return {r[ts.value().start], r[ts.value().end]};
+        return {{r[ts.value().start], r[ts.value().end]}};
     return {};
 }
 
@@ -237,7 +237,7 @@ template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto intersection_parameter(ray<D, ScalarT> const& r, Obj const& obj)
     -> enable_if<!std::is_same_v<Obj, decltype(boundary_of(obj))>, optional<ray_interval<ScalarT>>>
 {
-    const auto inter = intersection_parameter(r, boundary_of(obj));
+    const ray_hits<2, ScalarT> inter = intersection_parameter(r, boundary_of(obj));
 
     if (inter.size() == 0)
         return {};
