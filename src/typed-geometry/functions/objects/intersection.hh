@@ -53,7 +53,8 @@
 
 // Implementation guidelines:
 // explicit intersection_parameter(ray, obj), which gives closest_intersection_parameter and intersection position(s)
-//          intersection_parameter(ray, obj_boundary) already gives intersection_parameter(ray, obj) when boundary_of(obj) is defined and object is convex
+//          intersection_parameter(ray, obj_boundary) already gives intersection_parameter(ray, obj) when boundary_of(obj) is defined and object is convex and finite
+//          for infinite objects, a separate solid version is needed when the boundary version does not distinguish between completely contained and completely outside
 // explicit closest_intersection_parameter(ray, obj) if this is faster than computing all intersections
 // explicit intersects(obj, aabb), which gives intersects(aabb, obj)
 //
@@ -234,7 +235,7 @@ template <int D, class ScalarT, class Obj>
 // if boundary_of a solid object returns ray_hits, use this to construct the ray_interval result of the solid intersection
 template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto intersection_parameter(ray<D, ScalarT> const& r, Obj const& obj)
-    -> enable_if<std::is_same_v<decltype(intersection_parameter(r, boundary_of(obj))), ray_hits<2, ScalarT>>, optional<ray_interval<ScalarT>>>
+    -> enable_if<std::conjunction_v<std::negation<std::is_same<Obj, decltype(boundary_of(obj))>>, std::is_same<decltype(intersection_parameter(r, boundary_of(obj))), ray_hits<2, ScalarT>>>, optional<ray_interval<ScalarT>>>
 {
     const auto inter = intersection_parameter(r, boundary_of(obj));
 
