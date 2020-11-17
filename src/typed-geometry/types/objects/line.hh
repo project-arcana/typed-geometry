@@ -3,7 +3,6 @@
 #include <typed-geometry/types/scalars/default.hh>
 #include "../dir.hh"
 #include "../pos.hh"
-#include "../size.hh"
 #include "traits.hh"
 
 // A line has a direction and a point lying on it
@@ -46,8 +45,9 @@ using uline4 = line<4, u32>;
 template <int D, class ScalarT>
 struct line
 {
-    using dir_t = tg::dir<D, ScalarT>;
-    using pos_t = tg::pos<D, ScalarT>;
+    using scalar_t = ScalarT;
+    using dir_t = dir<D, ScalarT>;
+    using pos_t = pos<D, ScalarT>;
 
     pos_t pos;
     dir_t dir;

@@ -3,7 +3,6 @@
 #include <typed-geometry/types/scalars/default.hh>
 #include "../dir.hh"
 #include "../pos.hh"
-#include "../size.hh"
 #include "traits.hh"
 
 namespace tg
@@ -44,8 +43,9 @@ using uray4 = ray<4, u32>;
 template <int D, class ScalarT>
 struct ray
 {
-    using dir_t = tg::dir<D, ScalarT>;
-    using pos_t = tg::pos<D, ScalarT>;
+    using scalar_t = ScalarT;
+    using dir_t = dir<D, ScalarT>;
+    using pos_t = pos<D, ScalarT>;
 
     pos_t origin;
     dir_t dir;
