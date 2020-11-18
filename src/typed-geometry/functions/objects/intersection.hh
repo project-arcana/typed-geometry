@@ -32,7 +32,7 @@
 // intersects(a, b)              -> bool
 // intersection(a, b)            -> ???
 // intersection_safe(a, b)       -> optional<???>
-// intersection_parameter(a, b)  -> coords? (for a line or a ray: ray_hits<N, ScalarT> or optional<ray_interval> (when b is solid))
+// intersection_parameter(a, b)  -> coords? (for a line or a ray: hits<N, ScalarT> or optional<hit_interval> (when b is solid))
 // intersection_parameters(a, b) -> pair<coords, coords>?
 // intersection_exact(a, b)      -> variant
 // closest_intersection(a, b)            -> position/object (for a ray: optional<pos>)
@@ -80,14 +80,14 @@ namespace tg
 ///   operator[]
 ///   range-based-for
 template <int MaxHits, class HitT>
-struct ray_hits
+struct hits
 {
-    static constexpr bool is_ray_hits = true; // tag
+    static constexpr bool is_hits = true; // tag
     static constexpr int max_hits = MaxHits;
     using hit_t = HitT;
 
     template <class OtherT>
-    using as_ray_hits = ray_hits<MaxHits, OtherT>;
+    using as_hits = hits<MaxHits, OtherT>;
 
     [[nodiscard]] int size() const { return _size; }
     [[nodiscard]] bool any() const { return _size > 0; }
@@ -111,14 +111,14 @@ struct ray_hits
     [[nodiscard]] HitT const* begin() const { return _hit; }
     [[nodiscard]] HitT const* end() const { return _hit + _size; }
 
-    ray_hits() = default;
-    ray_hits(HitT* hits, int size) : _size(size)
+    hits() = default;
+    hits(HitT* hits, int size) : _size(size)
     {
         for (auto i = 0; i < size; ++i)
             _hit[i] = hits[i];
     }
     template <typename... HitTs>
-    ray_hits(HitTs... hits) : _size(sizeof...(HitTs)), _hit{hits...}
+    hits(HitTs... hits) : _size(sizeof...(HitTs)), _hit{hits...}
     {
     }
 
@@ -127,11 +127,11 @@ private:
     HitT _hit[MaxHits];
 };
 
-/// describes a continuous interval on a ray between start and end
+/// describes a continuous interval on a line or ray between start and end
 template <class ScalarT>
-struct ray_interval
+struct hit_interval
 {
-    static constexpr bool is_ray_interval = true; // tag
+    static constexpr bool is_hit_interval = true; // tag
 
     ScalarT start;
     ScalarT end;
@@ -146,7 +146,7 @@ namespace detail
 {
 // intersects the given line with all given objects and returns the concatenated intersections. A maximal number of 2 intersections is assumed.
 template <int D, class ScalarT, class... Objs>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> merge_hits(line<D, ScalarT> const& line, Objs const&... objs)
+[[nodiscard]] constexpr hits<2, ScalarT> merge_hits(line<D, ScalarT> const& line, Objs const&... objs)
 {
     ScalarT hits[2];
     hits[0] = tg::max<ScalarT>();
@@ -244,10 +244,10 @@ template <class A, class B>
     return {};
 }
 
-// if ray_hits intersection parameter is available, use that
+// if hits intersection parameter is available, use that
 template <class A, class B>
 [[nodiscard]] constexpr auto intersection(A const& a, B const& b) ->
-    typename decltype(intersection_parameter(a, b))::template as_ray_hits<typename A::pos_t>
+    typename decltype(intersection_parameter(a, b))::template as_hits<typename A::pos_t>
 {
     auto ts = intersection_parameter(a, b);
     typename A::pos_t hits[ts.max_hits];
@@ -256,10 +256,10 @@ template <class A, class B>
     return {hits, ts.size()};
 }
 
-// if an optional ray_interval intersection parameter is available, use that
+// if an optional hit_interval intersection parameter is available, use that
 template <class A, class B>
 [[nodiscard]] constexpr auto intersection(A const& a, B const& b)
-    -> std::enable_if<decltype(intersection_parameter(a, b).value())::is_ray_interval, // condition
+    -> std::enable_if<decltype(intersection_parameter(a, b).value())::is_hit_interval, // condition
     optional<segment<object_traits<A>::domain_dimension, typename object_traits<A>::scalar_t>>> // return type
 {
     auto ts = intersection_parameter(a, b);
@@ -268,7 +268,7 @@ template <class A, class B>
     return {};
 }
 
-// if ray_hits intersection parameter is available, use that
+// if hits intersection parameter is available, use that
 template <class A, class B>
 [[nodiscard]] constexpr auto closest_intersection_parameter(A const& a, B const& b) -> optional<typename decltype(intersection_parameter(a, b))::hit_t>
 {
@@ -278,7 +278,7 @@ template <class A, class B>
     return {};
 }
 
-// if ray_interval intersection parameter is available, use that
+// if an optional hit_interval intersection parameter is available, use that
 template <class A, class B>
 [[nodiscard]] constexpr auto closest_intersection_parameter(A const& a, B const& b) -> optional<decltype(intersection_parameter(a, b).value().start)>
 {
@@ -288,12 +288,12 @@ template <class A, class B>
     return {};
 }
 
-// if boundary_of a solid object returns ray_hits, use this to construct the ray_interval result of the solid intersection
+// if boundary_of a solid object returns hits, use this to construct the hit_interval result of the solid intersection
 template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto intersection_parameter(line<D, ScalarT> const& l, Obj const& obj)
-    -> enable_if<!std::is_same_v<Obj, decltype(boundary_of(obj))>, optional<ray_interval<ScalarT>>>
+    -> enable_if<!std::is_same_v<Obj, decltype(boundary_of(obj))>, optional<hit_interval<ScalarT>>>
 {
-    const ray_hits<2, ScalarT> inter = intersection_parameter(l, boundary_of(obj));
+    const hits<2, ScalarT> inter = intersection_parameter(l, boundary_of(obj));
 
     if (inter.size() == 2)
         return {{inter[0], inter[1]}};
@@ -342,7 +342,7 @@ constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT>
 
 template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto intersection_parameter(ray<D, ScalarT> const& ray, Obj const& obj)
-    -> decltype(intersection_parameter(inf_of(ray), obj).is_ray_hits, intersection_parameter(inf_of(ray), obj))
+    -> decltype(intersection_parameter(inf_of(ray), obj).is_hits, intersection_parameter(inf_of(ray), obj))
 {
     const auto inter = intersection_parameter(inf_of(ray), obj);
     constexpr auto maxHits = inter.max_hits;
@@ -361,7 +361,7 @@ template <int D, class ScalarT, class Obj>
 }
 template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto intersection_parameter(ray<D, ScalarT> const& ray, Obj const& obj)
-    -> decltype(intersection_parameter(inf_of(ray), obj).value().is_ray_interval, intersection_parameter(inf_of(ray), obj))
+    -> decltype(intersection_parameter(inf_of(ray), obj).value().is_hit_interval, intersection_parameter(inf_of(ray), obj))
 {
     const auto inter = intersection_parameter(inf_of(ray), obj);
 
@@ -382,14 +382,14 @@ template <int D, class ScalarT, class Obj>
 
 // line - point
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(line<1, ScalarT> const& l, pos<1, ScalarT> const& p)
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<1, ScalarT> const& l, pos<1, ScalarT> const& p)
 {
     return coordinates(l, p);
 }
 
 // line - line
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
 {
     // l0.pos + l0.dir * t.x == l1.pos + l1.dir * t.y  <=>  (l0.dir | -l1.dir) * (t.x | t.y)^T == l1.pos - l0.pos
     auto M = mat<2, 2, ScalarT>::from_cols(l0.dir, -l1.dir);
@@ -399,7 +399,7 @@ template <class ScalarT>
 
 // line - ray
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(line<2, ScalarT> const& l, ray<2, ScalarT> const& r)
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<2, ScalarT> const& l, ray<2, ScalarT> const& r)
 {
     auto M = mat<2, 2, ScalarT>::from_cols(l.dir, -r.dir);
     auto t = inverse(M) * (r.origin - l.pos);
@@ -410,7 +410,7 @@ template <class ScalarT>
 
 // line - segment
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(line<2, ScalarT> const& l, segment<2, ScalarT> const& s)
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<2, ScalarT> const& l, segment<2, ScalarT> const& s)
 {
     auto M = mat<2, 2, ScalarT>::from_cols(l.dir, s.pos0 - s.pos1);
     auto t = inverse(M) * (s.pos0 - l.pos);
@@ -421,7 +421,7 @@ template <class ScalarT>
 
 // line - plane
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(line<D, ScalarT> const& l, plane<D, ScalarT> const& p)
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<D, ScalarT> const& l, plane<D, ScalarT> const& p)
 {
     const auto dotND = dot(p.normal, l.dir);
     if (dotND == ScalarT(0)) // if plane normal and line direction are orthogonal, there is no intersection
@@ -433,7 +433,7 @@ template <int D, class ScalarT>
 
 // line - halfspace
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<ray_interval<ScalarT>> intersection_parameter(line<D, ScalarT> const& l, halfspace<D, ScalarT> const& h)
+[[nodiscard]] constexpr optional<hit_interval<ScalarT>> intersection_parameter(line<D, ScalarT> const& l, halfspace<D, ScalarT> const& h)
 {
     const auto dotND = dot(h.normal, l.dir);
     const auto dist = signed_distance(l.pos, h);
@@ -468,7 +468,7 @@ template <int D, class ScalarT>
 
 // line - aabb
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, aabb_boundary<D, ScalarT> const& b)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, aabb_boundary<D, ScalarT> const& b)
 {
     auto tFirst = tg::min<ScalarT>();
     auto tSecond = tg::max<ScalarT>();
@@ -494,7 +494,7 @@ template <int D, class ScalarT>
 
 // line - box
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, box_boundary<D, ScalarT> const& b)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, box_boundary<D, ScalarT> const& b)
 {
     const auto bMin = b[comp<D, ScalarT>(-1)] - l.pos;
     const auto bMax = b[comp<D, ScalarT>(1)] - l.pos;
@@ -521,7 +521,7 @@ template <int D, class ScalarT>
     return {tFirst, tSecond};
 }
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(line<3, ScalarT> const& l, box<2, ScalarT, 3> const& b)
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<3, ScalarT> const& l, box<2, ScalarT, 3> const& b)
 {
     const auto t = intersection_parameter(l, plane<3, ScalarT>(normal_of(b), b.center));
     if (!t.any()) // line parallel to box plane
@@ -536,7 +536,7 @@ template <class ScalarT>
 
 // line - disk
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(line<3, ScalarT> const& l, sphere<2, ScalarT, 3> const& d)
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<3, ScalarT> const& l, sphere<2, ScalarT, 3> const& d)
 {
     const auto t = intersection_parameter(l, plane<3, ScalarT>(d.normal, d.center));
     if (!t.any()) // line parallel to disk plane
@@ -551,7 +551,7 @@ template <class ScalarT>
 
 // line - sphere
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, sphere_boundary<D, ScalarT> const& s)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, sphere_boundary<D, ScalarT> const& s)
 {
     auto t = dot(s.center - l.pos, l.dir);
 
@@ -566,12 +566,12 @@ template <int D, class ScalarT>
 
 // line - hemisphere
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, hemisphere_boundary<D, ScalarT> const& h)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, hemisphere_boundary<D, ScalarT> const& h)
 {
     return detail::merge_hits(l, caps_of(h), boundary_no_caps_of(h));
 }
 template <int D, class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, hemisphere_boundary_no_caps<D, ScalarT> const& h)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, hemisphere_boundary_no_caps<D, ScalarT> const& h)
 {
     ScalarT hits[2];
     auto numHits = 0;
@@ -595,7 +595,7 @@ template <class Obj, int D, class ScalarT, class TraitsT>
 
 // line - capsule
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, capsule_boundary<3, ScalarT> const& c)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, capsule_boundary<3, ScalarT> const& c)
 {
     using caps_t = hemisphere_boundary_no_caps<3, ScalarT>;
     const auto n = direction(c);
@@ -613,7 +613,7 @@ template <class Obj, class ScalarT, class TraitsT>
 
 // line - cylinder
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, cylinder_boundary<3, ScalarT> const& c)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, cylinder_boundary<3, ScalarT> const& c)
 {
     const auto caps = caps_of(c);
     return detail::merge_hits(l, caps[0], caps[1], boundary_no_caps_of(c));
@@ -631,7 +631,7 @@ template <class Obj, class ScalarT, class TraitsT>
     }
 }
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, cylinder_boundary_no_caps<3, ScalarT> const& c)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, cylinder_boundary_no_caps<3, ScalarT> const& c)
 {
     auto cdir = direction(c);
     auto cosA = dot(cdir, l.dir);
@@ -681,7 +681,7 @@ template <class ScalarT>
 
 // line - inf_cylinder
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<2, ScalarT> const& l, inf_cylinder_boundary<2, ScalarT> const& c)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<2, ScalarT> const& l, inf_cylinder_boundary<2, ScalarT> const& c)
 {
     const auto n = perpendicular(c.axis.dir);
     const auto d = dot(l.dir, n);
@@ -695,7 +695,7 @@ template <class ScalarT>
 
 // line - triangle2
 template <class ScalarT>
-[[nodiscard]] constexpr optional<ray_interval<ScalarT>> intersection_parameter(line<2, ScalarT> const& l, triangle<2, ScalarT> const& t)
+[[nodiscard]] constexpr optional<hit_interval<ScalarT>> intersection_parameter(line<2, ScalarT> const& l, triangle<2, ScalarT> const& t)
 {
     ScalarT closestIntersection = tg::max<ScalarT>();
     ScalarT furtherIntersection = tg::min<ScalarT>();
@@ -720,7 +720,7 @@ template <class ScalarT>
 
 // line - triangle3
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<1, ScalarT> intersection_parameter(line<3, ScalarT> const& l,
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<3, ScalarT> const& l,
                                                                  triangle<3, ScalarT> const& t,
                                                                  dont_deduce<ScalarT> eps = 100 * tg::epsilon<ScalarT>)
 {
@@ -755,7 +755,7 @@ template <class ScalarT>
 
 // line - quadric_boundary (as an isosurface, not error quadric)
 template <class ScalarT>
-[[nodiscard]] constexpr ray_hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, quadric<3, ScalarT> const& q)
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, quadric<3, ScalarT> const& q)
 {
     const auto Ad = q.A() * l.dir;
     const auto p = l.pos;
