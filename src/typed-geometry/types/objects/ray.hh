@@ -44,8 +44,8 @@ template <int D, class ScalarT>
 struct ray
 {
     using scalar_t = ScalarT;
-    using dir_t = dir<D, ScalarT>;
-    using pos_t = pos<D, ScalarT>;
+    using dir_t = tg::dir<D, ScalarT>; // Note: gcc requires the tg:: prefix to distinguish from member variable
+    using pos_t = tg::pos<D, ScalarT>;
 
     pos_t origin;
     dir_t dir;

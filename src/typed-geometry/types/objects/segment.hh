@@ -44,6 +44,7 @@ using usegment4 = segment<4, u32>;
 template <int D, class ScalarT>
 struct segment
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<D, ScalarT>;
 
     pos_t pos0;
