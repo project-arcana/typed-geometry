@@ -35,7 +35,19 @@ template <>
 struct priority_tag<0>
 {
 };
+
+// see https://stackoverflow.com/questions/44395169/why-is-sfinae-on-if-constexpr-not-allowed
+template <template <class...> class, class, class...>
+struct can_apply : std::false_type
+{
+};
+template <template <class...> class Z, class... Ts>
+struct can_apply<Z, std::void_t<Z<Ts...>>, Ts...> : std::true_type
+{
+};
 } // namespace detail
+template <template <class...> class Z, class... Ts>
+constexpr bool can_apply = detail::can_apply<Z, void, Ts...>::value;
 
 template <class...>
 constexpr bool always_false = false;
