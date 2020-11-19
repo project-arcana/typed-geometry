@@ -176,7 +176,7 @@ template <class Obj, class... Objs>
 }
 
 template <class A, class B>
-using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()).has_value());
+using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
 }
 
 
@@ -633,53 +633,53 @@ template <class Obj, class ScalarT, class TraitsT>
 template <class ScalarT>
 [[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, cylinder_boundary_no_caps<3, ScalarT> const& c)
 {
-    auto cdir = direction(c);
-    auto cosA = dot(cdir, l.dir);
-    auto sinA_sqr = 1 - cosA * cosA;
+    auto const infInter = intersection_parameter(l, inf_of(c));
+    if (!infInter.any())
+        return infInter;
+
+    auto const d = c.axis.pos1 - c.axis.pos0;
+    auto const lambda0 = dot(l[infInter[0]] - c.axis.pos0, d);
+    auto const lambda1 = dot(l[infInter[1]] - c.axis.pos0, d);
+
+    ScalarT hits[2];
+    auto numHits = 0;
+    auto const dDotD = dot(d, d);
+    if (ScalarT(0) <= lambda0 && lambda0 <= dDotD)
+        hits[numHits++] = infInter[0];
+    if (ScalarT(0) <= lambda1 && lambda1 <= dDotD)
+        hits[numHits++] = infInter[1];
+
+    return {hits, numHits};
+}
+
+// line - inf_cylinder
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, inf_cylinder_boundary<3, ScalarT> const& c)
+{
+    auto const cosA = dot(c.axis.dir, l.dir);
+    auto const sinA_sqr = 1 - cosA * cosA;
 
     if (sinA_sqr <= 0)
         return {}; // line and cylinder are parallel
 
     // compute closest points of line and cylinder axis
-    auto origDiff = l.pos - c.axis.pos0;
-    auto fLine = dot(l.dir, origDiff);
-    auto fAxis = dot(cdir, origDiff);
-    auto tLine = (cosA * fAxis - fLine) / sinA_sqr;
-    auto tAxis = (fAxis - cosA * fLine) / sinA_sqr;
+    auto const origDiff = l.pos - c.axis.pos;
+    auto const fLine = dot(l.dir, origDiff);
+    auto const fAxis = dot(c.axis.dir, origDiff);
+    auto const tLine = (cosA * fAxis - fLine) / sinA_sqr;
+    auto const tAxis = (fAxis - cosA * fLine) / sinA_sqr;
 
-    auto closest_on_line = l.pos + tLine * l.dir;
-    auto closest_on_axis = c.axis.pos0 + tAxis * cdir;
-    auto line_axis_dist_sqr = distance_sqr(closest_on_line, closest_on_axis);
-    auto cyl_radius_sqr = c.radius * c.radius;
+    auto const line_axis_dist_sqr = distance_sqr(l[tLine], c.axis[tAxis]);
+    auto const cyl_radius_sqr = c.radius * c.radius;
 
-    if (line_axis_dist_sqr > cyl_radius_sqr)
+    if (cyl_radius_sqr < line_axis_dist_sqr)
         return {}; // line misses the cylinder
 
-    // radius in 2D slice
-    auto r_2D = sqrt(cyl_radius_sqr - line_axis_dist_sqr);
-
+    // radius in 2D slice = sqrt(cyl_radius_sqr - line_axis_dist_sqr)
     // infinite tube intersection
-    auto s = r_2D / sqrt(sinA_sqr);
-    auto cyl_intersection_0 = closest_on_line - s * l.dir;
-    auto cyl_intersection_1 = closest_on_line + s * l.dir;
-
-    // project onto line segment
-    auto line_length = length(c.axis);
-    auto lambda_0 = dot(cyl_intersection_0 - c.axis.pos0, cdir);
-    auto lambda_1 = dot(cyl_intersection_1 - c.axis.pos0, cdir);
-
-    ScalarT hits[2];
-    int hit_cnt = 0;
-
-    if (0 <= lambda_0 && lambda_0 < line_length)
-        hits[hit_cnt++] = tLine - s;
-    if (0 <= lambda_1 && lambda_1 < line_length)
-        hits[hit_cnt++] = tLine + s;
-
-    return {hits, hit_cnt};
+    auto const s = sqrt((cyl_radius_sqr - line_axis_dist_sqr) / sinA_sqr);
+    return {tLine - s, tLine + s};
 }
-
-// line - inf_cylinder
 template <class ScalarT>
 [[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<2, ScalarT> const& l, inf_cylinder_boundary<2, ScalarT> const& c)
 {
