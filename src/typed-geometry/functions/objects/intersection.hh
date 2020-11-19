@@ -10,6 +10,8 @@
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
+#include <typed-geometry/types/objects/inf_cone.hh>
+#include <typed-geometry/types/objects/inf_cylinder.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/ray.hh>
@@ -173,6 +175,22 @@ template <class Obj, class... Objs>
 [[nodiscard]] constexpr bool intersects_any(Obj const& obj, Objs const&... objs)
 {
     return (intersects(obj, objs) || ...);
+}
+
+// Solves the quadratic equation ax^2 + bx + c = 0
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, ScalarT> solve_quadratic(ScalarT const& a, ScalarT const& b, ScalarT const& c)
+{
+    const auto discriminant = b * b - ScalarT(4) * a * c;
+    if (discriminant < ScalarT(0))
+        return {}; // No solution
+
+    const auto sqrtD = sqrt(discriminant);
+    const auto t1 = (-b - sqrtD) / (ScalarT(2) * a);
+    const auto t2 = (-b + sqrtD) / (ScalarT(2) * a);
+
+    const auto [tMin, tMax] = minmax(t1, t2);
+    return {tMin, tMax};
 }
 
 template <class A, class B>
@@ -470,6 +488,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, aabb_boundary<D, ScalarT> const& b)
 {
+    // based on ideas from https://gamedev.stackexchange.com/q/18436
     auto tFirst = tg::min<ScalarT>();
     auto tSecond = tg::max<ScalarT>();
     for (auto i = 0; i < D; ++i)
@@ -693,6 +712,38 @@ template <class ScalarT>
     return {tMin, tMax};
 }
 
+// line - inf_cone
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<2, ScalarT> const& l, inf_cone_boundary<2, ScalarT> const& c)
+{
+    auto ray1 = ray<2, ScalarT>(c.apex, rotate(c.opening_dir, c.opening_angle / ScalarT(2)));
+    auto ray2 = ray<2, ScalarT>(c.apex, rotate(c.opening_dir, -c.opening_angle / ScalarT(2)));
+    return detail::merge_hits(l, ray1, ray2);
+}
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, inf_cone_boundary<3, ScalarT> const& ic)
+{
+    // see https://lousodrome.net/blog/light/2017/01/03/intersection-of-a-ray-and-a-cone/
+    auto const dv = dot(l.dir, ic.opening_dir);
+    auto const cos2 = pow2(cos(ic.opening_angle * ScalarT(0.5)));
+    auto const co = l.pos - ic.apex;
+    auto const cov = dot(co, ic.opening_dir);
+    auto const a = dv * dv - cos2;
+    auto const b = ScalarT(2) * (dv * cov - dot(l.dir, co) * cos2);
+    auto const c = cov * cov - dot(co, co) * cos2;
+    auto const inter = detail::solve_quadratic(a, b, c);
+
+    // exclude intersections with mirrored cone
+    ScalarT hits[2];
+    auto numHits = 0;
+    if (dot(l[inter[0]] - ic.apex, ic.opening_dir) >= ScalarT(0))
+        hits[numHits++] = inter[0];
+    if (dot(l[inter[1]] - ic.apex, ic.opening_dir) >= ScalarT(0))
+        hits[numHits++] = inter[1];
+
+    return {hits, numHits};
+}
+
 // line - triangle2
 template <class ScalarT>
 [[nodiscard]] constexpr optional<hit_interval<ScalarT>> intersection_parameter(line<2, ScalarT> const& l, triangle<2, ScalarT> const& t)
@@ -765,18 +816,7 @@ template <class ScalarT>
     const auto a = dot(l.dir, Ad);
     const auto b = ScalarT(2) * (dot(p, Ad) + dot(q.b(), l.dir));
     const auto c = dot(p, q.A() * vec3(p)) + ScalarT(2) * dot(q.b(), p) + q.c;
-
-    // Solve the quadratic equation ax^2 + bx + c = 0
-    const auto discriminant = b * b - ScalarT(4) * a * c;
-    if (discriminant < ScalarT(0))
-        return {}; // No solution
-
-    const auto sqrtD = sqrt(discriminant);
-    const auto t1 = (-b - sqrtD) / (ScalarT(2) * a);
-    const auto t2 = (-b + sqrtD) / (ScalarT(2) * a);
-
-    const auto [tMin, tMax] = minmax(t1, t2);
-    return {tMin, tMax};
+    return detail::solve_quadratic(a, b, c);
 }
 
 
