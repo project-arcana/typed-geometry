@@ -16,6 +16,12 @@ template <int D, class ScalarT, class TraitsT = default_object_tag>
 struct inf_cylinder;
 
 // Common infinite cylinder types
+using inf_cylinder2 = inf_cylinder<2, f32>;
+using finf_cylinder2 = inf_cylinder<2, f32>;
+using dinf_cylinder2 = inf_cylinder<2, f64>;
+using iinf_cylinder2 = inf_cylinder<2, i32>;
+using uinf_cylinder2 = inf_cylinder<2, u32>;
+
 using inf_cylinder3 = inf_cylinder<3, f32>;
 using finf_cylinder3 = inf_cylinder<3, f32>;
 using dinf_cylinder3 = inf_cylinder<3, f64>;
