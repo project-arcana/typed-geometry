@@ -11,7 +11,7 @@
 macro(arcana_source_group)
     foreach(loop_var ${ARGN})
 
-        if (${CMAKE_GENERATOR} MATCHES "Visual Studio")
+        if (${CMAKE_GENERATOR} MATCHES "Visual Studio" OR WIN32)
             source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" FILES ${${loop_var}})
         else()
             source_group("${CMAKE_CURRENT_SOURCE_DIR}/src" FILES ${${loop_var}})
