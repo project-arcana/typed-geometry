@@ -739,10 +739,13 @@ template <class ScalarT>
     // exclude intersections with mirrored cone
     ScalarT hits[2];
     auto numHits = 0;
-    auto const coneDir = ic.opening_angle > 180_deg ? -ic.opening_dir : ic.opening_dir;
-    if (dot(l[inter[0]] - ic.apex, coneDir) >= ScalarT(0))
+    TG_ASSERT(ic.opening_angle <= 180_deg, "Only convex objects are supported, but an inf_cone with openinge angle > 180 degree is not convex.");
+    // if it is not used for solid cones, this works:
+    // auto const coneDir = ic.opening_angle > 180_deg ? -ic.opening_dir : ic.opening_dir;
+    // if (dot(l[inter[0]] - ic.apex, coneDir) >= ScalarT(0)) ...
+    if (dot(l[inter[0]] - ic.apex, ic.opening_dir) >= ScalarT(0))
         hits[numHits++] = inter[0];
-    if (dot(l[inter[1]] - ic.apex, coneDir) >= ScalarT(0))
+    if (dot(l[inter[1]] - ic.apex, ic.opening_dir) >= ScalarT(0))
         hits[numHits++] = inter[1];
 
     return {hits, numHits};
@@ -826,6 +829,22 @@ template <class ScalarT>
     if (pow2(x / a) + pow2(y / b) <= ScalarT(1))
         return t;
     return {};
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, ellipse_boundary<D, ScalarT> const& e)
+{
+    // transform line to ellipse space (ellipse gets unit sphere at origin)
+    auto const pc = l.pos - e.center;
+    pos<D, ScalarT> p;
+    vec<D, ScalarT> d; // in ellipse space, this is no longer a unit vector
+    for (auto i = 0; i < D; ++i)
+    {
+        auto const axis2 = dot(e.semi_axes[i], e.semi_axes[i]);
+        p[i] = dot(pc, e.semi_axes[i]) / axis2;
+        d[i] = dot(l.dir, e.semi_axes[i]) / axis2;
+    }
+    // to find intersection with unit sphere, <t*d + p, t*d + p> == 1 has to be solved
+    return detail::solve_quadratic(dot(d, d), ScalarT(2) * dot(d, p), dot(p, p) - ScalarT(1));
 }
 
 // line - quadric_boundary (as an isosurface, not error quadric)
