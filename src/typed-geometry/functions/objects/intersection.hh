@@ -8,6 +8,7 @@
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
@@ -732,13 +733,16 @@ template <class ScalarT>
     auto const b = ScalarT(2) * (dv * cov - dot(l.dir, co) * cos2);
     auto const c = cov * cov - dot(co, co) * cos2;
     auto const inter = detail::solve_quadratic(a, b, c);
+    if (!inter.any())
+        return inter;
 
     // exclude intersections with mirrored cone
     ScalarT hits[2];
     auto numHits = 0;
-    if (dot(l[inter[0]] - ic.apex, ic.opening_dir) >= ScalarT(0))
+    auto const coneDir = ic.opening_angle > 180_deg ? -ic.opening_dir : ic.opening_dir;
+    if (dot(l[inter[0]] - ic.apex, coneDir) >= ScalarT(0))
         hits[numHits++] = inter[0];
-    if (dot(l[inter[1]] - ic.apex, ic.opening_dir) >= ScalarT(0))
+    if (dot(l[inter[1]] - ic.apex, coneDir) >= ScalarT(0))
         hits[numHits++] = inter[1];
 
     return {hits, numHits};
@@ -802,6 +806,26 @@ template <class ScalarT>
         return {};
 
     return (ScalarT(1) / det) * dot(e2, qvec);
+}
+
+// line - ellipse
+template <class ScalarT>
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<3, ScalarT> const& l, ellipse<2, ScalarT, 3> const& e)
+{
+    const auto t = intersection_parameter(l, plane<3, ScalarT>(normal_of(e), e.center));
+    if (!t.any()) // line parallel to ellipse plane
+        return {};
+
+    // simplified contains(e, p) without plane check and eps == 0
+    auto pc = l[t.first()] - e.center;
+    auto x = dot(pc, e.semi_axes[0]);
+    auto y = dot(pc, e.semi_axes[1]);
+    auto a = length_sqr(e.semi_axes[0]);
+    auto b = length_sqr(e.semi_axes[1]);
+
+    if (pow2(x / a) + pow2(y / b) <= ScalarT(1))
+        return t;
+    return {};
 }
 
 // line - quadric_boundary (as an isosurface, not error quadric)
