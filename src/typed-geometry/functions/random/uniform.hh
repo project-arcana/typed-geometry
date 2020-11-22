@@ -748,6 +748,20 @@ template <class Rng, class... Args>
     return uniform(rng, args...) - decltype(uniform(rng, args...))::zero;
 }
 
+/// returns uniformly sampled barycentric coordinates
+/// i.e. uniform(rng, triangle) has the same distribution as
+///      triangle[uniform_barycoords(rng)]
+template <class ScalarT = float, class Rng>
+[[nodiscard]] constexpr comp<3, ScalarT> uniform_barycoords(Rng& rng)
+{
+    auto const a = detail::uniform01<ScalarT>(rng);
+    auto const b = detail::uniform01<ScalarT>(rng);
+    if (a + b <= ScalarT(1))
+        return {a, b, 1 - a - b};
+    else
+        return {1 - a, 1 - b, a + b - 1};
+}
+
 
 namespace detail
 {
