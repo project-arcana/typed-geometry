@@ -43,12 +43,32 @@ struct make_unsigned_t<fixed_int<w> const>
     using type = fixed_uint<w> const;
 };
 template <int w>
+struct make_unsigned_t<fixed_uint<w>>
+{
+    using type = fixed_uint<w>;
+};
+template <int w>
+struct make_unsigned_t<fixed_uint<w> const>
+{
+    using type = fixed_uint<w> const;
+};
+template <int w>
 struct make_signed_t<fixed_uint<w>>
 {
     using type = fixed_int<w>;
 };
 template <int w>
 struct make_signed_t<fixed_uint<w> const>
+{
+    using type = fixed_int<w> const;
+};
+template <int w>
+struct make_signed_t<fixed_int<w>>
+{
+    using type = fixed_int<w>;
+};
+template <int w>
+struct make_signed_t<fixed_int<w> const>
 {
     using type = fixed_int<w> const;
 };
