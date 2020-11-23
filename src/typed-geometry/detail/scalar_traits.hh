@@ -113,4 +113,20 @@ struct is_scalar_t<angle_t<T>>
 // abstract scalars are scalars that don't hold a concrete values (e.g. traced types)
 TG_IMPL_DEFINE_TRAIT(is_abstract_scalar, bool, false);
 
+template <class T>
+struct make_unsigned_t
+{
+    using type = std::make_unsigned_t<T>;
+};
+template <class T>
+using make_unsigned = typename make_unsigned_t<T>::type;
+
+template <class T>
+struct make_signed_t
+{
+    using type = std::make_signed_t<T>;
+};
+template <class T>
+using make_signed = typename make_signed_t<T>::type;
+
 } // namespace tg

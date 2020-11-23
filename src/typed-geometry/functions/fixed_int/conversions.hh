@@ -1,5 +1,6 @@
 #pragma once
 
+#include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/types/scalars/fixed_int.hh>
 #include <typed-geometry/types/scalars/fixed_uint.hh>
 
@@ -30,4 +31,25 @@ constexpr fixed_uint<words>::fixed_uint(fixed_int<rhs_words> const& rhs)
     if constexpr (rhs_words > 3 && words > 3)
         d[3] = rhs.d[3];
 }
+
+template <int w>
+struct make_unsigned_t<fixed_int<w>>
+{
+    using type = fixed_uint<w>;
+};
+template <int w>
+struct make_unsigned_t<fixed_int<w> const>
+{
+    using type = fixed_uint<w> const;
+};
+template <int w>
+struct make_signed_t<fixed_uint<w>>
+{
+    using type = fixed_int<w>;
+};
+template <int w>
+struct make_signed_t<fixed_uint<w> const>
+{
+    using type = fixed_int<w> const;
+};
 }
