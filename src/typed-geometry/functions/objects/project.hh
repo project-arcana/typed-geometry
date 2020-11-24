@@ -30,6 +30,12 @@
 
 namespace tg
 {
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const&, pos<D, ScalarT> const& target_p)
+{
+    return target_p;
+}
+
 // ============== project to plane ==============
 
 template <int D, class ScalarT>
