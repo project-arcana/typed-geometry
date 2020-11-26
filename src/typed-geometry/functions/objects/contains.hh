@@ -213,8 +213,7 @@ template <class ScalarT, class TraitsT>
 
     if constexpr (std::is_same_v<TraitsT, boundary_tag>)
     {
-        if (a - eps > ScalarT(0) && b - eps > ScalarT(0) && c - eps > ScalarT(0)
-            && x2 / pow2(a - eps) + y2 / pow2(b - eps) + z2 / pow2(c - eps) < ScalarT(1))
+        if (a - eps > ScalarT(0) && b - eps > ScalarT(0) && c - eps > ScalarT(0) && x2 / pow2(a - eps) + y2 / pow2(b - eps) + z2 / pow2(c - eps) < ScalarT(1))
             return false;
     }
 
@@ -256,7 +255,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(hemisphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
-    return contains(boundary_no_caps_of(s), p , eps) || contains(caps_of(s), p, eps);
+    return contains(boundary_no_caps_of(s), p, eps) || contains(caps_of(s), p, eps);
 }
 
 template <int D, class ScalarT>
