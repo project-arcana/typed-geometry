@@ -73,7 +73,7 @@ std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, St
 template <int w, class CharT, class StreamTraits>
 std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, fixed_uint<w> const& val)
 {
-    char buf[w * 20 + 1];
+    CharT buf[w * 20 + 1];
     auto const end = buf + sizeof(buf);
     auto begin = end;
     *(--begin) = '\0';
@@ -82,10 +82,10 @@ std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, St
     {
         auto const n = u64(u % 10);
         u /= 10;
-        *(--begin) = '0' + n;
+        *(--begin) = CharT('0' + n);
     }
     if (begin + 1 == end)
-        *(--begin) = '0';
+        *(--begin) = CharT('0');
     return out << begin;
 }
 
