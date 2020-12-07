@@ -15,6 +15,7 @@
 #include <typed-geometry/types/objects/inf_cylinder.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
+#include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
@@ -28,6 +29,7 @@
 #include "contains.hh"
 #include "coordinates.hh"
 #include "direction.hh"
+#include "faces.hh"
 #include "normal.hh"
 
 // family of intersection functions:
@@ -169,6 +171,11 @@ template <int D, class ScalarT, class... Objs>
 
     TG_ASSERT(numHits <= 2);
     return {hits, numHits};
+}
+template <int D, class ScalarT, class ObjT, int N, std::size_t... I>
+[[nodiscard]] constexpr hits<2, ScalarT> merge_hits(line<D, ScalarT> const& line, array<ObjT, N> objs, std::index_sequence<I...>)
+{
+    return merge_hits(line, objs[I]...);
 }
 
 // returns true, iff the given line or ray object intersects any of the given other objects (with short-circuiting after the first intersection)
@@ -739,7 +746,7 @@ template <class ScalarT>
     // exclude intersections with mirrored cone
     ScalarT hits[2];
     auto numHits = 0;
-    TG_ASSERT(ic.opening_angle <= 180_deg, "Only convex objects are supported, but an inf_cone with openinge angle > 180 degree is not convex.");
+    TG_ASSERT(ic.opening_angle <= 180_deg && "Only convex objects are supported, but an inf_cone with openinge angle > 180 degree is not convex.");
     // if it is not used for solid cones, this works:
     // auto const coneDir = ic.opening_angle > 180_deg ? -ic.opening_dir : ic.opening_dir;
     // if (dot(l[inter[0]] - ic.apex, coneDir) >= ScalarT(0)) ...
@@ -749,6 +756,53 @@ template <class ScalarT>
         hits[numHits++] = inter[1];
 
     return {hits, numHits};
+}
+
+// line - cone
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<3, ScalarT> const& l, cone_boundary_no_caps<3, ScalarT> const& cone)
+{
+    auto const apex = apex_of(cone);
+    auto const openingDir = -normal_of(cone.base);
+    auto const borderPos = any_point(boundary_of(cone.base));
+    auto const openingAngleHalf = angle_between(openingDir, normalize(borderPos - apex));
+
+    // see https://lousodrome.net/blog/light/2017/01/03/intersection-of-a-ray-and-a-cone/
+    auto const dv = dot(l.dir, openingDir);
+    auto const cos2 = pow2(cos(openingAngleHalf));
+    auto const co = l.pos - apex;
+    auto const cov = dot(co, openingDir);
+    auto const a = dv * dv - cos2;
+    auto const b = ScalarT(2) * (dv * cov - dot(l.dir, co) * cos2);
+    auto const c = cov * cov - dot(co, co) * cos2;
+    auto const inter = detail::solve_quadratic(a, b, c);
+    if (!inter.any())
+        return inter;
+
+    // exclude intersections with mirrored cone
+    ScalarT hits[2];
+    auto numHits = 0;
+    auto const h0 = dot(l[inter[0]] - apex, openingDir);
+    auto const h1 = dot(l[inter[1]] - apex, openingDir);
+    if (ScalarT(0) <= h0 && h0 <= cone.height)
+        hits[numHits++] = inter[0];
+    if (ScalarT(0) <= h1 && h1 <= cone.height)
+        hits[numHits++] = inter[1];
+
+    return {hits, numHits};
+}
+
+// line - pyramid
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
+[[nodiscard]] constexpr hits<2, typename BaseT::scalar_t> intersection_parameter(line<3, typename BaseT::scalar_t> const& l, pyramid_boundary_no_caps<BaseT> const& py)
+{
+    auto const faces = faces_of(py);
+    return detail::merge_hits(l, faces, std::make_index_sequence<faces.size()>{});
+}
+template <class BaseT>
+[[nodiscard]] constexpr hits<2, typename BaseT::scalar_t> intersection_parameter(line<3, typename BaseT::scalar_t> const& l, pyramid_boundary<BaseT> const& py)
+{
+    return detail::merge_hits(l, py.base, boundary_no_caps_of(py));
 }
 
 // line - triangle2
