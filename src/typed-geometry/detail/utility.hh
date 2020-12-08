@@ -253,6 +253,27 @@ struct is_range_t<Container,
                       >> : std::true_type
 {
 };
+
+template <class Container, class = void>
+struct is_any_range_t : false_type
+{
+};
+template <class ElementT, size_t N>
+struct is_any_range_t<ElementT[N]> : true_type
+{
+};
+template <class ElementT, size_t N>
+struct is_any_range_t<ElementT (&)[N]> : true_type
+{
+};
+template <class Container>
+struct is_any_range_t<Container,
+                      std::void_t<                                     //
+                          decltype(std::declval<Container>().begin()), //
+                          decltype(std::declval<Container>().end())    //
+                          >> : std::true_type
+{
+};
 }
 
 template <class Container, class ElementT>
@@ -260,6 +281,9 @@ static constexpr bool is_container = sizeof(detail::container_test<Container, El
 
 template <class Container, class ElementT>
 static constexpr bool is_range = detail::is_range_t<Container, ElementT>::value;
+
+template <class Container>
+static constexpr bool is_any_range = detail::is_any_range_t<Container>::value;
 
 template <class C>
 constexpr auto begin(C& c) -> decltype(c.begin())
