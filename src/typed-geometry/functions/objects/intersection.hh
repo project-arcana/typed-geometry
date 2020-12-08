@@ -891,7 +891,7 @@ template <int D, class ScalarT>
 {
     // transform line to ellipse space (ellipse gets unit sphere at origin)
     auto const pc = l.pos - e.center;
-    pos<D, ScalarT> p;
+    vec<D, ScalarT> p;
     vec<D, ScalarT> d; // in ellipse space, this is no longer a unit vector
     for (auto i = 0; i < D; ++i)
     {
