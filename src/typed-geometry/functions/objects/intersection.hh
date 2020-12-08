@@ -32,6 +32,8 @@
 #include "faces.hh"
 #include "normal.hh"
 
+#include <utility>
+
 // family of intersection functions:
 
 // intersects(a, b)              -> bool
