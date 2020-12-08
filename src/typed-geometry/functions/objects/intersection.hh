@@ -131,7 +131,7 @@ struct hits
 
 private:
     int _size = 0;
-    HitT _hit[MaxHits];
+    HitT _hit[MaxHits] = {};
 };
 
 /// describes a continuous interval on a line or ray between start and end
@@ -155,7 +155,7 @@ namespace detail
 template <int D, class ScalarT, class... Objs>
 [[nodiscard]] constexpr hits<2, ScalarT> merge_hits(line<D, ScalarT> const& line, Objs const&... objs)
 {
-    ScalarT hits[2];
+    ScalarT hits[2] = {};
     hits[0] = tg::max<ScalarT>();
     hits[1] = tg::min<ScalarT>();
     auto numHits = 0;
@@ -278,7 +278,7 @@ template <class A, class B>
     typename decltype(intersection_parameter(a, b))::template as_hits<typename A::pos_t>
 {
     auto ts = intersection_parameter(a, b);
-    typename A::pos_t hits[ts.max_hits];
+    typename A::pos_t hits[ts.max_hits] = {};
     for (auto i = 0; i < ts.size(); ++i)
         hits[i] = a[ts[i]];
     return {hits, ts.size()};
@@ -602,7 +602,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, hemisphere_boundary_no_caps<D, ScalarT> const& h)
 {
-    ScalarT hits[2];
+    ScalarT hits[2] = {};
     auto numHits = 0;
     const auto sphereHits = intersection_parameter(l, sphere_boundary<D, ScalarT>(h.center, h.radius));
     const auto halfSpace = halfspace<D, ScalarT>(-h.normal, h.center); // the intersection of this halfspace and the sphere is exactly the hemisphere
@@ -670,7 +670,7 @@ template <class ScalarT>
     auto const lambda0 = dot(l[infInter[0]] - c.axis.pos0, d);
     auto const lambda1 = dot(l[infInter[1]] - c.axis.pos0, d);
 
-    ScalarT hits[2];
+    ScalarT hits[2] = {};
     auto numHits = 0;
     auto const dDotD = dot(d, d);
     if (ScalarT(0) <= lambda0 && lambda0 <= dDotD)
@@ -746,7 +746,7 @@ template <class ScalarT>
         return inter;
 
     // exclude intersections with mirrored cone
-    ScalarT hits[2];
+    ScalarT hits[2] = {};
     auto numHits = 0;
     TG_ASSERT(ic.opening_angle <= tg::angle::from_degree(ScalarT(180)) && "Only convex objects are supported, but an inf_cone with openinge angle > 180 degree is not convex.");
     // if it is not used for solid cones, this works:
@@ -782,7 +782,7 @@ template <class ScalarT>
         return inter;
 
     // exclude intersections with mirrored cone
-    ScalarT hits[2];
+    ScalarT hits[2] = {};
     auto numHits = 0;
     auto const h0 = dot(l[inter[0]] - apex, openingDir);
     auto const h1 = dot(l[inter[1]] - apex, openingDir);
