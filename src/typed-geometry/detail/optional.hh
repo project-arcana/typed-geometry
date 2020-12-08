@@ -45,7 +45,7 @@ public:
 };
 
 template <class T, class Stream>
-auto operator<<(Stream& os, optional<T> const& o) -> decltype(os << o.value(), os << "", os)
+auto operator<<(Stream& os, optional<T> const& o) -> decltype(os << o.value(), os << std::declval<char const*>(), os)
 {
     return o.has_value() ? (os << o.value()) : (os << "[empty]");
 }

@@ -30,12 +30,6 @@
 
 namespace tg
 {
-template <int D, class ScalarT>
-[[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const&, pos<D, ScalarT> const& target_p)
-{
-    return target_p;
-}
-
 // ============== project to plane ==============
 
 template <int D, class ScalarT>
@@ -63,6 +57,15 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> project(pos<D, ScalarT> const& p, halfspace<D, ScalarT> const& pl)
 {
     return p - pl.normal * tg::max(ScalarT(0), dot(p, pl.normal) - pl.dis);
+}
+
+
+// ============== project to point ==============
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pos<D, ScalarT> project([[maybe_unused]] pos<D, ScalarT> const& p, pos<D, ScalarT> const& q)
+{
+    return q;
 }
 
 

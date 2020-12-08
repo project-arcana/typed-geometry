@@ -44,6 +44,11 @@ template <int D, class ScalarT, class TraitsT>
     return direction(c.axis);
 }
 template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr dir<D, ScalarT> direction(inf_cylinder<D, ScalarT, TraitsT> const& c)
+{
+    return direction(c.axis);
+}
+template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr dir<D, ScalarT> direction(capsule<D, ScalarT, TraitsT> const& c)
 {
     return direction(c.axis);

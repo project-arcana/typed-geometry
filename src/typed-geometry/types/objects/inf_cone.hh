@@ -16,6 +16,12 @@ template <int D, class ScalarT, class TraitsT = default_object_tag>
 struct inf_cone;
 
 // Common cone types
+using inf_cone2 = inf_cone<2, f32>;
+using finf_cone2 = inf_cone<2, f32>;
+using dinf_cone2 = inf_cone<2, f64>;
+using iinf_cone2 = inf_cone<2, i32>;
+using uinf_cone2 = inf_cone<2, u32>;
+
 using inf_cone3 = inf_cone<3, f32>;
 using finf_cone3 = inf_cone<3, f32>;
 using dinf_cone3 = inf_cone<3, f64>;
