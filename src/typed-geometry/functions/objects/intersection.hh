@@ -174,8 +174,8 @@ template <int D, class ScalarT, class... Objs>
     TG_ASSERT(numHits <= 2);
     return {hits, numHits};
 }
-template <int D, class ScalarT, class ObjT, int N, std::size_t... I>
-[[nodiscard]] constexpr hits<2, ScalarT> merge_hits(line<D, ScalarT> const& line, array<ObjT, N> objs, std::index_sequence<I...>)
+template <int D, class ScalarT, class ObjT, u64 N, size_t... I>
+[[nodiscard]] constexpr hits<2, ScalarT> merge_hits_array(line<D, ScalarT> const& line, array<ObjT, N> objs, std::index_sequence<I...>)
 {
     return merge_hits(line, objs[I]...);
 }
@@ -748,7 +748,7 @@ template <class ScalarT>
     // exclude intersections with mirrored cone
     ScalarT hits[2];
     auto numHits = 0;
-    TG_ASSERT(ic.opening_angle <= 180_deg && "Only convex objects are supported, but an inf_cone with openinge angle > 180 degree is not convex.");
+    TG_ASSERT(ic.opening_angle <= tg::angle::from_degree(ScalarT(180)) && "Only convex objects are supported, but an inf_cone with openinge angle > 180 degree is not convex.");
     // if it is not used for solid cones, this works:
     // auto const coneDir = ic.opening_angle > 180_deg ? -ic.opening_dir : ic.opening_dir;
     // if (dot(l[inter[0]] - ic.apex, coneDir) >= ScalarT(0)) ...
@@ -799,7 +799,7 @@ template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere
 [[nodiscard]] constexpr hits<2, typename BaseT::scalar_t> intersection_parameter(line<3, typename BaseT::scalar_t> const& l, pyramid_boundary_no_caps<BaseT> const& py)
 {
     auto const faces = faces_of(py);
-    return detail::merge_hits(l, faces, std::make_index_sequence<faces.size()>{});
+    return detail::merge_hits_array(l, faces, std::make_index_sequence<faces.size()>{});
 }
 template <class BaseT>
 [[nodiscard]] constexpr hits<2, typename BaseT::scalar_t> intersection_parameter(line<3, typename BaseT::scalar_t> const& l, pyramid_boundary<BaseT> const& py)
