@@ -98,7 +98,12 @@ template <int D, class ScalarT, class TraitsT>
     if constexpr (std::is_same_v<TraitsT, default_object_tag>)
         return c.axis.pos;
     else
-        return c.axis.pos + c.radius * any_normal(c.axis.dir);
+    {
+        if constexpr (D == 3)
+            return c.axis.pos + c.radius * any_normal(c.axis.dir);
+        else
+            return c.axis.pos + c.radius * perpendicular(c.axis.dir);
+    }
 }
 
 template <int D, class ScalarT>

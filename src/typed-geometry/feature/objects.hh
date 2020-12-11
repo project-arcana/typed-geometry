@@ -23,5 +23,6 @@
 #include <typed-geometry/functions/objects/rasterize.hh>
 #include <typed-geometry/functions/objects/size.hh>
 #include <typed-geometry/functions/objects/tangent.hh>
+#include <typed-geometry/functions/objects/triangle.hh>
 #include <typed-geometry/functions/objects/vertices.hh>
 #include <typed-geometry/functions/objects/volume.hh>

@@ -73,37 +73,31 @@ std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, St
 template <int w, class CharT, class StreamTraits>
 std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, fixed_uint<w> const& val)
 {
-    constexpr const char* hex_map = "0123456789ABCDEF";
-
-    auto ss = detail::temp_sstream(out);
-    ss << "u" << 64 * w << "(";
-    ss << "0x";
-    for (auto wi = w - 1; wi >= 0; --wi)
-        for (auto i = 15; i >= 0; --i)
-        {
-            const u64 idx = (val.d[wi] >> (i * 4)) & 0xF;
-            ss << hex_map[idx];
-        }
-    ss << ")";
-    return out << ss.str();
+    CharT buf[w * 20 + 1];
+    auto const end = buf + sizeof(buf);
+    auto begin = end;
+    *(--begin) = '\0';
+    auto u = val;
+    while (u > 0)
+    {
+        auto const n = u64(u % 10);
+        u /= 10;
+        *(--begin) = CharT('0' + n);
+    }
+    if (begin + 1 == end)
+        *(--begin) = CharT('0');
+    return out << begin;
 }
 
 template <int w, class CharT, class StreamTraits>
 std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, StreamTraits>& out, fixed_int<w> const& val)
 {
-    constexpr const char* hex_map = "0123456789ABCDEF";
-
-    auto ss = detail::temp_sstream(out);
-    ss << "i" << 64 * w << "(";
-    ss << "0x";
-    for (auto wi = w - 1; wi >= 0; --wi)
-        for (auto i = 15; i >= 0; --i)
-        {
-            const u64 idx = (val.d[wi] >> (i * 4)) & 0xF;
-            ss << hex_map[idx];
-        }
-    ss << ")";
-    return out << ss.str();
+    if (val < 0)
+    {
+        out << '-';
+        return out << fixed_uint<w>(-val);
+    }
+    return out << fixed_uint<w>(val);
 }
 
 //

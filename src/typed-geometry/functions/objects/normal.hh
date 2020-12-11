@@ -1,6 +1,7 @@
 #pragma once
 
 #include <typed-geometry/types/objects/box.hh>
+#include <typed-geometry/types/objects/ellipse.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
@@ -76,6 +77,12 @@ template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal_of(box<2, ScalarT, 3, TraitsT> const& b)
 {
     return normalize(cross(b.half_extents[0], b.half_extents[1]));
+}
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal_of(ellipse<2, ScalarT, 3, TraitsT> const& e)
+{
+    return normalize(cross(e.semi_axes[0], e.semi_axes[1]));
 }
 
 template <class ScalarT>

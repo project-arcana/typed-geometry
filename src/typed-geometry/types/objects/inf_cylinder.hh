@@ -8,16 +8,22 @@
 namespace tg
 {
 /**
- * infinite tube
+ * infinite cylinder
  *
- * An infinite tube is defined by a position and an axis
+ * An infinite cylinder is defined by an axis and a radius
  */
 template <int D, class ScalarT, class TraitsT = default_object_tag>
 struct inf_cylinder;
 
-// Common infinte tube types
+// Common infinite cylinder types
+using inf_cylinder2 = inf_cylinder<2, f32>;
+using finf_cylinder2 = inf_cylinder<2, f32>;
+using dinf_cylinder2 = inf_cylinder<2, f64>;
+using iinf_cylinder2 = inf_cylinder<2, i32>;
+using uinf_cylinder2 = inf_cylinder<2, u32>;
+
 using inf_cylinder3 = inf_cylinder<3, f32>;
-using finttube3 = inf_cylinder<3, f32>;
+using finf_cylinder3 = inf_cylinder<3, f32>;
 using dinf_cylinder3 = inf_cylinder<3, f64>;
 using iinf_cylinder3 = inf_cylinder<3, i32>;
 using uinf_cylinder3 = inf_cylinder<3, u32>;
@@ -29,6 +35,7 @@ using inf_cylinder_boundary = inf_cylinder<D, ScalarT, boundary_tag>;
 template <int D, class ScalarT, class TraitsT>
 struct inf_cylinder
 {
+    using scalar_t = ScalarT;
     using pos_t = pos<D, ScalarT>;
     using dir_t = dir<D, ScalarT>;
     using line_t = line<D, ScalarT>;

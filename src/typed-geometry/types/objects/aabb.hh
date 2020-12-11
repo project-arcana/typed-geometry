@@ -48,6 +48,7 @@ using aabb_boundary = aabb<D, ScalarT, boundary_tag>;
 template <int D, class ScalarT, class TraitsT>
 struct aabb
 {
+    using scalar_t = ScalarT;
     using vec_t = vec<D, ScalarT>;
     using pos_t = pos<D, ScalarT>;
 
