@@ -80,8 +80,8 @@ std::basic_ostream<CharT, StreamTraits>& operator<<(std::basic_ostream<CharT, St
     auto u = val;
     while (u > 0)
     {
-        auto const n = u64(u % 10);
-        u /= 10;
+        auto const n = u64(u % 10u);
+        u /= 10u;
         *(--begin) = CharT('0' + n);
     }
     if (begin + 1 == end)
