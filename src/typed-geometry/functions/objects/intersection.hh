@@ -274,8 +274,7 @@ template <class A, class B>
 
 // if hits intersection parameter is available, use that
 template <class A, class B>
-[[nodiscard]] constexpr auto intersection(A const& a, B const& b) ->
-    typename decltype(intersection_parameter(a, b))::template as_hits<typename A::pos_t>
+[[nodiscard]] constexpr auto intersection(A const& a, B const& b) -> typename decltype(intersection_parameter(a, b))::template as_hits<typename A::pos_t>
 {
     auto ts = intersection_parameter(a, b);
     typename A::pos_t hits[ts.max_hits] = {};
@@ -287,8 +286,8 @@ template <class A, class B>
 // if an optional hit_interval intersection parameter is available, use that
 template <class A, class B>
 [[nodiscard]] constexpr auto intersection(A const& a, B const& b)
-    -> std::enable_if<decltype(intersection_parameter(a, b).value())::is_hit_interval, // condition
-    optional<segment<object_traits<A>::domain_dimension, typename object_traits<A>::scalar_t>>> // return type
+    -> std::enable_if<decltype(intersection_parameter(a, b).value())::is_hit_interval,                            // condition
+                      optional<segment<object_traits<A>::domain_dimension, typename object_traits<A>::scalar_t>>> // return type
 {
     auto ts = intersection_parameter(a, b);
     if (ts.has_value())
@@ -340,7 +339,7 @@ template <int D, class ScalarT, class Obj>
             return {};
         }
 
-        TG_ASSERT(inter.size() == 1); // no other number remains
+        TG_ASSERT(inter.size() == 1);                     // no other number remains
         if (contains(obj, l[inter.first() + ScalarT(1)])) // the line continues into the object
             return {{inter.first(), tg::max<ScalarT>()}};
         return {{tg::min<ScalarT>(), inter.first()}};
@@ -470,13 +469,13 @@ template <int D, class ScalarT>
     {
         if (dist <= ScalarT(0))
             return {{tg::min<ScalarT>(), tg::max<ScalarT>()}}; // completely contained
-        return {}; // completely outside
+        return {};                                             // completely outside
     }
 
     const auto t = -dist / dotND;
     if (dotND < ScalarT(0))
         return {{t, tg::max<ScalarT>()}}; // line goes into the halfspace
-    return {{tg::min<ScalarT>(), t}}; // line goes out of the halfspace
+    return {{tg::min<ScalarT>(), t}};     // line goes out of the halfspace
 }
 template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<D, ScalarT> const& r, halfspace<D, ScalarT> const& h)
@@ -628,16 +627,14 @@ template <class ScalarT>
 {
     using caps_t = hemisphere_boundary_no_caps<3, ScalarT>;
     const auto n = direction(c);
-    return detail::merge_hits(l, caps_t(c.axis.pos0, c.radius, -n), caps_t(c.axis.pos1, c.radius, n),
-                              cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
+    return detail::merge_hits(l, caps_t(c.axis.pos0, c.radius, -n), caps_t(c.axis.pos1, c.radius, n), cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
 }
 template <class Obj, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr bool intersects(Obj const& lr, capsule<3, ScalarT, TraitsT> const& c)
 {
     static_assert(object_traits<Obj>::is_infinite, "For finite objects, complete containment within boundary has to be considered as well");
     using caps_t = sphere_boundary<3, ScalarT>; // spheres are faster than hemispheres and equivalent for the yes/no decision
-    return detail::intersects_any(lr, caps_t(c.axis.pos0, c.radius), caps_t(c.axis.pos1, c.radius),
-                                  cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
+    return detail::intersects_any(lr, caps_t(c.axis.pos0, c.radius), caps_t(c.axis.pos1, c.radius), cylinder_boundary_no_caps<3, ScalarT>(c.axis, c.radius));
 }
 
 // line - cylinder
@@ -748,7 +745,8 @@ template <class ScalarT>
     // exclude intersections with mirrored cone
     ScalarT hits[2] = {};
     auto numHits = 0;
-    TG_ASSERT(ic.opening_angle <= tg::angle::from_degree(ScalarT(180)) && "Only convex objects are supported, but an inf_cone with openinge angle > 180 degree is not convex.");
+    TG_ASSERT(ic.opening_angle <= tg::angle::from_degree(ScalarT(180))
+              && "Only convex objects are supported, but an inf_cone with openinge angle > 180 degree is not convex.");
     // if it is not used for solid cones, this works:
     // auto const coneDir = ic.opening_angle > 180_deg ? -ic.opening_dir : ic.opening_dir;
     // if (dot(l[inter[0]] - ic.apex, coneDir) >= ScalarT(0)) ...
@@ -796,7 +794,8 @@ template <class ScalarT>
 
 // line - pyramid
 template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
-[[nodiscard]] constexpr hits<2, typename BaseT::scalar_t> intersection_parameter(line<3, typename BaseT::scalar_t> const& l, pyramid_boundary_no_caps<BaseT> const& py)
+[[nodiscard]] constexpr hits<2, typename BaseT::scalar_t> intersection_parameter(line<3, typename BaseT::scalar_t> const& l,
+                                                                                 pyramid_boundary_no_caps<BaseT> const& py)
 {
     auto const faces = faces_of(py);
     return detail::merge_hits_array(l, faces, std::make_index_sequence<faces.size()>{});
@@ -835,8 +834,8 @@ template <class ScalarT>
 // line - triangle3
 template <class ScalarT>
 [[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<3, ScalarT> const& l,
-                                                                 triangle<3, ScalarT> const& t,
-                                                                 dont_deduce<ScalarT> eps = 100 * tg::epsilon<ScalarT>)
+                                                                triangle<3, ScalarT> const& t,
+                                                                dont_deduce<ScalarT> eps = 100 * tg::epsilon<ScalarT>)
 {
     auto e1 = t.pos1 - t.pos0;
     auto e2 = t.pos2 - t.pos0;
