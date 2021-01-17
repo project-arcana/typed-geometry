@@ -25,7 +25,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT, class TraitsT>
 [[nodiscard]] constexpr aabb<D, ScalarT> aabb_of(aabb<D, ScalarT, TraitsT> const& b)
 {
-    return b;
+    return aabb<D, ScalarT>(b);
 }
 
 template <int D, class ScalarT, class TraitsT>

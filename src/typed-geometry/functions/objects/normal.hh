@@ -34,8 +34,8 @@ template <int D, class ScalarT>
     return h.normal;
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr dir<3, ScalarT> normal_of(sphere<2, ScalarT, 3> const& d)
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr dir<3, ScalarT> normal_of(sphere<2, ScalarT, 3, TraitsT> const& d)
 {
     return d.normal;
 }
