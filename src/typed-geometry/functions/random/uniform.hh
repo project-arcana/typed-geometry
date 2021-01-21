@@ -701,8 +701,9 @@ template <class ScalarT, class Rng>
 template <class BaseT, class Rng>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT> const& p)
 {
+    using ScalarT = typename BaseT::scalar_t;
     const auto n = normal_of(p.base);
-    const auto h = pow2(detail::uniform01<typename BaseT::scalar_t>(rng));
+    const auto h = ScalarT(1) - cbrt(detail::uniform01<ScalarT>(rng));
     const auto pBase = uniform(rng, p.base);
     return mix(pBase, centroid_of(p.base), h) + h * p.height * n;
 }
