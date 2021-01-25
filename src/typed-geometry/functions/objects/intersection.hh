@@ -417,7 +417,7 @@ template <class ScalarT>
 
 // line - line
 template <class ScalarT>
-[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
+[[nodiscard]] constexpr ScalarT intersection_parameter(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
 {
     // l0.pos + l0.dir * t.x == l1.pos + l1.dir * t.y  <=>  (l0.dir | -l1.dir) * (t.x | t.y)^T == l1.pos - l0.pos
     auto M = mat<2, 2, ScalarT>::from_cols(l0.dir, -l1.dir);

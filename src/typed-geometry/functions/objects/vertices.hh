@@ -31,10 +31,10 @@ template <int D, class ScalarT>
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr array<pos<2, ScalarT>, 4> vertices_of(aabb<2, ScalarT, TraitsT> const& bb)
 {
-    auto p00 = pos<3, ScalarT>(bb.min.x, bb.min.y);
-    auto p10 = pos<3, ScalarT>(bb.max.x, bb.min.y);
-    auto p11 = pos<3, ScalarT>(bb.max.x, bb.max.y);
-    auto p01 = pos<3, ScalarT>(bb.min.x, bb.max.y);
+    auto p00 = pos<2, ScalarT>(bb.min.x, bb.min.y);
+    auto p10 = pos<2, ScalarT>(bb.max.x, bb.min.y);
+    auto p11 = pos<2, ScalarT>(bb.max.x, bb.max.y);
+    auto p01 = pos<2, ScalarT>(bb.min.x, bb.max.y);
 
     return {{p00, p10, p11, p01}}; // in ccw order
 }
