@@ -61,7 +61,7 @@ template <class RangeT, class KeyT>
     auto min_e = it;
     auto min_v = key(*it);
 
-    it++;
+    ++it;
     while (it != e)
     {
         auto v = key(*it);
@@ -70,7 +70,7 @@ template <class RangeT, class KeyT>
             min_v = v;
             min_e = it;
         }
-        it++;
+        ++it;
     }
 
     return *min_e;
@@ -86,7 +86,7 @@ template <class RangeT, class KeyT>
     auto max_e = it;
     auto max_v = key(*it);
 
-    it++;
+    ++it;
     while (it != e)
     {
         auto v = key(*it);
@@ -95,7 +95,7 @@ template <class RangeT, class KeyT>
             max_v = v;
             max_e = it;
         }
-        it++;
+        ++it;
     }
 
     return *max_e;
