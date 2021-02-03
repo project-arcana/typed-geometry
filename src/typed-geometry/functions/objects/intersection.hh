@@ -417,11 +417,13 @@ template <class ScalarT>
 
 // line - line
 template <class ScalarT>
-[[nodiscard]] constexpr ScalarT intersection_parameter(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
+[[nodiscard]] constexpr hits<1, ScalarT> intersection_parameter(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
 {
     // l0.pos + l0.dir * t.x == l1.pos + l1.dir * t.y  <=>  (l0.dir | -l1.dir) * (t.x | t.y)^T == l1.pos - l0.pos
     auto M = mat<2, 2, ScalarT>::from_cols(l0.dir, -l1.dir);
     auto t = inverse(M) * (l1.pos - l0.pos);
+    if (!tg::is_finite(t.x))
+        return {};
     return t.x;
 }
 
@@ -431,7 +433,7 @@ template <class ScalarT>
 {
     auto M = mat<2, 2, ScalarT>::from_cols(l.dir, -r.dir);
     auto t = inverse(M) * (r.origin - l.pos);
-    if (t.y < ScalarT(0))
+    if (t.y < ScalarT(0) || !tg::is_finite(t.x))
         return {};
     return t.x;
 }
@@ -442,7 +444,7 @@ template <class ScalarT>
 {
     auto M = mat<2, 2, ScalarT>::from_cols(l.dir, s.pos0 - s.pos1);
     auto t = inverse(M) * (s.pos0 - l.pos);
-    if (t.y < ScalarT(0) || t.y > ScalarT(1))
+    if (t.y < ScalarT(0) || t.y > ScalarT(1) || !tg::is_finite(t.x))
         return {};
     return t.x;
 }
