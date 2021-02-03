@@ -1154,6 +1154,37 @@ template <int D, class ScalarT>
 
 // ====================================== Checks if Object Intersects aabb ======================================
 
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(line<2, ScalarT> const& l, aabb<2, ScalarT> const& b)
+{
+    auto const c = centroid_of(b);
+    auto const shadow = dot(b.max - c, abs(perpendicular(l.dir)));
+    return pow2(shadow) >= distance_sqr(c, l);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(ray<2, ScalarT> const& r, aabb<2, ScalarT> const& b)
+{
+    auto const p = r.origin;
+    auto const d = r.dir;
+    if ((p.x > b.max.x && d.x >= ScalarT(0)) || (p.x < b.min.x && d.x <= ScalarT(0)) ||
+        (p.y > b.max.y && d.y >= ScalarT(0)) || (p.y < b.min.y && d.y <= ScalarT(0)))
+        return false;
+
+    return intersects(inf_of(r), b);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(segment<2, ScalarT> const& s, aabb<2, ScalarT> const& b)
+{
+    auto pMin = min(s.pos0, s.pos1);
+    auto pMax = max(s.pos0, s.pos1);
+    if (pMin.x > b.max.x || pMax.x < b.min.x || pMin.y > b.max.y || pMax.y < b.min.y)
+        return false;
+
+    return intersects(inf_of(s), b);
+}
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(sphere<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
 {
