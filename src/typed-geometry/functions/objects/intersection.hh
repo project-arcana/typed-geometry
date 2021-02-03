@@ -1155,32 +1155,42 @@ template <int D, class ScalarT>
 // ====================================== Checks if Object Intersects aabb ======================================
 
 template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(line<1, ScalarT> const& l, aabb<1, ScalarT> const& b)
+{
+    return true;
+}
+template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(line<2, ScalarT> const& l, aabb<2, ScalarT> const& b)
 {
     auto const c = centroid_of(b);
     auto const shadow = dot(b.max - c, abs(perpendicular(l.dir)));
     return pow2(shadow) >= distance_sqr(c, l);
 }
+// line3 and line4 is deduced from intersection_parameter(l, b).has_value()
 
-template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(ray<2, ScalarT> const& r, aabb<2, ScalarT> const& b)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(ray<D, ScalarT> const& r, aabb<D, ScalarT> const& b)
 {
-    auto const p = r.origin;
-    auto const d = r.dir;
-    if ((p.x > b.max.x && d.x >= ScalarT(0)) || (p.x < b.min.x && d.x <= ScalarT(0)) ||
-        (p.y > b.max.y && d.y >= ScalarT(0)) || (p.y < b.min.y && d.y <= ScalarT(0)))
-        return false;
+    for (auto i = 0; i < D; ++i)
+    {
+        if ((r.origin[i] > b.max[i] && r.dir[i] >= ScalarT(0)) ||
+            (r.origin[i] < b.min[i] && r.dir[i] <= ScalarT(0)))
+            return false;
+    }
 
     return intersects(inf_of(r), b);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(segment<2, ScalarT> const& s, aabb<2, ScalarT> const& b)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(segment<D, ScalarT> const& s, aabb<D, ScalarT> const& b)
 {
     auto pMin = min(s.pos0, s.pos1);
     auto pMax = max(s.pos0, s.pos1);
-    if (pMin.x > b.max.x || pMax.x < b.min.x || pMin.y > b.max.y || pMax.y < b.min.y)
-        return false;
+    for (auto i = 0; i < D; ++i)
+    {
+        if (pMin[i] > b.max[i] || pMax[i] < b.min[i])
+            return false;
+    }
 
     return intersects(inf_of(s), b);
 }
