@@ -233,12 +233,6 @@ template <int D, class ScalarT, class Obj>
 {
     return intersects(obj, b);
 }
-// Explicit intersects aabb aabb to prevent infinite recursion
-template <int D, class ScalarT>
-[[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
-{
-    return intersection(a, b).has_value();
-}
 
 // if a value-typed intersection parameter is available and applicable, use that
 template <class A, class B>
@@ -1213,6 +1207,30 @@ template <int D, class ScalarT>
 
     auto const shadow = dot(b.max - c, abs(h.normal));
     return shadow >= dist;
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
+{
+    for (auto i = 0; i < D; ++i)
+    {
+        if (b.max[i] < a.min[i] || a.max[i] < b.min[i])
+            return false;
+    }
+    return true;
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(aabb_boundary<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
+{
+    auto contained = true;
+    for (auto i = 0; i < D; ++i)
+    {
+        if (b.max[i] < a.min[i] || a.max[i] < b.min[i])
+            return false;
+
+        contained = contained && a.min[i] < b.min[i] && b.max[i] < a.max[i];
+    }
+    return !contained;
 }
 
 template <int D, class ScalarT>
