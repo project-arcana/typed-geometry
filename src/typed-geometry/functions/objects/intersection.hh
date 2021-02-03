@@ -1186,6 +1186,26 @@ template <class ScalarT>
 }
 
 template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(plane<D, ScalarT> const& p, aabb<D, ScalarT> const& b)
+{
+    auto const c = centroid_of(b);
+    auto const shadow = dot(b.max - c, abs(p.normal));
+    return shadow >= distance(c, p); // Note: no square needed, since no sqrt involved
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(halfspace<D, ScalarT> const& h, aabb<D, ScalarT> const& b)
+{
+    auto const c = centroid_of(b);
+    auto const dist = signed_distance(c, h);
+    if (dist <= ScalarT(0))
+        return true;
+
+    auto const shadow = dot(b.max - c, abs(h.normal));
+    return shadow >= dist;
+}
+
+template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(sphere<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
 {
     auto const b_min = b.min;
