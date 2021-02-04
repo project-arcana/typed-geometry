@@ -33,6 +33,7 @@
 #include "normal.hh"
 
 #include <utility>
+#include <vector>
 
 // family of intersection functions:
 
@@ -1148,6 +1149,40 @@ template <int D, class ScalarT>
 
 // ====================================== Checks if Object Intersects aabb ======================================
 
+namespace detail
+{
+// Helper function that uses the separating axis theorem and the provided list of axes to determine whether a and b intersect
+template <class A, class B>
+[[nodiscard]] constexpr bool intersects_SAT(A const& a, B const& b, std::vector<vec<object_traits<B>::domain_dimension, typename B::scalar_t>> const& axes)
+{
+    for (auto const& axis : axes)
+        if (are_separate(shadow(a, axis), shadow(b, axis)))
+            return false;
+
+    return true;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool are_separate(hit_interval<ScalarT> const& a, hit_interval<ScalarT> const& b)
+{
+    return b.end < a.start || a.end < b.start;
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr hit_interval<ScalarT> shadow(aabb<D, ScalarT> const& b, vec<D, ScalarT> const& axis)
+{
+    auto const center = centroid_of(b);
+    auto const c = dot(center, axis);
+    auto const e = dot(b.max - center, abs(axis));
+    return {c - e, c + e};
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr hit_interval<ScalarT> shadow(box<D, ScalarT> const& b, vec<D, ScalarT> const& axis)
+{
+    auto const e = dot(abs(b.half_extents * vec<D, ScalarT>::one), abs(axis));
+    auto const c = dot(b.center, axis);
+    return {c - e, c + e};
+}
+}
+
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(line<1, ScalarT> const& l, aabb<1, ScalarT> const& b)
 {
@@ -1231,6 +1266,45 @@ template <int D, class ScalarT>
         contained = contained && a.min[i] < b.min[i] && b.max[i] < a.max[i];
     }
     return !contained;
+}
+
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(box<D, ScalarT> const& box, aabb<D, ScalarT> const& b)
+{
+    using vec_t = vec<D, ScalarT>;
+    auto axes = std::vector<vec_t>();
+    for (auto i = 0; i < D; ++i)
+    {
+        auto d = vec_t::zero;
+        d[i] = ScalarT(1);
+        axes.push_back(d);
+        if constexpr (D > 1)
+            axes.push_back(box.half_extents[i]);
+        if constexpr (D > 2)
+            axes.push_back(cross(axes[axes.size() - 2], axes[axes.size() - 1]));
+
+        static_assert(D < 4 && "Not implemented for 4D");
+    }
+
+    return detail::intersects_SAT(box, b, axes);
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(box_boundary<D, ScalarT> const& box, aabb<D, ScalarT> const& b)
+{
+    auto const solidBox = solid_of(box);
+    auto contained = true;
+    for (auto const& vertex : vertices_of(b))
+    {
+        if (!contains(solidBox, vertex, ScalarT(-16) * tg::epsilon<ScalarT>))
+        {
+            contained = false;
+            break;
+        }
+    }
+    if (contained)
+        return false;
+
+    return intersects(solidBox, b);
 }
 
 template <int D, class ScalarT>

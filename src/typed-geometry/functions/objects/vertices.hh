@@ -29,6 +29,12 @@ template <int D, class ScalarT>
 }
 
 template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr array<pos<1, ScalarT>, 2> vertices_of(aabb<1, ScalarT, TraitsT> const& bb)
+{
+    return {{bb.min, bb.max}};
+}
+
+template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr array<pos<2, ScalarT>, 4> vertices_of(aabb<2, ScalarT, TraitsT> const& bb)
 {
     auto p10 = pos<2, ScalarT>(bb.max.x, bb.min.y);
@@ -48,6 +54,14 @@ template <class ScalarT, class TraitsT>
     auto p110 = pos<3, ScalarT>(bb.max.x, bb.max.y, bb.min.z);
 
     return {{bb.min, p001, p010, p011, p100, p101, p110, bb.max}};
+}
+
+template <class ScalarT, int DomainD, class TraitsT>
+[[nodiscard]] constexpr array<pos<DomainD, ScalarT>, 2> vertices_of(box<1, ScalarT, DomainD, TraitsT> const& b)
+{
+    const auto p0 = b[comp<1, ScalarT>(-1)];
+    const auto p1 = b[comp<1, ScalarT>(1)];
+    return {{p0, p1}};
 }
 
 template <class ScalarT, int DomainD, class TraitsT>
