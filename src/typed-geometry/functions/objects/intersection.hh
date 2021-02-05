@@ -187,6 +187,11 @@ template <class Obj, class... Objs>
 {
     return (intersects(obj, objs) || ...);
 }
+template <class Obj, class ObjT, u64 N, size_t... I>
+[[nodiscard]] constexpr bool intersects_any_array(Obj const& obj, array<ObjT, N> objs, std::index_sequence<I...>)
+{
+    return intersects_any(obj, objs[I]...);
+}
 
 // Solves the quadratic equation ax^2 + bx + c = 0
 template <class ScalarT>
@@ -1174,10 +1179,10 @@ template <int D, class ScalarT>
     auto const e = dot(b.max - center, abs(axis));
     return {c - e, c + e};
 }
-template <int D, class ScalarT>
-[[nodiscard]] constexpr hit_interval<ScalarT> shadow(box<D, ScalarT> const& b, vec<D, ScalarT> const& axis)
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr hit_interval<ScalarT> shadow(box<ObjectD, ScalarT, DomainD> const& b, vec<DomainD, ScalarT> const& axis)
 {
-    auto const e = dot(abs(b.half_extents * vec<D, ScalarT>::one), abs(axis));
+    auto const e = dot(abs(b.half_extents * vec<ObjectD, ScalarT>::one), abs(axis));
     auto const c = dot(b.center, axis);
     return {c - e, c + e};
 }
@@ -1268,22 +1273,32 @@ template <int D, class ScalarT>
     return !contained;
 }
 
-template <int D, class ScalarT>
-[[nodiscard]] constexpr bool intersects(box<D, ScalarT> const& box, aabb<D, ScalarT> const& b)
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr bool intersects(box<ObjectD, ScalarT, DomainD> const& box, aabb<DomainD, ScalarT> const& b)
 {
-    using vec_t = vec<D, ScalarT>;
+    using vec_t = vec<DomainD, ScalarT>;
     auto axes = std::vector<vec_t>();
-    for (auto i = 0; i < D; ++i)
+    for (auto i = 0; i < DomainD; ++i)
     {
         auto d = vec_t::zero;
         d[i] = ScalarT(1);
         axes.push_back(d);
-        if constexpr (D > 1)
-            axes.push_back(box.half_extents[i]);
-        if constexpr (D > 2)
+        if constexpr (DomainD > 1)
+        {
+            if constexpr (ObjectD == 2 && DomainD == 3)
+            {
+                if (i == 2) // box2in3
+                    axes.push_back(normal_of(box));
+                else
+                    axes.push_back(box.half_extents[i]);
+            }
+            else
+                axes.push_back(box.half_extents[i]);
+        }
+        if constexpr (DomainD > 2)
             axes.push_back(cross(axes[axes.size() - 2], axes[axes.size() - 1]));
 
-        static_assert(D < 4 && "Not implemented for 4D");
+        static_assert(DomainD < 4 && "Not implemented for 4D");
     }
 
     return detail::intersects_SAT(box, b, axes);
@@ -1305,6 +1320,11 @@ template <int D, class ScalarT>
         return false;
 
     return intersects(solidBox, b);
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(box_boundary<2, ScalarT, 3> const& box, aabb<3, ScalarT> const& b)
+{
+    return detail::intersects_any_array(b, edges_of(box), std::make_index_sequence<4>{});
 }
 
 template <int D, class ScalarT>

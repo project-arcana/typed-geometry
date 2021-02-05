@@ -60,14 +60,14 @@ template <class ScalarT, class TraitsT>
 }
 
 template <class ScalarT, int DomainD, class TraitsT>
-[[nodiscard]] constexpr array<segment<2, ScalarT>, 4> edges_of(box<2, ScalarT, DomainD, TraitsT> const& b)
+[[nodiscard]] constexpr array<segment<DomainD, ScalarT>, 4> edges_of(box<2, ScalarT, DomainD, TraitsT> const& b)
 {
     const auto vs = vertices_of(b);
     return {{{vs[0], vs[1]}, {vs[1], vs[2]}, {vs[2], vs[3]}, {vs[3], vs[0]}}};
 }
 
 template <class ScalarT, int DomainD, class TraitsT>
-[[nodiscard]] constexpr array<segment<3, ScalarT>, 12> edges_of(box<3, ScalarT, DomainD, TraitsT> const& b)
+[[nodiscard]] constexpr array<segment<DomainD, ScalarT>, 12> edges_of(box<3, ScalarT, DomainD, TraitsT> const& b)
 {
     const auto vs = vertices_of(b);
     return {{
