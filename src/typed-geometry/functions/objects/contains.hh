@@ -46,6 +46,19 @@ template <int D, class ScalarT>
     return b == o;
 }
 
+// default implementation for contains(objA, objB) that works for all convex objB with vertices_of defined
+template <class A, class B>
+[[nodiscard]] constexpr auto contains(A const& a, B const& b, dont_deduce<typename B::scalar_t> eps = static_cast<typename B::scalar_t>(0)) -> decltype(vertices_of(b), false)
+{
+    for (auto const& vertex : vertices_of(b))
+        if (!contains(a, vertex, eps))
+            return false;
+
+    return true;
+}
+
+// object specific implementations for contains(obj, pos)
+
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(aabb<1, ScalarT> const& b, ScalarT const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
