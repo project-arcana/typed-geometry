@@ -233,6 +233,19 @@ template <class A, class B>
     return closest_intersection_parameter(a, b).has_value();
 }
 
+// if A is a _boundary, check if B is completely contained within (then false), otherwise same as intersects solid_of(A)
+template <class A, class B>
+[[nodiscard]] constexpr auto intersects(A const& a, B const& b)
+    -> enable_if<std::is_same_v<typename object_traits<A>::tag_t, boundary_tag>, bool>
+{
+    using ScalarT = typename A::scalar_t;
+    auto const solidA = solid_of(a);
+    if (contains(solidA, b, ScalarT(-16) * tg::epsilon<ScalarT>))
+        return false;
+
+    return intersects(solidA, b);
+}
+
 // parameters for intersects with aabb can switch order
 template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr bool intersects(aabb<D, ScalarT> const& b, Obj const& obj)
@@ -1302,24 +1315,6 @@ template <int ObjectD, class ScalarT, int DomainD>
     }
 
     return detail::intersects_SAT(box, b, axes);
-}
-template <int D, class ScalarT>
-[[nodiscard]] constexpr bool intersects(box_boundary<D, ScalarT> const& box, aabb<D, ScalarT> const& b)
-{
-    auto const solidBox = solid_of(box);
-    auto contained = true;
-    for (auto const& vertex : vertices_of(b))
-    {
-        if (!contains(solidBox, vertex, ScalarT(-16) * tg::epsilon<ScalarT>))
-        {
-            contained = false;
-            break;
-        }
-    }
-    if (contained)
-        return false;
-
-    return intersects(solidBox, b);
 }
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box_boundary<2, ScalarT, 3> const& box, aabb<3, ScalarT> const& b)
