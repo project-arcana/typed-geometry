@@ -46,9 +46,10 @@ template <int D, class ScalarT>
     return b == o;
 }
 
-// default implementation for contains(objA, objB) that works for all convex objB with vertices_of defined
+// default implementation for contains(objA, objB) that works when objA is solid and vertices_of(objB) is defined
 template <class A, class B>
-[[nodiscard]] constexpr auto contains(A const& a, B const& b, dont_deduce<typename B::scalar_t> eps = static_cast<typename B::scalar_t>(0)) -> decltype(vertices_of(b), false)
+[[nodiscard]] constexpr auto contains(A const& a, B const& b, dont_deduce<typename B::scalar_t> eps = static_cast<typename B::scalar_t>(0))
+    -> enable_if<std::is_same_v<typename object_traits<A>::tag_t, default_object_tag>, decltype(vertices_of(b), false)>
 {
     for (auto const& vertex : vertices_of(b))
         if (!contains(a, vertex, eps))
