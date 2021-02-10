@@ -91,45 +91,59 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> distance(segment<2, ScalarT> const& s0, segment<2, ScalarT> const& s1)
+[[nodiscard]] constexpr fractional_result<ScalarT> distance_sqr(segment<2, ScalarT> const& s0, segment<2, ScalarT> const& s1)
 {
-    auto l0 = line<2, ScalarT>::from_points(s0.pos0, s0.pos1);
-    auto l1 = line<2, ScalarT>::from_points(s1.pos0, s1.pos1);
-
-    auto sl0 = distance(s0.pos0, s0.pos1);
-    auto sl1 = distance(s1.pos0, s1.pos1);
+    auto l0 = inf_of(s0);
+    auto l1 = inf_of(s1);
+    auto len0 = length(s0);
+    auto len1 = length(s1);
 
     auto [t0, t1] = intersection_parameters(l0, l1);
 
-    if (ScalarT(0) <= t0 && t0 <= ScalarT(sl0) && //
-        ScalarT(0) <= t1 && t1 <= ScalarT(sl1))
+    if (ScalarT(0) <= t0 && t0 <= ScalarT(len0) && //
+        ScalarT(0) <= t1 && t1 <= ScalarT(len1))
         return ScalarT(0); // intersects
 
-    auto p0 = t0 < ScalarT(0) ? s0.pos0 : s0.pos1;
-    auto p1 = t1 < ScalarT(0) ? s1.pos0 : s1.pos1;
+    auto p0 = t0 * ScalarT(2) < len0 ? s0.pos0 : s0.pos1;
+    auto p1 = t1 * ScalarT(2) < len1 ? s1.pos0 : s1.pos1;
 
-    return min(distance(p0, s1), distance(p1, s0));
+    return min(distance_sqr(p0, s1), distance_sqr(p1, s0));
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> distance(segment<3, ScalarT> const& s0, segment<3, ScalarT> const& s1)
+[[nodiscard]] constexpr fractional_result<ScalarT> distance_sqr(segment<3, ScalarT> const& s0, segment<3, ScalarT> const& s1)
 {
-    auto l0 = line<3, ScalarT>::from_points(s0.pos0, s0.pos1);
-    auto l1 = line<3, ScalarT>::from_points(s1.pos0, s1.pos1);
-
-    auto sl0 = distance(s0.pos0, s0.pos1);
-    auto sl1 = distance(s1.pos0, s1.pos1);
+    auto l0 = inf_of(s0);
+    auto l1 = inf_of(s1);
+    auto len0 = length(s0);
+    auto len1 = length(s1);
 
     auto [t0, t1] = closest_points_parameters(l0, l1);
 
-    if (ScalarT(0) <= t0 && t0 <= ScalarT(sl0) && //
-        ScalarT(0) <= t1 && t1 <= ScalarT(sl1))
-        return distance(l0[t0], l1[t1]); // closest points is inside segments
+    if (ScalarT(0) <= t0 && t0 <= ScalarT(len0) && //
+        ScalarT(0) <= t1 && t1 <= ScalarT(len1))
+        return distance_sqr(l0[t0], l1[t1]); // closest points is inside segments
 
-    auto p0 = t0 < ScalarT(0) ? s0.pos0 : s0.pos1;
-    auto p1 = t1 < ScalarT(0) ? s1.pos0 : s1.pos1;
+    auto p0 = t0 * ScalarT(2) < len0 ? s0.pos0 : s0.pos1;
+    auto p1 = t1 * ScalarT(2) < len1 ? s1.pos0 : s1.pos1;
 
-    return min(distance(p0, s1), distance(p1, s0));
+    return min(distance_sqr(p0, s1), distance_sqr(p1, s0));
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance_sqr(segment<3, ScalarT> const& s, line<3, ScalarT> const& l)
+{
+    auto ls = inf_of(s);
+    auto len = length(s);
+
+    auto [ts, tl] = closest_points_parameters(ls, l);
+    auto tClamped = clamp(ts, ScalarT(0), len);
+    return distance_sqr(ls[tClamped], l[tl]);
+}
+template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance_sqr(line<3, ScalarT> const& l, segment<3, ScalarT> const& s)
+{
+    return distance_sqr(s, l);
 }
 
 // TODO: use GJK or something?

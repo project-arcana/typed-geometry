@@ -1109,7 +1109,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr pair<ScalarT, ScalarT> intersection_parameters(line<2, ScalarT> const& l0, line<2, ScalarT> const& l1)
 {
-    auto M = tg::mat<2, 2, ScalarT>::from_cols(l0.dir, -l1.dir);
+    auto M = mat<2, 2, ScalarT>::from_cols(l0.dir, -l1.dir);
     auto t = inverse(M) * (l1.pos - l0.pos);
     return {t.x, t.y};
 }
@@ -1535,8 +1535,9 @@ template <class ScalarT>
         return true;
 
     // now only intersections between aabb edges and capsule mantle remain
+    auto const r2 = c.radius * c.radius;
     for (auto const& edge : edges_of(b))
-        if (distance(edge, c.axis) <= c.radius)
+        if (distance_sqr(edge, c.axis) <= r2)
             return true;
 
     return false;

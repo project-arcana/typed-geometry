@@ -2,14 +2,9 @@
 
 #include <typed-geometry/detail/utility.hh>
 #include <typed-geometry/types/objects/line.hh>
-#include <typed-geometry/types/objects/plane.hh>
-#include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/quadric.hh>
 
-#include <typed-geometry/functions/basic/mix.hh>
-
-#include "coordinates.hh"
 #include "project.hh"
 
 // closest_points(a, b) returns points {p_a, p_b} such that contains(a, p_a) and contains(b, p_b) and |p_a - p_b| is minimal
@@ -45,7 +40,7 @@ template <class ScalarT>
     auto d0d1 = dot(l0.dir, l1.dir);
     auto b0 = dot(l1.pos - l0.pos, l0.dir);
     auto b1 = dot(l1.pos - l0.pos, l1.dir);
-    auto [t0, t1] = inverse(tg::mat<2, 2, ScalarT>::from_cols({1, d0d1}, {-d0d1, -1})) * tg::vec2(b0, b1);
+    auto [t0, t1] = inverse(mat<2, 2, ScalarT>::from_cols({1, d0d1}, {-d0d1, -1})) * vec2(b0, b1);
     return {t0, t1};
 }
 
