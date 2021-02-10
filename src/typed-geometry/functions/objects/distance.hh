@@ -100,8 +100,8 @@ template <class ScalarT>
 
     auto [t0, t1] = intersection_parameters(l0, l1);
 
-    if (ScalarT(0) <= t0 && t0 <= ScalarT(len0) && //
-        ScalarT(0) <= t1 && t1 <= ScalarT(len1))
+    if (ScalarT(0) <= t0 && t0 <= len0 && //
+        ScalarT(0) <= t1 && t1 <= len1)
         return ScalarT(0); // intersects
 
     auto p0 = t0 * ScalarT(2) < len0 ? s0.pos0 : s0.pos1;
@@ -120,8 +120,8 @@ template <class ScalarT>
 
     auto [t0, t1] = closest_points_parameters(l0, l1);
 
-    if (ScalarT(0) <= t0 && t0 <= ScalarT(len0) && //
-        ScalarT(0) <= t1 && t1 <= ScalarT(len1))
+    if (ScalarT(0) <= t0 && t0 <= len0 && //
+        ScalarT(0) <= t1 && t1 <= len1)
         return distance_sqr(l0[t0], l1[t1]); // closest points is inside segments
 
     auto p0 = t0 * ScalarT(2) < len0 ? s0.pos0 : s0.pos1;
@@ -131,6 +131,19 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance_sqr(segment<2, ScalarT> const& s, line<2, ScalarT> const& l)
+{
+    auto ls = inf_of(s);
+    auto len = length(s);
+
+    auto [ts, tl] = intersection_parameters(ls, l);
+    if (ScalarT(0) <= ts && ts <= len)
+        return ScalarT(0); // intersects
+
+    auto p = ts * ScalarT(2) < len ? s.pos0 : s.pos1;
+    return distance_sqr(p, l);
+}
+template <class ScalarT>
 [[nodiscard]] constexpr fractional_result<ScalarT> distance_sqr(segment<3, ScalarT> const& s, line<3, ScalarT> const& l)
 {
     auto ls = inf_of(s);
@@ -138,10 +151,10 @@ template <class ScalarT>
 
     auto [ts, tl] = closest_points_parameters(ls, l);
     auto tClamped = clamp(ts, ScalarT(0), len);
-    return distance_sqr(ls[tClamped], l[tl]);
+    return distance_sqr(ls[tClamped], l);
 }
-template <class ScalarT>
-[[nodiscard]] constexpr fractional_result<ScalarT> distance_sqr(line<3, ScalarT> const& l, segment<3, ScalarT> const& s)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr fractional_result<ScalarT> distance_sqr(line<D, ScalarT> const& l, segment<D, ScalarT> const& s)
 {
     return distance_sqr(s, l);
 }

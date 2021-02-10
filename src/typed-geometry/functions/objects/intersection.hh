@@ -1543,6 +1543,20 @@ template <class ScalarT>
     return false;
 }
 
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(inf_cylinder<D, ScalarT> const& c, aabb<D, ScalarT> const& b)
+{
+    if (intersects(c.axis, b))
+        return true;
+
+    auto const r2 = c.radius * c.radius;
+    for (auto const& edge : edges_of(b))
+        if (distance_sqr(edge, c.axis) <= r2)
+            return true;
+
+    return false;
+}
+
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(triangle<2, ScalarT> const& a, aabb<2, ScalarT> const& b)
 {
