@@ -1203,8 +1203,11 @@ template <int D, class ScalarT>
 template <int ObjectD, class ScalarT, int DomainD>
 [[nodiscard]] constexpr hit_interval<ScalarT> shadow(box<ObjectD, ScalarT, DomainD> const& b, vec<DomainD, ScalarT> const& axis)
 {
-    auto const e = dot(abs(b.half_extents * vec<ObjectD, ScalarT>::one), abs(axis));
     auto const c = dot(b.center, axis);
+    auto e = ScalarT(0);
+    for (auto i = 0; i < ObjectD; ++i)
+        e += abs(dot(b.half_extents[i], axis));
+
     return {c - e, c + e};
 }
 }
@@ -1295,28 +1298,28 @@ template <int ObjectD, class ScalarT, int DomainD>
     if (!intersects(aabb_of(box), b))
         return false;
 
+    if constexpr (DomainD == 1)
+        return true; // the only axis was already checked above
+
     using vec_t = vec<DomainD, ScalarT>;
     auto axes = std::vector<vec_t>();
+
+    auto axisDirs = tg::array<vec_t, DomainD>();
+    if constexpr (DomainD == 3)
+        axisDirs = {vec_t::unit_x, vec_t::unit_y, vec_t::unit_z};
+
     for (auto i = 0; i < DomainD; ++i)
     {
-        if constexpr (DomainD > 1)
-        {
-            if constexpr (ObjectD == 2 && DomainD == 3)
-            {
-                if (i == 2) // box2in3
-                    axes.push_back(normal_of(box));
-                else
-                    axes.push_back(box.half_extents[i]);
-            }
-            else
-                axes.push_back(box.half_extents[i]);
-        }
+        vec_t d;
+        if constexpr (ObjectD == 2 && DomainD == 3) // box2in3
+            d = i == 2 ? normal_of(box) : box.half_extents[i];
+        else
+            d = box.half_extents[i];
+        axes.emplace_back(d);
+
         if constexpr (DomainD > 2)
-        {
-            auto d = vec_t::zero;
-            d[i] = ScalarT(1);
-            axes.push_back(cross(d, axes[axes.size() - 1]));
-        }
+            for (auto j = 0; j < DomainD; ++j)
+                axes.push_back(cross(d, axisDirs[j]));
 
         static_assert(DomainD < 4 && "Not implemented for 4D");
     }
@@ -1387,11 +1390,11 @@ template <class ScalarT>
     if (!intersects(diskPlane, b))
         return false;
 
-    // SAT for each aabb axis
-    if (!intersects(aabb_of(s), b))
+    // early out, contains SAT for each aabb axis
+    if (!intersects(sphere<3, ScalarT>(s.center, s.radius), b))
         return false;
 
-    // check if disk extrema are within aabb. cross product of axis dir and two times with n yield the following vectors
+    // check if disk extrema are within aabb. cross(cross(axisDir, n)) yields the following vectors
     if (contains(b, s.center))
         return true;
     auto const c = s.center;
@@ -1421,22 +1424,23 @@ template <class ScalarT>
     if (!intersects(diskPlane, b))
         return false;
 
-    // SAT for each aabb axis
-    if (!intersects(aabb_of(s), b))
+    // early out, contains SAT for each aabb axis
+    if (!intersects(sphere<3, ScalarT>(s.center, s.radius), b))
         return false;
 
     // check if disk extrema are within aabb. cross product of axis dir and two times with n yield the following vectors
     auto const c = s.center;
     auto const n = s.normal;
     using vec_t = vec<3, ScalarT>;
+    auto const eps = ScalarT(16) * epsilon<ScalarT>;
     auto const vx = s.radius * normalize(vec_t(-n.y * n.y - n.z * n.z, n.x * n.y, n.x * n.z));
-    if (contains(b, c + vx) || contains(b, c - vx))
+    if (contains(b, c + vx, eps) || contains(b, c - vx, eps))
         return true;
     auto const vy = s.radius * normalize(vec_t(n.x * n.y, -n.x * n.x - n.z * n.z, n.y * n.z));
-    if (contains(b, c + vy) || contains(b, c - vy))
+    if (contains(b, c + vy, eps) || contains(b, c - vy, eps))
         return true;
     auto const vz = s.radius * normalize(vec_t(n.x * n.z, n.y * n.z, -n.x * n.x - n.y * n.y));
-    if (contains(b, c + vz) || contains(b, c - vz))
+    if (contains(b, c + vz, eps) || contains(b, c - vz, eps))
         return true;
 
     // intersection test with each aabb edge
@@ -1463,15 +1467,23 @@ template <int D, class ScalarT>
     auto const closestP = project(h.center, b);
     return contains(h, closestP) || intersects(caps_of(h), b);
 }
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(hemisphere_boundary_no_caps<1, ScalarT> const& h, aabb<1, ScalarT> const& b)
+{
+    return contains(b, h.center + h.radius * h.normal);
+}
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(hemisphere_boundary_no_caps<D, ScalarT> const& h, aabb<D, ScalarT> const& b)
 {
+    auto const fullSphere = sphere<D, ScalarT>(h.center, h.radius);
+    if (!intersects(fullSphere, b))
+        return false; // early out
+
     if (intersects(caps_of(h), b))
         return true;
 
     // classify aabb vertices
     auto const spaceUnder = halfspace<D, ScalarT>(h.normal, h.center);
-    auto const fullSphere = sphere<D, ScalarT>(h.center, h.radius);
     auto inside = 0, outside = 0, under = 0;
     for (auto const& vertex : vertices_of(b))
     {
@@ -1488,9 +1500,46 @@ template <int D, class ScalarT>
     if (outside < 2)
         return false; // cannot cross the boundary without intersecting the caps_of(h)
 
+    // note: outside and under cannot cross hemisphere through the inside due to Thales' theorem
     // now only a secant is left to check. Since inside == 0, we can check the closest projection onto the aabb
     auto const closestP = project(h.center, b);
-    return contains(h, closestP);
+    return contains(solid_of(h), closestP);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(capsule<3, ScalarT> const& c, aabb<3, ScalarT> const& b)
+{
+    if (!intersects(aabb_of(c), b))
+        return false;
+
+    // check if the line through the axis intersects the aabb
+    auto const line = inf_of(c.axis);
+    auto const hits = intersection_parameter(line, boundary_of(b));
+    if (hits.any())
+    {
+        auto const len = length(c.axis);
+        auto const t = clamp(hits.first(), ScalarT(0), len);
+        for (auto const& hit : hits)
+        {
+            if (ScalarT(0) - c.radius <= hit && hit <= len + c.radius)
+                return true; // capsule axis intersects aabb
+
+            if (t != clamp(hit, ScalarT(0), len))
+                return true; // intersections before and after the axis can only occur if it lies within aabb
+        }
+        return intersects(sphere<3, ScalarT>(line[t], c.radius), b);
+    }
+
+    // test spheres at both capsule ends (cheap)
+    if (intersects(sphere<3, ScalarT>(c.axis.pos0, c.radius), b) || intersects(sphere<3, ScalarT>(c.axis.pos1, c.radius), b))
+        return true;
+
+    // now only intersections between aabb edges and capsule mantle remain
+    for (auto const& edge : edges_of(b))
+        if (distance(edge, c.axis) <= c.radius)
+            return true;
+
+    return false;
 }
 
 template <class ScalarT>

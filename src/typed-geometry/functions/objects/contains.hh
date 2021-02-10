@@ -134,8 +134,7 @@ template <int D, class ScalarT>
         if (ri > bi + eps)
             return false; // False if outside of the aabb in any dimension
 
-        if (!onSomeBoundary && (ri >= bi - eps))
-            onSomeBoundary = true;
+        onSomeBoundary = onSomeBoundary || (ri >= bi - eps);
     }
     return onSomeBoundary; // True, if at on the boundary in at least one dimension
 }
