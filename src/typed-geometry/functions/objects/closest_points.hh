@@ -5,6 +5,7 @@
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/quadric.hh>
 
+#include "coordinates.hh"
 #include "project.hh"
 
 // closest_points(a, b) returns points {p_a, p_b} such that contains(a, p_a) and contains(b, p_b) and |p_a - p_b| is minimal
@@ -49,6 +50,17 @@ template <class ScalarT>
 {
     auto [t0, t1] = closest_points_parameters(l0, l1);
     return {l0[t0], l1[t1]};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr pair<ScalarT, ScalarT> closest_points_parameters(segment<3, ScalarT> const& s, line<3, ScalarT> const& l)
+{
+    auto ls = inf_of(s);
+    auto len = length(s);
+
+    auto [ts, tl] = closest_points_parameters(ls, l);
+    auto tClamped = clamp(ts, ScalarT(0), len);
+    return {tClamped / len, coordinates(l, ls[tClamped])};
 }
 
 

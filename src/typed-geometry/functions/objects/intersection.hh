@@ -26,6 +26,7 @@
 #include <typed-geometry/functions/vector/length.hh>
 
 #include "aabb.hh"
+#include "closest_points.hh"
 #include "contains.hh"
 #include "coordinates.hh"
 #include "direction.hh"
@@ -1542,6 +1543,48 @@ template <class ScalarT>
 
     return false;
 }
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(cylinder<3, ScalarT> const& c, aabb<3, ScalarT> const& b)
+{
+    if (!intersects(aabb_of(c), b))
+        return false;
+
+    // check if the line through the axis intersects the aabb
+    auto const line = inf_of(c.axis);
+    auto const len = length(c.axis);
+    auto const hits = intersection_parameter(line, boundary_of(b));
+    if (hits.any())
+    {
+        auto const t = clamp(hits.first(), ScalarT(0), len);
+        for (auto const& hit : hits)
+        {
+            if (ScalarT(0) <= hit && hit <= len)
+                return true; // cylinder axis intersects aabb
+
+            if (t != clamp(hit, ScalarT(0), len))
+                return true; // intersections before and after the axis can only occur if it lies within aabb
+        }
+        return intersects(sphere<2, ScalarT, 3>(line[t], c.radius, line.dir), b);
+    }
+
+    // test disks at both cylinder ends
+    if (intersects(sphere<2, ScalarT, 3>(c.axis.pos0, c.radius, line.dir), b) || //
+        intersects(sphere<2, ScalarT, 3>(c.axis.pos1, c.radius, line.dir), b))
+        return true;
+
+    // now only intersections between aabb edges and cylinder mantle remain
+    auto const r2 = c.radius * c.radius;
+    for (auto const& edge : edges_of(b))
+    {
+        auto [te, tl] = closest_points_parameters(edge, line);
+        if (ScalarT(0) < tl && tl < len && distance_sqr(edge[te], line[tl]) <= r2)
+            return true;
+    }
+
+    return false;
+}
+// TODO: cylinder_boundary_no_caps
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(inf_cylinder<D, ScalarT> const& c, aabb<D, ScalarT> const& b)
