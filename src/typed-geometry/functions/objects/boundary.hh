@@ -134,6 +134,7 @@ template <class ScalarT, class TraitsT>
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<1, ScalarT> caps_of(hemisphere<1, ScalarT, TraitsT> const& v)
 {
+    static_assert(!std::is_same_v<TraitsT, boundary_no_caps_tag> && "1D hemisphere_boundary_no_caps does not have any caps");
     return v.center;
 }
 
