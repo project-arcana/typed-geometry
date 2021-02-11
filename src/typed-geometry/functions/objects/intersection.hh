@@ -1584,7 +1584,59 @@ template <class ScalarT>
 
     return false;
 }
-// TODO: cylinder_boundary_no_caps
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(cylinder_boundary_no_caps<3, ScalarT> const& c, aabb<3, ScalarT> const& b)
+{
+    // alternative idea that is more efficient:
+    // compute the polygon of the aabb from the projection in cylinder direction and intersect it with a circle
+    //
+    // line = inf_of(c.axis);
+    // len = length(c.axis);
+    // compute planes p1 and p2 spanned by both caps
+    // foreach(vertex in vertices_of(b)) {
+    //      t = coordinates(line, vertex);
+    //      if (0 <= t <= len) add(vertex - t*line.dir);
+    // }
+    // foreach(edge in edges_of(b)) {
+    //      p = intersection(edge, p1);
+    //      if (p.has_value()) add(p.value());
+    //      p = intersection(edge, p2);
+    //      if (p.has_value()) add(p.value() - len*line.dir);
+    // }
+    // compute polygon as convex hull of all added vertices
+    // return intersects(caps_of(c)[0], polygon); // maybe in 2D
+
+    if (!intersects(aabb_of(c), b))
+        return false;
+
+    // check intersections between line through the axis and the aabb
+    auto const line = inf_of(c.axis);
+    auto const len = length(c.axis);
+    auto const intersects_at = [&](ScalarT t)
+    {
+        return intersects(sphere_boundary<2, ScalarT, 3>(line[t], c.radius, line.dir), b);
+    };
+
+    auto const hits = intersection_parameter(line, boundary_of(b));
+    for (auto const& hit : hits)
+        if (ScalarT(0) < hit && hit < len && intersects_at(hit))
+            return true;
+
+    // test disks at both cylinder ends
+    if (intersects(sphere_boundary<2, ScalarT, 3>(c.axis.pos0, c.radius, line.dir), b) || //
+        intersects(sphere_boundary<2, ScalarT, 3>(c.axis.pos1, c.radius, line.dir), b))
+        return true;
+
+    // now only intersections between aabb edges and cylinder mantle remain
+    for (auto const& edge : edges_of(b))
+    {
+        auto [te, tl] = closest_points_parameters(edge, line);
+        if (ScalarT(0) < tl && tl < len && intersects_at(tl))
+            return true;
+    }
+
+    return false;
+}
 
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(inf_cylinder<D, ScalarT> const& c, aabb<D, ScalarT> const& b)
