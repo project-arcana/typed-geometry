@@ -17,7 +17,7 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr array<segment<2, ScalarT>, 4> edges_of(quad<D, ScalarT> const& q)
+[[nodiscard]] constexpr array<segment<D, ScalarT>, 4> edges_of(quad<D, ScalarT> const& q)
 {
     return {{{q.pos00, q.pos10}, {q.pos10, q.pos11}, {q.pos11, q.pos01}, {q.pos01, q.pos00}}};
 }
@@ -79,12 +79,10 @@ template <class ScalarT, int DomainD, class TraitsT>
     }};
 }
 
-template <class BaseT, class TraitsT>
+template <class BaseT, class TraitsT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
 [[nodiscard]] constexpr auto edges_of(pyramid<BaseT, TraitsT> const& py)
 {
     using ScalarT = typename BaseT::scalar_t;
-    static_assert(!std::is_same_v<BaseT, sphere<2, ScalarT, 3>>, "not possible for cones");
-
     const auto apex = apex_of(py);
     const auto edgesBase = edges_of(py.base);
     auto res = array<segment<3, ScalarT>, edgesBase.size() * 2>();

@@ -135,12 +135,10 @@ template <class ScalarT, int DomainD, class TraitsT>
     return {{p0000, p1000, p1100, p0100, p0010, p1010, p1110, p0110, p0001, p1001, p1101, p0101, p0011, p1011, p1111, p0111}};
 }
 
-template <class BaseT, class TraitsT>
+template <class BaseT, class TraitsT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
 [[nodiscard]] constexpr auto vertices_of(pyramid<BaseT, TraitsT> const& py)
 {
     using ScalarT = typename BaseT::scalar_t;
-    static_assert(!std::is_same_v<BaseT, sphere<2, ScalarT, 3>>, "not possible for cones");
-
     auto const vertsBase = vertices_of(py.base);
     auto res = array<pos<3, ScalarT>, vertsBase.size() + 1>();
     for (size_t i = 0; i < vertsBase.size(); ++i)

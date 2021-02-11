@@ -62,12 +62,11 @@ template <class ScalarT, class TraitsT>
     return {{faceX0, faceX1, faceY0, faceY1, faceZ0, faceZ1}};
 }
 
-template <class BaseT>
+template <class BaseT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
 [[nodiscard]] constexpr auto faces_of(pyramid<BaseT, boundary_no_caps_tag> const& py)
 {
     using ScalarT = typename BaseT::scalar_t;
     static_assert(is_floating_point<ScalarT>, "cannot be guaranteed for integers");
-    static_assert(!std::is_same_v<BaseT, sphere<2, ScalarT, 3>>, "not possible for cones");
 
     const auto apex = apex_of(py);
     const auto verts = vertices_of(py.base);
@@ -77,7 +76,7 @@ template <class BaseT>
     return triangles;
 }
 
-template <class BaseT, class TraitsT>
+template <class BaseT, class TraitsT, typename = std::enable_if_t<!std::is_same_v<BaseT, sphere<2, typename BaseT::scalar_t, 3>>>>
 [[nodiscard]] constexpr auto faces_of(pyramid<BaseT, TraitsT> const& py)
 {
     auto mantle = faces_of(boundary_no_caps_of(py));

@@ -1211,6 +1211,20 @@ template <int ObjectD, class ScalarT, int DomainD>
 
     return {c - e, c + e};
 }
+template <class BaseT>
+[[nodiscard]] constexpr hit_interval<typename BaseT::scalar_t> shadow(pyramid<BaseT> const& p, vec<3, typename BaseT::scalar_t> const& axis)
+{
+    using ScalarT = typename BaseT::scalar_t;
+    auto tMin = tg::max<ScalarT>();
+    auto tMax = tg::min<ScalarT>();
+    for (auto const& vertex : vertices_of(p))
+    {
+        auto const t = dot(vertex, axis);
+        tMin = tg::min(tMin, t);
+        tMax = tg::max(tMax, t);
+    }
+    return {tMin, tMax};
+}
 }
 
 template <class ScalarT>
@@ -1650,6 +1664,47 @@ template <int D, class ScalarT>
             return true;
 
     return false;
+}
+
+template <class BaseT>
+[[nodiscard]] constexpr auto intersects(pyramid<BaseT> const& p, aabb<3, typename BaseT::scalar_t> const& b) -> decltype(faces_of(p), true)
+{
+    // SAT: box faces
+    if (!intersects(aabb_of(p), b))
+        return false;
+
+    // SAT: pyramid faces
+    using vec_t = vec<3, typename BaseT::scalar_t>;
+    auto axes = std::vector<vec_t>();
+    auto const faces = faces_of(p);
+    axes.emplace_back(normal_of(faces.base));
+    for (auto const& face : faces.mantle)
+        axes.emplace_back(normal_of(face));
+
+    if (!detail::intersects_SAT(p, b, axes))
+        return false;
+
+    // SAT: cross product of edge pairs
+    axes.clear();
+    array<vec_t, 3> axisDirs = {vec_t::unit_x, vec_t::unit_y, vec_t::unit_z};
+    for (auto const& edge : edges_of(p))
+    {
+        vec_t d = direction(edge);
+        for (auto j = 0; j < 3; ++j)
+            axes.push_back(cross(d, axisDirs[j]));
+    }
+
+    return detail::intersects_SAT(p, b, axes);
+}
+template <class BaseT>
+[[nodiscard]] constexpr auto intersects(pyramid_boundary_no_caps<BaseT> const& p, aabb<3, typename BaseT::scalar_t> const& b) -> decltype(faces_of(p), true)
+{
+    // SAT: box faces
+    if (!intersects(aabb_of(p), b))
+        return false;
+
+    auto const faces = faces_of(p);
+    return detail::intersects_any_array(b, faces, std::make_index_sequence<faces.size()>{});
 }
 
 template <class ScalarT>
