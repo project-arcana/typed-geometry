@@ -8,13 +8,13 @@
 namespace tg
 {
 template <int D, class ScalarT>
-[[nodiscard]] array<triangle<D, ScalarT>, 1> triangulation_of(triangle<D, ScalarT> const& t)
+[[nodiscard]] constexpr array<triangle<D, ScalarT>, 1> triangulation_of(triangle<D, ScalarT> const& t)
 {
     return {{t}};
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] array<triangle<D, ScalarT>, 2> triangulation_of(quad<D, ScalarT> const& q)
+[[nodiscard]] constexpr array<triangle<D, ScalarT>, 2> triangulation_of(quad<D, ScalarT> const& q)
 {
     // TODO: orientation guarantees?
     return {{

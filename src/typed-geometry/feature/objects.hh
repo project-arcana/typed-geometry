@@ -19,11 +19,13 @@
 #include <typed-geometry/functions/objects/intersection.hh>
 #include <typed-geometry/functions/objects/normal.hh>
 #include <typed-geometry/functions/objects/perimeter.hh>
+#include <typed-geometry/functions/objects/plane.hh>
 #include <typed-geometry/functions/objects/project.hh>
 #include <typed-geometry/functions/objects/rasterize.hh>
 #include <typed-geometry/functions/objects/size.hh>
 #include <typed-geometry/functions/objects/tangent.hh>
 #include <typed-geometry/functions/objects/triangle.hh>
+#include <typed-geometry/functions/objects/triangulate.hh>
 #include <typed-geometry/functions/objects/triangulation.hh>
 #include <typed-geometry/functions/objects/vertices.hh>
 #include <typed-geometry/functions/objects/volume.hh>

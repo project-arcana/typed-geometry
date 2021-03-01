@@ -32,6 +32,7 @@
 #include "direction.hh"
 #include "faces.hh"
 #include "normal.hh"
+#include "plane.hh"
 #include "project.hh"
 
 #include <utility>
@@ -943,6 +944,7 @@ template <class ScalarT>
 
 // ====================================== Object - Object Intersections ======================================
 
+// sphere boundary - sphere boundary
 // returns intersection circle of sphere and sphere (normal points from a to b)
 // for now does not work if spheres are identical (result would be a sphere3 again)
 template <class ScalarT>
@@ -996,6 +998,7 @@ template <class ScalarT>
     return sphere_boundary<2, ScalarT, 3>{ipos, irad, dir<3, ScalarT>((b.center - a.center) / d)};
 }
 
+// sphere boundary - sphere boundary
 // returns intersection points of two circles in 2D
 // for now does not work if circles are identical (result would be a circle2 again)
 template <class ScalarT>
@@ -1035,6 +1038,7 @@ template <class ScalarT>
     return pair{p_above, p_below};
 }
 
+// sphere boundary - plane
 // returns intersection circle of sphere and sphere (normal points from a to b)
 // for now does not work if spheres are identical (result would be a sphere3 again)
 template <class ScalarT>
@@ -1065,7 +1069,65 @@ template <class ScalarT>
     return r;
 }
 
+// circle - plane
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(sphere<2, ScalarT, 3, boundary_tag> const& a, plane<3, ScalarT> const& b)
+{
+    auto const l = intersection(plane_of(a), b);
+    return intersection(l, sphere_boundary<3, ScalarT>(a.center, a.radius));
+}
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(plane<3, ScalarT> const& a, sphere<2, ScalarT, 3, boundary_tag> const& b)
+{
+    return intersection(b, a);
+}
 
+// circle - sphere
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(sphere<2, ScalarT, 3, boundary_tag> const& a, sphere_boundary<3, ScalarT> const& s)
+{
+    auto const is = intersection(plane_of(a), s);
+    if (!is.has_value())
+        return {};
+
+    auto const b = is.value();
+
+    auto d2 = distance_sqr(a.center, b.center);
+    auto d = sqrt(d2);
+    auto ar = a.radius;
+    auto br = b.radius;
+    if (ar + br < d) // no intersection
+        return {};
+
+    if (d < abs(ar - br)) // no intersection (one inside the other)
+        return {};
+
+    TG_INTERNAL_ASSERT(d > ScalarT(0));
+
+    auto t = (ar * ar - br * br + d2) / (2 * d);
+    auto h2 = ar * ar - t * t;
+    TG_INTERNAL_ASSERT(h2 >= ScalarT(0));
+
+    auto h = sqrt(h2);
+    auto h_by_d = h / d;
+
+    auto p_between = a.center + t / d * (b.center - a.center);
+
+    auto bitangent = cross(b.center - a.center, a.normal);
+
+    // imagining circle a on the left side of circle b...
+    auto p_above = p_between + h_by_d * bitangent;
+    auto p_below = p_between - h_by_d * bitangent;
+
+    return {p_above, p_below};
+}
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(sphere_boundary<3, ScalarT> const& a, sphere<2, ScalarT, 3, boundary_tag> const& b)
+{
+    return intersection(b, a);
+}
+
+// plane - plane
 template <class ScalarT>
 [[nodiscard]] constexpr line<3, ScalarT> intersection(plane<3, ScalarT> const& a, plane<3, ScalarT> const& b)
 {
