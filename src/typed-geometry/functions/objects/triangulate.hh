@@ -34,8 +34,8 @@ void triangulate_uv(sphere<3, ScalarT, 3, TraitsT> const& s, int segs_u, int seg
         else if (v == segs_v)
             return dir_t(0, -1, 0);
 
-        auto [su, cu] = tg::sin_cos(tau<ScalarT> * (u == segs_u ? 0 : u) / ScalarT(segs_u));
-        auto [sv, cv] = tg::sin_cos(pi<ScalarT> * v / ScalarT(segs_v));
+        auto [su, cu] = sin_cos(tau<ScalarT> * (u == segs_u ? 0 : u) / ScalarT(segs_u));
+        auto [sv, cv] = sin_cos(pi<ScalarT> * v / ScalarT(segs_v));
 
         return dir_t(sv * su, cv, sv * cu);
     };
@@ -52,7 +52,7 @@ void triangulate_uv(sphere<3, ScalarT, 3, TraitsT> const& s, int segs_u, int seg
             auto p1 = pos_of(i, 1);
             auto p2 = pos_of(i + 1, 1);
 
-            on_triangle(tg::triangle3(p0, p1, p2));
+            on_triangle(tg::triangle<3, ScalarT>(p0, p1, p2));
         }
     }
 
@@ -66,8 +66,8 @@ void triangulate_uv(sphere<3, ScalarT, 3, TraitsT> const& s, int segs_u, int seg
             auto p10 = pos_of(i + 1, j + 0);
             auto p11 = pos_of(i + 1, j + 1);
 
-            on_triangle(tg::triangle3(p00, p01, p11));
-            on_triangle(tg::triangle3(p00, p11, p10));
+            on_triangle(tg::triangle<3, ScalarT>(p00, p01, p11));
+            on_triangle(tg::triangle<3, ScalarT>(p00, p11, p10));
         }
     }
 
@@ -79,7 +79,7 @@ void triangulate_uv(sphere<3, ScalarT, 3, TraitsT> const& s, int segs_u, int seg
             auto p1 = pos_of(i, segs_v - 1);
             auto p2 = pos_of(i + 1, segs_v - 1);
 
-            on_triangle(tg::triangle3(p0, p2, p1));
+            on_triangle(tg::triangle<3, ScalarT>(p0, p2, p1));
         }
     }
 }

@@ -22,6 +22,7 @@
 #include <typed-geometry/functions/objects/plane.hh>
 #include <typed-geometry/functions/objects/project.hh>
 #include <typed-geometry/functions/objects/rasterize.hh>
+#include <typed-geometry/functions/objects/segmentize.hh>
 #include <typed-geometry/functions/objects/size.hh>
 #include <typed-geometry/functions/objects/tangent.hh>
 #include <typed-geometry/functions/objects/triangle.hh>
