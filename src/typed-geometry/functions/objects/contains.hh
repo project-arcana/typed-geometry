@@ -46,6 +46,20 @@ template <int D, class ScalarT>
     return b == o;
 }
 
+// default implementation for contains(objA, objB) that works when objA is solid and vertices_of(objB) is defined
+template <class A, class B>
+[[nodiscard]] constexpr auto contains(A const& a, B const& b, dont_deduce<typename B::scalar_t> eps = static_cast<typename B::scalar_t>(0))
+    -> enable_if<std::is_same_v<typename object_traits<A>::tag_t, default_object_tag>, decltype(vertices_of(b), false)>
+{
+    for (auto const& vertex : vertices_of(b))
+        if (!contains(a, vertex, eps))
+            return false;
+
+    return true;
+}
+
+// object specific implementations for contains(obj, pos)
+
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(aabb<1, ScalarT> const& b, ScalarT const& o, dont_deduce<ScalarT> eps = ScalarT(0))
 {
@@ -120,8 +134,7 @@ template <int D, class ScalarT>
         if (ri > bi + eps)
             return false; // False if outside of the aabb in any dimension
 
-        if (!onSomeBoundary && (ri >= bi - eps))
-            onSomeBoundary = true;
+        onSomeBoundary = onSomeBoundary || (ri >= bi - eps);
     }
     return onSomeBoundary; // True, if at on the boundary in at least one dimension
 }

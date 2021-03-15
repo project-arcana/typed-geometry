@@ -5,9 +5,11 @@
 #include <typed-geometry/types/objects/capsule.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/ellipse.hh>
+#include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
 #include <typed-geometry/types/objects/inf_cylinder.hh>
+#include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/pyramid.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 
@@ -75,6 +77,11 @@ template <class ScalarT, class TraitsT>
 {
     return {v.center, v.radius, v.normal};
 }
+template <int D, class ScalarT>
+[[nodiscard]] constexpr plane<D, ScalarT> boundary_of(halfspace<D, ScalarT> const& v)
+{
+    return {v.normal, v.dis};
+}
 
 // === no caps versions ===
 
@@ -134,6 +141,7 @@ template <class ScalarT, class TraitsT>
 template <class ScalarT, class TraitsT>
 [[nodiscard]] constexpr pos<1, ScalarT> caps_of(hemisphere<1, ScalarT, TraitsT> const& v)
 {
+    static_assert(!std::is_same_v<TraitsT, boundary_no_caps_tag> && "1D hemisphere_boundary_no_caps does not have any caps");
     return v.center;
 }
 
