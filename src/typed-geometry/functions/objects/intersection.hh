@@ -1152,6 +1152,73 @@ template <int D, class ScalarT>
 
 // ====================================== Checks if Object Intersects aabb ======================================
 
+namespace detail
+{
+// Helper function that uses the separating axis theorem and the provided list of axes to determine whether a and b intersect
+template <class A, class B>
+[[nodiscard]] constexpr bool intersects_SAT(A const& a, B const& b, std::vector<vec<object_traits<B>::domain_dimension, typename B::scalar_t>> const& axes)
+{
+    for (auto const& axis : axes)
+        if (are_separate(shadow(a, axis), shadow(b, axis)))
+            return false;
+
+    return true;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool are_separate(hit_interval<ScalarT> const& a, hit_interval<ScalarT> const& b)
+{
+    return b.end < a.start || a.end < b.start;
+}
+template <int D, class ScalarT>
+[[nodiscard]] constexpr hit_interval<ScalarT> shadow(aabb<D, ScalarT> const& b, vec<D, ScalarT> const& axis)
+{
+    auto const center = centroid_of(b);
+    auto const c = dot(center, axis);
+    auto const e = dot(b.max - center, abs(axis));
+    return {c - e, c + e};
+}
+template <int ObjectD, class ScalarT, int DomainD>
+[[nodiscard]] constexpr hit_interval<ScalarT> shadow(box<ObjectD, ScalarT, DomainD> const& b, vec<DomainD, ScalarT> const& axis)
+{
+    auto const c = dot(b.center, axis);
+    auto e = ScalarT(0);
+    for (auto i = 0; i < ObjectD; ++i)
+        e += abs(dot(b.half_extents[i], axis));
+
+    return {c - e, c + e};
+}
+template <class BaseT>
+[[nodiscard]] constexpr hit_interval<typename BaseT::scalar_t> shadow(pyramid<BaseT> const& p, vec<3, typename BaseT::scalar_t> const& axis)
+{
+    using ScalarT = typename BaseT::scalar_t;
+    auto tMin = tg::max<ScalarT>();
+    auto tMax = tg::min<ScalarT>();
+    for (auto const& vertex : vertices_of(p))
+    {
+        auto const t = dot(vertex, axis);
+        tMin = tg::min(tMin, t);
+        tMax = tg::max(tMax, t);
+    }
+    return {tMin, tMax};
+}
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(line<1, ScalarT> const& l, aabb<1, ScalarT> const& b)
+{
+    TG_UNUSED(l);
+    TG_UNUSED(b);
+    return true;
+}
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(line<2, ScalarT> const& l, aabb<2, ScalarT> const& b)
+{
+    auto const c = centroid_of(b);
+    auto const shadow = dot(b.max - c, abs(perpendicular(l.dir)));
+    return pow2(shadow) >= distance_sqr(c, l);
+}
+// line3 and line4 is deduced from intersection_parameter(l, b).has_value()
+
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool intersects(sphere<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
 {
