@@ -314,6 +314,22 @@ public:
                + c;                                   // + c
     }
 
+    [[nodiscard]] constexpr quadric operator-() const
+    {
+        quadric q;
+        q.A00 = -A00;
+        q.A11 = -A11;
+        q.A22 = -A22;
+        q.A01 = -A01;
+        q.A02 = -A02;
+        q.A12 = -A12;
+        q.b0 = -b0;
+        q.b1 = -b1;
+        q.b2 = -b2;
+        q.c = -c;
+        return q;
+    }
+
     // TODO: fix me
     template <class T>
     friend constexpr T distance_sqr(pos<3, T> const& p, quadric<3, T> const& q);
