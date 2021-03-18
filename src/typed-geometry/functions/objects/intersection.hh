@@ -1320,6 +1320,8 @@ template <class BaseT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(line<1, ScalarT> const& l, aabb<1, ScalarT> const& b)
 {
+    TG_UNUSED(l);
+    TG_UNUSED(b);
     return true;
 }
 template <class ScalarT>
