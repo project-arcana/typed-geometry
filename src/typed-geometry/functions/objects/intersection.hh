@@ -1232,7 +1232,7 @@ template <int D, class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> intersection(plane<3, ScalarT> const& a, plane<3, ScalarT> const& b, plane<3, ScalarT> const& c)
 {
-    return intersection(intersection(a, b), c);
+    return intersection(intersection(a, b), c).first();
 }
 
 template <int D, class ScalarT>
