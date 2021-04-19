@@ -1414,7 +1414,7 @@ template <int ObjectD, class ScalarT, int DomainD>
     auto axes = array<vec_t, max_axes_count>();
     size_t curr_axis = 0;
 
-    auto axisDirs = tg::array<vec_t, DomainD>();
+    [[maybe_unused]] auto axisDirs = tg::array<vec_t, DomainD>();
     if constexpr (DomainD == 3)
         axisDirs = {vec_t::unit_x, vec_t::unit_y, vec_t::unit_z};
 
@@ -1759,7 +1759,7 @@ template <int D, class ScalarT>
 }
 
 template <class BaseT>
-[[nodiscard]] constexpr auto intersects(pyramid<BaseT> const& p, aabb<3, typename BaseT::scalar_t> const& b) -> decltype(faces_of(p), true)
+[[nodiscard]] constexpr auto intersects(pyramid<BaseT> const& p, aabb<3, typename BaseT::scalar_t> const& b) -> decltype((void)faces_of(p), true)
 {
     // SAT: box faces
     if (!intersects(aabb_of(p), b))
@@ -1800,7 +1800,8 @@ template <class BaseT>
     }
 }
 template <class BaseT>
-[[nodiscard]] constexpr auto intersects(pyramid_boundary_no_caps<BaseT> const& p, aabb<3, typename BaseT::scalar_t> const& b) -> decltype(faces_of(p), true)
+[[nodiscard]] constexpr auto intersects(pyramid_boundary_no_caps<BaseT> const& p, aabb<3, typename BaseT::scalar_t> const& b)
+    -> decltype((void)faces_of(p), true)
 {
     // SAT: box faces
     if (!intersects(aabb_of(p), b))

@@ -49,7 +49,7 @@ template <int D, class ScalarT>
 // default implementation for contains(objA, objB) that works when objA is solid and vertices_of(objB) is defined
 template <class A, class B>
 [[nodiscard]] constexpr auto contains(A const& a, B const& b, dont_deduce<typename B::scalar_t> eps = static_cast<typename B::scalar_t>(0))
-    -> enable_if<std::is_same_v<typename object_traits<A>::tag_t, default_object_tag>, decltype(vertices_of(b), false)>
+    -> enable_if<std::is_same_v<typename object_traits<A>::tag_t, default_object_tag>, decltype((void)vertices_of(b), false)>
 {
     for (auto const& vertex : vertices_of(b))
         if (!contains(a, vertex, eps))
@@ -227,8 +227,7 @@ template <class ScalarT, class TraitsT>
 
     if constexpr (std::is_same_v<TraitsT, boundary_tag>)
     {
-        if (a - eps > ScalarT(0) && b - eps > ScalarT(0) && c - eps > ScalarT(0)
-            && x2 / pow2(a - eps) + y2 / pow2(b - eps) + z2 / pow2(c - eps) < ScalarT(1))
+        if (a - eps > ScalarT(0) && b - eps > ScalarT(0) && c - eps > ScalarT(0) && x2 / pow2(a - eps) + y2 / pow2(b - eps) + z2 / pow2(c - eps) < ScalarT(1))
             return false;
     }
 
@@ -283,7 +282,7 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr bool contains(hemisphere_boundary<D, ScalarT> const& s, pos<D, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
 {
-    return contains(boundary_no_caps_of(s), p , eps) || contains(caps_of(s), p, eps);
+    return contains(boundary_no_caps_of(s), p, eps) || contains(caps_of(s), p, eps);
 }
 
 template <int D, class ScalarT>
