@@ -41,7 +41,7 @@ template <class ScalarT>
     auto d0d1 = dot(l0.dir, l1.dir);
     auto b0 = dot(l1.pos - l0.pos, l0.dir);
     auto b1 = dot(l1.pos - l0.pos, l1.dir);
-    auto [t0, t1] = inverse(mat<2, 2, ScalarT>::from_cols({1, d0d1}, {-d0d1, -1})) * vec2(b0, b1);
+    auto [t0, t1] = inverse(mat<2, 2, ScalarT>::from_cols({ScalarT(1), d0d1}, {-d0d1, ScalarT(-1)})) * vec<2, ScalarT>(b0, b1);
     return {t0, t1};
 }
 
