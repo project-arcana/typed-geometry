@@ -20,6 +20,7 @@
 #include <typed-geometry/types/objects/segment.hh>
 #include <typed-geometry/types/objects/sphere.hh>
 #include <typed-geometry/types/objects/triangle.hh>
+#include <typed-geometry/types/span.hh>
 
 #include <typed-geometry/functions/vector/cross.hh>
 #include <typed-geometry/functions/vector/dot.hh>
@@ -36,7 +37,6 @@
 #include "project.hh"
 
 #include <utility>
-#include <vector>
 
 // family of intersection functions:
 
@@ -1268,16 +1268,6 @@ template <int D, class ScalarT>
 
 namespace detail
 {
-// Helper function that uses the separating axis theorem and the provided list of axes to determine whether a and b intersect
-template <class A, class B>
-[[nodiscard]] constexpr bool intersects_SAT(A const& a, B const& b, std::vector<vec<object_traits<B>::domain_dimension, typename B::scalar_t>> const& axes)
-{
-    for (auto const& axis : axes)
-        if (are_separate(shadow(a, axis), shadow(b, axis)))
-            return false;
-
-    return true;
-}
 template <class ScalarT>
 [[nodiscard]] constexpr bool are_separate(hit_interval<ScalarT> const& a, hit_interval<ScalarT> const& b)
 {
@@ -1314,6 +1304,16 @@ template <class BaseT>
         tMax = tg::max(tMax, t);
     }
     return {tMin, tMax};
+}
+// Helper function that uses the separating axis theorem and the provided list of axes to determine whether a and b intersect
+template <class A, class B>
+[[nodiscard]] constexpr bool intersects_SAT(A const& a, B const& b, span<vec<object_traits<B>::domain_dimension, typename B::scalar_t> const> axes)
+{
+    for (auto const& axis : axes)
+        if (are_separate(shadow(a, axis), shadow(b, axis)))
+            return false;
+
+    return true;
 }
 }
 
@@ -1408,7 +1408,11 @@ template <int ObjectD, class ScalarT, int DomainD>
         return true; // the only axis was already checked above
 
     using vec_t = vec<DomainD, ScalarT>;
-    auto axes = std::vector<vec_t>();
+
+    constexpr int max_axes_count = DomainD + (DomainD > 2 ? DomainD * DomainD : 0);
+
+    auto axes = array<vec_t, max_axes_count>();
+    size_t curr_axis = 0;
 
     auto axisDirs = tg::array<vec_t, DomainD>();
     if constexpr (DomainD == 3)
@@ -1421,16 +1425,16 @@ template <int ObjectD, class ScalarT, int DomainD>
             d = i == 2 ? normal_of(box) : box.half_extents[i];
         else
             d = box.half_extents[i];
-        axes.emplace_back(d);
+        axes[curr_axis++] = d;
 
         if constexpr (DomainD > 2)
-            for (auto j = 0; j < DomainD; ++j)
-                axes.push_back(cross(d, axisDirs[j]));
+            for (auto j = 0u; j < DomainD; ++j)
+                axes[curr_axis++] = cross(d, axisDirs[j]);
 
         static_assert(DomainD < 4 && "Not implemented for 4D");
     }
 
-    return detail::intersects_SAT(box, b, axes);
+    return detail::intersects_SAT(box, b, span<vec_t const>(axes).subspan(0, curr_axis));
 }
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box_boundary<2, ScalarT, 3> const& box, aabb<3, ScalarT> const& b)
@@ -1763,26 +1767,37 @@ template <class BaseT>
 
     // SAT: pyramid faces
     using vec_t = vec<3, typename BaseT::scalar_t>;
-    auto axes = std::vector<vec_t>();
-    auto const faces = faces_of(p);
-    axes.emplace_back(normal_of(faces.base));
-    for (auto const& face : faces.mantle)
-        axes.emplace_back(normal_of(face));
-
-    if (!detail::intersects_SAT(p, b, axes))
-        return false;
-
-    // SAT: cross product of edge pairs
-    axes.clear();
-    array<vec_t, 3> axisDirs = {vec_t::unit_x, vec_t::unit_y, vec_t::unit_z};
-    for (auto const& edge : edges_of(p))
     {
-        vec_t d = direction(edge);
-        for (auto j = 0; j < 3; ++j)
-            axes.push_back(cross(d, axisDirs[j]));
+        auto const faces = faces_of(p);
+        constexpr int max_axes_count = 1 + faces.mantle.size();
+
+        auto axes = array<vec_t, max_axes_count>();
+        size_t curr_axis = 0;
+        axes[curr_axis++] = normal_of(faces.base);
+        for (auto const& face : faces.mantle)
+            axes[curr_axis++] = normal_of(face);
+
+        if (!detail::intersects_SAT(p, b, axes))
+            return false;
     }
 
-    return detail::intersects_SAT(p, b, axes);
+    // SAT: cross product of edge pairs
+    {
+        auto edges = edges_of(p);
+        constexpr int max_axes_count = 3 * edges.size();
+        auto axes = array<vec_t, max_axes_count>();
+        size_t curr_axis = 0;
+
+        array<vec_t, 3> axisDirs = {vec_t::unit_x, vec_t::unit_y, vec_t::unit_z};
+        for (auto const& edge : edges)
+        {
+            vec_t d = direction(edge);
+            for (auto j = 0u; j < 3; ++j)
+                axes[curr_axis++] = cross(d, axisDirs[j]);
+        }
+
+        return detail::intersects_SAT(p, b, axes);
+    }
 }
 template <class BaseT>
 [[nodiscard]] constexpr auto intersects(pyramid_boundary_no_caps<BaseT> const& p, aabb<3, typename BaseT::scalar_t> const& b) -> decltype(faces_of(p), true)
@@ -1819,7 +1834,7 @@ template <class ScalarT>
 
         auto b_min = dot(n, aabb_pts[0]);
         auto b_max = b_min;
-        for (auto i = 1; i < 4; ++i)
+        for (auto i = 1u; i < 4; ++i)
         {
             auto d = dot(n, aabb_pts[i]);
             b_min = min(b_min, d);

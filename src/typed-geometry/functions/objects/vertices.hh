@@ -74,7 +74,7 @@ template <class ScalarT, class TraitsT>
     auto const p1101 = pos<4, ScalarT>(bb.max.x, bb.max.y, bb.min.z, bb.max.w);
     auto const p1110 = pos<4, ScalarT>(bb.max.x, bb.max.y, bb.max.z, bb.min.w);
 
-    return {{bb.min, p0001, p0010, p0011, p0100, p0101, p0110, p0111, p1001, p1010, p1011, p1100, p1101, p1110, bb.max}};
+    return {{bb.min, p0001, p0010, p0011, p0100, p0101, p0110, p0111, p1000, p1001, p1010, p1011, p1100, p1101, p1110, bb.max}};
 }
 
 template <class ScalarT, int DomainD, class TraitsT>
