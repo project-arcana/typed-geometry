@@ -74,7 +74,7 @@ template <int ObjectD, class ScalarT, int DomainD, class TraitsT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> any_point(halfspace<D, ScalarT> const& h)
 {
-    return pos(- h.dis * h.normal);
+    return pos(-h.dis * h.normal);
 }
 
 template <int D, class ScalarT, class TraitsT>
