@@ -14,6 +14,12 @@
 namespace tg
 {
 template <int D, class ScalarT>
+[[nodiscard]] constexpr plane<D, ScalarT> operator-(plane<D, ScalarT> const& p)
+{
+    return {-p.normal, -p.dis};
+}
+
+template <int D, class ScalarT>
 [[nodiscard]] constexpr plane<D, ScalarT> plane_of(plane<D, ScalarT> const& p)
 {
     return p;

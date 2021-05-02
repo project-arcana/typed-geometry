@@ -8,6 +8,7 @@
 #include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/ellipse.hh>
+#include <typed-geometry/types/objects/frustum.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
@@ -474,5 +475,15 @@ template <int D, class ScalarT>
         return true;
     return angle_between(dir<D, ScalarT>(apexOuterToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle
            && angle_between(dir<D, ScalarT>(apexInnerToP), c.opening_dir) >= ScalarT(0.5) * c.opening_angle;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(frustum<3, ScalarT> const& f, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    for (auto const& pl : f.planes)
+        if (signed_distance(p, pl) > eps)
+            return false;
+
+    return true;
 }
 } // namespace tg

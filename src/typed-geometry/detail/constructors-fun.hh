@@ -65,22 +65,4 @@ constexpr line<D, ScalarT> line<D, ScalarT>::from_points(pos_t a, pos_t b)
 {
     return line(a, normalize(b - a));
 }
-
-template <class ScalarT>
-constexpr frustum<ScalarT>::frustum(mat<4, 4, ScalarT> const& m)
-{
-    // computing planes in order: left, right, bottom, top, near, far
-    for (auto i = 0u; i < 3; ++i)
-        for (auto j = 0u; j < 2; ++j)
-        {
-            // plane parameters from matrix (see http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf)
-            vec4 abcd;
-            for (auto k = 0; k < 4; ++k)
-                abcd[k] = j == 0 ? m[k][3] + m[k][i] : m[k][3] - m[k][i];
-
-            auto n = vec3(abcd);
-            auto l = length(n);
-            planes[2 * i + j] = plane3(dir3(n / l), -abcd.w / l);
-        }
-}
 }

@@ -3,6 +3,7 @@
 #include <typed-geometry/feature/assert.hh>
 
 #include <typed-geometry/types/scalars/default.hh>
+#include <typed-geometry/types/span.hh>
 
 namespace tg
 {
@@ -32,6 +33,26 @@ struct array
     {
         TG_CONTRACT(i < N);
         return _values[i];
+    }
+
+    constexpr bool operator==(span<T const> rhs) const noexcept
+    {
+        if (N != rhs.size())
+            return false;
+        for (size_t i = 0; i < N; ++i)
+            if (!(_values[i] == rhs[i]))
+                return false;
+        return true;
+    }
+
+    constexpr bool operator!=(span<T const> rhs) const noexcept
+    {
+        if (N != rhs.size())
+            return true;
+        for (size_t i = 0; i < N; ++i)
+            if (_values[i] != rhs[i])
+                return true;
+        return false;
     }
 };
 }
