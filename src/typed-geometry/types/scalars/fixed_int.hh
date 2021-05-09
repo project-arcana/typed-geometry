@@ -1,5 +1,6 @@
 #pragma once
 
+#include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/detail/utility.hh>
 #include <typed-geometry/types/scalars/default.hh>
 
@@ -13,6 +14,10 @@ struct fixed_int;
 using i128 = fixed_int<2>;
 using i192 = fixed_int<3>;
 using i256 = fixed_int<4>;
+
+TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, i128, "i128");
+TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, i192, "i192");
+TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, i256, "i256");
 
 template <int words>
 struct fixed_int
