@@ -2,6 +2,7 @@
 
 #include <typed-geometry/types/comp.hh>
 
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>

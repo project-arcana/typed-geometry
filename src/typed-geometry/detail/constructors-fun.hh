@@ -9,12 +9,14 @@
 
 #include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/ellipse.hh>
+#include <typed-geometry/types/objects/frustum.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>
 
 #include <typed-geometry/detail/operators/ops_pos.hh>
 #include <typed-geometry/functions/vector/dot.hh>
+#include <typed-geometry/functions/vector/length.hh>
 
 // Header for all constructors that depend on functions
 

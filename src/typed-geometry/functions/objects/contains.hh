@@ -8,6 +8,7 @@
 #include <typed-geometry/types/objects/cone.hh>
 #include <typed-geometry/types/objects/cylinder.hh>
 #include <typed-geometry/types/objects/ellipse.hh>
+#include <typed-geometry/types/objects/frustum.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/hemisphere.hh>
 #include <typed-geometry/types/objects/inf_cone.hh>
@@ -45,6 +46,20 @@ template <int D, class ScalarT>
         return distance_sqr(b, o) <= pow2(eps);
     return b == o;
 }
+
+// default implementation for contains(objA, objB) that works when objA is solid and vertices_of(objB) is defined
+template <class A, class B>
+[[nodiscard]] constexpr auto contains(A const& a, B const& b, dont_deduce<typename B::scalar_t> eps = static_cast<typename B::scalar_t>(0))
+    -> enable_if<std::is_same_v<typename object_traits<A>::tag_t, default_object_tag>, decltype((void)vertices_of(b), false)>
+{
+    for (auto const& vertex : vertices_of(b))
+        if (!contains(a, vertex, eps))
+            return false;
+
+    return true;
+}
+
+// object specific implementations for contains(obj, pos)
 
 template <class ScalarT>
 [[nodiscard]] constexpr bool contains(aabb<1, ScalarT> const& b, ScalarT const& o, dont_deduce<ScalarT> eps = ScalarT(0))
@@ -120,8 +135,7 @@ template <int D, class ScalarT>
         if (ri > bi + eps)
             return false; // False if outside of the aabb in any dimension
 
-        if (!onSomeBoundary && (ri >= bi - eps))
-            onSomeBoundary = true;
+        onSomeBoundary = onSomeBoundary || (ri >= bi - eps);
     }
     return onSomeBoundary; // True, if at on the boundary in at least one dimension
 }
@@ -461,5 +475,15 @@ template <int D, class ScalarT>
         return true;
     return angle_between(dir<D, ScalarT>(apexOuterToP), c.opening_dir) <= ScalarT(0.5) * c.opening_angle
            && angle_between(dir<D, ScalarT>(apexInnerToP), c.opening_dir) >= ScalarT(0.5) * c.opening_angle;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(frustum<3, ScalarT> const& f, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    for (auto const& pl : f.planes)
+        if (signed_distance(p, pl) > eps)
+            return false;
+
+    return true;
 }
 } // namespace tg

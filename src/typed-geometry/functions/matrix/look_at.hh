@@ -12,7 +12,7 @@
 namespace tg
 {
 template <class ScalarT>
-[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_opengl(pos<3, ScalarT> const& eye, dir<3, ScalarT> const& fwd, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_opengl(pos<3, ScalarT> const& eye, dir<3, ScalarT> const& fwd, vec_or_dir<3, ScalarT> const& ref_up)
 {
     auto const right = normalize(cross(vec(fwd), ref_up));
     auto const up = vec(cross(right, fwd));
@@ -40,7 +40,7 @@ template <class ScalarT>
     return m;
 }
 template <class ScalarT>
-[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_directx(pos<3, ScalarT> const& eye, dir<3, ScalarT> const& fwd, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_directx(pos<3, ScalarT> const& eye, dir<3, ScalarT> const& fwd, vec_or_dir<3, ScalarT> const& ref_up)
 {
     auto const right = normalize(cross(ref_up, vec(fwd)));
     auto const up = vec(cross(fwd, right));
@@ -68,22 +68,22 @@ template <class ScalarT>
     return m;
 }
 template <class ScalarT>
-[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_opengl(pos<3, ScalarT> const& eye, pos<3, ScalarT> const& target, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_opengl(pos<3, ScalarT> const& eye, pos<3, ScalarT> const& target, vec_or_dir<3, ScalarT> const& ref_up)
 {
     return look_at_opengl(eye, normalize(target - eye), ref_up);
 }
 template <class ScalarT>
-[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_opengl(pos<3, ScalarT> const& eye, vec<3, ScalarT> const& fwd, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_opengl(pos<3, ScalarT> const& eye, vec<3, ScalarT> const& fwd, vec_or_dir<3, ScalarT> const& ref_up)
 {
     return look_at_opengl(eye, normalize(fwd), ref_up);
 }
 template <class ScalarT>
-[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_directx(pos<3, ScalarT> const& eye, pos<3, ScalarT> const& target, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_directx(pos<3, ScalarT> const& eye, pos<3, ScalarT> const& target, vec_or_dir<3, ScalarT> const& ref_up)
 {
     return look_at_directx(eye, normalize(target - eye), ref_up);
 }
 template <class ScalarT>
-[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_directx(pos<3, ScalarT> const& eye, vec<3, ScalarT> const& fwd, vec<3, ScalarT> const& ref_up)
+[[nodiscard]] constexpr mat<4, 4, ScalarT> look_at_directx(pos<3, ScalarT> const& eye, vec<3, ScalarT> const& fwd, vec_or_dir<3, ScalarT> const& ref_up)
 {
     return look_at_directx(eye, normalize(fwd), ref_up);
 }
@@ -91,21 +91,21 @@ template <class ScalarT>
 template <class ScalarT>
 [[deprecated("use explicit _opengl or _directx version")]] [[nodiscard]] constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye,
                                                                                                               dir<3, ScalarT> const& fwd,
-                                                                                                              vec<3, ScalarT> const& ref_up)
+                                                                                                              vec_or_dir<3, ScalarT> const& ref_up)
 {
     return look_at_opengl(eye, fwd, ref_up);
 }
 template <class ScalarT>
 [[deprecated("use explicit _opengl or _directx version")]] [[nodiscard]] constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye,
                                                                                                               pos<3, ScalarT> const& target,
-                                                                                                              vec<3, ScalarT> const& ref_up)
+                                                                                                              vec_or_dir<3, ScalarT> const& ref_up)
 {
     return look_at_opengl(eye, normalize(target - eye), ref_up);
 }
 template <class ScalarT>
 [[deprecated("use explicit _opengl or _directx version")]] [[nodiscard]] constexpr mat<4, 4, ScalarT> look_at(pos<3, ScalarT> const& eye,
                                                                                                               vec<3, ScalarT> const& fwd,
-                                                                                                              vec<3, ScalarT> const& ref_up)
+                                                                                                              vec_or_dir<3, ScalarT> const& ref_up)
 {
     return look_at_opengl(eye, normalize(fwd), ref_up);
 }

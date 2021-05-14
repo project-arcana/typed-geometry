@@ -1,5 +1,7 @@
 #pragma once
 
+#include <typed-geometry/detail/operators.hh>
+
 #include <typed-geometry/functions/vector/angle.hh>
 #include <typed-geometry/functions/vector/cross.hh>
 #include <typed-geometry/functions/vector/distance.hh>

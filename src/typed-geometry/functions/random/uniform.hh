@@ -336,6 +336,12 @@ constexpr auto uniform_by_volume(Rng& rng, ObjectA const& obj, ObjectRest const&
 
 // ======== Uniform point on an object ========
 
+template <int D, class ScalarT, class Rng>
+[[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng&, pos<D, ScalarT> const& p)
+{
+    return p; // not really a random position, but this makes some generic implementations easier
+}
+
 template <class Rng>
 [[nodiscard]] constexpr int uniform(Rng& rng, range1 const& b)
 {
@@ -656,6 +662,8 @@ template <int D, class ScalarT, class Rng>
 [[nodiscard]] constexpr pos<D, ScalarT> uniform(Rng& rng, hemisphere_boundary<D, ScalarT> const& h)
 {
     ScalarT ratio;
+    if constexpr (D == 1)
+        ratio = ScalarT(0.5);
     if constexpr (D == 2)
         ratio = ScalarT(2) / (ScalarT(2) + pi_scalar<ScalarT>); // round length = pi * r, flat length = 2 * r => ratio pi : 2
     if constexpr (D == 3)
@@ -701,8 +709,9 @@ template <class ScalarT, class Rng>
 template <class BaseT, class Rng>
 [[nodiscard]] constexpr pos<3, typename BaseT::scalar_t> uniform(Rng& rng, pyramid<BaseT> const& p)
 {
+    using ScalarT = typename BaseT::scalar_t;
     const auto n = normal_of(p.base);
-    const auto h = pow2(detail::uniform01<typename BaseT::scalar_t>(rng));
+    const auto h = ScalarT(1) - cbrt(detail::uniform01<ScalarT>(rng));
     const auto pBase = uniform(rng, p.base);
     return mix(pBase, centroid_of(p.base), h) + h * p.height * n;
 }

@@ -131,6 +131,7 @@ struct quadric<3, ScalarT>
     using vec_t = tg::vec<3, ScalarT>;
     using pos_t = tg::pos<3, ScalarT>;
     using mat_t = tg::mat<3, 3, ScalarT>;
+    using mat4_t = tg::mat<4, 4, ScalarT>;
 
     // x^T A x - 2 b^T x + c
 public:
@@ -184,8 +185,45 @@ public:
         q.c = c;
         return q;
     }
+    static constexpr quadric from_coefficients(mat4_t const& Q)
+    {
+        quadric q;
+        q.A00 = Q[0][0];
+        q.A01 = Q[0][1];
+        q.A02 = Q[0][2];
+        q.A11 = Q[1][1];
+        q.A12 = Q[1][2];
+        q.A22 = Q[2][2];
+        q.b0 = -Q[3][0];
+        q.b1 = -Q[3][1];
+        q.b2 = -Q[3][2];
+        q.c = Q[3][3];
+        return q;
+    }
 
 public:
+    // x^T Q x
+    constexpr mat<4, 4, ScalarT> const Q() const
+    {
+        mat<4, 4, ScalarT> m;
+        m[0][0] = A00;
+        m[0][1] = A01;
+        m[0][2] = A02;
+        m[1][0] = A01;
+        m[1][1] = A11;
+        m[1][2] = A12;
+        m[2][0] = A02;
+        m[2][1] = A12;
+        m[2][2] = A22;
+        m[3][0] = -b0;
+        m[3][1] = -b1;
+        m[3][2] = -b2;
+        m[0][3] = -b0;
+        m[1][3] = -b1;
+        m[2][3] = -b2;
+        m[3][3] = c;
+        return m;
+    }
     constexpr mat<3, 3, ScalarT> const A() const
     {
         mat<3, 3, ScalarT> m;
@@ -274,6 +312,22 @@ public:
         return dot(vec<3, ScalarT>(p), Ax)            // x^T A x
                - 2 * (p.x * b0 + p.y * b1 + p.z * b2) // - 2 r^T x
                + c;                                   // + c
+    }
+
+    [[nodiscard]] constexpr quadric operator-() const
+    {
+        quadric q;
+        q.A00 = -A00;
+        q.A11 = -A11;
+        q.A22 = -A22;
+        q.A01 = -A01;
+        q.A02 = -A02;
+        q.A12 = -A12;
+        q.b0 = -b0;
+        q.b1 = -b1;
+        q.b2 = -b2;
+        q.c = -c;
+        return q;
     }
 
     // TODO: fix me

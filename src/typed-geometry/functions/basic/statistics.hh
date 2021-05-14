@@ -10,6 +10,8 @@
  *
  * - min_element
  * - max_element
+ * - max_index
+ * - min_index
  * - average (same as arithmetic_mean)
  * - mean    (same as arithmetic_mean)
  * - arithmetic_mean
@@ -39,11 +41,11 @@ template <class T = void, class RangeT, class TransformF, class ReduceF>
     using U = std::decay_t<decltype(f(t(R(*it)), t(R(*it))))>;
     auto const e = tg::end(values);
     U r = t(R(*it));
-    it++;
+    ++it;
     while (it != e)
     {
         r = f(r, t(R(*it)));
-        it++;
+        ++it;
     }
     return r;
 }
@@ -59,7 +61,7 @@ template <class RangeT, class KeyT>
     auto min_e = it;
     auto min_v = key(*it);
 
-    it++;
+    ++it;
     while (it != e)
     {
         auto v = key(*it);
@@ -68,7 +70,7 @@ template <class RangeT, class KeyT>
             min_v = v;
             min_e = it;
         }
-        it++;
+        ++it;
     }
 
     return *min_e;
@@ -84,7 +86,7 @@ template <class RangeT, class KeyT>
     auto max_e = it;
     auto max_v = key(*it);
 
-    it++;
+    ++it;
     while (it != e)
     {
         auto v = key(*it);
@@ -93,7 +95,7 @@ template <class RangeT, class KeyT>
             max_v = v;
             max_e = it;
         }
-        it++;
+        ++it;
     }
 
     return *max_e;
@@ -110,6 +112,63 @@ template <class RangeT, class TransformT = identity_fun>
 {
     return detail::fold_right(values, transform, [](auto&& a, auto&& b) { return max(a, b); });
 }
+
+/// returns the index of the max element
+template <class RangeT, class TransformT = identity_fun>
+[[nodiscard]] constexpr size_t max_index(RangeT const& values, TransformT&& transform = {})
+{
+    TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
+    size_t curr_idx = 0;
+    auto it = tg::begin(values);
+    auto const end = tg::end(values);
+
+    auto max_v = transform(*it);
+    size_t max_idx = curr_idx;
+
+    ++it;
+    ++curr_idx;
+    while (it != end)
+    {
+        auto v = transform(*it);
+        if (v > max_v)
+        {
+            max_v = v;
+            max_idx = curr_idx;
+        }
+        ++it;
+        ++curr_idx;
+    }
+    return max_idx;
+}
+
+/// returns the index of the min element
+template <class RangeT, class TransformT = identity_fun>
+[[nodiscard]] constexpr size_t min_index(RangeT const& values, TransformT&& transform = {})
+{
+    TG_CONTRACT(tg::begin(values) != tg::end(values) && "values must not be empty");
+    size_t curr_idx = 0;
+    auto it = tg::begin(values);
+    auto const end = tg::end(values);
+
+    auto min_v = transform(*it);
+    size_t min_idx = curr_idx;
+
+    ++it;
+    ++curr_idx;
+    while (it != end)
+    {
+        auto v = transform(*it);
+        if (v < min_v)
+        {
+            min_v = v;
+            min_idx = curr_idx;
+        }
+        ++it;
+        ++curr_idx;
+    }
+    return min_idx;
+}
+
 
 template <class T = void, class RangeT = void, class TransformT = identity_fun>
 [[nodiscard]] constexpr auto sum(RangeT const& values, TransformT&& transform = {})

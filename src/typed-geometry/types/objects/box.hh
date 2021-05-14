@@ -102,6 +102,7 @@ struct box<2, ScalarT, 3, TraitsT>
 
     constexpr box() = default;
     constexpr box(pos_t center, mat_t const& half_extents) : center(center), half_extents(half_extents) {}
+    constexpr box(pos_t center, vec_t half_extent_x, vec_t half_extent_y) : center(center), half_extents(half_extent_x, half_extent_y) {}
 
     template <class OtherT, class OtherTraitsT>
     explicit constexpr box(box<2, OtherT, 3, OtherTraitsT> const& v) : center(v.center), half_extents(v.half_extents)
