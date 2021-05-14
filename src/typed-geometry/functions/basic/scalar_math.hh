@@ -286,13 +286,13 @@ template <class T>
 
 [[nodiscard]] constexpr f32 smoothstep(f32 edge0, f32 edge1, f32 x)
 {
-    auto t = clamp((x - edge0) / (edge1 - edge0), f32(0), f32(1));
-    return t * t * (f32(3) - f32(2) * t);
+    auto t = clamp((x - edge0) / (edge1 - edge0), 0.f, 1.f);
+    return t * t * (3.f - 2.f * t);
 }
 [[nodiscard]] constexpr f64 smoothstep(f64 edge0, f64 edge1, f64 x)
 {
-    auto t = clamp((x - edge0) / (edge1 - edge0), f64(0), f64(1));
-    return t * t * (f64(3) - f64(2) * t);
+    auto t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+    return t * t * (3.0 - 2.0 * t);
 }
 
 // ==================================================================
