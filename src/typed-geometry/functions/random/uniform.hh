@@ -218,7 +218,7 @@ template <class Rng, class T>
 }
 
 template <class Rng, class Container>
-[[nodiscard]] constexpr auto uniform(Rng& rng, Container& c) -> decltype(c[c.size()])
+[[nodiscard]] constexpr auto uniform(Rng& rng, Container&& c) -> decltype(c[c.size()])
 {
     TG_CONTRACT(c.size() > 0 && "cannot pick from an empty container");
     return c[uniform(rng, u64(0), u64(c.size() - 1))];
