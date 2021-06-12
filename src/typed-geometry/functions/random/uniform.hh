@@ -492,7 +492,7 @@ template <int ObjectD, class ScalarT, int DomainD, class Rng>
     else if constexpr (ObjectD == 4)
         coeffs = {ls.y * ls.z * ls.w, ls.x * ls.z * ls.w, ls.x * ls.y * ls.w, ls.x * ls.y * ls.z};
     else
-        static_assert(always_false<ObjectD>, "dimension not supported");
+        static_assert(always_false_v<ObjectD>, "dimension not supported");
 
     auto probMax = max_element(coeffs);
 

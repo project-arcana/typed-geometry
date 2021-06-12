@@ -51,6 +51,9 @@ constexpr bool can_apply = detail::can_apply<Z, void, Ts...>::value;
 
 template <class...>
 constexpr bool always_false = false;
+/// same as always_false, but for non-type template parameters, e.g. always_false_v<Dimension>
+template <auto...>
+constexpr bool always_false_v = false;
 
 template <class...>
 using void_t = void;
