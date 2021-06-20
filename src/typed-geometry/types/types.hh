@@ -29,6 +29,8 @@
 
 #include "bezier.hh"
 
+#include "srgb.hh"
+
 #include "capped_array.hh"
 #include "capped_vector.hh"
 
