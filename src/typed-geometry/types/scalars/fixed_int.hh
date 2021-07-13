@@ -24,7 +24,9 @@ struct fixed_int
 {
     static_assert(words <= 4, "only up to 256 bit supported");
 
-    u64 d[words] = {};
+    using Word = unsigned long long; // intrinsics parameter type
+
+    Word d[words] = {};
 
     // ctors
     constexpr fixed_int() = default;
@@ -35,13 +37,13 @@ struct fixed_int
 
     constexpr fixed_int(i64 rhs)
     {
-        d[0] = u64(rhs);
+        d[0] = Word(rhs);
         if constexpr (words > 1)
-            d[1] = rhs < 0 ? u64(-1) : 0;
+            d[1] = rhs < 0 ? Word(-1) : 0;
         if constexpr (words > 2)
-            d[2] = rhs < 0 ? u64(-1) : 0;
+            d[2] = rhs < 0 ? Word(-1) : 0;
         if constexpr (words > 3)
-            d[3] = rhs < 0 ? u64(-1) : 0;
+            d[3] = rhs < 0 ? Word(-1) : 0;
     }
 
     template <int rhs_words>

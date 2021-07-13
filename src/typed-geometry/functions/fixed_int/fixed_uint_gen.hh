@@ -12,12 +12,14 @@
 
 namespace tg::detail
 {
+using u64_word = fixed_uint<1>::Word;
+
 template <>
 inline u128 mul(u64 lhs, u64 rhs)
 {
     u128 res;
-    u64 l00 = 0;
-    u64 h00 = 0;
+    u64_word l00 = 0;
+    u64_word h00 = 0;
     l00 = _mulx_u64(lhs, rhs, &h00);
     unsigned char c = 0;
     c += _addcarry_u64(0, res.d[0], l00, &res.d[0]);
@@ -29,9 +31,9 @@ template <>
 inline u128 mul(u128 lhs, u64 rhs)
 {
     u128 res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
+    u64_word l00 = 0;
+    u64_word l10 = 0;
+    u64_word h00 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs, &h00);
     l10 = lhs.d[1] * rhs;
     unsigned char c = 0;
@@ -44,9 +46,9 @@ template <>
 inline u128 mul(u64 lhs, u128 rhs)
 {
     u128 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 h00 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word h00 = 0;
     l00 = _mulx_u64(lhs, rhs.d[0], &h00);
     l01 = lhs * rhs.d[1];
     unsigned char c = 0;
@@ -59,10 +61,10 @@ template <>
 inline u128 mul(u128 lhs, u128 rhs)
 {
     u128 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l10 = 0;
+    u64_word h00 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = lhs.d[0] * rhs.d[1];
     l10 = lhs.d[1] * rhs.d[0];
@@ -76,10 +78,10 @@ template <>
 inline u192 mul(u128 lhs, u64 rhs)
 {
     u192 res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 h00 = 0;
-    u64 h10 = 0;
+    u64_word l00 = 0;
+    u64_word l10 = 0;
+    u64_word h00 = 0;
+    u64_word h10 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs, &h00);
     l10 = _mulx_u64(lhs.d[1], rhs, &h10);
     unsigned char c = 0;
@@ -96,11 +98,11 @@ template <>
 inline u192 mul(u192 lhs, u64 rhs)
 {
     u192 res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h10 = 0;
+    u64_word l00 = 0;
+    u64_word l10 = 0;
+    u64_word l20 = 0;
+    u64_word h00 = 0;
+    u64_word h10 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs, &h00);
     l10 = _mulx_u64(lhs.d[1], rhs, &h10);
     l20 = lhs.d[2] * rhs;
@@ -118,10 +120,10 @@ template <>
 inline u192 mul(u64 lhs, u128 rhs)
 {
     u192 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
     l00 = _mulx_u64(lhs, rhs.d[0], &h00);
     l01 = _mulx_u64(lhs, rhs.d[1], &h01);
     unsigned char c = 0;
@@ -138,13 +140,13 @@ template <>
 inline u192 mul(u128 lhs, u128 rhs)
 {
     u192 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h10 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
@@ -164,14 +166,14 @@ template <>
 inline u192 mul(u192 lhs, u128 rhs)
 {
     u192 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l20 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h10 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
@@ -192,11 +194,11 @@ template <>
 inline u192 mul(u64 lhs, u192 rhs)
 {
     u192 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
     l00 = _mulx_u64(lhs, rhs.d[0], &h00);
     l01 = _mulx_u64(lhs, rhs.d[1], &h01);
     l02 = lhs * rhs.d[2];
@@ -214,14 +216,14 @@ template <>
 inline u192 mul(u128 lhs, u192 rhs)
 {
     u192 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h10 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
@@ -242,15 +244,15 @@ template <>
 inline u192 mul(u192 lhs, u192 rhs)
 {
     u192 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l20 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h10 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
@@ -272,12 +274,12 @@ template <>
 inline u256 mul(u192 lhs, u64 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 l20 = 0;
-    u64 h00 = 0;
-    u64 h10 = 0;
-    u64 h20 = 0;
+    u64_word l00 = 0;
+    u64_word l10 = 0;
+    u64_word l20 = 0;
+    u64_word h00 = 0;
+    u64_word h10 = 0;
+    u64_word h20 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs, &h00);
     l10 = _mulx_u64(lhs.d[1], rhs, &h10);
     l20 = _mulx_u64(lhs.d[2], rhs, &h20);
@@ -299,13 +301,13 @@ template <>
 inline u256 mul(u256 lhs, u64 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l10 = 0;
-    u64 l20 = 0;
-    u64 l30 = 0;
-    u64 h00 = 0;
-    u64 h10 = 0;
-    u64 h20 = 0;
+    u64_word l00 = 0;
+    u64_word l10 = 0;
+    u64_word l20 = 0;
+    u64_word l30 = 0;
+    u64_word h00 = 0;
+    u64_word h10 = 0;
+    u64_word h20 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs, &h00);
     l10 = _mulx_u64(lhs.d[1], rhs, &h10);
     l20 = _mulx_u64(lhs.d[2], rhs, &h20);
@@ -328,14 +330,14 @@ template <>
 inline u256 mul(u128 lhs, u128 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
@@ -360,17 +362,17 @@ template <>
 inline u256 mul(u192 lhs, u128 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l20 = 0;
-    u64 l21 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
-    u64 h20 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l20 = 0;
+    u64_word l21 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
+    u64_word h20 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
@@ -398,18 +400,18 @@ template <>
 inline u256 mul(u256 lhs, u128 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l20 = 0;
-    u64 l21 = 0;
-    u64 l30 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
-    u64 h20 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l20 = 0;
+    u64_word l21 = 0;
+    u64_word l30 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
+    u64_word h20 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l10 = _mulx_u64(lhs.d[1], rhs.d[0], &h10);
@@ -438,12 +440,12 @@ template <>
 inline u256 mul(u64 lhs, u192 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h02 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h02 = 0;
     l00 = _mulx_u64(lhs, rhs.d[0], &h00);
     l01 = _mulx_u64(lhs, rhs.d[1], &h01);
     l02 = _mulx_u64(lhs, rhs.d[2], &h02);
@@ -465,17 +467,17 @@ template <>
 inline u256 mul(u128 lhs, u192 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l12 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h02 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l12 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h02 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l02 = _mulx_u64(lhs.d[0], rhs.d[2], &h02);
@@ -503,20 +505,20 @@ template <>
 inline u256 mul(u192 lhs, u192 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l12 = 0;
-    u64 l20 = 0;
-    u64 l21 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h02 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
-    u64 h20 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l12 = 0;
+    u64_word l20 = 0;
+    u64_word l21 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h02 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
+    u64_word h20 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l02 = _mulx_u64(lhs.d[0], rhs.d[2], &h02);
@@ -547,21 +549,21 @@ template <>
 inline u256 mul(u256 lhs, u192 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l12 = 0;
-    u64 l20 = 0;
-    u64 l21 = 0;
-    u64 l30 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h02 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
-    u64 h20 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l12 = 0;
+    u64_word l20 = 0;
+    u64_word l21 = 0;
+    u64_word l30 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h02 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
+    u64_word h20 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l02 = _mulx_u64(lhs.d[0], rhs.d[2], &h02);
@@ -593,13 +595,13 @@ template <>
 inline u256 mul(u64 lhs, u256 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l03 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h02 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l03 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h02 = 0;
     l00 = _mulx_u64(lhs, rhs.d[0], &h00);
     l01 = _mulx_u64(lhs, rhs.d[1], &h01);
     l02 = _mulx_u64(lhs, rhs.d[2], &h02);
@@ -622,18 +624,18 @@ template <>
 inline u256 mul(u128 lhs, u256 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l03 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l12 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h02 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l03 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l12 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h02 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l02 = _mulx_u64(lhs.d[0], rhs.d[2], &h02);
@@ -662,21 +664,21 @@ template <>
 inline u256 mul(u192 lhs, u256 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l03 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l12 = 0;
-    u64 l20 = 0;
-    u64 l21 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h02 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
-    u64 h20 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l03 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l12 = 0;
+    u64_word l20 = 0;
+    u64_word l21 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h02 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
+    u64_word h20 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l02 = _mulx_u64(lhs.d[0], rhs.d[2], &h02);
@@ -708,22 +710,22 @@ template <>
 inline u256 mul(u256 lhs, u256 rhs)
 {
     u256 res;
-    u64 l00 = 0;
-    u64 l01 = 0;
-    u64 l02 = 0;
-    u64 l03 = 0;
-    u64 l10 = 0;
-    u64 l11 = 0;
-    u64 l12 = 0;
-    u64 l20 = 0;
-    u64 l21 = 0;
-    u64 l30 = 0;
-    u64 h00 = 0;
-    u64 h01 = 0;
-    u64 h02 = 0;
-    u64 h10 = 0;
-    u64 h11 = 0;
-    u64 h20 = 0;
+    u64_word l00 = 0;
+    u64_word l01 = 0;
+    u64_word l02 = 0;
+    u64_word l03 = 0;
+    u64_word l10 = 0;
+    u64_word l11 = 0;
+    u64_word l12 = 0;
+    u64_word l20 = 0;
+    u64_word l21 = 0;
+    u64_word l30 = 0;
+    u64_word h00 = 0;
+    u64_word h01 = 0;
+    u64_word h02 = 0;
+    u64_word h10 = 0;
+    u64_word h11 = 0;
+    u64_word h20 = 0;
     l00 = _mulx_u64(lhs.d[0], rhs.d[0], &h00);
     l01 = _mulx_u64(lhs.d[0], rhs.d[1], &h01);
     l02 = _mulx_u64(lhs.d[0], rhs.d[2], &h02);

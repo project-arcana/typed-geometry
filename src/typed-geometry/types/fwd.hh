@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cstdint>
+
 namespace tg
 {
-using u64 = unsigned long long;
+using u64 = std::uint64_t;
 
 // general purpose types:
 template <class T, u64 N>
