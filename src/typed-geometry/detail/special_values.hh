@@ -1,5 +1,6 @@
 #pragma once
 
+#include <typed-geometry/types/comp.hh>
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/mat.hh>
 #include <typed-geometry/types/pos.hh>
@@ -299,6 +300,15 @@ template <class ScalarT>
 const size<4, ScalarT> size<4, ScalarT>::ones = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
 template <class ScalarT>
 const size<4, ScalarT> size<4, ScalarT>::unit = {ScalarT(1), ScalarT(1), ScalarT(1), ScalarT(1)};
+
+template <class ScalarT>
+const comp<1, ScalarT> comp<1, ScalarT>::zero = {ScalarT(0)};
+template <class ScalarT>
+const comp<2, ScalarT> comp<2, ScalarT>::zero = {ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const comp<3, ScalarT> comp<3, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0)};
+template <class ScalarT>
+const comp<4, ScalarT> comp<4, ScalarT>::zero = {ScalarT(0), ScalarT(0), ScalarT(0), ScalarT(0)};
 
 template <int C, int R, class ScalarT>
 const mat<C, R, ScalarT> mat<C, R, ScalarT>::zero = {};
