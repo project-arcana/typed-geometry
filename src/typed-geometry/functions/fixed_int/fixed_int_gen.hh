@@ -21,7 +21,7 @@ using intrinsic_i128 = __int128;
 #pragma GCC diagnostic pop
 #endif
 
-using u64_word = fixed_int<1>::Word;
+using u64_word = fixed_int<1>::word_t;
 
 template <>
 inline i128 imul(i128 lhs, i128 rhs)

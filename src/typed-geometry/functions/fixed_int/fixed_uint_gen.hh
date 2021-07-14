@@ -12,7 +12,7 @@
 
 namespace tg::detail
 {
-using u64_word = fixed_uint<1>::Word;
+using u64_word = fixed_uint<1>::word_t;
 
 template <>
 inline u128 mul(u64 lhs, u64 rhs)
