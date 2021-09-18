@@ -17,8 +17,7 @@ namespace tg
 template <class T>
 [[nodiscard]] constexpr mat<4, 4, T> rotation_around(dir<3, T> const& axis, angle_t<T> angle)
 {
-    auto ca = cos(angle);
-    auto sa = sin(angle);
+    auto [sa, ca] = sin_cos(angle);
     auto one_minus_ca = T(1) - ca;
 
     auto ux = axis.x;
@@ -50,8 +49,7 @@ template <class T>
 template <class T>
 [[nodiscard]] constexpr mat<4, 4, T> rotation_x(angle_t<T> a)
 {
-    auto ca = cos(a);
-    auto sa = sin(a);
+    auto [sa, ca] = sin_cos(a);
 
     auto m = mat<4, 4, T>::identity;
     m[1][1] = ca;
@@ -63,8 +61,7 @@ template <class T>
 template <class T>
 [[nodiscard]] constexpr mat<4, 4, T> rotation_y(angle_t<T> a)
 {
-    auto ca = cos(a);
-    auto sa = sin(a);
+    auto [sa, ca] = sin_cos(a);
 
     auto m = mat<4, 4, T>::identity;
     m[0][0] = ca;
@@ -76,8 +73,7 @@ template <class T>
 template <class T>
 [[nodiscard]] constexpr mat<4, 4, T> rotation_z(angle_t<T> a)
 {
-    auto ca = cos(a);
-    auto sa = sin(a);
+    auto [sa, ca] = sin_cos(a);
 
     auto m = mat<4, 4, T>::identity;
     m[0][0] = ca;
@@ -139,8 +135,7 @@ template <class ScalarT>
 {
     auto origin_to_p = p - pos<2, ScalarT>::zero;
 
-    auto ca = cos(a);
-    auto sa = sin(a);
+    auto [sa, ca] = sin_cos(a);
 
     auto r = mat<3, 3, ScalarT>::identity;
 
@@ -155,19 +150,19 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr vec<2, ScalarT> rotate(vec<2, ScalarT> v, angle_t<ScalarT> a)
 {
-    auto [sin, cos] = tg::sin_cos(a);
-    return {cos * v.x - sin * v.y, sin * v.x + cos * v.y};
+    auto [sa, ca] = sin_cos(a);
+    return {ca * v.x - sa * v.y, sa * v.x + ca * v.y};
 }
 template <class ScalarT>
 [[nodiscard]] constexpr dir<2, ScalarT> rotate(dir<2, ScalarT> v, angle_t<ScalarT> a)
 {
-    auto [sin, cos] = tg::sin_cos(a);
-    return {cos * v.x - sin * v.y, sin * v.x + cos * v.y};
+    auto [sa, ca] = sin_cos(a);
+    return {ca * v.x - sa * v.y, sa * v.x + ca * v.y};
 }
 template <class ScalarT>
 [[nodiscard]] constexpr pos<2, ScalarT> rotate(pos<2, ScalarT> v, angle_t<ScalarT> a)
 {
-    auto [sin, cos] = tg::sin_cos(a);
-    return {cos * v.x - sin * v.y, sin * v.x + cos * v.y};
+    auto [sa, ca] = sin_cos(a);
+    return {ca * v.x - sa * v.y, sa * v.x + ca * v.y};
 }
 } // namespace tg

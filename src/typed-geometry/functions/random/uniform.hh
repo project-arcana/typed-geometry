@@ -7,6 +7,7 @@
 
 #include <typed-geometry/types/color.hh>
 #include <typed-geometry/types/pos.hh>
+#include <typed-geometry/types/quat.hh>
 #include <typed-geometry/types/range.hh>
 #include <typed-geometry/types/scalars/scalars.hh>
 
@@ -832,6 +833,22 @@ struct sampler<dir<D, ScalarT>>
             auto l = length_sqr(p);
             if (l > ScalarT(0) && l <= ScalarT(1))
                 return tg::dir<D, ScalarT>(p / sqrt(l));
+        }
+    }
+};
+template <class ScalarT>
+struct sampler<quaternion<ScalarT>>
+{
+    template <class Rng>
+    constexpr static quaternion<ScalarT> uniform(Rng& rng)
+    {
+        auto ub = aabb<4, ScalarT>::minus_one_to_one;
+        while (true)
+        {
+            auto p = uniform_vec(rng, ub);
+            auto l = length_sqr(p);
+            if (l > ScalarT(0) && l <= ScalarT(1))
+                return tg::quaternion<ScalarT>(p / sqrt(l));
         }
     }
 };
