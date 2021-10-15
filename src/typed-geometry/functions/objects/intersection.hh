@@ -1263,6 +1263,36 @@ template <int D, class ScalarT>
     return intersection(b, a);
 }
 
+// sphere_boundary<3, ScalarT> -- segment3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(sphere_boundary<3, ScalarT> const& sphere_boundary, segment<3, ScalarT> const& segment)
+{
+    auto const line = line3::from_points(segment.pos0, segment.pos1);
+    auto const params = intersection_parameter(line, sphere_boundary);
+
+    if (!params.any())
+        return {};
+
+    auto const dist = distance(segment.pos0, segment.pos1);
+    auto n_hits = 0;
+    tg::pos<3, ScalarT> ps[2];
+    for (auto i = 0; i < params.size(); ++i)
+    {
+        auto const t = params[i];
+        if (ScalarT(0) <= t && t <= dist)
+        {
+            ps[n_hits++] = line[t];
+        }
+    }
+    return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, sphere_boundary<3, ScalarT> const& sphere_boundary)
+{
+    return intersection(sphere_boundary, segment);
+}
+
 
 // ====================================== Checks if Object Intersects aabb ======================================
 
