@@ -22,6 +22,7 @@
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/span.hh>
 
+#include <typed-geometry/functions/matrix/determinant.hh> //?
 #include <typed-geometry/functions/vector/cross.hh>
 #include <typed-geometry/functions/vector/dot.hh>
 #include <typed-geometry/functions/vector/length.hh>
@@ -38,6 +39,7 @@
 
 #include <array>
 #include <utility>
+#include <vector> // ?
 
 // family of intersection functions:
 
@@ -165,8 +167,7 @@ template <int D, class ScalarT, class... Objs>
     hits[1] = tg::min<ScalarT>();
     auto numHits = 0;
 
-    const auto find_hits = [&](const auto& obj)
-    {
+    const auto find_hits = [&](const auto& obj) {
         const auto inters = intersection_parameter(line, obj);
         for (const auto& inter : inters)
         {
@@ -1480,8 +1481,7 @@ template <int D, class ScalarT>
     auto const b_min = b.min;
     auto const b_max = b.max;
     auto const c = s.center;
-    auto const clamped_sqr = [](ScalarT v)
-    {
+    auto const clamped_sqr = [](ScalarT v) {
         v = tg::max(ScalarT(0), v);
         return v * v;
     };
@@ -1858,8 +1858,7 @@ template <class ScalarT>
 
     auto aabb_pts = vertices_of(b);
 
-    auto const is_separate = [&](pos<2, ScalarT> pa, vec<2, ScalarT> n, pos<2, ScalarT> pb)
-    {
+    auto const is_separate = [&](pos<2, ScalarT> pa, vec<2, ScalarT> n, pos<2, ScalarT> pb) {
         auto da = dot(n, pa);
         auto db = dot(n, pb);
 
@@ -1914,8 +1913,7 @@ template <class ScalarT>
         tri_aabb.min.x > amax.x || tri_aabb.min.y > amax.y || tri_aabb.min.z > amax.z)
         return false;
 
-    auto const proper_contains = [](aabb<3, ScalarT> const& b, pos_t const& p)
-    {
+    auto const proper_contains = [](aabb<3, ScalarT> const& b, pos_t const& p) {
         return b.min.x < p.x && p.x < b.max.x && //
                b.min.y < p.y && p.y < b.max.y && //
                b.min.z < p.z && p.z < b.max.z;
@@ -1944,8 +1942,7 @@ template <class ScalarT>
 
     // 9 axis SAT test
     {
-        auto const is_seperating = [amax](vec<3, ScalarT> const& n, pos_t const& tp0, pos_t const& tp1) -> bool
-        {
+        auto const is_seperating = [amax](vec<3, ScalarT> const& n, pos_t const& tp0, pos_t const& tp1) -> bool {
             if (tg::is_zero_vector(n))
                 return false; // not a real candidate axis
 
@@ -2013,18 +2010,18 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& t)
 {
-    //std::array<pos<3, ScalarT>, 3> triangle_pos = {t.pos0, t.pos1, t.pos2};
+    // std::array<pos<3, ScalarT>, 3> triangle_pos = {t.pos0, t.pos1, t.pos2};
 
     // classify vertices,
     auto sign_v1 = signed_distance(t.pos0, plane);
     auto sign_v2 = signed_distance(t.pos1, plane);
     auto sign_v3 = signed_distance(t.pos2, plane);
 
-    //TODO: Take booleans instead of float
+    // TODO: Take booleans instead of float
 
     // exclude some degenerate cases? e.g. vertices of triangle on same positions, angle constraints..
 
-    if (tg::max(sign_v1, sign_v2, sign_v3) < 0 || tg::min(sign_v1, sign_v2, sign_v3) > 0) // no intersection (early out)
+    if (max(sign_v1, sign_v2, sign_v3) < 0 || min(sign_v1, sign_v2, sign_v3) > 0) // no intersection (early out)
         return {};
 
     // isolated vertex
@@ -2070,14 +2067,14 @@ template <class ScalarT>
     {
         if (sign == 0)
         {
-            sign = tg::dot(plane.normal, tr) - plane.dis;
+            sign = dot(plane.normal, tr) - plane.dis;
             if (sign == 0)
                 return true;
         }
 
         else
         {
-            if ((tg::dot(plane.normal, tr) - plane.dis) * sign < 0)
+            if ((dot(plane.normal, tr) - plane.dis) * sign < 0)
                 return true;
         }
     }
@@ -2092,11 +2089,50 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersection(triangle<3, ScalarT> const& t1, triangle<3, ScalarT> const& t2)
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(triangle<3, ScalarT> const& t1, triangle<3, ScalarT> const& t2)
 {
-    // early out: check with plane
-    tg::plane<3, ScalarT> plane_t1 = plane<3, ScalarT>(tg::cross((t1.pos1 - t1.pos0), (t1.pos2 - t1.pos0)), t1.pos0);
-    return true;
+    // early out: check with plane clamped by triangle t1
+    auto const plane_t1 = plane_of(t1);
+
+    if (!intersects(t2, plane_t1))
+        return {};
+
+    array<pos<3, ScalarT>, 2> insecs;
+    array<segment<3, ScalarT>, 3> segments_t1 = edges_of(t1);    //{{t1.pos0, t1.pos1}, {t1.pos1, t1.pos2}, {t1.pos2, t1.pos0}};
+    array<segment<3, ScalarT>, 3> segments_t2 = edges_of(t2); //{{t2.pos0, t2.pos1}, {t2.pos1, t2.pos2}, {t2.pos2, t2.pos0}};
+    int insec_count = 0;
+
+    // check intersection of t1 segments with t2
+    for (auto const& s : segments_t1)
+    {
+        auto insec = intersection(s, t2);
+
+        if (insec.has_value())
+        {
+            insecs[insec_count++] = insec.value();
+        }
+
+        if (insec_count >= 2)
+            return segment<3, ScalarT>{insecs[0], insecs[1]};
+    }
+
+    // check intersection of t2 segments with t1
+    for (auto const& s : segments_t2)
+    {
+        auto insec = intersection(s, t1);
+        if (insec.has_value())
+        {
+            insecs[insec_count++] = insec.value();
+        }
+
+        if (insec_count >= 2)
+            return segment<3, ScalarT>{insecs[0], insecs[1]};
+    }
+
+    if (insec_count == 1)
+        return segment<3, ScalarT>{insecs[0], insecs[0]};
+
+    return {};
 }
 
 template <class ScalarT>
@@ -2111,7 +2147,7 @@ template <class ScalarT>
     if (!insec.has_value())
         return {};
 
-    // insec on triangle?
+    // insec in triangle?
     dir<3, ScalarT> a = normalize(cross(t.pos1 - t.pos0, normal_t));
     dir<3, ScalarT> b = normalize(cross(t.pos2 - t.pos1, normal_t));
     dir<3, ScalarT> c = normalize(cross(t.pos0 - t.pos2, normal_t));
@@ -2130,6 +2166,5 @@ template <class ScalarT>
 {
     return intersection(seg, t);
 }
-
 
 } // namespace tg
