@@ -38,6 +38,7 @@
 #include "project.hh"
 
 #include <array>
+#include <type_traits> // ?
 #include <utility>
 #include <vector> // ?
 
@@ -217,6 +218,38 @@ template <class ScalarT>
 
 template <class A, class B>
 using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
+
+template <class ScalarT, class B>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection_segment_object_impl(segment<3, ScalarT> const& s, B const& o)
+{
+    bool con_pos0 = contains(o, s.pos0);
+    bool con_pos1 = contains(o, s.pos1);
+
+    // Case 1: Both seg. points are inside the cylinder
+    if (con_pos0 && con_pos1)
+        return segment<3, ScalarT>{s.pos0, s.pos1};
+
+    line<3, ScalarT> segment_line = line<3, ScalarT>(s.pos0, normalize(s.pos1 - s.pos0));
+    auto insec = intersection_parameter(segment_line, o);
+
+    // No intersection exists
+    if (!insec.has_value())
+        return {};
+
+    // Case 2: One seg. point inside the cylinder and one outside -> intersection with boundary must exist
+    if (con_pos0 || con_pos1)
+    {
+        // one point of the segment is inside the cylinder and one is outside -> intersection must exist
+        auto param = con_pos0 ? max(insec.value().start, insec.value().end) : min(insec.value().start, insec.value().end);
+        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * param, con_pos0 ? s.pos0 : s.pos1};
+    }
+
+    // Case 3: both points of segment outside of the cylinder
+    if (0 < insec.value().start < length(s) && 0 < insec.value().end < length(s))
+        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * insec.value().start, segment_line.pos + segment_line.dir * insec.value().end};
+
+    return {};
+}
 }
 
 
@@ -2098,7 +2131,7 @@ template <class ScalarT>
         return {};
 
     array<pos<3, ScalarT>, 2> insecs;
-    array<segment<3, ScalarT>, 3> segments_t1 = edges_of(t1);    //{{t1.pos0, t1.pos1}, {t1.pos1, t1.pos2}, {t1.pos2, t1.pos0}};
+    array<segment<3, ScalarT>, 3> segments_t1 = edges_of(t1); //{{t1.pos0, t1.pos1}, {t1.pos1, t1.pos2}, {t1.pos2, t1.pos0}};
     array<segment<3, ScalarT>, 3> segments_t2 = edges_of(t2); //{{t2.pos0, t2.pos1}, {t2.pos1, t2.pos2}, {t2.pos2, t2.pos0}};
     int insec_count = 0;
 
@@ -2165,6 +2198,76 @@ template <class ScalarT>
 [[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(triangle<3, ScalarT> const& t, segment<3, ScalarT> const& seg)
 {
     return intersection(seg, t);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, aabb<3, ScalarT> const& bb) // NOT CONFIRMED
+{
+    // TODO: There might be a more effective way!
+    line<3, ScalarT> segment_line = {s.pos0, normalize(s.pos1 - s.pos0)};
+    auto param_insec = intersection_parameter(segment_line, bb);
+
+    if (!param_insec.has_value())
+        return {};
+
+    // parameters
+    auto a = param_insec.value().start;
+    auto b = param_insec.value().end;
+
+    // intersection may exist
+    if (param_insec.value().start < length(s) && param_insec.value().end < length(s))
+    {
+        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
+    }
+
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, box<3, ScalarT> const& bx)
+{
+    // TODO: some cases unhandled (one seg. point inside the box or both points inside of the box
+    line<3, ScalarT> segment_line = {s.pos0, normalize(s.pos1 - s.pos0)};
+    auto param_insec = intersection_parameter(segment_line, bx);
+
+    if (!param_insec.has_value())
+        return {};
+
+    // parameters
+    auto a = param_insec.value().start;
+    auto b = param_insec.value().end;
+
+    // intersection may exist
+    if (a < length(s) && b < length(s) && a > 0 && b > 0)
+    {
+        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
+    }
+
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, capsule<3, ScalarT> const& c)
+{
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder<3, ScalarT> const& c)
+{
+    return detail::intersection_segment_object_impl(s, c);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, ellipse<3, ScalarT> const& e)
+{
+    return detail::intersection_segment_object_impl(s, e);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, sphere<3, ScalarT> const& e)
+{
+    return detail::intersection_segment_object_impl(s, e);
 }
 
 } // namespace tg
