@@ -2270,4 +2270,35 @@ template <class ScalarT>
     return detail::intersection_segment_object_impl(s, e);
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, tube<3, ScalarT> const& t)
+{
+    return detail::intersection_segment_object_impl(s, t);
+}
+
+// segment3 - cylinder_boundary
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, cylinder_boundary<3, ScalarT> const& cylinder_boundary)
+{
+    // This is a standard solution that can be applied to any boundary case
+    auto const line = line3::from_points(segment.pos0, segment.pos1);
+    auto const params = intersection_parameter(line, cylinder_boundary);
+
+    if (!params.any())
+        return {};
+
+    auto const dist = distance(segment.pos0, segment.pos1);
+    auto n_hits = 0;
+    tg::pos<3, ScalarT> ps[2];
+    for (auto i = 0; i < params.size(); ++i)
+    {
+        auto const t = params[i];
+        if (ScalarT(0) <= t && t <= dist)
+        {
+            ps[n_hits++] = line[t];
+        }
+    }
+    return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
+}
+
 } // namespace tg
