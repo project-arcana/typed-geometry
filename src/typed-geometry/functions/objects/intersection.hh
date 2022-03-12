@@ -2300,5 +2300,95 @@ template <class ScalarT>
     }
     return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
 }
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(box<2, ScalarT> const& a, box<2, ScalarT> const& b)
+{
+    if (a.center == b.center)
+        return true;
+
+    auto const ab = b.center - a.center;
+    auto const ba = -ab;
+
+    /// compute the smallest corner of box in direction d
+    auto const min_point = [](tg::dir2 d, box<2, ScalarT> const& box) {
+        auto point = box.center;
+        if (dot(d, box.half_extents[0]) > 0)
+            point -= box.half_extents[0];
+        else
+            point += box.half_extents[0];
+        if (dot(d, box.half_extents[1]) > 0)
+            point -= box.half_extents[1];
+        else
+            point += box.half_extents[1];
+        return point;
+    };
+
+    // the idea here is that we need only check the two planes facing the center of the other bounding box
+    // and only need to check against the smallest corner
+
+    // check planes of a vs smallest point of b
+    if (dot(ab, a.half_extents[0]) > 0)
+    {
+        auto plane = tg::plane2(normalize(a.half_extents[0]), a.center + a.half_extents[0]);
+        auto point_to_check = min_point(plane.normal, b);
+        if (signed_distance(point_to_check, plane) > 0)
+            return false;
+    }
+    else
+    {
+        auto plane = tg::plane2(normalize(-a.half_extents[0]), a.center - a.half_extents[0]);
+        auto point_to_check = min_point(plane.normal, b);
+        if (signed_distance(point_to_check, plane) > 0)
+            return false;
+    }
+
+    if (dot(ab, a.half_extents[1]) > 0)
+    {
+        auto plane = tg::plane2(normalize(a.half_extents[1]), a.center + a.half_extents[1]);
+        auto point_to_check = min_point(plane.normal, b);
+        if (signed_distance(point_to_check, plane) > 0)
+            return false;
+    }
+    else
+    {
+        auto plane = tg::plane2(normalize(-a.half_extents[1]), a.center - a.half_extents[1]);
+        auto point_to_check = min_point(plane.normal, b);
+        if (signed_distance(point_to_check, plane) > 0)
+            return false;
+    }
+
+    // check planes of b vs smallest point of a
+    if (dot(ba, b.half_extents[0]) > 0)
+    {
+        auto plane = tg::plane2(normalize(b.half_extents[0]), b.center + b.half_extents[0]);
+        auto point_to_check = min_point(plane.normal, a);
+        if (signed_distance(point_to_check, plane) > 0)
+            return false;
+    }
+    else
+    {
+        auto plane = tg::plane2(normalize(-b.half_extents[0]), b.center - b.half_extents[0]);
+        auto point_to_check = min_point(plane.normal, a);
+        if (signed_distance(point_to_check, plane) > 0)
+            return false;
+    }
+
+    if (dot(ba, b.half_extents[1]) > 0)
+    {
+        auto plane = tg::plane2(normalize(b.half_extents[1]), b.center + b.half_extents[1]);
+        auto point_to_check = min_point(plane.normal, a);
+        if (signed_distance(point_to_check, plane) > 0)
+            return false;
+    }
+    else
+    {
+        auto plane = tg::plane2(normalize(-b.half_extents[1]), b.center - b.half_extents[1]);
+        auto point_to_check = min_point(plane.normal, a);
+        if (signed_distance(point_to_check, plane) > 0)
+            return false;
+    }
+
+    return true;
+}
 
 } // namespace tg
