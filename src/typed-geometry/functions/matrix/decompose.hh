@@ -69,7 +69,7 @@ constexpr void decompose_transformation(mat<4, 4, T> const& M, vec<3, T>& transl
 
 /// returns the translation encoded in the transformation matrix as a vector
 template <class T, int D>
-constexpr vec<D - 1, T> transformation_of(mat<D, D, T> const& M)
+constexpr vec<D - 1, T> translation_of(mat<D, D, T> const& M)
 {
     return vec<D - 1, T>(M[3]);
 }
