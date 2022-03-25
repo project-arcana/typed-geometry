@@ -396,11 +396,8 @@ using compact_size_t_typed = size_t_for<N, alignof(T)>;
 template <unsigned... digits>
 struct digits_to_string_literal
 {
-    static const char value[];
+    static constexpr const char value[] = {('0' + digits)..., 0};
 };
-
-template <unsigned... digits>
-constexpr char digits_to_string_literal<digits...>::value[] = {('0' + digits)..., 0};
 
 template <unsigned rem, unsigned... digits>
 struct number_to_string_literal_t : number_to_string_literal_t<rem / 10, rem % 10, digits...>
