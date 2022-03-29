@@ -2249,7 +2249,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, capsule<3, ScalarT> const& c)
 {
-    return {};
+    return detail::intersection_segment_object_impl(s, c);
 }
 
 template <class ScalarT>
@@ -2300,6 +2300,7 @@ template <class ScalarT>
     }
     return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
 }
+
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<2, ScalarT> const& a, box<2, ScalarT> const& b)
 {
@@ -2390,5 +2391,309 @@ template <class ScalarT>
 
     return true;
 }
+
+// template <class ScalarT>
+//[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& a, box<3, ScalarT> const& b)
+//{
+//    if (a.center == b.center)
+//        return true;
+//
+//    auto const ab = b.center - a.center;
+//    auto const ba = -ab;
+//
+//    /// compute the smallest corner of box in direction d
+//    auto const min_point = [](tg::dir3 d, box<3, ScalarT> const& box) {
+//        auto point = box.center;
+//        if (dot(d, box.half_extents[0]) > 0)
+//            point -= box.half_extents[0];
+//        else
+//            point += box.half_extents[0];
+//        if (dot(d, box.half_extents[1]) > 0)
+//            point -= box.half_extents[1];
+//        else
+//            point += box.half_extents[1];
+//        if (dot(d, box.half_extents[2]) > 0)
+//            point -= box.half_extents[2];
+//        else
+//            point += box.half_extents[2];
+//        return point;
+//    };
+//
+//    // the idea here is that we need only check the two planes facing the center of the other bounding box
+//    // and only need to check against the smallest corner
+//
+//    // check planes of a vs smallest point of b
+//    if (dot(ab, a.half_extents[0]) > 0)
+//    {
+//        auto plane = tg::plane3(normalize(a.half_extents[0]), a.center + a.half_extents[0]);
+//        auto point_to_check = min_point(plane.normal, b);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//    else
+//    {
+//        auto plane = tg::plane3(normalize(-a.half_extents[0]), a.center - a.half_extents[0]);
+//        auto point_to_check = min_point(plane.normal, b);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//
+//    if (dot(ab, a.half_extents[1]) > 0)
+//    {
+//        auto plane = tg::plane3(normalize(a.half_extents[1]), a.center + a.half_extents[1]);
+//        auto point_to_check = min_point(plane.normal, b);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//    else
+//    {
+//        auto plane = tg::plane3(normalize(-a.half_extents[1]), a.center - a.half_extents[1]);
+//        auto point_to_check = min_point(plane.normal, b);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//
+//    if (dot(ab, a.half_extents[2]) > 0)
+//    {
+//        auto plane = tg::plane3(normalize(a.half_extents[2]), a.center + a.half_extents[2]);
+//        auto point_to_check = min_point(plane.normal, b);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//    else
+//    {
+//        auto plane = tg::plane3(normalize(-a.half_extents[2]), a.center - a.half_extents[2]);
+//        auto point_to_check = min_point(plane.normal, b);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//
+//    // check planes of b vs smallest point of a
+//    if (dot(ba, b.half_extents[0]) > 0)
+//    {
+//        auto plane = tg::plane3(normalize(b.half_extents[0]), b.center + b.half_extents[0]);
+//        auto point_to_check = min_point(plane.normal, a);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//    else
+//    {
+//        auto plane = tg::plane3(normalize(-b.half_extents[0]), b.center - b.half_extents[0]);
+//        auto point_to_check = min_point(plane.normal, a);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//
+//    if (dot(ba, b.half_extents[1]) > 0)
+//    {
+//        auto plane = tg::plane3(normalize(b.half_extents[1]), b.center + b.half_extents[1]);
+//        auto point_to_check = min_point(plane.normal, a);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//    else
+//    {
+//        auto plane = tg::plane3(normalize(-b.half_extents[1]), b.center - b.half_extents[1]);
+//        auto point_to_check = min_point(plane.normal, a);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//
+//    if (dot(ba, b.half_extents[2]) > 0)
+//    {
+//        auto plane = tg::plane3(normalize(b.half_extents[2]), b.center + b.half_extents[2]);
+//        auto point_to_check = min_point(plane.normal, a);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//    else
+//    {
+//        auto plane = tg::plane3(normalize(-b.half_extents[2]), b.center - b.half_extents[2]);
+//        auto point_to_check = min_point(plane.normal, a);
+//        if (signed_distance(point_to_check, plane) > 0)
+//            return false;
+//    }
+//
+//    return true;
+//}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& a, box<3, ScalarT> const& b)
+{
+    if (a.center == b.center)
+        return true;
+
+    // Separating Axes Theorem
+    auto const axis_check = [](tg::dir<3, ScalarT> d, box<3, ScalarT> const& box_a, box<3, ScalarT> const& box_b) -> bool {
+        float minProja = std::numeric_limits<float>::max();
+        float maxProja = std::numeric_limits<float>::min();
+        float minProjb = std::numeric_limits<float>::max();
+        float maxProjb = std::numeric_limits<float>::min();
+
+        for (auto x : {-1, 1})
+            for (auto y : {-1, 1})
+                for (auto z : {-1, 1})
+                {
+                    vec3 v = {float(x), float(y), float(z)};
+
+                    auto proja = dot(d, box_a.half_extents * v);
+                    if (proja < minProja)
+                        minProja = proja;
+                    if (proja > maxProja)
+                        maxProja = proja;
+
+                    auto projb = dot(d, box_b.half_extents * v);
+                    if (projb < minProjb)
+                        minProjb = projb;
+                    if (projb > maxProjb)
+                        maxProjb = projb;
+                }
+
+        if (maxProja < minProjb || minProja > maxProjb)
+            return true; // extents of boxes projected onto axis are overlapping -> intersection)
+
+        return false;
+    };
+
+    dir<3, ScalarT> ax = normalize(a.half_extents[0]);
+    dir<3, ScalarT> ay = normalize(a.half_extents[1]);
+    dir<3, ScalarT> az = normalize(a.half_extents[2]);
+
+    dir<3, ScalarT> bx = normalize(b.half_extents[0]);
+    dir<3, ScalarT> by = normalize(b.half_extents[1]);
+    dir<3, ScalarT> bz = normalize(b.half_extents[2]);
+
+    auto cross_ax_bx = cross(ax, bx);
+    auto cross_ax_by = cross(ax, by);
+    auto cross_ax_bz = cross(ax, bz);
+
+    auto cross_ay_bx = cross(ay, bx);
+    auto cross_ay_by = cross(ay, by);
+    auto cross_ay_bz = cross(ay, bz);
+
+    auto cross_az_bx = cross(az, bx);
+    auto cross_az_by = cross(az, by);
+    auto cross_az_bz = cross(az, bz);
+
+    // ax
+    if (axis_check(ax, a, b))
+        return true;
+
+    // ay
+    if (axis_check(ay, a, b))
+        return true;
+
+    // az
+    if (axis_check(az, a, b))
+        return true;
+
+    // bx
+    if (axis_check(bx, a, b))
+        return true;
+
+    // by
+    if (axis_check(by, a, b))
+        return true;
+
+    // bz
+    if (axis_check(bz, a, b))
+        return true;
+
+    // ax_bx
+    if (length(cross_ax_bx) > 0 ? axis_check(normalize(cross_ax_bx), a, b) : false)
+        return true;
+
+    // ax_by
+    if (length(cross_ax_by) > 0 ? axis_check(normalize(cross_ax_by), a, b) : false)
+        return true;
+
+    // ax_bz
+    if (length(cross_ax_bz) > 0 ? axis_check(normalize(cross_ax_bz), a, b) : false)
+        return true;
+
+    // ay_by
+    if (length(cross_ay_bx) > 0 ? axis_check(normalize(cross_ay_bx), a, b) : false)
+        return true;
+
+    // ay_by
+    if (length(cross_ay_by) > 0 ? axis_check(normalize(cross_ay_by), a, b) : false)
+        return true;
+
+    // ay_bz
+    if (length(cross_ay_bz) > 0 ? axis_check(normalize(cross_ay_bz), a, b) : false)
+        return true;
+
+    // az_bx
+    if (length(cross_az_bx) > 0 ? axis_check(normalize(cross_az_bx), a, b) : false)
+        return true;
+
+    // az_by
+    if (length(cross_az_by) > 0 ? axis_check(normalize(cross_az_by), a, b) : false)
+        return true;
+
+    // az_bz
+    if (length(cross_az_bz) > 0 ? axis_check(normalize(cross_az_bz), a, b) : false)
+        return true;
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+{
+    return distance(a.center, b.center) < (a.radius + b.radius);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+{
+    vec<3, ScalarT> box_vertices[8] = {{-1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {1, 1, 1}, {1, -1, 1}};
+
+    // as early-out
+    for (auto v : box_vertices)
+    {
+        auto dist = length((b.half_extents * v) - b.center);
+
+        if (dist < b.radius)
+            return true;
+    }
+
+    // TODO: Segment/Plane intersection
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+{
+    if (distance(a, b.center) < b.radius)
+        return true;
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& a, plane<3, ScalarT> const& b)
+{
+    return intersects(b, a);
+}
+
+// template <class ScalarT>
+//[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& a, quad<3, ScalarT> const& b)
+//{
+//    segment<3, ScalarT> quad_segs[4] = {{b.pos00, b.pos10}, {b.pos10, b.pos11}, {b.pos11, b.pos01}, {b.pos01, b.pos00}};
+//
+//    for (auto& s : quad_segs)
+//    {
+//        if (intersects(s, sphere))
+//            return true;
+//    }
+//
+//    return false;
+//}
+
+// template <class ScalarT>
+//[[nodiscard]] constexpr bool intersects(quad<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+//{
+//    return intersects(b, a);
+//}
 
 } // namespace tg
