@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <initializer_list>
 
@@ -13,7 +13,7 @@ TEST("TypedGeometry.Round")
     }
 }
 
-TG_FUZZ_TEST(TypedGeometry, RoundRand)
+FUZZ_TEST("RoundRand")(tg::rng& rng)
 {
     auto v = tg::uniform(rng, -10.0f, 10.0f);
 

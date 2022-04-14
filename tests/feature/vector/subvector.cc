@@ -1,6 +1,6 @@
 #include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Subvector)
+FUZZ_TEST("Subvector")(tg::rng& rng)
 {
     // 1D
     {

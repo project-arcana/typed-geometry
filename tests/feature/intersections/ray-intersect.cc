@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Intersections)
+FUZZ_TEST("Intersections")(tg::rng& rng)
 {
     auto const tolerance = 0.002f;
     auto const test_obj = [tolerance](auto const& ray, auto const& obj) {
@@ -221,7 +221,7 @@ TG_FUZZ_TEST(TypedGeometry, Intersections)
     test_obj(ray3, tg::triangle3(pos30, pos31, pos32));
 }
 
-TG_FUZZ_TEST(Intersect, LineLine2)
+FUZZ_TEST("Intersect - LineLine2")(tg::rng& rng)
 {
     auto bb = tg::aabb2(-10.f, 10.f);
     auto l0 = tg::line2::from_points(uniform(rng, bb), uniform(rng, bb));
@@ -231,7 +231,7 @@ TG_FUZZ_TEST(Intersect, LineLine2)
     CHECK(l0[t0] == approx(l1[t1], 0.01f));
 }
 
-TG_FUZZ_TEST(Intersect, SegSeg2)
+FUZZ_TEST("Intersect - SegSeg2")(tg::rng& rng)
 {
     auto bb = tg::aabb2(-10.f, 10.f);
     auto s0 = tg::segment2(uniform(rng, bb), uniform(rng, bb));

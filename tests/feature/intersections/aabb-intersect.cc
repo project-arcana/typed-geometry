@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(AABB, Intersect)
+FUZZ_TEST("AABB - Intersect")(tg::rng& rng)
 {
     auto const bounds = tg::aabb3(-10, 10);
 
@@ -32,7 +32,7 @@ TG_FUZZ_TEST(AABB, Intersect)
 }
 
 
-TG_FUZZ_TEST(AABB, NonIntersect)
+FUZZ_TEST("AABB - NonIntersect")(tg::rng& rng)
 {
     auto const bounds = tg::aabb3(-10, 10);
 
@@ -65,7 +65,7 @@ TG_FUZZ_TEST(AABB, NonIntersect)
     }
 }
 
-TG_FUZZ_TEST(AABB, SamplingTest)
+FUZZ_TEST("AABB - SamplingTest")(tg::rng& rng)
 {
     auto const bounds = tg::aabb3(-10, 10);
     {
@@ -128,7 +128,7 @@ TG_FUZZ_TEST(AABB, SamplingTest)
     }
 }
 
-TG_FUZZ_TEST(AABB, SphereIntersection)
+FUZZ_TEST("AABB - SphereIntersection")(tg::rng& rng)
 {
     auto const bounds = tg::aabb3(-10, 10);
 
@@ -166,7 +166,7 @@ TG_FUZZ_TEST(AABB, SphereIntersection)
     }
 }
 
-TG_FUZZ_TEST(AABB, TriangleIntersection3)
+FUZZ_TEST("AABB - TriangleIntersection3")(tg::rng& rng)
 {
     auto const bounds = tg::aabb3(-10, 10);
 
@@ -184,7 +184,7 @@ TG_FUZZ_TEST(AABB, TriangleIntersection3)
         CHECK(distance(p, bb) > 0);
 }
 
-TG_FUZZ_TEST(AABB, LineIntersection)
+FUZZ_TEST("AABB - LineIntersection")(tg::rng& rng)
 {
     auto const bounds = tg::aabb2(-10, 10);
     auto const bb = aabb_of(uniform(rng, bounds), uniform(rng, bounds));
@@ -193,7 +193,7 @@ TG_FUZZ_TEST(AABB, LineIntersection)
     CHECK(intersects(line, bb) == tg::intersection_parameter(line, bb).has_value());
 }
 
-TG_FUZZ_TEST(AABB, RayIntersection)
+FUZZ_TEST("AABB - RayIntersection")(tg::rng& rng)
 {
     auto const bounds = tg::aabb2(-10, 10);
     auto const bb = aabb_of(uniform(rng, bounds), uniform(rng, bounds));
@@ -202,7 +202,7 @@ TG_FUZZ_TEST(AABB, RayIntersection)
     CHECK(intersects(ray, bb) == tg::intersection_parameter(ray, bb).has_value());
 }
 
-TG_FUZZ_TEST(AABB, ObjectIntersection)
+FUZZ_TEST("AABB - ObjectIntersection")(tg::rng& rng)
 {
     auto const numSamples = 250;
     auto const test_obj = [&](auto const& bb, auto const& o) {

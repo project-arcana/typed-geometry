@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(Frustum, BasicFuzzer)
+FUZZ_TEST("Frustum - BasicFuzzer")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 

@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Minmax)
+FUZZ_TEST("Minmax")(tg::rng& rng)
 {
     // only values > 0
     auto box1 = tg::aabb1(tg::pos1(0.1f), tg::pos1(1.0f));

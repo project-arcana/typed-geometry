@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 TEST("norms")
 {
@@ -7,7 +7,7 @@ TEST("norms")
     CHECK(frobenius_norm(tg::mat4::ones) == 4.0f);
 }
 
-TG_FUZZ_TEST(TypedGeometry, Norm)
+FUZZ_TEST("Norm")(tg::rng& rng)
 {
     {
         auto max_r = tg::exp(uniform(rng, -4.0f, 4.0f));

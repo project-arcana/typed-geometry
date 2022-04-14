@@ -1,10 +1,10 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <iostream>
 
 #include <typed-geometry/tg.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Distance)
+FUZZ_TEST("Distance")(tg::rng& rng)
 {
     auto rBox1 = tg::aabb1(tg::pos1(-1.0f), tg::pos1(1.0f));
     auto rBox2 = tg::aabb2(tg::pos2(-1.0f, -1.0f), tg::pos2(1.0f, 1.0f));
@@ -290,7 +290,7 @@ float minimize_f1(tg::rng& rng, float step_size, F&& f, int steps = 1500)
 }
 }
 
-TG_FUZZ_TEST(Distance, LineLine3)
+FUZZ_TEST("Distance - LineLine3")(tg::rng& rng)
 {
     auto bb = tg::aabb3(-10, 10);
 
@@ -304,7 +304,7 @@ TG_FUZZ_TEST(Distance, LineLine3)
     CHECK(d == approx(dd).epsilon(0.4f));
 }
 
-TG_FUZZ_TEST(Distance, PosSeg2)
+FUZZ_TEST("Distance - PosSeg2")(tg::rng& rng)
 {
     auto bb = tg::aabb2(-10, 10);
 
@@ -321,7 +321,7 @@ TG_FUZZ_TEST(Distance, PosSeg2)
     CHECK(d == approx(dd).epsilon(0.4f));
 }
 
-TG_FUZZ_TEST(Distance, SegSeg2)
+FUZZ_TEST("Distance - SegSeg2")(tg::rng& rng)
 {
     auto bb = tg::aabb2(-10, 10);
 
@@ -342,7 +342,7 @@ TG_FUZZ_TEST(Distance, SegSeg2)
     CHECK(d == approx(dd).epsilon(0.4f));
 }
 
-TG_FUZZ_TEST(Distance, SegSeg3)
+FUZZ_TEST("Distance - SegSeg3")(tg::rng& rng)
 {
     auto bb = tg::aabb3(-10, 10);
 
@@ -360,7 +360,7 @@ TG_FUZZ_TEST(Distance, SegSeg3)
     CHECK(d == approx(dd).epsilon(0.4f));
 }
 
-TG_FUZZ_TEST(Distance, PosTri3)
+FUZZ_TEST("Distance - PosTri3")(tg::rng& rng)
 {
     auto bb = tg::aabb3(-10, 10);
 
@@ -376,7 +376,7 @@ TG_FUZZ_TEST(Distance, PosTri3)
     CHECK(distance(pp, t) >= d - r);
 }
 
-TG_FUZZ_TEST(Distance, TriangleAABB3)
+FUZZ_TEST("Distance - TriangleAABB3")(tg::rng& rng)
 {
     auto bounds = tg::aabb3(-10, 10);
     auto bb = tg::aabb_of(uniform(rng, bounds), uniform(rng, bounds));

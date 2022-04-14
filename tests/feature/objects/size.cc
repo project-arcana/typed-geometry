@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Size)
+FUZZ_TEST("Size")(tg::rng& rng)
 {
     auto box1 = tg::aabb1(tg::pos1(-1.0f), tg::pos1(0.0f));
     auto r0 = uniform(rng, box1).x;

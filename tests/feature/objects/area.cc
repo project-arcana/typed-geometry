@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, AreaRelations)
+FUZZ_TEST("AreaRelations")(tg::rng& rng)
 {
     const auto r = uniform(rng, 0.0f, 10.0f);
     const auto r2 = uniform(rng, 0.0f, 10.0f);
@@ -63,7 +63,7 @@ TG_FUZZ_TEST(TypedGeometry, AreaRelations)
     CHECK(area_of(cone) == approx(aHemisphereCaps + area_of(boundary_no_caps_of(cone)))); // cone = base + mantle
 }
 
-TG_FUZZ_TEST(TypedGeometry, AreaObjects)
+FUZZ_TEST("AreaObjects")(tg::rng& rng)
 {
     const auto r = uniform(rng, 0.0f, 10.0f);
     const auto h = uniform(rng, 0.0f, 10.0f);

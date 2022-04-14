@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/tg-std.hh>
 
@@ -142,7 +142,7 @@ TG_FUZZ_TEST_MAX_ITS_MAX_CYCLES(TypedGeometry, Project, 25, 100'000'000'000)
     // test_obj(p4, tg::triangle4(pos40, pos41, pos42));
 }
 
-TG_FUZZ_TEST(TypedGeometry, ProjectObjects)
+FUZZ_TEST("ProjectObjects")(tg::rng& rng)
 {
     auto range1 = tg::aabb1(tg::pos1(-10), tg::pos1(10));
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));

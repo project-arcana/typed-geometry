@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 template <int D, class ScalarT>
 static void checkAllEqual(const tg::vec<D, ScalarT>& v, ScalarT c)
 {
@@ -116,7 +116,7 @@ TEST("TypedGeometry.Diag")
     }
 }
 
-TG_FUZZ_TEST(TypedGeometry, Diag)
+FUZZ_TEST("Diag")(tg::rng& rng)
 {
     auto randBox = tg::aabb1(-10.0f, 10.0f);
     // random square matrices

@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, AABB)
+FUZZ_TEST("AABB")(tg::rng& rng)
 {
     auto p0 = uniform(rng, tg::aabb3(tg::pos3(-10.0f), tg::pos3(10.0f)));
     auto p1 = uniform(rng, tg::aabb3(tg::pos3(-10.0f), tg::pos3(10.0f)));
@@ -22,7 +22,7 @@ TG_FUZZ_TEST(TypedGeometry, AABB)
     CHECK(b.min.z <= p1.z);
 }
 
-TG_FUZZ_TEST(TypedGeometry, ObjectAABB)
+FUZZ_TEST("ObjectAABB")(tg::rng& rng)
 {;
     auto const test_obj = [&](auto const& obj) {
         auto bb = aabb_of(obj);

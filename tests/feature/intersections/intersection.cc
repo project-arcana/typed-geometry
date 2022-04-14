@@ -1,8 +1,8 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/tg-std.hh>
 
-TG_FUZZ_TEST(TypedGeometry, IntersectionRay3Sphere3)
+FUZZ_TEST("IntersectionRay3Sphere3")(tg::rng& rng)
 {
     auto box1 = tg::aabb1(tg::pos1(-1.0f), tg::pos1(1.0f));
     auto box3 = tg::aabb3(tg::pos3(-1.0f), tg::pos3(1.0f));
@@ -166,7 +166,7 @@ TEST("TypedGeometry.IntersectionSphere3Sphere3")
         CHECK(res.has_value());
 
         // radius is sqrt(1^2 - 0.5^2)
-        CHECK(res.value().radius == approx(tg::sqrt(0.75f)));
+        CHECK(res.value().radius == nx::approx(tg::sqrt(0.75f)));
 
         // intersection circle center exactly between sphere centers
         CHECK(res.value().center == tg::pos3(0, 0, 0.5));
@@ -190,7 +190,7 @@ TEST("TypedGeometry.IntersectionSphere3Sphere3")
         CHECK(res.has_value());
 
         // radius is sqrt(1^2 - 0.5^2)
-        CHECK(res.value().radius == approx(tg::sqrt(0.75f)));
+        CHECK(res.value().radius == nx::approx(tg::sqrt(0.75f)));
 
         // intersection circle center exactly between sphere centers
         CHECK(res.value().center == tg::pos3(0, 0, 0.5));
@@ -311,7 +311,7 @@ TEST("TypedGeometry.IntersectionCircle2Circle2")
     }
 }
 
-TG_FUZZ_TEST(Triangle, Intersection)
+FUZZ_TEST("Triangle - Intersection")(tg::rng& rng)
 {
     auto bb = tg::aabb3(-10, 10);
 

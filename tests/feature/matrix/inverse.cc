@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Inverse)
+FUZZ_TEST("Inverse")(tg::rng& rng)
 {
     // random mat1 inverse test
     {

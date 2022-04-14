@@ -1,7 +1,7 @@
 // GMP is not installed by default on Windows
 #ifndef _MSC_VER
 
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -382,14 +382,14 @@ void check_gcd(tg::rng& rng)
 
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintShift)
+FUZZ_TEST("FixedUintShift")(tg::rng& rng)
 {
     check_shift<2>(rng);
     check_shift<3>(rng);
     check_shift<4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintsum)
+FUZZ_TEST("FixedUintsum")(tg::rng& rng)
 {
     check_sum<2, 1>(rng);
     check_sum<1, 2>(rng);
@@ -410,7 +410,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedUintsum)
     check_sum<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintdiff)
+FUZZ_TEST("FixedUintdiff")(tg::rng& rng)
 {
     check_diff<2, 1>(rng);
     check_diff<1, 2>(rng);
@@ -429,7 +429,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedUintdiff)
     check_diff<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintMul)
+FUZZ_TEST("FixedUintMul")(tg::rng& rng)
 {
     check_mul<2, 1, 1>(rng);
     check_mul<2, 1, 2>(rng);
@@ -460,7 +460,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedUintMul)
     check_mul<4, 4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintdiv)
+FUZZ_TEST("FixedUintdiv")(tg::rng& rng)
 {
     check_div<2, 1>(rng);
     check_div<1, 2>(rng);
@@ -479,7 +479,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedUintdiv)
     check_div<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintmod)
+FUZZ_TEST("FixedUintmod")(tg::rng& rng)
 {
     check_mod<2, 1>(rng);
     check_mod<1, 2>(rng);
@@ -498,7 +498,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedUintmod)
     check_mod<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintCompare)
+FUZZ_TEST("FixedUintCompare")(tg::rng& rng)
 {
     check_compare<1, 2>(rng);
     check_compare<2, 1>(rng);
@@ -520,7 +520,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedUintCompare)
     check_compare<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintBitops)
+FUZZ_TEST("FixedUintBitops")(tg::rng& rng)
 {
     check_bitops<1, 2>(rng);
     check_bitops<2, 1>(rng);
@@ -540,42 +540,42 @@ TG_FUZZ_TEST(TypedGeometry, FixedUintBitops)
     check_bitops<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintIncDec)
+FUZZ_TEST("FixedUintIncDec")(tg::rng& rng)
 {
     check_incdec<2>(rng);
     check_incdec<3>(rng);
     check_incdec<4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintLeadingZeros)
+FUZZ_TEST("FixedUintLeadingZeros")(tg::rng& rng)
 {
     check_leading_zeros<2>(rng);
     check_leading_zeros<3>(rng);
     check_leading_zeros<4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintLeadingOnes)
+FUZZ_TEST("FixedUintLeadingOnes")(tg::rng& rng)
 {
     check_leading_ones<2>(rng);
     check_leading_ones<3>(rng);
     check_leading_ones<4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintTrailingZeros)
+FUZZ_TEST("FixedUintTrailingZeros")(tg::rng& rng)
 {
     check_trailing_zeros<2>(rng);
     check_trailing_zeros<3>(rng);
     check_trailing_zeros<4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintTrailingOnes)
+FUZZ_TEST("FixedUintTrailingOnes")(tg::rng& rng)
 {
     check_trailing_ones<2>(rng);
     check_trailing_ones<3>(rng);
     check_trailing_ones<4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedUintGCD)
+FUZZ_TEST("FixedUintGCD")(tg::rng& rng)
 {
     check_gcd<1, 2>(rng);
     check_gcd<2, 1>(rng);

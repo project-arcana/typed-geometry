@@ -1,6 +1,6 @@
 #include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Cross)
+FUZZ_TEST("Cross")(tg::rng& rng)
 {
     auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));

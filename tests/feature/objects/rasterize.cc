@@ -1,10 +1,10 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <set>
 
 #include <typed-geometry/tg-std.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Rasterize)
+FUZZ_TEST("Rasterize")(tg::rng& rng)
 {
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));
     auto tri = tg::triangle2(tg::uniform(rng, range2), tg::uniform(rng, range2), tg::uniform(rng, range2));

@@ -1,6 +1,6 @@
 #include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(Tests, Vec)
+FUZZ_TEST("Tests - Vec")(tg::rng& rng)
 {
     CHECK(is_zero_vector(tg::vec3::zero));
 

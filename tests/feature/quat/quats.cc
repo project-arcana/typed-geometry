@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-TG_FUZZ_TEST(Quaternion, Basics)
+FUZZ_TEST("Quaternion - Basics")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-2, 2);
 

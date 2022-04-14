@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(ClosestPoints, PosPos)
+FUZZ_TEST("ClosestPoints - PosPos")(tg::rng& rng)
 {
     auto range1 = tg::aabb1(tg::pos1(-10), tg::pos1(10));
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));
@@ -42,7 +42,7 @@ TG_FUZZ_TEST(ClosestPoints, PosPos)
 }
 
 
-TG_FUZZ_TEST(ClosestPoints, SegmentPos)
+FUZZ_TEST("ClosestPoints - SegmentPos")(tg::rng& rng)
 {
     auto range1 = tg::aabb1(tg::pos1(-10), tg::pos1(10));
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));
@@ -160,7 +160,7 @@ TG_FUZZ_TEST(ClosestPoints, SegmentPos)
     }
 }
 
-TG_FUZZ_TEST(ClosestPoints, LineLine3)
+FUZZ_TEST("ClosestPoints - LineLine3")(tg::rng& rng)
 {
     auto bb = tg::aabb3(-10, 10);
     auto l0 = tg::line3::from_points(uniform(rng, bb), uniform(rng, bb));

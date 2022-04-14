@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 namespace
 {
@@ -47,7 +47,7 @@ struct object_tester
 };
 } // namespace
 
-TG_FUZZ_TEST(TypedGeometry, Object)
+FUZZ_TEST("Object")(tg::rng& rng)
 {
     object_tester<tg::aabb1>::test(rng);
     object_tester<tg::aabb2>::test(rng);

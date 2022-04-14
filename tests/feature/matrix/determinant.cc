@@ -1,6 +1,8 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Determinant)
+#include <typed-geometry/feature/matrix.hh>
+
+FUZZ_TEST("Determinant")(tg::rng& rng)
 {
     auto rd1 = tg::aabb1(0.0f, 1.0f);
 

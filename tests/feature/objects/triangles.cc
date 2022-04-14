@@ -1,8 +1,12 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(Triangle, Circles)
+#include <typed-geometry/feature/objects.hh>
+
+FUZZ_TEST("Triangle - Circles")(tg::rng& rng)
 {
-    auto const execute_test = [&](auto bb) {
+    auto const execute_test = [&](auto bb)
+    {
         auto const p0 = uniform(rng, bb);
         auto const p1 = uniform(rng, bb);
         auto const p2 = uniform(rng, bb);
@@ -11,7 +15,7 @@ TG_FUZZ_TEST(Triangle, Circles)
 
         auto const p = tg::perimeter_of(t);
 
-        CHECK(distance(p0, p1) + distance(p1, p2) + distance(p2, p0) == approx(p).epsilon(0.001f));
+        CHECK(distance(p0, p1) + distance(p1, p2) + distance(p2, p0) == nx::approx(p));
 
         //
         // circumcenter
@@ -22,13 +26,13 @@ TG_FUZZ_TEST(Triangle, Circles)
             auto const cs = tg::circumcircle_of(t);
             auto const cr = tg::circumradius_of(t);
 
-            CHECK(distance(p0, cc) == approx(distance(p1, cc)).epsilon(0.001f));
-            CHECK(distance(p1, cc) == approx(distance(p2, cc)).epsilon(0.001f));
-            CHECK(distance(p2, cc) == approx(distance(p0, cc)).epsilon(0.001f));
+            CHECK(distance(p0, cc) == nx::approx(distance(p1, cc)));
+            CHECK(distance(p1, cc) == nx::approx(distance(p2, cc)));
+            CHECK(distance(p2, cc) == nx::approx(distance(p0, cc)));
 
-            CHECK(cs.radius == approx(distance(p0, cc)).epsilon(0.001f));
-            CHECK(cs.center == approx(cc, 0.001f));
-            CHECK(cr == approx(cs.radius).epsilon(0.001f));
+            CHECK(cs.radius == nx::approx(distance(p0, cc)));
+            CHECK(cs.center == nx::approx(cc));
+            CHECK(cr == nx::approx(cs.radius));
         }
 
         //
@@ -41,10 +45,10 @@ TG_FUZZ_TEST(Triangle, Circles)
             auto const ir = tg::inradius_of(t);
 
             for (auto e : tg::edges_of(t))
-                CHECK(distance(e, ic) == approx(ir).epsilon(0.001f));
+                CHECK(distance(e, ic) == nx::approx(ir));
 
-            CHECK(is.center == approx(ic, 0.001f));
-            CHECK(ir == approx(is.radius).epsilon(0.001f));
+            CHECK(is.center == nx::approx(ic).abs(0.001f));
+            CHECK(ir == nx::approx(is.radius));
         }
     };
 

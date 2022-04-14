@@ -1,6 +1,6 @@
-/*#include <nexus/test.hh>
+/*#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Refract)
+FUZZ_TEST("Refract")(tg::rng& rng)
 {
     // TODO nothing to test yet
 }*/

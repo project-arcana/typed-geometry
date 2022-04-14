@@ -1,5 +1,7 @@
 #include <nexus/test.hh>
 
+#include <typed-geometry/tg-lean.hh>
+
 TEST("TypedGeometry.Sizes")
 {
     CHECK(sizeof(tg::vec3) == 3 * sizeof(float));
@@ -10,6 +12,7 @@ TEST("TypedGeometry.Sizes")
     CHECK(sizeof(tg::dmat4x3) == 4 * 3 * sizeof(double));
     CHECK(sizeof(tg::mat2x3) == 2 * 3 * sizeof(float));
     CHECK(sizeof(tg::mat2x4) == 2 * 4 * sizeof(float));
+    CHECK(sizeof(tg::quat) == 4 * sizeof(float));
 
     static_assert(sizeof(tg::mat2x4) == 2 * 4 * sizeof(float), "");
 }

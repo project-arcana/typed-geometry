@@ -2,7 +2,7 @@
 
 #include <typed-geometry/feature/quadric.hh>
 
-TG_FUZZ_TEST(Quadrics, PointQuadric)
+FUZZ_TEST("Quadrics - PointQuadric")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 
@@ -22,7 +22,7 @@ TG_FUZZ_TEST(Quadrics, PointQuadric)
         CHECK(q[i] == approx(p[i]));
 }
 
-TG_FUZZ_TEST(Quadrics, PlaneQuadric)
+FUZZ_TEST("Quadrics - PlaneQuadric")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 
@@ -40,7 +40,7 @@ TG_FUZZ_TEST(Quadrics, PlaneQuadric)
     }
 }
 
-TG_FUZZ_TEST(Quadrics, ProbPlaneQuadricZero)
+FUZZ_TEST("Quadrics - ProbPlaneQuadricZero")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 
@@ -58,7 +58,7 @@ TG_FUZZ_TEST(Quadrics, ProbPlaneQuadricZero)
     }
 }
 
-TG_FUZZ_TEST(Quadrics, ProbPlaneQuadricZeroMat)
+FUZZ_TEST("Quadrics - ProbPlaneQuadricZeroMat")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 
@@ -76,7 +76,7 @@ TG_FUZZ_TEST(Quadrics, ProbPlaneQuadricZeroMat)
     }
 }
 
-TG_FUZZ_TEST(Quadrics, ProbPlaneQuadricNonZero)
+FUZZ_TEST("Quadrics - ProbPlaneQuadricNonZero")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 
@@ -94,7 +94,7 @@ TG_FUZZ_TEST(Quadrics, ProbPlaneQuadricNonZero)
     }
 }
 
-TG_FUZZ_TEST(Quadrics, ProbPlaneQuadricNonZeroMat)
+FUZZ_TEST("Quadrics - ProbPlaneQuadricNonZeroMat")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 
@@ -114,7 +114,7 @@ TG_FUZZ_TEST(Quadrics, ProbPlaneQuadricNonZeroMat)
     }
 }
 
-TG_FUZZ_TEST(Quadrics, TriangleQuadric)
+FUZZ_TEST("Quadrics - TriangleQuadric")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-3, 3);
 
@@ -137,7 +137,7 @@ TG_FUZZ_TEST(Quadrics, TriangleQuadric)
     }
 }
 
-TG_FUZZ_TEST(Quadrics, ProbTriangleQuadricZero)
+FUZZ_TEST("Quadrics - ProbTriangleQuadricZero")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-3, 3);
 
@@ -160,7 +160,7 @@ TG_FUZZ_TEST(Quadrics, ProbTriangleQuadricZero)
     }
 }
 
-TG_FUZZ_TEST(Quadrics, ProbTriangleQuadricNonZero)
+FUZZ_TEST("Quadrics - ProbTriangleQuadricNonZero")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-3, 3);
 

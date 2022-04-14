@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Submatrix)
+FUZZ_TEST("Submatrix")(tg::rng& rng)
 {
     {
         auto mat = random_matrix<2>(rng);

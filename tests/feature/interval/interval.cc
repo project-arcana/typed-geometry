@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <iostream>
 
@@ -59,7 +59,7 @@ void test_interval(tg::rng& rng, F&& f, tg::interval<T> vals0, tg::interval<T> v
 }
 }
 
-TG_FUZZ_TEST(Intervals, Fuzz)
+FUZZ_TEST("Intervals - Fuzz")(tg::rng& rng)
 {
     auto const get_rand_val = [&](float s) -> float {
         switch (uniform(rng, 0, 4))

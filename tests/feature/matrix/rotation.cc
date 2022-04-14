@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Rotation)
+FUZZ_TEST("Rotation")(tg::rng& rng)
 {
     auto a = tg::degree(uniform(rng, 0.0f, 360.0f));
 

@@ -1,5 +1,7 @@
 #include <nexus/test.hh>
 
+#include <typed-geometry/feature/basic.hh>
+
 #include <array>
 #include <list>
 #include <map>

@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, ContainsBox)
+FUZZ_TEST("ContainsBox")(tg::rng& rng)
 {
     {
         auto p0 = uniform(rng, tg::aabb3(tg::pos3(-10.0f), tg::pos3(10.0f)));
@@ -30,7 +30,7 @@ TG_FUZZ_TEST(TypedGeometry, ContainsBox)
     }
 }
 
-TG_FUZZ_TEST(TypedGeometry, ContainsSphere)
+FUZZ_TEST("ContainsSphere")(tg::rng& rng)
 {
     auto c = uniform(rng, tg::aabb3::unit_centered);
     auto r = uniform(rng, 0.2f, 3.0f);
@@ -48,7 +48,7 @@ TG_FUZZ_TEST(TypedGeometry, ContainsSphere)
     }
 }
 
-TG_FUZZ_TEST(TypedGeometry, ContainsCylinder)
+FUZZ_TEST("ContainsCylinder")(tg::rng& rng)
 {
     auto box3 = tg::aabb3(tg::pos3(-1.0f), tg::pos3(1.0f));
     auto box1 = tg::aabb1(-1.0f, 1.0f);

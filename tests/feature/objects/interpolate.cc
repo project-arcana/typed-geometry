@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Interpolate)
+FUZZ_TEST("Interpolate")(tg::rng& rng)
 {
     auto box1 = tg::aabb1(-1.0f, 1.0f);
     auto box2 = tg::aabb2(tg::pos2(-1.0f), tg::pos2(1.0f));

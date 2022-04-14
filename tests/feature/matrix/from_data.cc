@@ -1,5 +1,8 @@
 #include <nexus/test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+#include <typed-geometry/tg-lean.hh>
+
 TEST("mat::from_data")
 {
     float vals[] = {

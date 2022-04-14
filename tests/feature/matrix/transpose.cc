@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Transpose)
+FUZZ_TEST("Transpose")(tg::rng& rng)
 {
     // orthogonal matrix: tranposed is inverse
     {

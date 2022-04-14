@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(Triangle2, BarycoordMatrix)
+FUZZ_TEST("Triangle2 - BarycoordMatrix")(tg::rng& rng)
 {
     auto const bb = tg::aabb2(-10, 10);
 
@@ -33,7 +33,7 @@ TG_FUZZ_TEST(Triangle2, BarycoordMatrix)
     CHECK(p_recon.z == approx(1).epsilon(0.001f));
 }
 
-TG_FUZZ_TEST(Triangle3, BarycoordMatrix)
+FUZZ_TEST("Triangle3 - BarycoordMatrix")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 
@@ -80,7 +80,7 @@ TG_FUZZ_TEST(Triangle3, BarycoordMatrix)
     CHECK(p_recon.w == approx(1).epsilon(0.001f));
 }
 
-TG_FUZZ_TEST(Triangle2, TransformationFromTo)
+FUZZ_TEST("Triangle2 - TransformationFromTo")(tg::rng& rng)
 {
     auto const bb = tg::aabb2(-10, 10);
 
@@ -107,7 +107,7 @@ TG_FUZZ_TEST(Triangle2, TransformationFromTo)
     CHECK(M * p == approx(q, 0.01f));
 }
 
-TG_FUZZ_TEST(Triangle3, TransformationFromTo)
+FUZZ_TEST("Triangle3 - TransformationFromTo")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);
 

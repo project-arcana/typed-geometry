@@ -42,7 +42,7 @@ static tg::dir<D, ScalarT> randomDir(tg::rng& rng)
     return normalize(randomVec<D, ScalarT>(rng));
 }
 
-TG_FUZZ_TEST(TypedGeometry, DotVec)
+FUZZ_TEST("DotVec")(tg::rng& rng)
 {
     { // 3D
         // random angle
@@ -208,7 +208,7 @@ TG_FUZZ_TEST(TypedGeometry, DotVec)
     }
 }
 
-TG_FUZZ_TEST(TypedGeometry, DotDir)
+FUZZ_TEST("DotDir")(tg::rng& rng)
 {
     {     // 3D
           // random angle

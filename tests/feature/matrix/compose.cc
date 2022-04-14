@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(Mat4, DecomposeUniform)
+FUZZ_TEST("Mat4 - DecomposeUniform")(tg::rng& rng)
 {
     auto t0 = uniform_vec(rng, tg::aabb3(-10, 10));
     auto s0 = uniform(rng, .1f, 2.f);
@@ -28,7 +28,7 @@ TG_FUZZ_TEST(Mat4, DecomposeUniform)
     CHECK(q2 == approx(q0, 0.01f));
 }
 
-TG_FUZZ_TEST(Mat4, DecomposeNonUniform)
+FUZZ_TEST("Mat4 - DecomposeNonUniform")(tg::rng& rng)
 {
     auto t0 = uniform_vec(rng, tg::aabb3(-10, 10));
     auto s0 = tg::size3(uniform(rng, tg::aabb3(0.1f, 2.f)));

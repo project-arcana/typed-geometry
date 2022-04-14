@@ -1,6 +1,6 @@
 #include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Length)
+FUZZ_TEST("Length")(tg::rng& rng)
 {
     auto box1 = tg::aabb1(tg::pos1(-1.0f), tg::pos1(1.0f));
     auto box2 = tg::aabb2(tg::pos2(-1.0f), tg::pos2(1.0f));

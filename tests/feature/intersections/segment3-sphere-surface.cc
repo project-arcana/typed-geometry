@@ -1,10 +1,10 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/tg.hh>
 
 //#include <glow-extras/viewer/canvas.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Segment3SphereSurface)
+FUZZ_TEST("Segment3SphereSurface")(tg::rng& rng)
 {
     auto const radius = tg::uniform(rng, 0.01f, 10.0f);
     auto const center = tg::uniform(rng, tg::aabb3(tg::pos3(-10), tg::pos3(10)));

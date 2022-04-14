@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 TEST("TypedGeometry.BoxBasics")
 {
@@ -9,7 +9,7 @@ TEST("TypedGeometry.BoxBasics")
     CHECK(centroid_of(b) == tg::pos2(1, 2));
 }
 
-TG_FUZZ_TEST(TypedGeometry, BoxFuzz)
+FUZZ_TEST("BoxFuzz")(tg::rng& rng)
 {
     auto ab = tg::aabb3(tg::pos3(-10) + uniform_vec(rng, tg::sphere3::unit) * 5.f, //
                         tg::pos3(10) + uniform_vec(rng, tg::sphere3::unit) * 5.f);

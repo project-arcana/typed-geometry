@@ -1,7 +1,7 @@
 // GMP is not installed by default on Windows
 #ifndef _MSC_VER
 
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -362,21 +362,21 @@ void check_neg(tg::rng& rng)
 }
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntNeg)
+FUZZ_TEST("FixedIntNeg")(tg::rng& rng)
 {
     check_neg<2>(rng);
     check_neg<3>(rng);
     check_neg<4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntShift)
+FUZZ_TEST("FixedIntShift")(tg::rng& rng)
 {
     check_shift<2>(rng);
     check_shift<3>(rng);
     check_shift<4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntsum)
+FUZZ_TEST("FixedIntsum")(tg::rng& rng)
 {
     check_sum<2, 1>(rng);
     check_sum<1, 2>(rng);
@@ -397,7 +397,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedIntsum)
     check_sum<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntdiff)
+FUZZ_TEST("FixedIntdiff")(tg::rng& rng)
 {
     check_diff<2, 1>(rng);
     check_diff<1, 2>(rng);
@@ -416,7 +416,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedIntdiff)
     check_diff<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntMul)
+FUZZ_TEST("FixedIntMul")(tg::rng& rng)
 {
     check_mul<2, 1, 1>(rng);
     check_mul<2, 1, 2>(rng);
@@ -447,7 +447,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedIntMul)
     check_mul<4, 4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntdiv)
+FUZZ_TEST("FixedIntdiv")(tg::rng& rng)
 {
     check_div<2, 1>(rng);
     check_div<1, 2>(rng);
@@ -466,7 +466,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedIntdiv)
     check_div<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntmod)
+FUZZ_TEST("FixedIntmod")(tg::rng& rng)
 {
     check_mod<2, 1>(rng);
     check_mod<1, 2>(rng);
@@ -485,7 +485,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedIntmod)
     check_mod<4, 4>(rng);
 }
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntCompare)
+FUZZ_TEST("FixedIntCompare")(tg::rng& rng)
 {
     check_compare<1, 2>(rng);
     check_compare<2, 1>(rng);
@@ -529,7 +529,7 @@ TG_FUZZ_TEST(TypedGeometry, FixedIntCompare)
 //    check_bitops<4, 4>(rng);
 //}
 
-TG_FUZZ_TEST(TypedGeometry, FixedIntIncDec)
+FUZZ_TEST("FixedIntIncDec")(tg::rng& rng)
 {
     check_incdec<2>(rng);
     check_incdec<3>(rng);

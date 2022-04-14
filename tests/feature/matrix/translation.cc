@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Translation)
+FUZZ_TEST("Translation")(tg::rng& rng)
 {
     const auto min = -10.0f;
     const auto max = 10.0f;

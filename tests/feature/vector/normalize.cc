@@ -1,6 +1,6 @@
 #include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Normalize)
+FUZZ_TEST("Normalize")(tg::rng& rng)
 {
     // float
     {
@@ -43,7 +43,7 @@ TG_FUZZ_TEST(TypedGeometry, Normalize)
     }
 }
 
-TG_FUZZ_TEST(TypedGeometry, BigNormalize)
+FUZZ_TEST("BigNormalize")(tg::rng& rng)
 {
     // float
     {

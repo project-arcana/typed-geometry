@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 template <int D, class ScalarT = tg::f32>
 static void checkEqual(const tg::dir<D, ScalarT>& v0, const tg::dir<D, ScalarT>& v1, double eps = 1e-2)
@@ -9,7 +9,7 @@ static void checkEqual(const tg::dir<D, ScalarT>& v0, const tg::dir<D, ScalarT>&
     }
 }
 
-TG_FUZZ_TEST(TypedGeometry, Direction)
+FUZZ_TEST("Direction")(tg::rng& rng)
 {
     // TODO direction (i.e. closest_points) for more objects? currently just pos, line, segment, planes..
     auto rBox1 = tg::aabb1(tg::pos1(-1.0f), tg::pos1(1.0f));

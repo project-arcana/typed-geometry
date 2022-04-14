@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Centroid)
+FUZZ_TEST("Centroid")(tg::rng& rng)
 {
     auto range1 = tg::aabb1(tg::pos1(-10), tg::pos1(10));
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));
@@ -66,7 +66,7 @@ TG_FUZZ_TEST(TypedGeometry, Centroid)
     }
 }
 
-TG_FUZZ_TEST(TypedGeometry, CentroidByUniform)
+FUZZ_TEST("CentroidByUniform")(tg::rng& rng)
 {
     auto const tolerance = 0.25f;
     auto const numSamples = 100000;

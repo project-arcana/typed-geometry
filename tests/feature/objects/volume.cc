@@ -1,6 +1,6 @@
 #include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Volume)
+FUZZ_TEST("Volume")(tg::rng& rng)
 {
     {
         const auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));

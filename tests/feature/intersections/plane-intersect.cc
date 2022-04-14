@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(Plane, Intersect)
+FUZZ_TEST("Plane - Intersect")(tg::rng& rng)
 {
     auto bounds = tg::aabb3(-10, 10);
 

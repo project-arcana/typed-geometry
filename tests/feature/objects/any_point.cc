@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, AnyPoint)
+FUZZ_TEST("AnyPoint")(tg::rng& rng)
 {
     auto const tolerance = 0.001f;
     auto const test_obj = [tolerance](auto const& o) {

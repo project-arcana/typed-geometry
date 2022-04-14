@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 TEST("TypedGeometry.Tangent")
 {
@@ -25,7 +25,7 @@ TEST("TypedGeometry.Tangent")
 }
 
 
-TG_FUZZ_TEST(TypedGeometry, Tangent)
+FUZZ_TEST("Tangent")(tg::rng& rng)
 {
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));
     auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));

@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/feature/fwd_diff.hh>
 
@@ -16,7 +16,7 @@ void test_fwd_vs_finite_diff(F&& f, T val, T eps = T(1e-4))
 }
 }
 
-TG_FUZZ_TEST(FwdDiff, FiniteDiffFuzz)
+FUZZ_TEST("FwdDiff - FiniteDiffFuzz")(tg::rng& rng)
 {
     // basics
     test_fwd_vs_finite_diff([](auto v) { return v; }, uniform(rng, -10.f, 10.f));

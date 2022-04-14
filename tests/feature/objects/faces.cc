@@ -1,6 +1,6 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, FacesPreserveArea)
+FUZZ_TEST("FacesPreserveArea")(tg::rng& rng)
 {
     const auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));
     const auto pos30 = uniform(rng, range3);

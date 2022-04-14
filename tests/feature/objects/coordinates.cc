@@ -1,9 +1,9 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/feature/random.hh>
 #include <typed-geometry/feature/objects.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Coordinates)
+FUZZ_TEST("Coordinates")(tg::rng& rng)
 {
     auto range1 = tg::aabb1(tg::pos1(0), tg::pos1(1));
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));

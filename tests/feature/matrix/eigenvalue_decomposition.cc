@@ -4,7 +4,7 @@
 #include <Eigen/Eigenvalues>
 #include <typed-geometry/functions/matrix/eigenvalues.hh>
 
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 template <int M, int N, class ScalarT>
 static tg::mat<M, N, ScalarT> rand_symmetric_Mat(tg::rng& rng)
@@ -20,7 +20,7 @@ static tg::mat<M, N, ScalarT> rand_symmetric_Mat(tg::rng& rng)
     return mat;
 }
 
-TG_FUZZ_TEST(TypedGeometry, EigenDecompositionSymmetric)
+FUZZ_TEST("EigenDecompositionSymmetric")(tg::rng& rng)
 {
     auto const generate_matrices = [&]() -> tg::pair<tg::dmat3, Eigen::Matrix3d> {
         tg::dmat3 tgm = rand_symmetric_Mat<3, 3, double>(rng);

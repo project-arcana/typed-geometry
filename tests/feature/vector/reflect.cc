@@ -1,6 +1,6 @@
 #include <nexus/fuzz_test.hh>
 
-TG_FUZZ_TEST(TypedGeometry, Reflect)
+FUZZ_TEST("Reflect")(tg::rng& rng)
 {
     auto d = tg::uniform<tg::dir3>(rng);
     auto v = uniform_vec(rng, tg::sphere3({0, 0, 0}, 3.0f));

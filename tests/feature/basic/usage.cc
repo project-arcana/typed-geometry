@@ -1,5 +1,7 @@
 #include <nexus/test.hh>
 
+#include <typed-geometry/tg-lean.hh>
+
 #include <type_traits>
 
 TEST("TypedGeometry.Usage")

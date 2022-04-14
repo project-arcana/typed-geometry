@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/fuzz_test.hh>
 
 TEST("tg::wrap")
 {
@@ -7,7 +7,7 @@ TEST("tg::wrap")
     CHECK(tg::wrap(-.3f, 0.0f, 1.0f) == approx(0.7f));
 }
 
-TG_FUZZ_TEST(Wrap, Random)
+FUZZ_TEST("Wrap - Random")(tg::rng& rng)
 {
     auto range = uniform(rng, 0.1f, 5.0f);
     auto vmin = uniform(rng, -10.f, 10.f);

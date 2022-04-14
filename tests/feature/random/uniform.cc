@@ -21,7 +21,7 @@ TEST("Uniform API")
     CHECK(uniform(rng, {EnumTest::A, EnumTest::B, EnumTest::C}) != EnumTest::D);
 }
 
-TG_FUZZ_TEST(TypedGeometry, Uniform)
+FUZZ_TEST("Uniform")(tg::rng& rng)
 {
     auto a = uniform(rng, -10.0f, -1.0f);
     auto b = uniform(rng, 1.0f, 10.0f);
@@ -173,7 +173,7 @@ TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformGeneralProperties, 100)
     // test_obj(samples4, tg::triangle4(pos40, pos41, pos42));
 }
 
-TG_FUZZ_TEST(TypedGeometry, UniformObjects)
+FUZZ_TEST("UniformObjects")(tg::rng& rng)
 {
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));
     auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));
