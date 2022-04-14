@@ -7,12 +7,12 @@ Header-only strongly typed math library for graphics and geometry.
 
 Type definitions only, no functions:
 ```
-#include <tg/typed-geometry-lean.hh>
+#include <typed-geometry/tg-lean.hh>
 ```
 
 All functionality:
 ```
-#include <tg/typed-geometry.hh>
+#include <typed-geometry/tg.hh>
 
 tg::vec3 v;
 tg::pos3 p;
@@ -22,7 +22,7 @@ tg::pos3 p;
 
 Helpers for interacting with the standard library:
 ```
-#include <tg/typed-geometry-std.hh>
+#include <typed-geometry/tg-std.hh>
 
 tg::pos3 p;
 std::cout << p;                    // std::operator<<(std::ostream&, ...)
@@ -105,7 +105,7 @@ auto p = uniform(rng, obj);
 
 ## Dependencies
 
-None.
+clean-core.
 
 ## TODO
 
