@@ -18,8 +18,8 @@ FUZZ_TEST("Distance")(tg::rng& rng)
 
         auto d2 = distance_sqr(a, b);
         auto d = distance(a, b);
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         // symmetry
         CHECK(distance(b, a) == d);
         CHECK(distance_sqr(b, a) == d2);
@@ -31,8 +31,8 @@ FUZZ_TEST("Distance")(tg::rng& rng)
 
         auto d2 = distance_sqr(a, b);
         auto d = distance(a, b);
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         // symmetry
         CHECK(distance(b, a) == d);
         CHECK(distance_sqr(b, a) == d2);
@@ -44,8 +44,8 @@ FUZZ_TEST("Distance")(tg::rng& rng)
 
         auto d2 = distance_sqr(a, b);
         auto d = distance(a, b);
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         // symmetry
         CHECK(distance(b, a) == d);
         CHECK(distance_sqr(b, a) == d2);
@@ -59,12 +59,12 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         auto rd = uniform(rng, rBox1).x;
 
         auto b = a + dir * rd;
-        CHECK(distance(a, b) == approx(tg::abs(rd)));
+        CHECK(distance(a, b) == nx::approx(tg::abs(rd)));
 
         auto d2 = distance_sqr(a, b);
         auto d = distance(a, b);
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         // symmetry
         CHECK(distance(b, a) == d);
         CHECK(distance_sqr(b, a) == d2);
@@ -76,12 +76,12 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         auto rd = uniform(rng, rBox1).x;
 
         auto b = a + dir * rd;
-        CHECK(distance(a, b) == approx(tg::abs(rd)));
+        CHECK(distance(a, b) == nx::approx(tg::abs(rd)));
 
         auto d2 = distance_sqr(a, b);
         auto d = distance(a, b);
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         // symmetry
         CHECK(distance(b, a) == d);
         CHECK(distance_sqr(b, a) == d2);
@@ -93,12 +93,12 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         auto rd = uniform(rng, rBox1).x;
 
         auto b = a + dir * rd;
-        CHECK(distance(a, b) == approx(tg::abs(rd)));
+        CHECK(distance(a, b) == nx::approx(tg::abs(rd)));
 
         auto d2 = distance_sqr(a, b);
         auto d = distance(a, b);
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         // symmetry
         CHECK(distance(b, a) == d);
         CHECK(distance_sqr(b, a) == d2);
@@ -108,17 +108,17 @@ FUZZ_TEST("Distance")(tg::rng& rng)
     {
         auto p = uniform(rng, rBox1);
         auto d = distance_to_origin(p);
-        CHECK(d == approx(tg::length(tg::vec1(p))));
+        CHECK(d == nx::approx(tg::length(tg::vec1(p))));
     }
     {
         auto p = uniform(rng, rBox2);
         auto d = distance_to_origin(p);
-        CHECK(d == approx(tg::length(tg::vec2(p))));
+        CHECK(d == nx::approx(tg::length(tg::vec2(p))));
     }
     {
         auto p = uniform(rng, rBox3);
         auto d = distance_to_origin(p);
-        CHECK(d == approx(tg::length(tg::vec3(p))));
+        CHECK(d == nx::approx(tg::length(tg::vec3(p))));
     }
 
 
@@ -132,11 +132,11 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         // symmetry
         auto d2 = distance_sqr(pt, pl);
         auto d = distance(pt, pl);
-        CHECK(d == approx(distance(pl, pt)));
-        CHECK(d2 == approx(distance_sqr(pl, pt)));
+        CHECK(d == nx::approx(distance(pl, pt)));
+        CHECK(d2 == nx::approx(distance_sqr(pl, pt)));
 
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
 
         // move point on plane
         auto o = tg::pos3(pl.dis * pl.normal);
@@ -147,11 +147,11 @@ FUZZ_TEST("Distance")(tg::rng& rng)
             t = normalize(cross(pl.normal, r));
         }
         pt = o + t; // origin + tangent
-        CHECK(distance(pt, pl) == approx(0.0f));
+        CHECK(distance(pt, pl) == nx::approx(0.0f));
 
         auto l = uniform(rng, rBox1).x;
         pt += pl.normal * l; // move along normal
-        CHECK(distance(pt, pl) == approx(tg::abs(l)));
+        CHECK(distance(pt, pl) == nx::approx(tg::abs(l)));
     }
 
 
@@ -163,9 +163,9 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         auto pt = icone.apex - l * icone.opening_dir;
         auto d2 = distance_sqr(pt, icone);
         auto d = distance(pt, icone);
-        CHECK(d == approx(l));
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d == nx::approx(l));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         l = uniform(rng, 0.f, 10.f);
         pt = icone.apex + l * icone.opening_dir;
         d = distance(pt, icone);
@@ -180,19 +180,19 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         pt = icone.apex + l * icone.opening_dir + r * ortho_dir;
         d = distance(pt, icone);
         d2 = distance_sqr(pt, icone);
-        CHECK(d == approx(0).epsilon(0.01));
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d == nx::approx(0).epsilon(0.01));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         d = distance(icone.apex, icone);
-        CHECK(d == approx(0).epsilon(0.01));
+        CHECK(d == nx::approx(0).epsilon(0.01));
         pt = {2, -4, 0};
         icone = tg::inf_cone_boundary<3, float>({0, 0, 0}, {0, 0, 1}, tg::angle::from_degree(90));
         d2 = distance_sqr(pt, icone);
-        CHECK(d2 == approx(10));
+        CHECK(d2 == nx::approx(10));
         l = uniform(rng, 0.f, 10.f);
         pt = icone.apex + l * icone.opening_dir;
         d = distance(pt, icone);
-        CHECK(d == approx(l / sqrt(2)));
+        CHECK(d == nx::approx(l / sqrt(2)));
     }
 
 
@@ -204,22 +204,22 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         auto pt = sp.center + l * rand_dir;
         auto d2 = distance_sqr(pt, sp);
         auto d = distance(pt, sp);
-        CHECK(d == approx(tg::abs(l - sp.radius)));
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d == nx::approx(tg::abs(l - sp.radius)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
         sp = tg::sphere_boundary<3, tg::f32>(tg::pos3(uniform(rng, rBox3)), uniform(rng, 0.f, 10.f));
         pt = sp.center + sp.radius * rand_dir;
         d = distance(pt, sp);
-        CHECK(d == approx(0).epsilon(0.01));
+        CHECK(d == nx::approx(0).epsilon(0.01));
         auto sp2 = tg::sphere_boundary<2, tg::f32>(tg::pos2(uniform(rng, rBox2)), uniform(rng, 0.f, 10.f));
         l = uniform(rng, 0.f, 10.f);
         auto rand_dir2 = normalize(tg::vec2(uniform(rng, rBox2)));
         auto pt2 = sp2.center + l * rand_dir2;
         d2 = distance_sqr(pt2, sp2);
         d = distance(pt2, sp2);
-        CHECK(d == approx(tg::abs(l - sp2.radius)));
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d == nx::approx(tg::abs(l - sp2.radius)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
     }
 
 
@@ -234,9 +234,9 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         auto pt = itube.axis[l] + r * ortho_dir;
         auto d2 = distance_sqr(pt, itube);
         auto d = distance(pt, itube);
-        CHECK(d == approx(tg::abs(r - itube.radius)));
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d == nx::approx(tg::abs(r - itube.radius)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
 
         auto itube2 = tg::inf_cylinder_boundary<2, tg::f32>({tg::pos2(uniform(rng, rBox2)), normalize(tg::vec2(uniform(rng, rBox2)))}, uniform(rng, 0.f, 10.f));
         tg::vec2 ortho_dir2 = {-itube2.axis.dir[1], itube2.axis.dir[0]};
@@ -245,19 +245,19 @@ FUZZ_TEST("Distance")(tg::rng& rng)
         auto pt2 = itube2.axis[l] + r * ortho_dir2;
         d2 = distance_sqr(pt2, itube2);
         d = distance(pt2, itube2);
-        CHECK(d == approx(tg::abs(r - itube2.radius)));
-        CHECK(d * d == approx(d2));
-        CHECK(d == approx(sqrt(d2)));
+        CHECK(d == nx::approx(tg::abs(r - itube2.radius)));
+        CHECK(d * d == nx::approx(d2));
+        CHECK(d == nx::approx(sqrt(d2)));
     }
 
     // cylinder and pos
     {
         auto c = tg::cylinder_boundary<3, float>({-1, -2, -3}, {5, -2, -3}, 2);
-        CHECK(distance(tg::pos3(-1, -2, -3), c) == approx(0));
-        CHECK(distance(tg::pos3(5, -2, -3), c) == approx(0));
-        CHECK(distance(tg::pos3(0, -2, -3), c) == approx(1));
-        CHECK(distance(tg::pos3(2, -2, -3), c) == approx(2));
-        CHECK(distance(tg::pos3(-1, -3, -3), c) == approx(0));
+        CHECK(distance(tg::pos3(-1, -2, -3), c) == nx::approx(0));
+        CHECK(distance(tg::pos3(5, -2, -3), c) == nx::approx(0));
+        CHECK(distance(tg::pos3(0, -2, -3), c) == nx::approx(1));
+        CHECK(distance(tg::pos3(2, -2, -3), c) == nx::approx(2));
+        CHECK(distance(tg::pos3(-1, -3, -3), c) == nx::approx(0));
     }
 }
 
@@ -301,7 +301,7 @@ FUZZ_TEST("Distance - LineLine3")(tg::rng& rng)
 
     auto dd = minimize_f1(rng, 2.0f, [&](float a, float b) { return distance(l0[a], l1[b]); });
 
-    CHECK(d == approx(dd).epsilon(0.4f));
+    CHECK(d == nx::approx(dd).epsilon(0.4f));
 }
 
 FUZZ_TEST("Distance - PosSeg2")(tg::rng& rng)
@@ -318,7 +318,7 @@ FUZZ_TEST("Distance - PosSeg2")(tg::rng& rng)
         return distance(s[a], p);
     });
 
-    CHECK(d == approx(dd).epsilon(0.4f));
+    CHECK(d == nx::approx(dd).epsilon(0.4f));
 }
 
 FUZZ_TEST("Distance - SegSeg2")(tg::rng& rng)
@@ -339,7 +339,7 @@ FUZZ_TEST("Distance - SegSeg2")(tg::rng& rng)
     if (d > 0)
         CHECK(!intersects(s0, s1));
 
-    CHECK(d == approx(dd).epsilon(0.4f));
+    CHECK(d == nx::approx(dd).epsilon(0.4f));
 }
 
 FUZZ_TEST("Distance - SegSeg3")(tg::rng& rng)
@@ -357,7 +357,7 @@ FUZZ_TEST("Distance - SegSeg3")(tg::rng& rng)
         return distance(s0[a], s1[b]);
     });
 
-    CHECK(d == approx(dd).epsilon(0.4f));
+    CHECK(d == nx::approx(dd).epsilon(0.4f));
 }
 
 FUZZ_TEST("Distance - PosTri3")(tg::rng& rng)

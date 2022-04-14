@@ -81,19 +81,19 @@ FUZZ_TEST("Tangent")(tg::rng& rng)
 
     // In this scenario, uv coords are chosen such that uv frame is orthogonal
     // and thus tangent frame should be
-    CHECK(tg::abs(dot(t, b)) == approx(0.0f).epsilon(1e-3f));
+    CHECK(tg::abs(dot(t, b)) == nx::approx(0.0f).epsilon(1e-3f));
 
     // for the given triangle positions, all tbn vectors should be unit
-    CHECK(length(t) == approx(1.0f).epsilon(1e-6f));
-    CHECK(length(b) == approx(1.0f).epsilon(1e-6f));
-    CHECK(length(n) == approx(1.0f).epsilon(1e-6f));
+    CHECK(length(t) == nx::approx(1.0f).epsilon(1e-6f));
+    CHECK(length(b) == nx::approx(1.0f).epsilon(1e-6f));
+    CHECK(length(n) == nx::approx(1.0f).epsilon(1e-6f));
 
     // random point in triangle
     auto p = uniform(rng, tri_pos);
     auto coords = coordinates(tri_pos, p);
 
     auto coords_sum = coords[0] + coords[1] + coords[2];
-    CHECK(coords_sum == approx(1.0f).epsilon(1e-5f));
+    CHECK(coords_sum == nx::approx(1.0f).epsilon(1e-5f));
 
     auto uv = interpolate(tri_uv, coords[0], coords[1], coords[2]);
 
@@ -111,13 +111,13 @@ FUZZ_TEST("Tangent")(tg::rng& rng)
     auto uv_b = interpolate(tri_uv, coords_b[0], coords_b[1], coords_b[2]);
 
     // moving along tangent should not cange the v coordinate
-    CHECK(uv.y == approx(uv_t.y).epsilon(1e-3f));
+    CHECK(uv.y == nx::approx(uv_t.y).epsilon(1e-3f));
 
     // moving along bitangent should not change the u coodinate
-    CHECK(uv.x == approx(uv_b.x).epsilon(1e-3f));
+    CHECK(uv.x == nx::approx(uv_b.x).epsilon(1e-3f));
 
     // Check normal
     auto displace = uniform(rng, -1.0f, 1.0f);
     auto p_n = p + displace * n;
-    CHECK(distance(p, p_n) == approx(tg::abs(displace)).epsilon(1e-6f));
+    CHECK(distance(p, p_n) == nx::approx(tg::abs(displace)).epsilon(1e-6f));
 }

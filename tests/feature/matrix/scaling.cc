@@ -13,7 +13,7 @@ FUZZ_TEST("Scaling")(tg::rng& rng)
 
         auto v = identity * u;
 
-        CHECK(u == approx(v));
+        CHECK(u == nx::approx(v));
     }
     {
         auto identity = tg::scaling(tg::size2(1.0f));
@@ -21,7 +21,7 @@ FUZZ_TEST("Scaling")(tg::rng& rng)
 
         auto v = identity * u;
 
-        CHECK(u == approx(v));
+        CHECK(u == nx::approx(v));
     }
     {
         auto identity = tg::scaling(tg::size3(1.0f));
@@ -29,7 +29,7 @@ FUZZ_TEST("Scaling")(tg::rng& rng)
 
         auto v = identity * u;
 
-        CHECK(u == approx(v));
+        CHECK(u == nx::approx(v));
     }
 
     // scaling vector and comparing lengths
@@ -43,7 +43,7 @@ FUZZ_TEST("Scaling")(tg::rng& rng)
         auto l0 = length(v);
         auto l1 = length(mat * v);
 
-        CHECK(l0 * r == approx(l1));
+        CHECK(l0 * r == nx::approx(l1));
     }
     {
         auto mat = tg::scaling(tg::size2(r));
@@ -53,7 +53,7 @@ FUZZ_TEST("Scaling")(tg::rng& rng)
         auto l0 = length(v);
         auto l1 = length(mat * v);
 
-        CHECK(l0 * r == approx(l1));
+        CHECK(l0 * r == nx::approx(l1));
     }
     {
         auto mat = tg::scaling(tg::size3(r));
@@ -63,6 +63,6 @@ FUZZ_TEST("Scaling")(tg::rng& rng)
         auto l0 = length(v);
         auto l1 = length(mat * v);
 
-        CHECK(l0 * r == approx(l1));
+        CHECK(l0 * r == nx::approx(l1));
     }
 }

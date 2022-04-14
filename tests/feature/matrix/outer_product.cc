@@ -25,7 +25,7 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
             res[2] = tg::vec4::zero;
             res[3] = tg::vec4(3, 9, 6, 12);
 
-            CHECK(m == approx(res));
+            CHECK(m == nx::approx(res));
         }
 
         auto x = tg::vec4(uniform(rng, box4));
@@ -35,20 +35,20 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
         auto zero = tg::vec4::zero;
 
         // commutativity
-        CHECK(transpose(outer_product(y, x)) == approx(outer_product(x, y)));
+        CHECK(transpose(outer_product(y, x)) == nx::approx(outer_product(x, y)));
 
         // as u is x multiplied by random
-        CHECK(outer_product(z, x) == approx(outer_product(x, z), 1e-2f));
+        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z), 1e-2f));
 
         // distributivity
-        CHECK(outer_product(x, y + z) == approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
+        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
 
         // scalar multiplication
         auto lambda = uniform(rng, box1).x;
-        CHECK(outer_product(x, y) * lambda == approx(outer_product(lambda * x, y), 1e-2f));
+        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y), 1e-2f));
 
         // zero
-        CHECK(outer_product(x, zero) == approx(tg::mat4::zero));
+        CHECK(outer_product(x, zero) == nx::approx(tg::mat4::zero));
     }
 
     // 3D
@@ -65,7 +65,7 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
             res[1] = tg::vec3(1, 3, 2);
             res[2] = tg::vec3::zero;
 
-            CHECK(m == approx(res));
+            CHECK(m == nx::approx(res));
         }
 
         auto x = tg::vec3(uniform(rng, box3));
@@ -75,20 +75,20 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
         auto zero = tg::vec3::zero;
 
         // commutativity
-        CHECK(transpose(outer_product(y, x)) == approx(outer_product(x, y)));
+        CHECK(transpose(outer_product(y, x)) == nx::approx(outer_product(x, y)));
 
         // as u is x multiplied by random
-        CHECK(outer_product(z, x) == approx(outer_product(x, z), 1e-2f));
+        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z), 1e-2f));
 
         // distributivity
-        CHECK(outer_product(x, y + z) == approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
+        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
 
         // scalar multiplication
         auto lambda = uniform(rng, box1).x;
-        CHECK(outer_product(x, y) * lambda == approx(outer_product(lambda * x, y), 1e-2f));
+        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y), 1e-2f));
 
         // zero
-        CHECK(outer_product(x, zero) == approx(tg::mat3::zero));
+        CHECK(outer_product(x, zero) == nx::approx(tg::mat3::zero));
     }
 
     // 2D
@@ -104,7 +104,7 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
             res[0] = tg::vec2(2, 6);
             res[1] = tg::vec2(1, 3);
 
-            CHECK(m == approx(res));
+            CHECK(m == nx::approx(res));
         }
 
         auto x = tg::vec2(uniform(rng, box2));
@@ -114,20 +114,20 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
         auto zero = tg::vec2::zero;
 
         // commutativity
-        CHECK(transpose(outer_product(y, x)) == approx(outer_product(x, y)));
+        CHECK(transpose(outer_product(y, x)) == nx::approx(outer_product(x, y)));
 
         // as u is x multiplied by random
-        CHECK(outer_product(z, x) == approx(outer_product(x, z), 1e-2f));
+        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z), 1e-2f));
 
         // distributivity
-        CHECK(outer_product(x, y + z) == approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
+        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
 
         // scalar multiplication
         auto lambda = uniform(rng, box1).x;
-        CHECK(outer_product(x, y) * lambda == approx(outer_product(lambda * x, y), 1e-2f));
+        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y), 1e-2f));
 
         // zero
-        CHECK(outer_product(x, zero) == approx(tg::mat2::zero));
+        CHECK(outer_product(x, zero) == nx::approx(tg::mat2::zero));
     }
 
     // 1D
@@ -142,7 +142,7 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
             auto res = tg::mat1();
             res[0] = tg::vec1(2);
 
-            CHECK(m == approx(res));
+            CHECK(m == nx::approx(res));
         }
 
         auto x = tg::vec1(uniform(rng, box1));
@@ -152,19 +152,19 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
         auto zero = tg::vec1::zero;
 
         // commutativity
-        CHECK(transpose(outer_product(y, x)) == approx(outer_product(x, y)));
+        CHECK(transpose(outer_product(y, x)) == nx::approx(outer_product(x, y)));
 
         // as u is x multiplied by random
-        CHECK(outer_product(z, x) == approx(outer_product(x, z), 1e-2f));
+        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z), 1e-2f));
 
         // distributivity
-        CHECK(outer_product(x, y + z) == approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
+        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
 
         // scalar multiplication
         auto lambda = uniform(rng, box1).x;
-        CHECK(outer_product(x, y) * lambda == approx(outer_product(lambda * x, y), 1e-2f));
+        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y), 1e-2f));
 
         // zero
-        CHECK(outer_product(x, zero) == approx(tg::mat1::zero));
+        CHECK(outer_product(x, zero) == nx::approx(tg::mat1::zero));
     }
 }

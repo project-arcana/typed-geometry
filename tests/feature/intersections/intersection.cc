@@ -16,7 +16,7 @@ FUZZ_TEST("IntersectionRay3Sphere3")(tg::rng& rng)
 
         auto result = tg::intersection(r, s);
         CHECK(result.size() == 1);
-        CHECK(distance(result[0], s.center) == approx(s.radius));
+        CHECK(distance(result[0], s.center) == nx::approx(s.radius));
 
         // inside (or on surface of) sphere moved along its direction
         auto m = uniform(rng, box1).x * s.radius;
@@ -28,7 +28,7 @@ FUZZ_TEST("IntersectionRay3Sphere3")(tg::rng& rng)
 
         result = tg::intersection(r, s);
         CHECK(result.size() == 1);
-        CHECK(distance(result[0], r.origin) == approx(s.radius - m));
+        CHECK(distance(result[0], r.origin) == nx::approx(s.radius - m));
 
         // close to surface and perpendicular shots
         auto eps = tg::f32(1e-2);
@@ -283,10 +283,10 @@ TEST("TypedGeometry.IntersectionCircle2Circle2")
         CHECK(res.has_value());
 
         // intersection positions
-        CHECK(res.value().first.x == approx(0.5f));
-        CHECK(res.value().first.y == approx(tg::sqrt(0.75f)));
-        CHECK(res.value().second.x == approx(0.5f));
-        CHECK(res.value().second.y == approx(-tg::sqrt(0.75f)));
+        CHECK(res.value().first.x == nx::approx(0.5f));
+        CHECK(res.value().first.y == nx::approx(tg::sqrt(0.75f)));
+        CHECK(res.value().second.x == nx::approx(0.5f));
+        CHECK(res.value().second.y == nx::approx(-tg::sqrt(0.75f)));
     }
 
     { // intersecting circles (swapped circles)
@@ -304,10 +304,10 @@ TEST("TypedGeometry.IntersectionCircle2Circle2")
         CHECK(res.has_value());
 
         // intersection positions
-        CHECK(res.value().first.x == approx(0.5f));
-        CHECK(res.value().first.y == approx(-tg::sqrt(0.75f)));
-        CHECK(res.value().second.x == approx(0.5f));
-        CHECK(res.value().second.y == approx(tg::sqrt(0.75f)));
+        CHECK(res.value().first.x == nx::approx(0.5f));
+        CHECK(res.value().first.y == nx::approx(-tg::sqrt(0.75f)));
+        CHECK(res.value().second.x == nx::approx(0.5f));
+        CHECK(res.value().second.y == nx::approx(tg::sqrt(0.75f)));
     }
 }
 
@@ -364,12 +364,12 @@ FUZZ_TEST("Triangle - Intersection")(tg::rng& rng)
     CHECK(ip4.any());
     CHECK(ip5.any());
 
-    CHECK(ip0.first() == approx(p, 0.01f));
-    CHECK(ip1.first() == approx(p, 0.01f));
-    CHECK(ip2.first() == approx(p, 0.01f));
-    CHECK(ip3.first() == approx(p, 0.01f));
-    CHECK(ip4.first() == approx(p, 0.01f));
-    CHECK(ip5.first() == approx(p, 0.01f));
+    CHECK(ip0.first() == nx::approx(p, 0.01f));
+    CHECK(ip1.first() == nx::approx(p, 0.01f));
+    CHECK(ip2.first() == nx::approx(p, 0.01f));
+    CHECK(ip3.first() == nx::approx(p, 0.01f));
+    CHECK(ip4.first() == nx::approx(p, 0.01f));
+    CHECK(ip5.first() == nx::approx(p, 0.01f));
 
     auto a = uniform(rng, -2.f, 2.f);
     auto b = uniform(rng, -2.f, 2.f);

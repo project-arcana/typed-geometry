@@ -40,11 +40,11 @@ FUZZ_TEST("Perimeter")(tg::rng& rng)
         auto pe3 = perimeter_of(ellipse3);
 
         // must all be the same
-        CHECK(pd == approx(pc));
-        CHECK(pc == approx(pd3));
-        CHECK(pd3 == approx(pc3));
-        CHECK(pc3 == approx(pe));
-        CHECK(pe == approx(pe3));
+        CHECK(pd == nx::approx(pc));
+        CHECK(pc == nx::approx(pd3));
+        CHECK(pd3 == nx::approx(pc3));
+        CHECK(pc3 == nx::approx(pe));
+        CHECK(pe == nx::approx(pe3));
 
         auto hemisphere = tg::hemisphere2(pos20, r, n2);
         auto hemisphereBound = boundary_of(hemisphere);
@@ -54,9 +54,9 @@ FUZZ_TEST("Perimeter")(tg::rng& rng)
         auto phb = perimeter_of(hemisphereBound);
         auto phc = perimeter_of(hemisphereNoCaps);
 
-        CHECK(ph == approx(phb)); // must be the same
-        CHECK(ph == approx(phc + 2.f * r)); // is no_caps + diameter
-        CHECK(pd == approx(2.f * phc)); // sphere == 2 * hemisphere
+        CHECK(ph == nx::approx(phb)); // must be the same
+        CHECK(ph == nx::approx(phc + 2.f * r)); // is no_caps + diameter
+        CHECK(pd == nx::approx(2.f * phc)); // sphere == 2 * hemisphere
     }
 
     // known radius
@@ -81,13 +81,13 @@ FUZZ_TEST("Perimeter")(tg::rng& rng)
         auto pe23 = perimeter_of(ellipse23);
         auto phc = perimeter_of(hemisphere);
 
-        CHECK(pd == approx(1.0f));
-        CHECK(pc == approx(1.0f));
-        CHECK(pd3 == approx(1.0f));
-        CHECK(pc3 == approx(1.0f));
-        CHECK(pe == approx(1.0f));
-        CHECK(pe23 == approx(1.0f));
-        CHECK(phc == approx(0.5f));
+        CHECK(pd == nx::approx(1.0f));
+        CHECK(pc == nx::approx(1.0f));
+        CHECK(pd3 == nx::approx(1.0f));
+        CHECK(pc3 == nx::approx(1.0f));
+        CHECK(pe == nx::approx(1.0f));
+        CHECK(pe23 == nx::approx(1.0f));
+        CHECK(phc == nx::approx(0.5f));
     }
 
     // === aabb and box ===
@@ -98,5 +98,5 @@ FUZZ_TEST("Perimeter")(tg::rng& rng)
     const auto pAabb = perimeter_of(aabb);
     const auto pBox = perimeter_of(box);
 
-    CHECK(pAabb == approx(pBox));
+    CHECK(pAabb == nx::approx(pBox));
 }

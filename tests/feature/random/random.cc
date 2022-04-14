@@ -29,8 +29,8 @@ TEST("uniform")
     for (auto i = 0; i < 10000; ++i)
         v.push_back(uniform(rng, 0.0f, 1.0f));
 
-    CHECK(tg::average(v) == approx(0.5f).epsilon(0.01f));
-    CHECK(tg::variance(v) == approx(1 / 12.f).epsilon(0.01f));
+    CHECK(tg::average(v) == nx::approx(0.5f).epsilon(0.01f));
+    CHECK(tg::variance(v) == nx::approx(1 / 12.f).epsilon(0.01f));
     CHECK(tg::min_element(v) >= 0);
     CHECK(tg::max_element(v) <= 1);
 }
@@ -44,16 +44,16 @@ TEST("gaussian")
         for (auto i = 0; i < 10000; ++i)
             v.push_back(tg::normal<float>(rng));
 
-        CHECK(tg::average(v) == approx(0.0f).epsilon(0.05f));
-        CHECK(tg::variance(v) == approx(1.0f).epsilon(0.05f));
-        CHECK(tg::standard_deviation(v) == approx(1.0f).epsilon(0.05f));
+        CHECK(tg::average(v) == nx::approx(0.0f).epsilon(0.05f));
+        CHECK(tg::variance(v) == nx::approx(1.0f).epsilon(0.05f));
+        CHECK(tg::standard_deviation(v) == nx::approx(1.0f).epsilon(0.05f));
     }
     {
         std::vector<float> v;
         for (auto i = 0; i < 10000; ++i)
             v.push_back(tg::gaussian(rng, -17.5f, 6.f));
 
-        CHECK(tg::average(v) == approx(-17.5f).epsilon(0.05f));
-        CHECK(tg::standard_deviation(v) == approx(6.0f).epsilon(0.05f));
+        CHECK(tg::average(v) == nx::approx(-17.5f).epsilon(0.05f));
+        CHECK(tg::standard_deviation(v) == nx::approx(6.0f).epsilon(0.05f));
     }
 }

@@ -195,12 +195,12 @@ FUZZ_TEST("UniformObjects")(tg::rng& rng)
     {
         auto circle = tg::sphere_boundary<2, float, 3>(c3, r, n);
         auto p1 = uniform(rng, circle);
-        CHECK(distance(c3, p1) == approx(r));
+        CHECK(distance(c3, p1) == nx::approx(r));
     }
     {
         auto circle = tg::sphere_boundary<2, float>(c2, r);
         auto p1 = uniform(rng, circle);
-        CHECK(distance(c2, p1) == approx(r));
+        CHECK(distance(c2, p1) == nx::approx(r));
     }
     {
         auto disk = tg::sphere2in3(c3, r, n);
@@ -225,18 +225,18 @@ FUZZ_TEST("UniformObjects")(tg::rng& rng)
         auto pos1 = uniform(rng, range3);
         auto tube = tg::tube3(pos0, pos1, r);
         auto p1 = uniform(rng, tube);
-        CHECK(distance(tube.axis, p1) == approx(r));
+        CHECK(distance(tube.axis, p1) == nx::approx(r));
     }
     {
         auto hemi = tg::hemisphere_boundary_no_caps<3, float>(c3, r, n);
         auto p1 = uniform(rng, hemi); // no caps
-        CHECK(distance(hemi.center, p1) == approx(r));
+        CHECK(distance(hemi.center, p1) == nx::approx(r));
         CHECK(dot(p1 - c3, n) >= 0);
     }
     {
         auto hemi = tg::hemisphere_boundary_no_caps<2, float>(c2, r, n2);
         auto p1 = uniform(rng, hemi); // no caps
-        CHECK(distance(hemi.center, p1) == approx(r));
+        CHECK(distance(hemi.center, p1) == nx::approx(r));
         CHECK(dot(p1 - c2, n2) >= 0);
     }
 }

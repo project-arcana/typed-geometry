@@ -16,8 +16,8 @@ FUZZ_TEST("Coordinates")(tg::rng& rng)
         auto coordinates = tg::coordinates(t, center);
 
         // barycentric coordinates should all be the same for centroid
-        CHECK(coordinates[0] == approx(coordinates[1]).epsilon(1e-3));
-        CHECK(coordinates[1] == approx(coordinates[2]).epsilon(1e-3));
+        CHECK(coordinates[0] == nx::approx(coordinates[1]).epsilon(1e-3));
+        CHECK(coordinates[1] == nx::approx(coordinates[2]).epsilon(1e-3));
     }
 
     {
@@ -30,10 +30,10 @@ FUZZ_TEST("Coordinates")(tg::rng& rng)
         // check for points in between if coordinates correct
         auto s = uniform(rng, range1).x;
         auto between = start + (end - start) * s;
-        CHECK(coordinates(l, between) == approx(s));
+        CHECK(coordinates(l, between) == nx::approx(s));
 
         // start and end explicitly checked
-        CHECK(coordinates(l, end) == approx(1));
-        CHECK(coordinates(l, start) == approx(0));
+        CHECK(coordinates(l, end) == nx::approx(1));
+        CHECK(coordinates(l, start) == nx::approx(0));
     }
 }

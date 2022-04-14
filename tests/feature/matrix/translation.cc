@@ -16,7 +16,7 @@ FUZZ_TEST("Translation")(tg::rng& rng)
 
         auto w = tra * v;
 
-        CHECK(w.x - v.x == approx(s.x));
+        CHECK(w.x - v.x == nx::approx(s.x));
     }
 
     // 2D
@@ -31,7 +31,7 @@ FUZZ_TEST("Translation")(tg::rng& rng)
         auto w = tra * v;
 
         auto res = w - v;
-        CHECK(res == approx(s, 1e-5f));
+        CHECK(res == nx::approx(s, 1e-5f));
     }
 
     // 3D
@@ -46,6 +46,6 @@ FUZZ_TEST("Translation")(tg::rng& rng)
         auto w = tra * v;
 
         auto res = w - v;
-        CHECK(res == approx(s, 1e-5f));
+        CHECK(res == nx::approx(s, 1e-5f));
     }
 }

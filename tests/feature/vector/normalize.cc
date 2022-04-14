@@ -65,8 +65,8 @@ FUZZ_TEST("BigNormalize")(tg::rng& rng)
         CHECK(tg::detail::is_dir_valid(d1));
         CHECK(tg::detail::is_dir_valid(d2));
 
-        CHECK(dot(d0, d0) == approx(1.f));
-        CHECK(dot(d1, d1) == approx(1.f));
-        CHECK(dot(d2, d2) == approx(1.f));
+        CHECK(dot(d0, d0) == nx::approx(1.f));
+        CHECK(dot(d1, d1) == nx::approx(1.f));
+        CHECK(dot(d2, d2) == nx::approx(1.f));
     }
 }

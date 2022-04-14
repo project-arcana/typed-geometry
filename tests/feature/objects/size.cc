@@ -14,16 +14,16 @@ FUZZ_TEST("Size")(tg::rng& rng)
 
     {
         auto res = size_of(box1);
-        CHECK(res.width == approx(r1 - r0));
+        CHECK(res.width == nx::approx(r1 - r0));
     }
 
     {
         auto res = size_of(box2);
-        CHECK(res.width == approx(r1 - r0));
+        CHECK(res.width == nx::approx(r1 - r0));
     }
 
     {
         auto res = size_of(box3);
-        CHECK(res.width == approx(r1 - r0));
+        CHECK(res.width == nx::approx(r1 - r0));
     }
 }

@@ -22,16 +22,16 @@ FUZZ_TEST("Norm")(tg::rng& rng)
         auto v3 = uniform(rng, range3) - tg::pos3::zero;
         auto v4 = uniform(rng, range4) - tg::pos4::zero;
 
-        CHECK(length(v1) == approx(norm(v1, 2.f)));
-        CHECK(length(v2) == approx(norm(v2, 2.f)));
-        CHECK(length(v3) == approx(norm(v3, 2.f)));
-        CHECK(length(v4) == approx(norm(v4, 2.f)));
+        CHECK(length(v1) == nx::approx(norm(v1, 2.f)));
+        CHECK(length(v2) == nx::approx(norm(v2, 2.f)));
+        CHECK(length(v3) == nx::approx(norm(v3, 2.f)));
+        CHECK(length(v4) == nx::approx(norm(v4, 2.f)));
     }
 
     {
         auto p = uniform(rng, 1.0f, 10.0f);
-        CHECK(norm(tg::vec3::unit_x, p) == approx(1.0f));
-        CHECK(norm(tg::vec4::unit_z, p) == approx(1.0f));
-        CHECK(norm(tg::dvec2::unit_y, double(p)) == approx(1.0f));
+        CHECK(norm(tg::vec3::unit_x, p) == nx::approx(1.0f));
+        CHECK(norm(tg::vec4::unit_z, p) == nx::approx(1.0f));
+        CHECK(norm(tg::dvec2::unit_y, double(p)) == nx::approx(1.0f));
     }
 }

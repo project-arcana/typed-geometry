@@ -13,7 +13,7 @@ FUZZ_TEST("Plane - Intersect")(tg::rng& rng)
 
         auto const p = l[uniform(rng, -10.0f, 10.0f)];
 
-        CHECK(distance(p, p0) == approx(0));
-        CHECK(distance(p, p1) == approx(0));
+        CHECK(distance(p, p0) == nx::approx(0));
+        CHECK(distance(p, p1) == nx::approx(0));
     }
 }

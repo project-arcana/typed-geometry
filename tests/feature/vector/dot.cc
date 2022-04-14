@@ -7,7 +7,7 @@ static void confPosDef(const tg::vec<D, ScalarT>& v)
     auto r = dot(v, v);
     CHECK(r >= 0.0f);
     if (length(v) == 0.0f)
-        CHECK(r == approx(0.0f));
+        CHECK(r == nx::approx(0.0f));
     else
         CHECK(r != 0.0f);
 }
@@ -49,16 +49,16 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
         auto theta = tg::degree(tg::abs(randomPos<1>(rng).x) * 360.0f);
         { // dot product of normalized vector with itself = 1
             auto n = normalize(randomVec<3>(rng));
-            CHECK(dot(n, n) == approx(1.0f));
+            CHECK(dot(n, n) == nx::approx(1.0f));
 
             // dot product of random vector with itself is length^2
             auto r = randomVec<3>(rng);
             auto l = length(r);
             auto result = l * l;
             auto calc = dot(r, r);
-            CHECK(calc == approx(result));
+            CHECK(calc == nx::approx(result));
             // equivalent to..
-            CHECK(sqrt(calc) == approx(l));
+            CHECK(sqrt(calc) == nx::approx(l));
         }
         { // orthogonality
             // random rotation..
@@ -70,7 +70,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
             auto v1 = tg::vec3(rotMat * tg::vec4(by, 0));
             // dot product is 0
             auto calc = dot(v0, v1);
-            CHECK(calc == approx(0.0f));
+            CHECK(calc == nx::approx(0.0f));
         }
 
         { // cosine
@@ -86,9 +86,9 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
             auto v1 = tg::vec3(rotMat * tg::vec4(v0, 0));
             auto c = cos(theta);
             // dot is cosine(theta)!
-            CHECK(dot(v0, v1) == approx(c));
+            CHECK(dot(v0, v1) == nx::approx(c));
             // symmetry
-            CHECK(dot(v1, v0) == approx(c));
+            CHECK(dot(v1, v0) == nx::approx(c));
         }
         { // 3 random vectors
 
@@ -97,7 +97,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
             auto c = randomVec<3>(rng);
 
             // distributive law
-            CHECK(dot(a, b + c) == approx(dot(a, b) + dot(a, c)));
+            CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)));
 
             // dot product is positive definite
             confPosDef(a);
@@ -115,16 +115,16 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
         auto theta = tg::degree(tg::abs(randomPos<1>(rng).x) * 360.0f);
         { // dot product of normalized vector with itself = 1
             auto n = normalize(randomVec<2>(rng));
-            CHECK(dot(n, n) == approx(1.0f));
+            CHECK(dot(n, n) == nx::approx(1.0f));
 
             // dot product of random vector with itself is length^2
             auto r = randomVec<2>(rng);
             auto l = length(r);
             auto result = l * l;
             auto calc = dot(r, r);
-            CHECK(calc == approx(result));
+            CHECK(calc == nx::approx(result));
             // equivalent to..
-            CHECK(sqrt(calc) == approx(l));
+            CHECK(sqrt(calc) == nx::approx(l));
         }
         {
             { //  two perpendicular vectors
@@ -132,7 +132,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
                 auto v1 = perpendicular(v0);
                 // dot product is 0
                 auto calc = dot(v0, v1);
-                CHECK(calc == approx(0.0f));
+                CHECK(calc == nx::approx(0.0f));
             }
             { // cosine
               // random normalized vector (|v| > 0)
@@ -145,9 +145,9 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
                 auto v1 = tg::vec2(rotMat * tg::vec3(v0, 0));
                 auto c = cos(theta);
                 // dot is cosine(theta)!
-                CHECK(dot(v0, v1) == approx(c));
+                CHECK(dot(v0, v1) == nx::approx(c));
                 // symmetry
-                CHECK(dot(v1, v0) == approx(c));
+                CHECK(dot(v1, v0) == nx::approx(c));
             }
             { // 3 random vectors
 
@@ -156,7 +156,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
                 auto c = randomVec<2>(rng);
 
                 // distributive law
-                CHECK(dot(a, b + c) == approx(dot(a, b) + dot(a, c)));
+                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)));
 
                 // dot product is positive definite
                 confPosDef<2>(a);
@@ -173,16 +173,16 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
     {     // 1D
         { // dot product of normalized vector with itself = 1
             auto n = normalize(randomVec<1>(rng));
-            CHECK(dot(n, n) == approx(1.0f));
+            CHECK(dot(n, n) == nx::approx(1.0f));
 
             // dot product of random vector with itself is length^2
             auto r = randomVec<1>(rng);
             auto l = length(r);
             auto result = l * l;
             auto calc = dot(r, r);
-            CHECK(calc == approx(result));
+            CHECK(calc == nx::approx(result));
             // equivalent to..
-            CHECK(sqrt(calc) == approx(l));
+            CHECK(sqrt(calc) == nx::approx(l));
         }
         {
             { // 3 random vectors
@@ -192,7 +192,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
                 auto c = randomVec<2>(rng);
 
                 // distributive law
-                CHECK(dot(a, b + c) == approx(dot(a, b) + dot(a, c)));
+                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)));
 
                 // dot product is positive definite
                 confPosDef<2>(a);
@@ -214,11 +214,11 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
           // random angle
         { // dot product of dir with itself is 1
             auto n = randomDir<3>(rng);
-            CHECK(dot(n, n) == approx(1.0f));
+            CHECK(dot(n, n) == nx::approx(1.0f));
 
             auto r = randomDir<3>(rng);
             auto calc = dot(r, r);
-            CHECK(calc == approx(1.0f));
+            CHECK(calc == nx::approx(1.0f));
         }
         auto theta = tg::degree(tg::abs(randomPos<1>(rng).x) * 360.0f);
         { // orthogonality
@@ -231,7 +231,7 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
             auto d1 = normalize(tg::vec3(rotMat * tg::vec4(by, 0)));
             // dot product is 0
             auto calc = dot(d0, d1);
-            CHECK(calc == approx(0.0f));
+            CHECK(calc == nx::approx(0.0f));
         }
     }
     { // cosine
@@ -246,9 +246,9 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
         auto d1 = normalize(tg::vec3(rotMat * tg::vec4(tg::vec3(d0), 0)));
         auto c = cos(theta);
         // dot is cosine(theta)!
-        CHECK(dot(d0, d1) == approx(c));
+        CHECK(dot(d0, d1) == nx::approx(c));
         // symmetry
-        CHECK(dot(d1, d0) == approx(c));
+        CHECK(dot(d1, d0) == nx::approx(c));
     }
     { // 3 random dirs
         auto a = randomDir<3>(rng);
@@ -270,18 +270,18 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
         auto theta = tg::degree(tg::abs(randomPos<1>(rng).x) * 360.0f);
         { // dot product of dir with itself is 1
             auto n = randomDir<2>(rng);
-            CHECK(dot(n, n) == approx(1.0f));
+            CHECK(dot(n, n) == nx::approx(1.0f));
 
             auto r = randomDir<2>(rng);
             auto calc = dot(r, r);
-            CHECK(calc == approx(1.0f));
+            CHECK(calc == nx::approx(1.0f));
         }
         { //  two perpendicular directions
             auto d0 = randomDir<2>(rng);
             auto d1 = perpendicular(d0);
             // dot product is 0
             auto calc = dot(d0, d1);
-            CHECK(calc == approx(0.0f));
+            CHECK(calc == nx::approx(0.0f));
         }
         { // cosine
           // random direction (|v| > 0)
@@ -295,9 +295,9 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
             auto d1 = normalize(tg::vec2(rotMat * tg::vec3(p.x, p.y, 0)));
             auto c = cos(theta);
             // dot is cosine(theta)!
-            CHECK(dot(d0, d1) == approx(c));
+            CHECK(dot(d0, d1) == nx::approx(c));
             // symmetry
-            CHECK(dot(d1, d0) == approx(c));
+            CHECK(dot(d1, d0) == nx::approx(c));
         }
         { // 3 random directions
             auto a = randomDir<2>(rng);
@@ -318,11 +318,11 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
     {     // 1D
         { // dot product of direction with itself is 1
             auto n = randomDir<1>(rng);
-            CHECK(dot(n, n) == approx(1.0f));
+            CHECK(dot(n, n) == nx::approx(1.0f));
 
             auto r = randomDir<1>(rng);
             auto calc = dot(r, r);
-            CHECK(calc == approx(1.0f));
+            CHECK(calc == nx::approx(1.0f));
         }
         {
             { // 3 random directions
@@ -331,7 +331,7 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
                 auto c = randomVec<1>(rng);
 
                 // distributive law
-                CHECK(dot(a, b + c) == approx(dot(a, b) + dot(a, c)));
+                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)));
 
                 // dot product is positive definite
                 confPosDef<1>(a);

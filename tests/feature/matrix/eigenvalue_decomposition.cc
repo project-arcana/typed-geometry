@@ -62,13 +62,13 @@ FUZZ_TEST("EigenDecompositionSymmetric")(tg::rng& rng)
     for (auto i : tg::range(3))
     {
         // check same eigenvalue
-        CHECK(eevala[i] == approx(decomp[i].eigenvalue));
+        CHECK(eevala[i] == nx::approx(decomp[i].eigenvalue));
         // check if eigendecomposition
         auto const lhs = tgm * decomp[i].eigenvector;
         auto const rhs = decomp[i].eigenvalue * decomp[i].eigenvector;
-        CHECK(lhs[0] == approx(rhs[0]));
-        CHECK(lhs[1] == approx(rhs[1]));
-        CHECK(lhs[2] == approx(rhs[2]));
+        CHECK(lhs[0] == nx::approx(rhs[0]));
+        CHECK(lhs[1] == nx::approx(rhs[1]));
+        CHECK(lhs[2] == nx::approx(rhs[2]));
     }
 }
 

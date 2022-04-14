@@ -14,7 +14,7 @@ FUZZ_TEST("Cross")(tg::rng& rng)
         auto c = cross(a, b);
 
         // TODO abs(.. rounds to integer?
-        CHECK(tg::length(tg::vec1(c)) == approx(area));
+        CHECK(tg::length(tg::vec1(c)) == nx::approx(area));
     }
 
     {
@@ -37,14 +37,14 @@ FUZZ_TEST("Cross")(tg::rng& rng)
 
         auto unitZ_v = cross(unitX, unitY);
 
-        CHECK(dot(unitZ_v, unitX) == approx(0));
-        CHECK(dot(unitZ_v, unitY) == approx(0));
+        CHECK(dot(unitZ_v, unitX) == nx::approx(0));
+        CHECK(dot(unitZ_v, unitY) == nx::approx(0));
 
         auto unitZ = normalize(tg::vec3(undoRotation * tg::vec4(unitZ_v, 0.0f)));
 
         CHECK(unitZ.z == 1.f);
-        CHECK(unitZ.x == approx(0));
-        CHECK(unitZ.y == approx(0));
+        CHECK(unitZ.x == nx::approx(0));
+        CHECK(unitZ.y == nx::approx(0));
         CHECK(is_normalized(unitZ_v));
 
 
@@ -59,9 +59,9 @@ FUZZ_TEST("Cross")(tg::rng& rng)
         auto vecZ = cross(vecX, vecY);
 
         // magnitude of new vector should be equal to area of parallelogram of first two vectors
-        CHECK(length(vecZ) == approx(areaOfParallelogram));
+        CHECK(length(vecZ) == nx::approx(areaOfParallelogram));
 
-        CHECK(dot(vecZ, vecX) == approx(0).epsilon(1e-3));
-        CHECK(dot(vecZ, vecY) == approx(0).epsilon(1e-3));
+        CHECK(dot(vecZ, vecX) == nx::approx(0).epsilon(1e-3));
+        CHECK(dot(vecZ, vecY) == nx::approx(0).epsilon(1e-3));
     }
 }

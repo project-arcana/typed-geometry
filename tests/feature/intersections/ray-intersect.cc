@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/intersections.hh>
+
 FUZZ_TEST("Intersections")(tg::rng& rng)
 {
     auto const tolerance = 0.002f;
@@ -13,9 +15,9 @@ FUZZ_TEST("Intersections")(tg::rng& rng)
         auto const t = tg::closest_intersection_parameter(ray, obj);
         if (t.has_value())
         {
-            CHECK(t.value() == approx(ts.first()));
+            CHECK(t.value() == nx::approx(ts.first()));
             CHECK(closest_intersection(ray, obj).has_value());
-            CHECK(closest_intersection(ray, obj).value() == approx(ray[t.value()], 0.01f));
+            CHECK(closest_intersection(ray, obj).value() == nx::approx(ray[t.value()], 0.01f));
             CHECK(intersects(ray, obj));
         }
         else
@@ -25,7 +27,7 @@ FUZZ_TEST("Intersections")(tg::rng& rng)
         auto iRay = 0;
         for (auto iLine = 0; iLine < tsLine.size(); ++iLine)
             if (tsLine[iLine] >= 0)
-                CHECK(tsLine[iLine] == approx(ts[iRay++]));
+                CHECK(tsLine[iLine] == nx::approx(ts[iRay++]));
         CHECK(iRay == ts.size());
     };
 
@@ -228,7 +230,7 @@ FUZZ_TEST("Intersect - LineLine2")(tg::rng& rng)
     auto l1 = tg::line2::from_points(uniform(rng, bb), uniform(rng, bb));
 
     auto [t0, t1] = tg::intersection_parameters(l0, l1);
-    CHECK(l0[t0] == approx(l1[t1], 0.01f));
+    CHECK(l0[t0] == nx::approx(l1[t1], 0.01f));
 }
 
 FUZZ_TEST("Intersect - SegSeg2")(tg::rng& rng)

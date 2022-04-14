@@ -1,4 +1,8 @@
 #include <nexus/fuzz_test.hh>
+
+#include <typed-geometry/feature/matrix.hh>
+#include <typed-geometry/feature/vector.hh>
+
 template <int D, class ScalarT>
 static void checkAllEqual(const tg::vec<D, ScalarT>& v, ScalarT c)
 {

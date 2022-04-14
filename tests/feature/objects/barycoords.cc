@@ -12,10 +12,10 @@ FUZZ_TEST("Triangle2 - BarycoordMatrix")(tg::rng& rng)
 
     auto const M = tg::to_barycoord_matrix_of(t);
 
-    CHECK(M * tg::vec3(p0, 1) == approx(tg::vec3(1, 0, 0), 0.001f));
-    CHECK(M * tg::vec3(p1, 1) == approx(tg::vec3(0, 1, 0), 0.001f));
-    CHECK(M * tg::vec3(p2, 1) == approx(tg::vec3(0, 0, 1), 0.001f));
-    CHECK(M * tg::vec3(centroid_of(t), 1) == approx(tg::vec3(1 / 3.f, 1 / 3.f, 1 / 3.f), 0.001f));
+    CHECK(M * tg::vec3(p0, 1) == nx::approx(tg::vec3(1, 0, 0), 0.001f));
+    CHECK(M * tg::vec3(p1, 1) == nx::approx(tg::vec3(0, 1, 0), 0.001f));
+    CHECK(M * tg::vec3(p2, 1) == nx::approx(tg::vec3(0, 0, 1), 0.001f));
+    CHECK(M * tg::vec3(centroid_of(t), 1) == nx::approx(tg::vec3(1 / 3.f, 1 / 3.f, 1 / 3.f), 0.001f));
 
     auto p = uniform(rng, t);
     auto b = M * tg::vec3(p, 1);
@@ -26,11 +26,11 @@ FUZZ_TEST("Triangle2 - BarycoordMatrix")(tg::rng& rng)
     CHECK(b.x <= 1.001f);
     CHECK(b.y <= 1.001f);
     CHECK(b.z <= 1.001f);
-    CHECK(b.x + b.y + b.z == approx(1.f).epsilon(0.001f));
+    CHECK(b.x + b.y + b.z == nx::approx(1.f).epsilon(0.001f));
 
     auto p_recon = tg::from_barycoord_matrix_of(t) * b;
-    CHECK(tg::pos2(p_recon) == approx(p, 0.001f));
-    CHECK(p_recon.z == approx(1).epsilon(0.001f));
+    CHECK(tg::pos2(p_recon) == nx::approx(p, 0.001f));
+    CHECK(p_recon.z == nx::approx(1).epsilon(0.001f));
 }
 
 FUZZ_TEST("Triangle3 - BarycoordMatrix")(tg::rng& rng)
@@ -45,10 +45,10 @@ FUZZ_TEST("Triangle3 - BarycoordMatrix")(tg::rng& rng)
 
     auto const M = tg::to_barycoord_matrix_of(t);
 
-    CHECK(M * tg::vec4(p0, 1) == approx(tg::vec4(1, 0, 0, 0), 0.001f));
-    CHECK(M * tg::vec4(p1, 1) == approx(tg::vec4(0, 1, 0, 0), 0.001f));
-    CHECK(M * tg::vec4(p2, 1) == approx(tg::vec4(0, 0, 1, 0), 0.001f));
-    CHECK(M * tg::vec4(centroid_of(t), 1) == approx(tg::vec4(1 / 3.f, 1 / 3.f, 1 / 3.f, 0), 0.001f));
+    CHECK(M * tg::vec4(p0, 1) == nx::approx(tg::vec4(1, 0, 0, 0), 0.001f));
+    CHECK(M * tg::vec4(p1, 1) == nx::approx(tg::vec4(0, 1, 0, 0), 0.001f));
+    CHECK(M * tg::vec4(p2, 1) == nx::approx(tg::vec4(0, 0, 1, 0), 0.001f));
+    CHECK(M * tg::vec4(centroid_of(t), 1) == nx::approx(tg::vec4(1 / 3.f, 1 / 3.f, 1 / 3.f, 0), 0.001f));
 
     auto p = uniform(rng, t);
     auto b = M * tg::vec4(p, 1);
@@ -59,25 +59,25 @@ FUZZ_TEST("Triangle3 - BarycoordMatrix")(tg::rng& rng)
     CHECK(b.x <= 1.001f);
     CHECK(b.y <= 1.001f);
     CHECK(b.z <= 1.001f);
-    CHECK(b.w == approx(0.f).epsilon(0.001f));
-    CHECK(b.x + b.y + b.z == approx(1.f).epsilon(0.001f));
+    CHECK(b.w == nx::approx(0.f).epsilon(0.001f));
+    CHECK(b.x + b.y + b.z == nx::approx(1.f).epsilon(0.001f));
 
     auto p_recon = tg::from_barycoord_matrix_of(t) * b;
-    CHECK(tg::pos3(p_recon) == approx(p, 0.001f));
-    CHECK(p_recon.w == approx(1).epsilon(0.001f));
+    CHECK(tg::pos3(p_recon) == nx::approx(p, 0.001f));
+    CHECK(p_recon.w == nx::approx(1).epsilon(0.001f));
 
     auto n = tg::normal_of(t);
     auto offset = uniform(rng, -10.f, 10.f);
     auto b2 = M * tg::vec4(p + n * offset, 1);
 
-    CHECK(b2.x == approx(b.x).epsilon(0.001f));
-    CHECK(b2.y == approx(b.y).epsilon(0.001f));
-    CHECK(b2.z == approx(b.z).epsilon(0.001f));
-    CHECK(b2.w == approx(offset).epsilon(0.001f));
+    CHECK(b2.x == nx::approx(b.x).epsilon(0.001f));
+    CHECK(b2.y == nx::approx(b.y).epsilon(0.001f));
+    CHECK(b2.z == nx::approx(b.z).epsilon(0.001f));
+    CHECK(b2.w == nx::approx(offset).epsilon(0.001f));
 
     auto p_recon2 = tg::from_barycoord_matrix_of(t) * b2;
-    CHECK(tg::pos3(p_recon2) == approx(p + n * offset, 0.001f));
-    CHECK(p_recon.w == approx(1).epsilon(0.001f));
+    CHECK(tg::pos3(p_recon2) == nx::approx(p + n * offset, 0.001f));
+    CHECK(p_recon.w == nx::approx(1).epsilon(0.001f));
 }
 
 FUZZ_TEST("Triangle2 - TransformationFromTo")(tg::rng& rng)
@@ -97,14 +97,14 @@ FUZZ_TEST("Triangle2 - TransformationFromTo")(tg::rng& rng)
 
     auto const M = tg::transformation_from_to(t0, t1);
 
-    CHECK(M * p0 == approx(q0, 0.01f));
-    CHECK(M * p1 == approx(q1, 0.01f));
-    CHECK(M * p2 == approx(q2, 0.01f));
+    CHECK(M * p0 == nx::approx(q0, 0.01f));
+    CHECK(M * p1 == nx::approx(q1, 0.01f));
+    CHECK(M * p2 == nx::approx(q2, 0.01f));
 
     auto const b = tg::uniform_barycoords(rng);
     auto const p = t0[b];
     auto const q = t1[b];
-    CHECK(M * p == approx(q, 0.01f));
+    CHECK(M * p == nx::approx(q, 0.01f));
 }
 
 FUZZ_TEST("Triangle3 - TransformationFromTo")(tg::rng& rng)
@@ -124,12 +124,12 @@ FUZZ_TEST("Triangle3 - TransformationFromTo")(tg::rng& rng)
 
     auto const M = tg::transformation_from_to(t0, t1);
 
-    CHECK(M * p0 == approx(q0, 0.001f));
-    CHECK(M * p1 == approx(q1, 0.001f));
-    CHECK(M * p2 == approx(q2, 0.001f));
+    CHECK(M * p0 == nx::approx(q0, 0.001f));
+    CHECK(M * p1 == nx::approx(q1, 0.001f));
+    CHECK(M * p2 == nx::approx(q2, 0.001f));
 
     auto const b = tg::uniform_barycoords(rng);
     auto const p = t0[b];
     auto const q = t1[b];
-    CHECK(M * p == approx(q, 0.001f));
+    CHECK(M * p == nx::approx(q, 0.001f));
 }

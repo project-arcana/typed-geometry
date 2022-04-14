@@ -30,7 +30,7 @@ FUZZ_TEST("Centroid")(tg::rng& rng)
         auto const newCenter = center + transl;
 
         CHECK(contains(t, newCenter));
-        CHECK(centroid_of(t) == approx(newCenter));
+        CHECK(centroid_of(t) == nx::approx(newCenter));
     }
 
 
@@ -49,7 +49,7 @@ FUZZ_TEST("Centroid")(tg::rng& rng)
             {
                 auto surfacePoint = sphere.center + tg::vec3(tg::f32(cos(s) * sin(t) * radius), tg::f32(sin(s) * sin(t) * radius), tg::f32(cos(t) * radius));
 
-                CHECK(tg::distance_sqr(center, surfacePoint) == approx(pow(radius, 2)));
+                CHECK(tg::distance_sqr(center, surfacePoint) == nx::approx(pow(radius, 2)));
             }
         }
     }
@@ -62,7 +62,7 @@ FUZZ_TEST("Centroid")(tg::rng& rng)
             center += vertex;
         center /= 4.f;
         auto const centroid = centroid_of(pyTri);
-        CHECK(centroid == approx(center));
+        CHECK(centroid == nx::approx(center));
     }
 }
 
@@ -78,7 +78,7 @@ FUZZ_TEST("CentroidByUniform")(tg::rng& rng)
         center /= numSamples;
         auto const centroid = centroid_of(o);
         auto const relError = tg::distance_sqr(center, centroid) / tg::distance_sqr_to_origin(centroid);
-        auto const approxEqual = centroid == approx(center, tolerance) || relError <= tg::pow2(tolerance);
+        auto const approxEqual = centroid == nx::approx(center, tolerance) || relError <= tg::pow2(tolerance);
         CHECK(approxEqual);
     };
 

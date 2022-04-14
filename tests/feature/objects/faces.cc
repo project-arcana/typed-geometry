@@ -20,7 +20,7 @@ FUZZ_TEST("FacesPreserveArea")(tg::rng& rng)
         auto areaSum = 0.f;
         for (const auto& face : faces_of(o))
             areaSum += area_of(face);
-        CHECK(areaSum == approx(areaObj));
+        CHECK(areaSum == nx::approx(areaObj));
     };
 
     test_face_areas(aabb_of(pos30, pos31));

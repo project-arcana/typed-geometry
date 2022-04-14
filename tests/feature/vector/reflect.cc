@@ -15,5 +15,5 @@ FUZZ_TEST("Reflect")(tg::rng& rng)
     auto dv = reflect(v, n);
     CHECK(tg::sign(dot(d, n)) != tg::sign(dot(dr, n)));
     CHECK(tg::sign(dot(v, n)) != tg::sign(dot(dv, n)));
-    CHECK(length(dv) == approx(length(v)));
+    CHECK(length(dv) == nx::approx(length(v)));
 }

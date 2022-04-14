@@ -5,7 +5,7 @@ static void checkEqual(const tg::dir<D, ScalarT>& v0, const tg::dir<D, ScalarT>&
 {
     for (auto i = 0; i < D; i++)
     {
-        CHECK(v0[i] == approx(v1[i]).epsilon(eps));
+        CHECK(v0[i] == nx::approx(v1[i]).epsilon(eps));
     }
 }
 
@@ -99,7 +99,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
 
         // perpendicular direction
         auto pv = tg::dir2(-ldir.y, ldir.x);
-        CHECK(dot(pv, ldir) == approx(0.0f)); // just to be sure
+        CHECK(dot(pv, ldir) == nx::approx(0.0f)); // just to be sure
 
         auto r = uniform(rng, rBox1).x * 10.0f; // might be negative
         auto push = pv * r;
@@ -159,7 +159,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
 
         // perpendicular direction
         auto pv = tg::dir2(-ldir.y, ldir.x);
-        CHECK(dot(pv, ldir) == approx(0.0f)); // just to be sure
+        CHECK(dot(pv, ldir) == nx::approx(0.0f)); // just to be sure
 
         auto r = uniform(rng, rBox1).x * 10.0f; // might be negative
         auto push = pv * r;

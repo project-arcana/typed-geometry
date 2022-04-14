@@ -13,8 +13,8 @@ TEST("bezier basics")
 
     auto bb = tg::aabb_of(p0, p1, p2, p3);
 
-    CHECK(b[0.0f] == approx(p0));
-    CHECK(b[1.0f] == approx(p3));
+    CHECK(b[0.0f] == nx::approx(p0));
+    CHECK(b[1.0f] == nx::approx(p3));
 
     tg::rng rng;
     for (auto i = 0; i < 100; ++i)

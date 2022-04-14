@@ -14,12 +14,12 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         CHECK(determinant(mat) == 0.0f);
 
         mat = tg::mat<D, D, tg::f32>::identity;
-        CHECK(determinant(mat) == approx(1.0f));
+        CHECK(determinant(mat) == nx::approx(1.0f));
 
         auto rf = uniform(rng, rd1).x;
         mat = tg::mat<D, D, tg::f32>::diag(rf);
         auto res = tg::pow(rf, D);
-        CHECK(determinant(mat) == approx(res));
+        CHECK(determinant(mat) == nx::approx(res));
     }
 
     {
@@ -29,12 +29,12 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         CHECK(determinant(mat) == 0.0f);
 
         mat = tg::mat<D, D, tg::f32>::identity;
-        CHECK(determinant(mat) == approx(1.0f));
+        CHECK(determinant(mat) == nx::approx(1.0f));
 
         auto rf = uniform(rng, rd1).x;
         mat = tg::mat<D, D, tg::f32>::diag(rf);
         auto res = tg::pow(rf, D);
-        CHECK(determinant(mat) == approx(res));
+        CHECK(determinant(mat) == nx::approx(res));
     }
 
     {
@@ -44,12 +44,12 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         CHECK(determinant(mat) == 0.0f);
 
         mat = tg::mat<D, D, tg::f32>::identity;
-        CHECK(determinant(mat) == approx(1.0f));
+        CHECK(determinant(mat) == nx::approx(1.0f));
 
         auto rf = uniform(rng, rd1).x;
         mat = tg::mat<D, D, tg::f32>::diag(rf);
         auto res = tg::pow(rf, D);
-        CHECK(determinant(mat) == approx(res));
+        CHECK(determinant(mat) == nx::approx(res));
     }
 
     // random DxD matrices for 3D
@@ -57,7 +57,7 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         auto matA = random_matrix<3>(rng);
         auto matB = random_matrix<3>(rng);
         // confirm multiplicativity
-        CHECK(determinant(matA * matB) == approx(determinant(matA) * determinant(matB)).epsilon(0.01));
+        CHECK(determinant(matA * matB) == nx::approx(determinant(matA) * determinant(matB)).epsilon(0.01));
 
         matA = random_invertible_matrix<3>(rng);
         matB = random_invertible_matrix<3>(rng);
@@ -69,13 +69,13 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         // confirm multiplicativity
         auto detA = determinant(matA);
         auto detB = determinant(matB);
-        CHECK(determinant(matA * matB) == approx(detA * detB));
+        CHECK(determinant(matA * matB) == nx::approx(detA * detB));
 
         auto invA = inverse(matA);
         auto invB = inverse(matB);
 
-        CHECK(determinant(invA) == approx(1.0f / detA).epsilon(0.01));
-        CHECK(determinant(invB) == approx(1.0f / detB).epsilon(0.01));
+        CHECK(determinant(invA) == nx::approx(1.0f / detA).epsilon(0.01));
+        CHECK(determinant(invB) == nx::approx(1.0f / detB).epsilon(0.01));
     }
 
     // random DxD matrices for 2D
@@ -83,7 +83,7 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         auto matA = random_matrix<2>(rng);
         auto matB = random_matrix<2>(rng);
         // confirm multiplicativity
-        CHECK(determinant(matA * matB) == approx(determinant(matA) * determinant(matB)).epsilon(0.01));
+        CHECK(determinant(matA * matB) == nx::approx(determinant(matA) * determinant(matB)).epsilon(0.01));
 
         matA = random_invertible_matrix<2>(rng);
         matB = random_invertible_matrix<2>(rng);
@@ -95,12 +95,12 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         // confirm multiplicativity
         auto detA = determinant(matA);
         auto detB = determinant(matB);
-        CHECK(determinant(matA * matB) == approx(detA * detB));
+        CHECK(determinant(matA * matB) == nx::approx(detA * detB));
 
         auto invA = inverse(matA);
         auto invB = inverse(matB);
 
-        CHECK(determinant(invA) == approx(1.0f / detA));
-        CHECK(determinant(invB) == approx(1.0f / detB));
+        CHECK(determinant(invA) == nx::approx(1.0f / detA));
+        CHECK(determinant(invB) == nx::approx(1.0f / detB));
     }
 }

@@ -16,7 +16,7 @@ FUZZ_TEST("BoxFuzz")(tg::rng& rng)
 
     auto ob = tg::box3(ab);
 
-    CHECK(volume_of(ob) == approx(volume_of(ab)));
+    CHECK(volume_of(ob) == nx::approx(volume_of(ab)));
 
     auto p = uniform(rng, ob);
     CHECK(contains(ob, p));
