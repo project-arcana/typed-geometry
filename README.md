@@ -2,6 +2,8 @@
 
 Header-only strongly typed math library for graphics and geometry.
 
+> :warning: this repository is an old version (and the last version without clean-core dependency). typed-geometry is being actively developed at https://github.com/project-arcana/typed-geometry. 
+
 
 ## Usage / Example
 
