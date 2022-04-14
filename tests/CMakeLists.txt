@@ -7,6 +7,8 @@ file(GLOB_RECURSE SOURCES
 
 add_arcana_test(tests-typed-geometry "${SOURCES}")
 
+target_include_directories(tests-typed-geometry PUBLIC ./)
+
 target_link_libraries(tests-typed-geometry PUBLIC
     clean-core
     clean-ranges
