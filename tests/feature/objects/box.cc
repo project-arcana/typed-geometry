@@ -2,7 +2,7 @@
 
 #include <typed-geometry/feature/objects.hh>
 
-TEST("TypedGeometry.BoxBasics")
+TEST("BoxBasics")
 {
     auto b = tg::aabb2({-1, 0}, {3, 4});
     CHECK(contains(b, tg::pos2{-1, 0}));

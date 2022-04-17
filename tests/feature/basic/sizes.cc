@@ -2,7 +2,7 @@
 
 #include <typed-geometry/tg-lean.hh>
 
-TEST("TypedGeometry.Sizes")
+TEST("Sizes")
 {
     CHECK(sizeof(tg::vec3) == 3 * sizeof(float));
     CHECK(sizeof(tg::ivec4) == 4 * sizeof(int));

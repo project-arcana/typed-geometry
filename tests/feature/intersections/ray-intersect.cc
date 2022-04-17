@@ -6,7 +6,7 @@
 
 FUZZ_TEST("Intersections")(tg::rng& rng)
 {
-    auto const tolerance = 0.002f;
+    auto const tolerance = 0.02f;
     auto const test_obj = [tolerance](auto const& ray, auto const& obj)
     {
         auto const ts = tg::intersection_parameter(ray, obj);

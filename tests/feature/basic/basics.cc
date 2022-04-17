@@ -2,7 +2,7 @@
 
 #include <typed-geometry/feature/vector.hh>
 
-TEST("TypedGeometry.Ctor")
+TEST("Ctor")
 {
     {
         tg::vec3 v;
@@ -55,12 +55,7 @@ TEST("TypedGeometry.Ctor")
     }
 }
 
-TEST("TypedGeometry.Constants")
-{
-    // TODO
-}
-
-TEST("TypedGeometry.VecOps")
+TEST("VecOps")
 {
     {
         auto v = tg::vec4(2, 2, 2, 2);
@@ -70,7 +65,7 @@ TEST("TypedGeometry.VecOps")
     }
 }
 
-TEST("TypedGeometry.IvecLength")
+TEST("IvecLength")
 {
     auto a = tg::ivec2(16044, 0);
     auto b = tg::ivec2(28444, 12974);

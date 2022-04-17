@@ -100,7 +100,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
             auto c = randomVec<3>(rng);
 
             // distributive law
-            CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)));
+            CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)).abs(0.001f));
 
             // dot product is positive definite
             confPosDef(a);
@@ -159,7 +159,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
                 auto c = randomVec<2>(rng);
 
                 // distributive law
-                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)));
+                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)).abs(0.0001f));
 
                 // dot product is positive definite
                 confPosDef<2>(a);
@@ -195,7 +195,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
                 auto c = randomVec<2>(rng);
 
                 // distributive law
-                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)));
+                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)).abs(0.0001f));
 
                 // dot product is positive definite
                 confPosDef<2>(a);
@@ -334,7 +334,7 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
                 auto c = randomVec<1>(rng);
 
                 // distributive law
-                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)));
+                CHECK(dot(a, b + c) == nx::approx(dot(a, b) + dot(a, c)).abs(0.0001f));
 
                 // dot product is positive definite
                 confPosDef<1>(a);

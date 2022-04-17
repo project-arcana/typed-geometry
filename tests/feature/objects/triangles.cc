@@ -26,13 +26,13 @@ FUZZ_TEST("Triangle - Circles")(tg::rng& rng)
             auto const cs = tg::circumcircle_of(t);
             auto const cr = tg::circumradius_of(t);
 
-            CHECK(distance(p0, cc) == nx::approx(distance(p1, cc)));
-            CHECK(distance(p1, cc) == nx::approx(distance(p2, cc)));
-            CHECK(distance(p2, cc) == nx::approx(distance(p0, cc)));
+            CHECK(distance(p0, cc) == nx::approx(distance(p1, cc)).abs(0.01f));
+            CHECK(distance(p2, cc) == nx::approx(distance(p0, cc)).abs(0.01f));
+            CHECK(distance(p1, cc) == nx::approx(distance(p2, cc)).abs(0.01f));
 
-            CHECK(cs.radius == nx::approx(distance(p0, cc)));
-            CHECK(cs.center == nx::approx(cc));
-            CHECK(cr == nx::approx(cs.radius));
+            CHECK(cs.radius == nx::approx(distance(p0, cc)).abs(0.01f));
+            CHECK(cs.center == nx::approx(cc).abs(0.01f));
+            CHECK(cr == nx::approx(cs.radius).abs(0.01f).rel(0.01f));
         }
 
         //
@@ -45,10 +45,10 @@ FUZZ_TEST("Triangle - Circles")(tg::rng& rng)
             auto const ir = tg::inradius_of(t);
 
             for (auto e : tg::edges_of(t))
-                CHECK(distance(e, ic) == nx::approx(ir));
+                CHECK(distance(e, ic) == nx::approx(ir).abs(0.01f));
 
-            CHECK(is.center == nx::approx(ic).abs(0.001f));
-            CHECK(ir == nx::approx(is.radius));
+            CHECK(is.center == nx::approx(ic).abs(0.01f));
+            CHECK(ir == nx::approx(is.radius).abs(0.01f));
         }
     };
 

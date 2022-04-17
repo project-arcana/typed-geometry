@@ -86,7 +86,7 @@ FUZZ_TEST("IntersectionRay3Sphere3")(tg::rng& rng)
     }
 }
 
-TEST("TypedGeometry.IntersectionSphere3Sphere3")
+TEST("IntersectionSphere3Sphere3")
 {
     { // touching spheres 1 (side-by-side)
         auto ac = tg::pos3(0, 0, 0);
@@ -201,7 +201,7 @@ TEST("TypedGeometry.IntersectionSphere3Sphere3")
     }
 }
 
-TEST("TypedGeometry.IntersectionCircle2Circle2")
+TEST("IntersectionCircle2Circle2")
 {
     { // touching circles 1 (side-by-side)
         auto ac = tg::pos2(0, 0);
@@ -365,12 +365,12 @@ FUZZ_TEST("Triangle - Intersection")(tg::rng& rng)
     CHECK(ip4.any());
     CHECK(ip5.any());
 
-    CHECK(ip0.first() == nx::approx(p));
-    CHECK(ip1.first() == nx::approx(p));
-    CHECK(ip2.first() == nx::approx(p));
-    CHECK(ip3.first() == nx::approx(p));
-    CHECK(ip4.first() == nx::approx(p));
-    CHECK(ip5.first() == nx::approx(p));
+    CHECK(ip0.first() == nx::approx(p).abs(0.1f));
+    CHECK(ip1.first() == nx::approx(p).abs(0.1f));
+    CHECK(ip2.first() == nx::approx(p).abs(0.1f));
+    CHECK(ip3.first() == nx::approx(p).abs(0.1f));
+    CHECK(ip4.first() == nx::approx(p).abs(0.1f));
+    CHECK(ip5.first() == nx::approx(p).abs(0.1f));
 
     auto a = uniform(rng, -2.f, 2.f);
     auto b = uniform(rng, -2.f, 2.f);

@@ -71,19 +71,17 @@ FUZZ_TEST("Centroid")(tg::rng& rng)
 
 FUZZ_TEST("CentroidByUniform")(tg::rng& rng)
 {
-    auto const tolerance = 0.25f;
-    auto const numSamples = 100000;
+    auto const numSamples = 1500;
 
-    auto const test_obj = [&rng, numSamples, tolerance](auto const& o)
+    auto const test_obj = [&rng, numSamples](auto const& o)
     {
         auto center = uniform(rng, o);
         for (auto i = 1; i < numSamples; ++i)
             center += uniform(rng, o);
         center /= numSamples;
         auto const centroid = centroid_of(o);
-        auto const relError = tg::distance_sqr(center, centroid) / tg::distance_sqr_to_origin(centroid);
-        auto const approxEqual = centroid == nx::approx(center) || relError <= tg::pow2(tolerance);
-        CHECK(approxEqual);
+        // NOTE: really high tolerance because number of samples is kinda low
+        CHECK(centroid == nx::approx(center).abs(1.5f).rel(0.2f));
     };
 
     auto const test_obj_and_boundary = [&test_obj](auto const& o)

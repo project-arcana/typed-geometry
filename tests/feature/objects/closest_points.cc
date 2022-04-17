@@ -172,6 +172,6 @@ FUZZ_TEST("ClosestPoints - LineLine3")(tg::rng& rng)
     auto [p0, p1] = tg::closest_points(l0, l1);
     auto [t0, t1] = tg::closest_points_parameters(l0, l1);
 
-    CHECK(distance(p0, p1) == nx::approx(d));
-    CHECK(distance(l0[t0], l1[t1]) == nx::approx(d));
+    CHECK(distance(p0, p1) == nx::approx(d).abs(0.001f));
+    CHECK(distance(l0[t0], l1[t1]) == nx::approx(d).abs(0.001f));
 }

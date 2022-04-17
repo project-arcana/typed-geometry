@@ -67,9 +67,12 @@ FUZZ_TEST("ContainsCylinder")(tg::rng& rng)
     auto h = distance(p1, p0);
     auto t = any_normal(n);
 
+    if (h < 0.1f || r < 0.1f)
+        return; // too narrow
+
     auto eps = 1e-2f;
-    auto below = 0.98f;
-    auto above = 1.02f;
+    auto below = 0.94f;
+    auto above = 1.06f;
 
     {
         auto p = tg::pos3(c + h / 2 * n - eps * n); // slightly below top cap

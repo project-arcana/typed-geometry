@@ -3,7 +3,7 @@
 #include <typed-geometry/feature/vector.hh>
 #include <typed-geometry/feature/objects.hh>
 
-TEST("TypedGeometry.Tangent")
+TEST("Tangent")
 {
     tg::triangle3 t_pos = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
     tg::triangle2 t_uv = {{0, 0}, {1, 0}, {0, 1}};

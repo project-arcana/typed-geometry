@@ -4,7 +4,7 @@
 
 #include <limits>
 
-TEST("TypedGeometry.Limits")
+TEST("Limits")
 {
     using namespace tg;
 

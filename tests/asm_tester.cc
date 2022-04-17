@@ -29,7 +29,7 @@ asm_tester::asm_tester(const std::string& code, const std::string& compiler, con
         ss << " " << args;
         ss << " -msse2";
         ss << " -O2";
-        ss << " -I" << curr_dir << "/../extern/typed-geometry/src";
+        ss << " -I" << curr_dir << "/../src";
         ss << " -c " << tmp_file << ".cc";
         ss << " -o " << tmp_file << ".o";
         compile_cmd = ss.str();

@@ -20,7 +20,7 @@ FUZZ_TEST("Project")(tg::rng& rng)
             for (auto i = 0; i < 256; i++)
             {
                 auto q = uniform(rng, o);
-                CHECK(distance_sqr(q, p) >= nx::approx(dist));
+                CHECK(distance_sqr(q, p) >= nx::approx(dist).abs(0.01f));
             }
 
         // Projection of points already sampled from inside changes nothing

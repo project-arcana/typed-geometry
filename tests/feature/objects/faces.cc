@@ -60,4 +60,6 @@ FUZZ_TEST("FacesOfPyramids")(tg::rng& rng)
     static_assert(std::is_same_v<decltype(baseFace), tg::box2in3>);
     CHECK(triangleFaces.size() == 4);
     */
+
+    CHECK(true);
 }

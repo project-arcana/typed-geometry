@@ -4,7 +4,7 @@
 
 #include <type_traits>
 
-TEST("TypedGeometry.Usage")
+TEST("Usage")
 {
     // structured binding
     {

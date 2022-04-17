@@ -17,7 +17,7 @@ FUZZ_TEST("Quadrics - PointQuadric")(tg::rng& rng)
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(p, p2)));
+        CHECK(Q(p2) == nx::approx(distance_sqr(p, p2)).abs(0.01f));
     }
 
     auto const q = closest_point(Q);
@@ -34,12 +34,12 @@ FUZZ_TEST("Quadrics - PlaneQuadric")(tg::rng& rng)
     auto const Q = tg::plane_quadric(p, n);
     auto const P = tg::plane(normalize(n), p);
 
-    CHECK(Q(p) == nx::approx(0.f).abs(0.001f));
+    CHECK(Q(p) == nx::approx(0.f).abs(0.1f));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)).abs(0.01f));
     }
 }
 
@@ -52,12 +52,12 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricZero")(tg::rng& rng)
     auto const Q = tg::probabilistic_plane_quadric(p, n, 0, 0);
     auto const P = tg::plane(normalize(n), p);
 
-    CHECK(Q(p) == nx::approx(0.f).abs(0.001f));
+    CHECK(Q(p) == nx::approx(0.f).abs(0.1f));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)).abs(0.01f));
     }
 }
 
@@ -70,12 +70,12 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricZeroMat")(tg::rng& rng)
     auto const Q = tg::probabilistic_plane_quadric(p, n, tg::mat3::zero, tg::mat3::zero);
     auto const P = tg::plane(normalize(n), p);
 
-    CHECK(Q(p) == nx::approx(0.f).abs(0.001f));
+    CHECK(Q(p) == nx::approx(0.f).abs(0.1f));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)).abs(0.01f));
     }
 }
 
@@ -136,7 +136,7 @@ FUZZ_TEST("Quadrics - TriangleQuadric")(tg::rng& rng)
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * tg::pow2(area_of(T)) * 4));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * tg::pow2(area_of(T)) * 4).abs(0.1f));
     }
 }
 
@@ -154,12 +154,12 @@ FUZZ_TEST("Quadrics - ProbTriangleQuadricZero")(tg::rng& rng)
     CHECK(Q(p0) == nx::approx(0.f).abs(0.1));
     CHECK(Q(p1) == nx::approx(0.f).abs(0.1));
     CHECK(Q(p2) == nx::approx(0.f).abs(0.1));
-    CHECK(Q(T[{uniform(rng, 0.0f, 1.0f), uniform(rng, 0.0f, 1.0f)}]) == nx::approx(0.f).abs(0.1));
+    CHECK(Q(T[{uniform(rng, 0.0f, 1.0f), uniform(rng, 0.0f, 1.0f)}]) == nx::approx(0.f).abs(0.1f));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * tg::pow2(area_of(T)) * 4));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * tg::pow2(area_of(T)) * 4).abs(0.1f));
     }
 }
 

@@ -3,7 +3,7 @@
 #include <typed-geometry/feature/vector.hh>
 #include <typed-geometry/feature/random.hh>
 
-TEST("TypedGeometry.OperatorsVec")
+TEST("OperatorsVec")
 {
     // float
     {
@@ -99,7 +99,7 @@ TEST("TypedGeometry.OperatorsVec")
     }
 }
 
-TEST("TypedGeometry.OperatorsPos")
+TEST("OperatorsPos")
 {
     // float
     {
@@ -195,7 +195,7 @@ TEST("TypedGeometry.OperatorsPos")
     }
 }
 
-TEST("TypedGeometry.OperatorsSize")
+TEST("OperatorsSize")
 {
     // float
     {
@@ -291,7 +291,7 @@ TEST("TypedGeometry.OperatorsSize")
     }
 }
 
-TEST("TypedGeometry.OperatorsTriangle")
+TEST("OperatorsTriangle")
 {
     {
         tg::rng rng;
@@ -299,5 +299,7 @@ TEST("TypedGeometry.OperatorsTriangle")
 
         auto t = tg::triangle2(uniform(rng, range2), uniform(rng, range2), uniform(rng, range2));
         t = t * tg::size2(2);
+
+        CHECK(true);
     }
 }

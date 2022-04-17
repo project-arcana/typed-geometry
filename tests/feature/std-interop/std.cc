@@ -59,33 +59,39 @@ void test_all(F&& f)
 }
 } // namespace
 
-TEST("TypedGeometry.StdIo")
+TEST("StdIo")
 {
     test_all([](auto v) {
         std::stringstream ss;
         ss << v;
     });
+
+    CHECK(true); // compile check only
 }
 
-TEST("TypedGeometry.StdLess")
+TEST("StdLess")
 {
     test_all([](auto v) {
         using T = decltype(v);
         std::map<T, int> m;
         std::set<T> s;
     });
+
+    CHECK(true); // compile check only
 }
 
-TEST("TypedGeometry.StdHash")
+TEST("StdHash")
 {
     test_all([](auto v) {
         using T = decltype(v);
         std::unordered_map<T, int> um;
         std::unordered_set<T> us;
     });
+
+    CHECK(true); // compile check only
 }
 
-TEST("TypedGeometry.StdTrivialTypes")
+TEST("StdTrivialTypes")
 {
     test_all([](auto v) {
         using T = decltype(v);
@@ -115,4 +121,6 @@ TEST("TypedGeometry.StdTrivialTypes")
         static_assert(!std::is_trivially_default_constructible<T>::value, "");
         static_assert(!std::is_trivially_constructible<T>::value, "");
     });
+
+    CHECK(true); // compile check only
 }

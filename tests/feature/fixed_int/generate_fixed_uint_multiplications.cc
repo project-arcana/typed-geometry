@@ -1,4 +1,4 @@
-#include <nexus/test.hh>
+#include <nexus/app.hh>
 
 #include <fstream>
 #include <string>
@@ -393,7 +393,7 @@ void generate_imul_file()
 
 } // namespace
 
-TEST("tg generate multiplications")
+APP("tg generate multiplications")
 {
     generate_mul_file();
     generate_imul_file();

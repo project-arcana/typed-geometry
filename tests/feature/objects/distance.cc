@@ -301,7 +301,7 @@ FUZZ_TEST("Distance - LineLine3")(tg::rng& rng)
 
     auto dd = minimize_f1(rng, 2.0f, [&](float a, float b) { return distance(l0[a], l1[b]); });
 
-    CHECK(d == nx::approx(dd).abs(0.4f));
+    CHECK(d == nx::approx(dd).abs(0.7f));
 }
 
 FUZZ_TEST("Distance - PosSeg2")(tg::rng& rng)
@@ -318,7 +318,7 @@ FUZZ_TEST("Distance - PosSeg2")(tg::rng& rng)
         return distance(s[a], p);
     });
 
-    CHECK(d == nx::approx(dd).abs(0.4f));
+    CHECK(d == nx::approx(dd).abs(0.7f));
 }
 
 FUZZ_TEST("Distance - SegSeg2")(tg::rng& rng)
@@ -339,7 +339,7 @@ FUZZ_TEST("Distance - SegSeg2")(tg::rng& rng)
     if (d > 0)
         CHECK(!intersects(s0, s1));
 
-    CHECK(d == nx::approx(dd).abs(0.4f));
+    CHECK(d == nx::approx(dd).abs(0.7f));
 }
 
 FUZZ_TEST("Distance - SegSeg3")(tg::rng& rng)
@@ -357,7 +357,7 @@ FUZZ_TEST("Distance - SegSeg3")(tg::rng& rng)
         return distance(s0[a], s1[b]);
     });
 
-    CHECK(d == nx::approx(dd).abs(0.4f));
+    CHECK(d == nx::approx(dd).abs(0.7f));
 }
 
 FUZZ_TEST("Distance - PosTri3")(tg::rng& rng)

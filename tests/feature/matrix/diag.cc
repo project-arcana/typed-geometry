@@ -23,7 +23,7 @@ static tg::mat<M, N, ScalarT> randMat(tg::rng& rng)
     return mat;
 }
 
-TEST("TypedGeometry.Diag")
+TEST("Diag")
 {
     // m x n identity and zero matrices
     // square
