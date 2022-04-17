@@ -1,5 +1,9 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/basic.hh>
+#include <typed-geometry/feature/matrix.hh>
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("Frustum - BasicFuzzer")(tg::rng& rng)
 {
     auto const bb = tg::aabb3(-10, 10);

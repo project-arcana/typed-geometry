@@ -1,6 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/feature/fwd_diff.hh>
+#include <typed-geometry/feature/vector.hh>
 
 namespace
 {
@@ -12,7 +13,7 @@ void test_fwd_vs_finite_diff(F&& f, T val, T eps = T(1e-4))
     auto v1 = f(val + eps);
     auto g = (v1 - v0) / eps;
     CHECK(v0 == nx::approx(fd_result.value));
-    CHECK(g == nx::approx(fd_result.derivative).epsilon(.01));
+    CHECK(g == nx::approx(fd_result.derivative));
 }
 }
 

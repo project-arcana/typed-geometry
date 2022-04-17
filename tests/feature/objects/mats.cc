@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/matrix.hh>
+
 FUZZ_TEST("MatrixBasics")(tg::rng& rng)
 {
     auto range3 = tg::aabb3(tg::pos3(-2.0f), tg::pos3(2.0f));

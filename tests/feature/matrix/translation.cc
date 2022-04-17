@@ -1,4 +1,7 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
+
+#include <typed-geometry/feature/matrix.hh>
 
 FUZZ_TEST("Translation")(tg::rng& rng)
 {
@@ -31,7 +34,7 @@ FUZZ_TEST("Translation")(tg::rng& rng)
         auto w = tra * v;
 
         auto res = w - v;
-        CHECK(res == nx::approx(s, 1e-5f));
+        CHECK(res == nx::approx(s));
     }
 
     // 3D
@@ -46,6 +49,6 @@ FUZZ_TEST("Translation")(tg::rng& rng)
         auto w = tra * v;
 
         auto res = w - v;
-        CHECK(res == nx::approx(s, 1e-5f));
+        CHECK(res == nx::approx(s));
     }
 }

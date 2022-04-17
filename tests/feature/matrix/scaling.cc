@@ -1,4 +1,7 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
+
+#include <typed-geometry/feature/matrix.hh>
 
 FUZZ_TEST("Scaling")(tg::rng& rng)
 {

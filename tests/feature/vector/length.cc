@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+
 FUZZ_TEST("Length")(tg::rng& rng)
 {
     auto box1 = tg::aabb1(tg::pos1(-1.0f), tg::pos1(1.0f));

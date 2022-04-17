@@ -1,5 +1,8 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/intersections.hh>
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("AABB - Intersect")(tg::rng& rng)
 {
     auto const bounds = tg::aabb3(-10, 10);
@@ -205,7 +208,8 @@ FUZZ_TEST("AABB - RayIntersection")(tg::rng& rng)
 FUZZ_TEST("AABB - ObjectIntersection")(tg::rng& rng)
 {
     auto const numSamples = 250;
-    auto const test_obj = [&](auto const& bb, auto const& o) {
+    auto const test_obj = [&](auto const& bb, auto const& o)
+    {
         if (!intersects(o, bb))
         {
             for (auto i = 0; i < numSamples; ++i)
@@ -253,12 +257,14 @@ FUZZ_TEST("AABB - ObjectIntersection")(tg::rng& rng)
         }
     };
 
-    auto const test_obj_and_boundary = [&test_obj](auto const& bb, auto const& o) {
+    auto const test_obj_and_boundary = [&test_obj](auto const& bb, auto const& o)
+    {
         test_obj(bb, o);
         test_obj(bb, boundary_of(o));
     };
 
-    auto const test_obj_and_boundary_no_caps = [&test_obj](auto const& bb, auto const& o) {
+    auto const test_obj_and_boundary_no_caps = [&test_obj](auto const& bb, auto const& o)
+    {
         test_obj(bb, o);
         test_obj(bb, boundary_of(o));
         test_obj(bb, boundary_no_caps_of(o));

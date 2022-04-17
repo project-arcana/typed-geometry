@@ -1,5 +1,8 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/matrix.hh>
+#include <typed-geometry/feature/vector.hh>
+
 TEST("norms")
 {
     CHECK(frobenius_norm(tg::mat4::identity) == 2.0f);
@@ -32,6 +35,6 @@ FUZZ_TEST("Norm")(tg::rng& rng)
         auto p = uniform(rng, 1.0f, 10.0f);
         CHECK(norm(tg::vec3::unit_x, p) == nx::approx(1.0f));
         CHECK(norm(tg::vec4::unit_z, p) == nx::approx(1.0f));
-        CHECK(norm(tg::dvec2::unit_y, double(p)) == nx::approx(1.0f));
+        CHECK(norm(tg::dvec2::unit_y, double(p)) == nx::approx(1.));
     }
 }

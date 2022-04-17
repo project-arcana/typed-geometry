@@ -9,6 +9,7 @@
 #include <gmpxx.h>
 
 #include <typed-geometry/feature/fixed_int.hh>
+#include <typed-geometry/feature/std-interop.hh>
 
 namespace
 {
@@ -188,7 +189,8 @@ void check_mul(tg::rng& rng)
 template <int w>
 void check_shift(tg::rng& rng)
 {
-    auto const capped_shift_left = [](mpz_class i, int shift) -> mpz_class {
+    auto const capped_shift_left = [](mpz_class i, int shift) -> mpz_class
+    {
         mpz_class res = i << tg::u64(shift);
         std::string s;
         s.resize(w * 64, '1');
@@ -197,7 +199,8 @@ void check_shift(tg::rng& rng)
         res &= mask;
         return res;
     };
-    auto const capped_shift_right = [](mpz_class i, int shift) -> mpz_class {
+    auto const capped_shift_right = [](mpz_class i, int shift) -> mpz_class
+    {
         mpz_class res = i >> tg::u64(shift);
         std::string s;
         s.resize(w * 64, '1');
@@ -274,7 +277,8 @@ void check_bitops(tg::rng& rng)
 {
     // gmp seems to use twos-complement internally,
     // this is a workaround to make sure inversion works correctly
-    auto const capped_inv = [](mpz_class i, size_t words) -> mpz_class {
+    auto const capped_inv = [](mpz_class i, size_t words) -> mpz_class
+    {
         std::string s;
         s.resize(words * 64, '1');
         mpz_class mask;

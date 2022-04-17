@@ -1,4 +1,8 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
+
+#include <typed-geometry/feature/matrix.hh>
+#include <typed-geometry/feature/vector.hh>
 
 FUZZ_TEST("OuterProduct")(tg::rng& rng)
 {
@@ -38,14 +42,14 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
         CHECK(transpose(outer_product(y, x)) == nx::approx(outer_product(x, y)));
 
         // as u is x multiplied by random
-        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z), 1e-2f));
+        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z)));
 
         // distributivity
-        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
+        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z)));
 
         // scalar multiplication
         auto lambda = uniform(rng, box1).x;
-        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y), 1e-2f));
+        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y)));
 
         // zero
         CHECK(outer_product(x, zero) == nx::approx(tg::mat4::zero));
@@ -78,14 +82,14 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
         CHECK(transpose(outer_product(y, x)) == nx::approx(outer_product(x, y)));
 
         // as u is x multiplied by random
-        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z), 1e-2f));
+        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z)));
 
         // distributivity
-        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
+        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z)));
 
         // scalar multiplication
         auto lambda = uniform(rng, box1).x;
-        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y), 1e-2f));
+        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y)));
 
         // zero
         CHECK(outer_product(x, zero) == nx::approx(tg::mat3::zero));
@@ -117,14 +121,14 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
         CHECK(transpose(outer_product(y, x)) == nx::approx(outer_product(x, y)));
 
         // as u is x multiplied by random
-        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z), 1e-2f));
+        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z)));
 
         // distributivity
-        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
+        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z)));
 
         // scalar multiplication
         auto lambda = uniform(rng, box1).x;
-        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y), 1e-2f));
+        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y)));
 
         // zero
         CHECK(outer_product(x, zero) == nx::approx(tg::mat2::zero));
@@ -155,14 +159,14 @@ FUZZ_TEST("OuterProduct")(tg::rng& rng)
         CHECK(transpose(outer_product(y, x)) == nx::approx(outer_product(x, y)));
 
         // as u is x multiplied by random
-        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z), 1e-2f));
+        CHECK(outer_product(z, x) == nx::approx(outer_product(x, z)));
 
         // distributivity
-        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z), 1e-2f));
+        CHECK(outer_product(x, y + z) == nx::approx(outer_product(x, y) + outer_product(x, z)));
 
         // scalar multiplication
         auto lambda = uniform(rng, box1).x;
-        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y), 1e-2f));
+        CHECK(outer_product(x, y) * lambda == nx::approx(outer_product(lambda * x, y)));
 
         // zero
         CHECK(outer_product(x, zero) == nx::approx(tg::mat1::zero));

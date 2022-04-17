@@ -1,6 +1,9 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
 #include <typed-geometry/feature/quadric.hh>
+#include <typed-geometry/feature/vector.hh>
 
 FUZZ_TEST("Quadrics - PointQuadric")(tg::rng& rng)
 {
@@ -9,7 +12,7 @@ FUZZ_TEST("Quadrics - PointQuadric")(tg::rng& rng)
     auto const p = uniform(rng, bb);
     auto const Q = tg::point_quadric(p);
 
-    CHECK(Q(p) == nx::approx(0));
+    CHECK(Q(p) == nx::approx(0.f).abs(0.001f));
 
     for (auto i = 0; i < 10; ++i)
     {
@@ -31,12 +34,12 @@ FUZZ_TEST("Quadrics - PlaneQuadric")(tg::rng& rng)
     auto const Q = tg::plane_quadric(p, n);
     auto const P = tg::plane(normalize(n), p);
 
-    CHECK(Q(p) == nx::approx(0).epsilon(0.01));
+    CHECK(Q(p) == nx::approx(0.f).abs(0.001f));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)).epsilon(0.01));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)));
     }
 }
 
@@ -49,12 +52,12 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricZero")(tg::rng& rng)
     auto const Q = tg::probabilistic_plane_quadric(p, n, 0, 0);
     auto const P = tg::plane(normalize(n), p);
 
-    CHECK(Q(p) == nx::approx(0).epsilon(0.01));
+    CHECK(Q(p) == nx::approx(0.f).abs(0.001f));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)).epsilon(0.01));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)));
     }
 }
 
@@ -67,12 +70,12 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricZeroMat")(tg::rng& rng)
     auto const Q = tg::probabilistic_plane_quadric(p, n, tg::mat3::zero, tg::mat3::zero);
     auto const P = tg::plane(normalize(n), p);
 
-    CHECK(Q(p) == nx::approx(0).epsilon(0.01));
+    CHECK(Q(p) == nx::approx(0.f).abs(0.001f));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)).epsilon(0.01));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * length_sqr(n)));
     }
 }
 
@@ -125,15 +128,15 @@ FUZZ_TEST("Quadrics - TriangleQuadric")(tg::rng& rng)
     auto const Q = tg::triangle_quadric(p0, p1, p2);
     auto const P = tg::plane(normal_of(T), p0);
 
-    CHECK(Q(p0) == nx::approx(0).epsilon(0.1));
-    CHECK(Q(p1) == nx::approx(0).epsilon(0.1));
-    CHECK(Q(p2) == nx::approx(0).epsilon(0.1));
-    CHECK(Q(T[{uniform(rng, 0.0f, 1.0f), uniform(rng, 0.0f, 1.0f)}]) == nx::approx(0).epsilon(0.1));
+    CHECK(Q(p0) == nx::approx(0.f).abs(0.1));
+    CHECK(Q(p1) == nx::approx(0.f).abs(0.1));
+    CHECK(Q(p2) == nx::approx(0.f).abs(0.1));
+    CHECK(Q(T[{uniform(rng, 0.0f, 1.0f), uniform(rng, 0.0f, 1.0f)}]) == nx::approx(0.f).abs(0.1));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * tg::pow2(area_of(T)) * 4).epsilon(0.01));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * tg::pow2(area_of(T)) * 4));
     }
 }
 
@@ -148,15 +151,15 @@ FUZZ_TEST("Quadrics - ProbTriangleQuadricZero")(tg::rng& rng)
     auto const Q = tg::probabilistic_triangle_quadric(p0, p1, p2, 0);
     auto const P = tg::plane(normal_of(T), p0);
 
-    CHECK(Q(p0) == nx::approx(0).epsilon(0.1));
-    CHECK(Q(p1) == nx::approx(0).epsilon(0.1));
-    CHECK(Q(p2) == nx::approx(0).epsilon(0.1));
-    CHECK(Q(T[{uniform(rng, 0.0f, 1.0f), uniform(rng, 0.0f, 1.0f)}]) == nx::approx(0).epsilon(0.1));
+    CHECK(Q(p0) == nx::approx(0.f).abs(0.1));
+    CHECK(Q(p1) == nx::approx(0.f).abs(0.1));
+    CHECK(Q(p2) == nx::approx(0.f).abs(0.1));
+    CHECK(Q(T[{uniform(rng, 0.0f, 1.0f), uniform(rng, 0.0f, 1.0f)}]) == nx::approx(0.f).abs(0.1));
 
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * tg::pow2(area_of(T)) * 4).epsilon(0.01));
+        CHECK(Q(p2) == nx::approx(distance_sqr(P, p2) * tg::pow2(area_of(T)) * 4));
     }
 }
 

@@ -1,5 +1,8 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+#include <typed-geometry/feature/matrix.hh>
+
 /// confirms that dot product of vec is positive definite
 template <int D = 3, class ScalarT = tg::f32>
 static void confPosDef(const tg::vec<D, ScalarT>& v)
@@ -7,7 +10,7 @@ static void confPosDef(const tg::vec<D, ScalarT>& v)
     auto r = dot(v, v);
     CHECK(r >= 0.0f);
     if (length(v) == 0.0f)
-        CHECK(r == nx::approx(0.0f));
+        CHECK(r == nx::approx(0.0f).abs(0.001f));
     else
         CHECK(r != 0.0f);
 }
@@ -58,7 +61,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
             auto calc = dot(r, r);
             CHECK(calc == nx::approx(result));
             // equivalent to..
-            CHECK(sqrt(calc) == nx::approx(l));
+            CHECK(tg::sqrt(calc) == nx::approx(l));
         }
         { // orthogonality
             // random rotation..
@@ -70,7 +73,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
             auto v1 = tg::vec3(rotMat * tg::vec4(by, 0));
             // dot product is 0
             auto calc = dot(v0, v1);
-            CHECK(calc == nx::approx(0.0f));
+            CHECK(calc == nx::approx(0.0f).abs(0.001f));
         }
 
         { // cosine
@@ -124,7 +127,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
             auto calc = dot(r, r);
             CHECK(calc == nx::approx(result));
             // equivalent to..
-            CHECK(sqrt(calc) == nx::approx(l));
+            CHECK(tg::sqrt(calc) == nx::approx(l));
         }
         {
             { //  two perpendicular vectors
@@ -132,7 +135,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
                 auto v1 = perpendicular(v0);
                 // dot product is 0
                 auto calc = dot(v0, v1);
-                CHECK(calc == nx::approx(0.0f));
+                CHECK(calc == nx::approx(0.0f).abs(0.001f));
             }
             { // cosine
               // random normalized vector (|v| > 0)
@@ -182,7 +185,7 @@ FUZZ_TEST("DotVec")(tg::rng& rng)
             auto calc = dot(r, r);
             CHECK(calc == nx::approx(result));
             // equivalent to..
-            CHECK(sqrt(calc) == nx::approx(l));
+            CHECK(tg::sqrt(calc) == nx::approx(l));
         }
         {
             { // 3 random vectors
@@ -231,7 +234,7 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
             auto d1 = normalize(tg::vec3(rotMat * tg::vec4(by, 0)));
             // dot product is 0
             auto calc = dot(d0, d1);
-            CHECK(calc == nx::approx(0.0f));
+            CHECK(calc == nx::approx(0.0f).abs(0.001f));
         }
     }
     { // cosine
@@ -281,7 +284,7 @@ FUZZ_TEST("DotDir")(tg::rng& rng)
             auto d1 = perpendicular(d0);
             // dot product is 0
             auto calc = dot(d0, d1);
-            CHECK(calc == nx::approx(0.0f));
+            CHECK(calc == nx::approx(0.0f).abs(0.001f));
         }
         { // cosine
           // random direction (|v| > 0)

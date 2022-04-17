@@ -2,39 +2,42 @@
 
 #include <typed-geometry/tg-std.hh>
 
-TG_FUZZ_TEST_MAX_ITS_MAX_CYCLES(TypedGeometry, Project, 25, 100'000'000'000)
+FUZZ_TEST("Project")(tg::rng& rng)
 {
-    auto const test_obj = [&rng](auto const& p, auto const& o) {
+    auto const test_obj = [&rng](auto const& p, auto const& o)
+    {
         auto proj = project(p, o);
 
         // Projected point lies in the object
         auto dist = distance_sqr(proj, o);
-        CHECK(dist == nx::approx(0.0f));
+        CHECK(dist == nx::approx(0.0f).abs(0.001f));
         CHECK(contains(o, proj, 0.01f));
 
         dist = distance_sqr(proj, p);
         if (contains(o, p)) // If inside by chance, the projection does not change anything
-            CHECK(dist == nx::approx(0.0f));
+            CHECK(dist == nx::approx(0.0f).abs(0.001f));
         else // Otherwise all other points inside are not closer than the projection
             for (auto i = 0; i < 256; i++)
             {
                 auto q = uniform(rng, o);
-                CHECK(distance_sqr(q, p) >= approx(dist));
+                CHECK(distance_sqr(q, p) >= nx::approx(dist));
             }
 
         // Projection of points already sampled from inside changes nothing
         auto pInside = uniform(rng, o);
         proj = project(pInside, o);
         dist = distance_sqr(proj, pInside);
-        CHECK(dist == nx::approx(0.0f));
+        CHECK(dist == nx::approx(0.0f).abs(0.001f));
     };
 
-    auto const test_obj_and_boundary = [&test_obj](auto const& p, auto const& o) {
+    auto const test_obj_and_boundary = [&test_obj](auto const& p, auto const& o)
+    {
         test_obj(p, o);
         test_obj(p, boundary_of(o));
     };
 
-    auto const test_obj_and_boundary_no_caps = [&test_obj](auto const& p, auto const& o) {
+    auto const test_obj_and_boundary_no_caps = [&test_obj](auto const& p, auto const& o)
+    {
         test_obj(p, o);
         test_obj(p, boundary_of(o));
         test_obj(p, boundary_no_caps_of(o));
@@ -170,7 +173,7 @@ FUZZ_TEST("ProjectObjects")(tg::rng& rng)
         auto dist2 = distance(pp, pl);
 
         CHECK(dist0 == nx::approx(dist1));
-        CHECK(dist2 == nx::approx(0.0f));
+        CHECK(dist2 == nx::approx(0.0f).abs(0.001f));
     }
 
     {
@@ -197,7 +200,7 @@ FUZZ_TEST("ProjectObjects")(tg::rng& rng)
         // project that point back, it should lie at p's position
         pn = project(pn, line);
         auto dist1 = distance_sqr(p, pn);
-        CHECK(dist1 == nx::approx(0.0f));
+        CHECK(dist1 == nx::approx(0.0f).abs(0.001f));
     }
 
     {
@@ -217,6 +220,6 @@ FUZZ_TEST("ProjectObjects")(tg::rng& rng)
 
         // The projection onto the ray is the same as onto the line if in positive direction, otherwise at the ray origin
         auto diff = distance_sqr(projRay, dot(p - pos, dir) > 0 ? projLine : pos);
-        CHECK(diff == nx::approx(0.0f));
+        CHECK(diff == nx::approx(0.0f).abs(0.001f));
     }
 }

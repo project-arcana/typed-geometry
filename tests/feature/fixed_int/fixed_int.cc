@@ -9,6 +9,7 @@
 #include <gmpxx.h>
 
 #include <typed-geometry/feature/fixed_int.hh>
+#include <typed-geometry/feature/std-interop.hh>
 
 namespace
 {

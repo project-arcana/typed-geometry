@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("Interpolate")(tg::rng& rng)
 {
     auto box1 = tg::aabb1(-1.0f, 1.0f);
@@ -31,25 +33,25 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
         // testing interpolation, lazy and must be exactly the same as passing all three scalars
         auto p0Lazy = tg::interpolate(triangle, 1.0f, 0.0f);
         auto p0 = tg::interpolate(triangle, 1.0f, 0.0f, 0.0f);
-        CHECK(distance(p0, vertices[0]) == nx::approx(0));
-        CHECK(distance(p0Lazy, p0) == nx::approx(0));
+        CHECK(distance(p0, vertices[0]) == nx::approx(0.f).abs(0.001f));
+        CHECK(distance(p0Lazy, p0) == nx::approx(0.f).abs(0.001f));
 
         auto p1Lazy = tg::interpolate(triangle, 0.0f, 1.0f);
         auto p1 = tg::interpolate(triangle, 0.0f, 1.0f, 0.0f);
-        CHECK(distance(p1, vertices[1]) == nx::approx(0));
-        CHECK(distance(p1Lazy, p1) == nx::approx(0));
+        CHECK(distance(p1, vertices[1]) == nx::approx(0.f).abs(0.001f));
+        CHECK(distance(p1Lazy, p1) == nx::approx(0.f).abs(0.001f));
 
         auto p2Lazy = tg::interpolate(triangle, 0.0f, 0.0f);
         auto p2 = tg::interpolate(triangle, 0.0f, 0.0f, 1.0f);
-        CHECK(distance(p2, vertices[2]) == nx::approx(0));
-        CHECK(distance(p2Lazy, p2) == nx::approx(0));
+        CHECK(distance(p2, vertices[2]) == nx::approx(0.f).abs(0.001f));
+        CHECK(distance(p2Lazy, p2) == nx::approx(0.f).abs(0.001f));
 
         auto third = 1.0f / 3.0f;
         auto result = tg::interpolate(triangle, third, third);
         auto center = tg::pos2::zero;
         for (auto v : vertices)
             center += tg::vec2(v) * third;
-        CHECK(distance(center, result) == nx::approx(0).epsilon(1e-3));
+        CHECK(distance(center, result) == nx::approx(0.f).abs(0.001f));
     }
 
 
@@ -83,25 +85,25 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
         // testing interpolation, lazy and must be exactly the same as passing all three scalars
         auto p0Lazy = tg::interpolate(triangle, 1.0f, 0.0f);
         auto p0 = tg::interpolate(triangle, 1.0f, 0.0f, 0.0f);
-        CHECK(distance(p0, vertices[0]) == nx::approx(0));
-        CHECK(distance(p0Lazy, p0) == nx::approx(0));
+        CHECK(distance(p0, vertices[0]) == nx::approx(0.f).abs(0.001f));
+        CHECK(distance(p0Lazy, p0) == nx::approx(0.f).abs(0.001f));
 
         auto p1Lazy = tg::interpolate(triangle, 0.0f, 1.0f);
         auto p1 = tg::interpolate(triangle, 0.0f, 1.0f, 0.0f);
-        CHECK(distance(p1, vertices[1]) == nx::approx(0));
-        CHECK(distance(p1Lazy, p1) == nx::approx(0));
+        CHECK(distance(p1, vertices[1]) == nx::approx(0.f).abs(0.001f));
+        CHECK(distance(p1Lazy, p1) == nx::approx(0.f).abs(0.001f));
 
         auto p2Lazy = tg::interpolate(triangle, 0.0f, 0.0f);
         auto p2 = tg::interpolate(triangle, 0.0f, 0.0f, 1.0f);
-        CHECK(distance(p2, vertices[2]) == nx::approx(0));
-        CHECK(distance(p2Lazy, p2) == nx::approx(0));
+        CHECK(distance(p2, vertices[2]) == nx::approx(0.f).abs(0.001f));
+        CHECK(distance(p2Lazy, p2) == nx::approx(0.f).abs(0.001f));
 
         auto third = 1.0f / 3.0f;
         auto result = tg::interpolate(triangle, third, third);
         auto center = tg::pos3::zero;
         for (auto v : vertices)
             center += tg::vec3(v) * third;
-        CHECK(distance(center, result) == nx::approx(0).epsilon(1e-3));
+        CHECK(distance(center, result) == nx::approx(0.f).abs(0.001f));
     }
 
     auto t = uniform(rng, box1).x;
@@ -113,7 +115,7 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
             auto p1 = uniform(rng, box1);
 
             auto result = tg::interpolate(p0, p1, t);
-            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0));
+            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0.f).abs(0.001f));
         }
         {
             // vec
@@ -126,8 +128,8 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
             auto wb = t;
             auto wResult = tg::pos1(tg::interpolate(tg::vec1(p0), tg::vec1(p1), wa, wb));
 
-            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0));
-            CHECK(distance(result, wResult) == nx::approx(0));
+            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0.f).abs(0.001f));
+            CHECK(distance(result, wResult) == nx::approx(0.f).abs(0.001f));
         }
         {
             // scalar
@@ -139,8 +141,8 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
             auto wResult = tg::interpolate(p0, p1, wa, wb);
 
             auto result = tg::interpolate(p0, p1, t);
-            CHECK(tg::abs(result - (p0 + t * (p1 - p0))) == nx::approx(0));
-            CHECK(tg::abs(result - wResult) == nx::approx(0));
+            CHECK(tg::abs(result - (p0 + t * (p1 - p0))) == nx::approx(0.f).abs(0.001f));
+            CHECK(tg::abs(result - wResult) == nx::approx(0.f).abs(0.001f));
         }
 
         // 2D random
@@ -154,8 +156,8 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
             auto wResult = tg::pos2(tg::interpolate(p0, p1, wa, wb));
 
             auto result = tg::interpolate(p0, p1, t);
-            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0));
-            CHECK(distance(result, wResult) == nx::approx(0));
+            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0.f).abs(0.001f));
+            CHECK(distance(result, wResult) == nx::approx(0.f).abs(0.001f));
         }
         {
             // vec
@@ -167,8 +169,8 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
             auto wResult = tg::pos2(tg::interpolate(tg::vec2(p0), tg::vec2(p1), wa, wb));
 
             auto result = tg::pos2(tg::interpolate(tg::vec2(p0), tg::vec2(p1), t));
-            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0));
-            CHECK(distance(result, wResult) == nx::approx(0));
+            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0.f).abs(0.001f));
+            CHECK(distance(result, wResult) == nx::approx(0.f).abs(0.001f));
         }
 
         // 3D random
@@ -182,8 +184,8 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
             auto wResult = tg::pos3(tg::interpolate(p0, p1, wa, wb));
 
             auto result = tg::interpolate(p0, p1, t);
-            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0));
-            CHECK(distance(result, wResult) == nx::approx(0));
+            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0.f).abs(0.001f));
+            CHECK(distance(result, wResult) == nx::approx(0.f).abs(0.001f));
         }
         {
             // vec
@@ -195,8 +197,8 @@ FUZZ_TEST("Interpolate")(tg::rng& rng)
             auto wResult = tg::pos3(tg::interpolate(tg::vec3(p0), tg::vec3(p1), wa, wb));
 
             auto result = tg::pos3(tg::interpolate(tg::vec3(p0), tg::vec3(p1), t));
-            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0));
-            CHECK(distance(result, wResult) == nx::approx(0));
+            CHECK(distance(result, p0 + t * (p1 - p0)) == nx::approx(0.f).abs(0.001f));
+            CHECK(distance(result, wResult) == nx::approx(0.f).abs(0.001f));
         }
     }
 }

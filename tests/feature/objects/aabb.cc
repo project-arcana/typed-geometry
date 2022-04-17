@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("AABB")(tg::rng& rng)
 {
     auto p0 = uniform(rng, tg::aabb3(tg::pos3(-10.0f), tg::pos3(10.0f)));

@@ -1,5 +1,8 @@
 #include <nexus/test.hh>
 
+#include <typed-geometry/feature/basic.hh>
+#include <typed-geometry/feature/vector.hh>
+
 #include <vector>
 
 TEST("span")

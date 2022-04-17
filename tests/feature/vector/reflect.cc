@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+
 FUZZ_TEST("Reflect")(tg::rng& rng)
 {
     auto d = tg::uniform<tg::dir3>(rng);

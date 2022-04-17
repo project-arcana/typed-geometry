@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("FacesPreserveArea")(tg::rng& rng)
 {
     const auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));
@@ -27,7 +29,7 @@ FUZZ_TEST("FacesPreserveArea")(tg::rng& rng)
     test_face_areas(tg::box3(pos30, m3));
 }
 
-TG_FUZZ_TEST_MAX_ITS(TypedGeometry, FacesOfPyramids, 1)
+FUZZ_TEST("FacesOfPyramids")(tg::rng& rng)
 {
     const auto h = uniform(rng, 0.0f, 10.0f);
 

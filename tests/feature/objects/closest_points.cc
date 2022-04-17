@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("ClosestPoints - PosPos")(tg::rng& rng)
 {
     auto range1 = tg::aabb1(tg::pos1(-10), tg::pos1(10));

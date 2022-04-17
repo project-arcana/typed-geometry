@@ -1,5 +1,9 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/matrix.hh>
+#include <typed-geometry/feature/objects.hh>
+#include <typed-geometry/feature/vector.hh>
+
 FUZZ_TEST("Cross")(tg::rng& rng)
 {
     auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));
@@ -37,14 +41,14 @@ FUZZ_TEST("Cross")(tg::rng& rng)
 
         auto unitZ_v = cross(unitX, unitY);
 
-        CHECK(dot(unitZ_v, unitX) == nx::approx(0));
-        CHECK(dot(unitZ_v, unitY) == nx::approx(0));
+        CHECK(dot(unitZ_v, unitX) == nx::approx(0.f).abs(0.001f));
+        CHECK(dot(unitZ_v, unitY) == nx::approx(0.f).abs(0.001f));
 
         auto unitZ = normalize(tg::vec3(undoRotation * tg::vec4(unitZ_v, 0.0f)));
 
         CHECK(unitZ.z == 1.f);
-        CHECK(unitZ.x == nx::approx(0));
-        CHECK(unitZ.y == nx::approx(0));
+        CHECK(unitZ.x == nx::approx(0.f).abs(0.001f));
+        CHECK(unitZ.y == nx::approx(0.f).abs(0.001f));
         CHECK(is_normalized(unitZ_v));
 
 
@@ -61,7 +65,7 @@ FUZZ_TEST("Cross")(tg::rng& rng)
         // magnitude of new vector should be equal to area of parallelogram of first two vectors
         CHECK(length(vecZ) == nx::approx(areaOfParallelogram));
 
-        CHECK(dot(vecZ, vecX) == nx::approx(0).epsilon(1e-3));
-        CHECK(dot(vecZ, vecY) == nx::approx(0).epsilon(1e-3));
+        CHECK(dot(vecZ, vecX) == nx::approx(0.f).abs(1e-3));
+        CHECK(dot(vecZ, vecY) == nx::approx(0.f).abs(1e-3));
     }
 }

@@ -1,4 +1,7 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
+
+#include <typed-geometry/feature/objects.hh>
 
 FUZZ_TEST("Centroid")(tg::rng& rng)
 {
@@ -34,7 +37,6 @@ FUZZ_TEST("Centroid")(tg::rng& rng)
     }
 
 
-
     {
         // 3d sphere
         auto radius = uniform(rng, range1).x;
@@ -49,14 +51,15 @@ FUZZ_TEST("Centroid")(tg::rng& rng)
             {
                 auto surfacePoint = sphere.center + tg::vec3(tg::f32(cos(s) * sin(t) * radius), tg::f32(sin(s) * sin(t) * radius), tg::f32(cos(t) * radius));
 
-                CHECK(tg::distance_sqr(center, surfacePoint) == nx::approx(pow(radius, 2)));
+                CHECK(tg::distance_sqr(center, surfacePoint) == nx::approx(tg::pow(radius, 2)));
             }
         }
     }
 
     {
         // tetrahedron
-        auto const pyTri = tg::pyramid<tg::triangle3>(tg::triangle3(uniform(rng, range3), uniform(rng, range3), uniform(rng, range3)), uniform(rng, 0.1f, 10.f));
+        auto const pyTri
+            = tg::pyramid<tg::triangle3>(tg::triangle3(uniform(rng, range3), uniform(rng, range3), uniform(rng, range3)), uniform(rng, 0.1f, 10.f));
         auto center = apex_of(pyTri);
         for (auto const& vertex : vertices_of(pyTri.base))
             center += vertex;
@@ -71,23 +74,26 @@ FUZZ_TEST("CentroidByUniform")(tg::rng& rng)
     auto const tolerance = 0.25f;
     auto const numSamples = 100000;
 
-    auto const test_obj = [&rng, numSamples, tolerance](auto const& o) {
+    auto const test_obj = [&rng, numSamples, tolerance](auto const& o)
+    {
         auto center = uniform(rng, o);
         for (auto i = 1; i < numSamples; ++i)
             center += uniform(rng, o);
         center /= numSamples;
         auto const centroid = centroid_of(o);
         auto const relError = tg::distance_sqr(center, centroid) / tg::distance_sqr_to_origin(centroid);
-        auto const approxEqual = centroid == nx::approx(center, tolerance) || relError <= tg::pow2(tolerance);
+        auto const approxEqual = centroid == nx::approx(center) || relError <= tg::pow2(tolerance);
         CHECK(approxEqual);
     };
 
-    auto const test_obj_and_boundary = [&test_obj](auto const& o) {
+    auto const test_obj_and_boundary = [&test_obj](auto const& o)
+    {
         test_obj(o);
         test_obj(boundary_of(o));
     };
 
-    auto const test_obj_and_boundary_no_caps = [&test_obj](auto const& o) {
+    auto const test_obj_and_boundary_no_caps = [&test_obj](auto const& o)
+    {
         test_obj(o);
         test_obj(boundary_of(o));
         test_obj(boundary_no_caps_of(o));

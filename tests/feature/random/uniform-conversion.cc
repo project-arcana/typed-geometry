@@ -1,5 +1,6 @@
 #include <nexus/test.hh>
 
+#include <typed-geometry/feature/basic.hh>
 #include <typed-geometry/feature/random.hh>
 
 TEST("Uniform Conversion API")

@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+
 FUZZ_TEST("Tests - Vec")(tg::rng& rng)
 {
     CHECK(is_zero_vector(tg::vec3::zero));

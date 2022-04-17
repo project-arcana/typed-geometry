@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+
 FUZZ_TEST("Normalize")(tg::rng& rng)
 {
     // float

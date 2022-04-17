@@ -1,5 +1,7 @@
 #include <nexus/test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+
 TEST("object convert")
 {
     {

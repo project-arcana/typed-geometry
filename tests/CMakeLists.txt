@@ -15,4 +15,7 @@ target_link_libraries(tests-typed-geometry PUBLIC
     typed-geometry
     rich-log
     ctracer
+    $<$<PLATFORM_ID:Linux>:gmp>
 )
+
+target_compile_options(tests-typed-geometry PUBLIC -mavx2 -mbmi2 -mlzcnt)

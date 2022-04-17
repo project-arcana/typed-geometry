@@ -2,6 +2,8 @@
 
 #include <typed-geometry/feature/matrix.hh>
 
+#include "random_ctors.hh"
+
 FUZZ_TEST("Determinant")(tg::rng& rng)
 {
     auto rd1 = tg::aabb1(0.0f, 1.0f);
@@ -54,16 +56,16 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
 
     // random DxD matrices for 3D
     {
-        auto matA = random_matrix<3>(rng);
-        auto matB = random_matrix<3>(rng);
+        auto matA = test::random_matrix<3>(rng);
+        auto matB = test::random_matrix<3>(rng);
         // confirm multiplicativity
-        CHECK(determinant(matA * matB) == nx::approx(determinant(matA) * determinant(matB)).epsilon(0.01));
+        CHECK(determinant(matA * matB) == nx::approx(determinant(matA) * determinant(matB)));
 
-        matA = random_invertible_matrix<3>(rng);
-        matB = random_invertible_matrix<3>(rng);
+        matA = test::random_invertible_matrix<3>(rng);
+        matB = test::random_invertible_matrix<3>(rng);
 
         // if invertible det != 0
-        CHECK(determinant(matA) != approx(0.0f));
+        CHECK(determinant(matA) != nx::approx(0.0f).abs(0.001f));
         // CHECK(determinant(matB) != approx(0.0f));
 
         // confirm multiplicativity
@@ -74,23 +76,23 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         auto invA = inverse(matA);
         auto invB = inverse(matB);
 
-        CHECK(determinant(invA) == nx::approx(1.0f / detA).epsilon(0.01));
-        CHECK(determinant(invB) == nx::approx(1.0f / detB).epsilon(0.01));
+        CHECK(determinant(invA) == nx::approx(1.0f / detA));
+        CHECK(determinant(invB) == nx::approx(1.0f / detB));
     }
 
     // random DxD matrices for 2D
     {
-        auto matA = random_matrix<2>(rng);
-        auto matB = random_matrix<2>(rng);
+        auto matA = test::random_matrix<2>(rng);
+        auto matB = test::random_matrix<2>(rng);
         // confirm multiplicativity
-        CHECK(determinant(matA * matB) == nx::approx(determinant(matA) * determinant(matB)).epsilon(0.01));
+        CHECK(determinant(matA * matB) == nx::approx(determinant(matA) * determinant(matB)));
 
-        matA = random_invertible_matrix<2>(rng);
-        matB = random_invertible_matrix<2>(rng);
+        matA = test::random_invertible_matrix<2>(rng);
+        matB = test::random_invertible_matrix<2>(rng);
 
         // if invertible det != 0
-        CHECK(determinant(matA) != approx(0.0f));
-        CHECK(determinant(matB) != approx(0.0f));
+        CHECK(determinant(matA) != nx::approx(0.0f).abs(0.001f));
+        CHECK(determinant(matB) != nx::approx(0.0f).abs(0.001f));
 
         // confirm multiplicativity
         auto detA = determinant(matA);

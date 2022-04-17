@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("ContainsBox")(tg::rng& rng)
 {
     {

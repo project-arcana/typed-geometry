@@ -1,9 +1,14 @@
 #include <nexus/fuzz_test.hh>
+#include <nexus/ext/tg-approx.hh>
+
+#include <typed-geometry/feature/matrix.hh>
+
+#include "random_ctors.hh"
 
 FUZZ_TEST("Submatrix")(tg::rng& rng)
 {
     {
-        auto mat = random_matrix<2>(rng);
+        auto mat = test::random_matrix<2>(rng);
         auto copy = tg::submatrix<0, 0, 2, 2>(mat);
 
         CHECK(copy == nx::approx(mat));
@@ -20,7 +25,7 @@ FUZZ_TEST("Submatrix")(tg::rng& rng)
     }
 
     {
-        auto mat = random_matrix<3>(rng);
+        auto mat = test::random_matrix<3>(rng);
         auto copy = tg::submatrix<0, 0, 3, 3>(mat);
 
         CHECK(copy == nx::approx(mat));

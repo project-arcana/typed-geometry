@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("Perimeter")(tg::rng& rng)
 {
     const auto n2 = tg::uniform<tg::dir2>(rng);

@@ -1,13 +1,8 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
 
-template <int D, class ScalarT = tg::f32>
-static void checkEqual(const tg::dir<D, ScalarT>& v0, const tg::dir<D, ScalarT>& v1, double eps = 1e-2)
-{
-    for (auto i = 0; i < D; i++)
-    {
-        CHECK(v0[i] == nx::approx(v1[i]).epsilon(eps));
-    }
-}
+#include <typed-geometry/feature/objects.hh>
+#include <typed-geometry/feature/vector.hh>
 
 FUZZ_TEST("Direction")(tg::rng& rng)
 {
@@ -25,7 +20,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
 
         // compare calculated with given
         auto cDir = tg::dir3(direction(p, np));
-        checkEqual<3>(cDir, dir);
+        CHECK(cDir == nx::approx(dir));
     }
     // pos2
     {
@@ -36,7 +31,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
 
         // compare calculated with given
         auto cDir = tg::dir2(direction(p, np));
-        checkEqual<2>(cDir, dir);
+        CHECK(cDir == nx::approx(dir));
     }
     // pos1
     {
@@ -47,7 +42,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
 
         // compare calculated with given
         auto cDir = tg::dir1(direction(p, np));
-        checkEqual<1>(cDir, dir);
+        CHECK(cDir == nx::approx(dir));
     }
 
     // line3
@@ -64,7 +59,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         auto np = p + scatter;
         // compare calculated with given
         auto cdir = tg::dir3(direction(p, np));
-        checkEqual<3>(cdir, scatter);
+        CHECK(cdir == nx::approx(scatter));
 
         // find perpendicular direction
         auto pv = ldir;
@@ -79,7 +74,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         np = p + push; // move along perpendicular direction
         // compare calculated with given
         cdir = tg::dir3(direction(l, np));
-        checkEqual<3>(cdir, normalize(push));
+        CHECK(cdir == nx::approx(normalize(push)));
     }
     // line2
     {
@@ -95,18 +90,18 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         auto np = p + scatter;
         // compare calculated with given
         auto cdir = tg::dir2(direction(p, np));
-        checkEqual<2>(cdir, scatter);
+        CHECK(cdir == nx::approx(scatter));
 
         // perpendicular direction
         auto pv = tg::dir2(-ldir.y, ldir.x);
-        CHECK(dot(pv, ldir) == nx::approx(0.0f)); // just to be sure
+        CHECK(dot(pv, ldir) == nx::approx(0.0f).abs(0.001f)); // just to be sure
 
         auto r = uniform(rng, rBox1).x * 10.0f; // might be negative
         auto push = pv * r;
         np = p + push; // move along perpendicular direction
         // compare calculated with given
         cdir = tg::dir2(direction(l, np));
-        checkEqual<2>(cdir, normalize(push));
+        CHECK(cdir == nx::approx(normalize(push)));
     }
     // segment3
     {
@@ -123,7 +118,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         auto np = p + scatter;
         // compare calculated with given
         auto cdir = tg::dir3(direction(p, np));
-        checkEqual<3>(cdir, scatter);
+        CHECK(cdir == nx::approx(scatter));
 
         // find perpendicular direction
         auto pv = ldir;
@@ -138,7 +133,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         np = p + push; // move along perpendicular direction
         // compare calculated with given
         cdir = tg::dir3(direction(l, np));
-        checkEqual<3>(cdir, normalize(push));
+        CHECK(cdir == nx::approx(normalize(push)));
     }
     // segment2
     {
@@ -155,18 +150,18 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         auto np = p + scatter;
         // compare calculated with given
         auto cdir = tg::dir2(direction(p, np));
-        checkEqual<2>(cdir, scatter);
+        CHECK(cdir == nx::approx(scatter));
 
         // perpendicular direction
         auto pv = tg::dir2(-ldir.y, ldir.x);
-        CHECK(dot(pv, ldir) == nx::approx(0.0f)); // just to be sure
+        CHECK(dot(pv, ldir) == nx::approx(0.0f).abs(0.001f)); // just to be sure
 
         auto r = uniform(rng, rBox1).x * 10.0f; // might be negative
         auto push = pv * r;
         np = p + push; // move along perpendicular direction
         // compare calculated with given
         cdir = tg::dir2(direction(l, np));
-        checkEqual<2>(cdir, normalize(push));
+        CHECK(cdir == nx::approx(normalize(push)));
     }
     // plane
     {
@@ -177,7 +172,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         // compare calculated with given
         auto p = planePos + rdir;
         auto cdir = tg::dir3(direction(plane, p));
-        checkEqual<3>(rdir, cdir);
+        CHECK(cdir == nx::approx(rdir));
 
         // find perpendicular direction
         auto pv = rdir;
@@ -191,6 +186,6 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         p += pv * uniform(rng, rBox1).x * 10.0f;
         // this should not change the calculated direction to plane
         cdir = tg::dir3(direction(plane, p));
-        checkEqual<3>(rdir, cdir);
+        CHECK(cdir == nx::approx(rdir));
     }
 }

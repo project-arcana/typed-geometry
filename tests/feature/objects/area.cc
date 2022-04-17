@@ -1,5 +1,8 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("AreaRelations")(tg::rng& rng)
 {
     const auto r = uniform(rng, 0.0f, 10.0f);
@@ -191,13 +194,13 @@ FUZZ_TEST("AreaObjects")(tg::rng& rng)
 
         const auto base = tg::triangle3(tg::pos3(r, 0, 0), tg::pos3(0, r, 0), tg::pos3(0, 0, r)); // equilateral triangle
         const auto pyTri = tg::pyramid<tg::triangle3>(base, h);
-        const auto slantHeightTri = sqrt(tg::pow2(h) + distance_sqr(base.pos0, base.pos1) / 12.f);
+        const auto slantHeightTri = tg::sqrt(tg::pow2(h) + distance_sqr(base.pos0, base.pos1) / 12.f);
 
         const auto d30 = tg::uniform<tg::dir3>(rng);
         const auto d31 = any_normal(d30);
         const auto m23 = tg::mat2x3(r * d30, r * d31);
         const auto pyBox = tg::pyramid<tg::box2in3>(tg::box2in3(pos30, m23), h);
-        const auto slantHeightBox = sqrt(tg::pow2(h) + tg::pow2(r));
+        const auto slantHeightBox = tg::sqrt(tg::pow2(h) + tg::pow2(r));
 
         const auto cone = tg::cone3(tg::sphere2in3(pos30, r, n3), h);
         const auto slantHeightCone = slantHeightBox;

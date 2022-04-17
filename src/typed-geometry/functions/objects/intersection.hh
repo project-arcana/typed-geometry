@@ -22,11 +22,13 @@
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/span.hh>
 
+#include <typed-geometry/functions/matrix/inverse.hh>
 #include <typed-geometry/functions/vector/cross.hh>
 #include <typed-geometry/functions/vector/dot.hh>
 #include <typed-geometry/functions/vector/length.hh>
 
 #include "aabb.hh"
+#include "centroid.hh"
 #include "closest_points.hh"
 #include "contains.hh"
 #include "coordinates.hh"
@@ -164,7 +166,8 @@ template <int D, class ScalarT, class... Objs>
     hits[1] = tg::min<ScalarT>();
     auto numHits = 0;
 
-    const auto find_hits = [&](const auto& obj) {
+    const auto find_hits = [&](const auto& obj)
+    {
         const auto inters = intersection_parameter(line, obj);
         for (const auto& inter : inters)
         {
@@ -1478,7 +1481,8 @@ template <int D, class ScalarT>
     auto const b_min = b.min;
     auto const b_max = b.max;
     auto const c = s.center;
-    auto const clamped_sqr = [](ScalarT v) {
+    auto const clamped_sqr = [](ScalarT v)
+    {
         v = tg::max(ScalarT(0), v);
         return v * v;
     };
@@ -1855,7 +1859,8 @@ template <class ScalarT>
 
     auto aabb_pts = vertices_of(b);
 
-    auto const is_separate = [&](pos<2, ScalarT> pa, vec<2, ScalarT> n, pos<2, ScalarT> pb) {
+    auto const is_separate = [&](pos<2, ScalarT> pa, vec<2, ScalarT> n, pos<2, ScalarT> pb)
+    {
         auto da = dot(n, pa);
         auto db = dot(n, pb);
 
@@ -1910,7 +1915,8 @@ template <class ScalarT>
         tri_aabb.min.x > amax.x || tri_aabb.min.y > amax.y || tri_aabb.min.z > amax.z)
         return false;
 
-    auto const proper_contains = [](aabb<3, ScalarT> const& b, pos_t const& p) {
+    auto const proper_contains = [](aabb<3, ScalarT> const& b, pos_t const& p)
+    {
         return b.min.x < p.x && p.x < b.max.x && //
                b.min.y < p.y && p.y < b.max.y && //
                b.min.z < p.z && p.z < b.max.z;
@@ -1939,7 +1945,8 @@ template <class ScalarT>
 
     // 9 axis SAT test
     {
-        auto const is_seperating = [amax](vec<3, ScalarT> const& n, pos_t const& tp0, pos_t const& tp1) -> bool {
+        auto const is_seperating = [amax](vec<3, ScalarT> const& n, pos_t const& tp0, pos_t const& tp1) -> bool
+        {
             if (tg::is_zero_vector(n))
                 return false; // not a real candidate axis
 
@@ -2013,7 +2020,8 @@ template <class ScalarT>
     auto const ba = -ab;
 
     /// compute the smallest corner of box in direction d
-    auto const min_point = [](tg::dir2 d, box<2, ScalarT> const& box) {
+    auto const min_point = [](tg::dir2 d, box<2, ScalarT> const& box)
+    {
         auto point = box.center;
         if (dot(d, box.half_extents[0]) > 0)
             point -= box.half_extents[0];

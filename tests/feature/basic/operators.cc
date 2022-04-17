@@ -1,6 +1,7 @@
 #include <nexus/test.hh>
 
 #include <typed-geometry/feature/vector.hh>
+#include <typed-geometry/feature/random.hh>
 
 TEST("TypedGeometry.OperatorsVec")
 {

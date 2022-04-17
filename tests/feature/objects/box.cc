@@ -1,5 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+
 TEST("TypedGeometry.BoxBasics")
 {
     auto b = tg::aabb2({-1, 0}, {3, 4});

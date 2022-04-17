@@ -1,6 +1,9 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/test.hh>
 
 #include <typed-geometry/feature/bezier.hh>
+#include <typed-geometry/feature/objects.hh>
+#include <typed-geometry/feature/random.hh>
 
 TEST("bezier basics")
 {

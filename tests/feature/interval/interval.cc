@@ -1,8 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
-#include <iostream>
-
 #include <typed-geometry/feature/interval.hh>
+#include <typed-geometry/feature/vector.hh>
 
 namespace
 {

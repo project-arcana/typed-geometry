@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <typed-geometry/feature/random.hh>
+
 TEST("tg::shuffle")
 {
     std::vector<int> v;

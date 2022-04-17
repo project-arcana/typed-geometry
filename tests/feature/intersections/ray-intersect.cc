@@ -1,11 +1,14 @@
 #include <nexus/fuzz_test.hh>
+#include <nexus/ext/tg-approx.hh>
 
 #include <typed-geometry/feature/intersections.hh>
+#include <typed-geometry/feature/objects.hh>
 
 FUZZ_TEST("Intersections")(tg::rng& rng)
 {
     auto const tolerance = 0.002f;
-    auto const test_obj = [tolerance](auto const& ray, auto const& obj) {
+    auto const test_obj = [tolerance](auto const& ray, auto const& obj)
+    {
         auto const ts = tg::intersection_parameter(ray, obj);
         for (auto const& t : ts)
         {
@@ -17,7 +20,7 @@ FUZZ_TEST("Intersections")(tg::rng& rng)
         {
             CHECK(t.value() == nx::approx(ts.first()));
             CHECK(closest_intersection(ray, obj).has_value());
-            CHECK(closest_intersection(ray, obj).value() == nx::approx(ray[t.value()], 0.01f));
+            CHECK(closest_intersection(ray, obj).value() == nx::approx(ray[t.value()]));
             CHECK(intersects(ray, obj));
         }
         else
@@ -31,7 +34,8 @@ FUZZ_TEST("Intersections")(tg::rng& rng)
         CHECK(iRay == ts.size());
     };
 
-    auto const test_solid_obj = [tolerance, &rng](auto const& ray, auto const& obj) {
+    auto const test_solid_obj = [tolerance, &rng](auto const& ray, auto const& obj)
+    {
         auto const ts = tg::intersection_parameter(ray, obj);
         if (ts.has_value())
         {
@@ -62,7 +66,8 @@ FUZZ_TEST("Intersections")(tg::rng& rng)
             CHECK(!intersects(ray, obj));
     };
 
-    auto const test_obj_and_boundary = [&](auto const& ray, auto const& obj) {
+    auto const test_obj_and_boundary = [&](auto const& ray, auto const& obj)
+    {
         auto const bounds = boundary_of(obj);
         test_solid_obj(ray, obj);
         test_obj(ray, bounds);
@@ -77,7 +82,8 @@ FUZZ_TEST("Intersections")(tg::rng& rng)
         }
     };
 
-    auto const test_obj_and_boundary_no_caps = [&](auto const& ray, auto const& obj) {
+    auto const test_obj_and_boundary_no_caps = [&](auto const& ray, auto const& obj)
+    {
         auto const bounds = boundary_of(obj);
         auto const boundsNoCaps = boundary_no_caps_of(obj);
         test_solid_obj(ray, obj);
@@ -230,7 +236,7 @@ FUZZ_TEST("Intersect - LineLine2")(tg::rng& rng)
     auto l1 = tg::line2::from_points(uniform(rng, bb), uniform(rng, bb));
 
     auto [t0, t1] = tg::intersection_parameters(l0, l1);
-    CHECK(l0[t0] == nx::approx(l1[t1], 0.01f));
+    CHECK(l0[t0] == nx::approx(l1[t1]));
 }
 
 FUZZ_TEST("Intersect - SegSeg2")(tg::rng& rng)

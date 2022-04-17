@@ -21,6 +21,7 @@
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
 
+#include <typed-geometry/feature/vector.hh>
 #include <typed-geometry/functions/vector/project.hh>
 
 #include "boundary.hh"

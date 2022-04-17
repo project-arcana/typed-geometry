@@ -1,5 +1,8 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/objects.hh>
+#include <typed-geometry/feature/vector.hh>
+
 namespace
 {
 enum class EnumTest
@@ -37,12 +40,13 @@ FUZZ_TEST("Uniform")(tg::rng& rng)
     CHECK(r <= b);
 }
 
-TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformGeneralProperties, 100)
+FUZZ_TEST("UniformGeneralProperties")(tg::rng& rng)
 {
     auto const tolerance = 0.01f;
     tg::u64 const sampleSize = 32;
 
-    auto const test_obj = [&rng, tolerance](auto samples, auto const& o) {
+    auto const test_obj = [&rng, tolerance](auto samples, auto const& o)
+    {
         for (tg::u64 i = 0; i < samples.size(); ++i)
         {
             auto p = uniform(rng, o);
@@ -54,12 +58,14 @@ TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformGeneralProperties, 100)
         }
     };
 
-    auto const test_obj_and_boundary = [&test_obj](auto const& p, auto const& o) {
+    auto const test_obj_and_boundary = [&test_obj](auto const& p, auto const& o)
+    {
         test_obj(p, o);
         test_obj(p, boundary_of(o));
     };
 
-    auto const test_obj_and_boundary_no_caps = [&test_obj](auto const& p, auto const& o) {
+    auto const test_obj_and_boundary_no_caps = [&test_obj](auto const& p, auto const& o)
+    {
         test_obj(p, o);
         test_obj(p, boundary_of(o));
         test_obj(p, boundary_no_caps_of(o));
@@ -144,10 +150,10 @@ TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformGeneralProperties, 100)
     test_obj_and_boundary(samples3, tg::ellipse2in3(pos30, m23));
     // hemisphere
     // TODO: And boundary no caps
-    //test_obj_and_boundary_no_caps(samples1, tg::hemisphere1(pos10, r, n1));
+    // test_obj_and_boundary_no_caps(samples1, tg::hemisphere1(pos10, r, n1));
     test_obj_and_boundary_no_caps(samples2, tg::hemisphere2(pos20, r, n2));
     test_obj_and_boundary_no_caps(samples3, tg::hemisphere3(pos30, r, n3));
-    //test_obj_and_boundary_no_caps(samples4, tg::hemisphere4(pos40, r, n4));
+    // test_obj_and_boundary_no_caps(samples4, tg::hemisphere4(pos40, r, n4));
     // pyramid
     test_obj_and_boundary_no_caps(samples3, tg::pyramid<tg::box2in3>(tg::box2in3(pos30, m23), h));
     test_obj_and_boundary_no_caps(samples3, tg::pyramid<tg::sphere2in3>(disk0, h)); // == cone
@@ -241,7 +247,7 @@ FUZZ_TEST("UniformObjects")(tg::rng& rng)
     }
 }
 
-TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformBasic, 10)
+FUZZ_TEST("UniformBasic")(tg::rng& rng)
 {
     auto c = uniform(rng, -2.0f, 2.0f);
 
@@ -259,7 +265,7 @@ TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformBasic, 10)
     CHECK(any_bigger);
 }
 
-TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformBox, 10)
+FUZZ_TEST("UniformBox")(tg::rng& rng)
 {
     auto c = tg::pos3(2, 3, 4);
     auto b = tg::aabb3(c - 10.0f, c + 10.0f);
@@ -290,7 +296,7 @@ TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformBox, 10)
     CHECK(any_smaller_cz);
 }
 
-TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformCylinder, 10)
+FUZZ_TEST("UniformCylinder")(tg::rng& rng)
 {
     auto tolerance = 0.01f;
     auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));
@@ -320,7 +326,7 @@ TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformCylinder, 10)
     CHECK(any_on_cap_1);
 }
 
-TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformCapsule, 10)
+FUZZ_TEST("UniformCapsule")(tg::rng& rng)
 {
     auto tolerance = 0.01f;
     auto range3 = tg::aabb3(tg::pos3(-10), tg::pos3(10));
@@ -350,7 +356,7 @@ TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformCapsule, 10)
     CHECK(any_on_cap_1);
 }
 
-TG_FUZZ_TEST_MAX_ITS(TypedGeometry, UniformTriangle, 10)
+FUZZ_TEST("UniformTriangle")(tg::rng& rng)
 {
     auto range2 = tg::aabb2(tg::pos2(-1), tg::pos2(1));
     auto tri = tg::triangle2(uniform(rng, range2), uniform(rng, range2), uniform(rng, range2));

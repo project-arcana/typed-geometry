@@ -1,5 +1,8 @@
 #include <nexus/fuzz_test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+#include <typed-geometry/feature/objects.hh>
+
 FUZZ_TEST("AnyPoint")(tg::rng& rng)
 {
     auto const tolerance = 0.001f;

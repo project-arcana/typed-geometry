@@ -1,4 +1,7 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
+
+#include <typed-geometry/feature/vector.hh>
 
 FUZZ_TEST("Subvector")(tg::rng& rng)
 {

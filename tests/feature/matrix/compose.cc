@@ -1,3 +1,4 @@
+#include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/feature/matrix.hh>
@@ -19,15 +20,15 @@ FUZZ_TEST("Mat4 - DecomposeUniform")(tg::rng& rng)
     float s1;
     tg::decompose_transformation(M, t1, R1, s1);
 
-    CHECK(t1 == nx::approx(t0, 0.01f));
-    CHECK(s1 == nx::approx(s0).epsilon(0.01f));
+    CHECK(t1 == nx::approx(t0));
+    CHECK(s1 == nx::approx(s0));
 
     auto q0 = M * p;
     auto q1 = tg::pos3(R1 * (s1 * tg::vec3(p)) + t1);
     auto q2 = MM * p;
 
-    CHECK(q1 == nx::approx(q0, 0.01f));
-    CHECK(q2 == nx::approx(q0, 0.01f));
+    CHECK(q1 == nx::approx(q0));
+    CHECK(q2 == nx::approx(q0));
 }
 
 FUZZ_TEST("Mat4 - DecomposeNonUniform")(tg::rng& rng)
@@ -47,13 +48,13 @@ FUZZ_TEST("Mat4 - DecomposeNonUniform")(tg::rng& rng)
     tg::size3 s1;
     tg::decompose_transformation(M, t1, R1, s1);
 
-    CHECK(t1 == nx::approx(t0, 0.01f));
-    CHECK(s1 == nx::approx(s0, 0.01f));
+    CHECK(t1 == nx::approx(t0));
+    CHECK(s1 == nx::approx(s0));
 
     auto q0 = M * p;
     auto q1 = tg::pos3(R1 * (tg::vec3(p) * s1) + t1);
     auto q2 = MM * p;
 
-    CHECK(q1 == nx::approx(q0, 0.01f));
-    CHECK(q2 == nx::approx(q0, 0.01f));
+    CHECK(q1 == nx::approx(q0));
+    CHECK(q2 == nx::approx(q0));
 }

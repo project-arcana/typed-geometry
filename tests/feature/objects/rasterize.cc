@@ -27,21 +27,23 @@ FUZZ_TEST("Rasterize")(tg::rng& rng)
     // std::cout << "--" << std::endl;
 
     int count = 0;
-    tg::rasterize(tri, [&](tg::ipos2 p, float a, float b) {
-        // barycentric coordinates must not exceed range [0..1] inside triangle
-        CHECK(a >= 0.0f);
-        CHECK(b >= 0.0f);
-        CHECK(a <= 1.0f);
-        CHECK(b <= 1.0f);
+    tg::rasterize(tri,
+                  [&](tg::ipos2 p, float a, float b)
+                  {
+                      // barycentric coordinates must not exceed range [0..1] inside triangle
+                      CHECK(a >= 0.0f);
+                      CHECK(b >= 0.0f);
+                      CHECK(a <= 1.0f);
+                      CHECK(b <= 1.0f);
 
-        CHECK(tg::contains(tri, tg::pos2(p)));
+                      CHECK(tg::contains(tri, tg::pos2(p)));
 
-        triSamples.erase(p);
+                      triSamples.erase(p);
 
-        // std::cout << p << std::endl;
+                      // std::cout << p << std::endl;
 
-        ++count;
-    });
+                      ++count;
+                  });
 
     // std::cout << tri << std::endl;
     // for (auto s : triSamples)
@@ -52,20 +54,22 @@ FUZZ_TEST("Rasterize")(tg::rng& rng)
 }
 
 
-TG_FUZZ_TEST_MAX_ITS(TypedGeometry, Rasterize2, 100)
+FUZZ_TEST("Rasterize2")(tg::rng& rng)
 {
     auto range2 = tg::aabb2(tg::pos2(-10), tg::pos2(10));
     auto tri = tg::triangle2(tg::uniform(rng, range2), tg::uniform(rng, range2), tg::uniform(rng, range2));
 
     std::set<tg::ipos2> rpts;
 
-    tg::rasterize(tri, [&](tg::ipos2 p, float a, float b) {
-        rpts.insert(p);
+    tg::rasterize(tri,
+                  [&](tg::ipos2 p, float a, float b)
+                  {
+                      rpts.insert(p);
 
-        auto rp = interpolate(tri, a, b);
+                      auto rp = interpolate(tri, a, b);
 
-        CHECK(distance(tg::pos2(p), rp) < 1e-3f);
-    });
+                      CHECK(distance(tg::pos2(p), rp) < 1e-3f);
+                  });
 
     for (auto i = 0; i < 100; ++i)
     {

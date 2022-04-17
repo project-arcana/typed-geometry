@@ -1,13 +1,13 @@
 #include <nexus/test.hh>
 
+#include <typed-geometry/feature/vector.hh>
+
 #include <array>
-#include <glm/glm.hpp>
 #include <vector>
 
 static_assert(tg::is_comp_convertible<tg::vec3, int>, "");
 static_assert(tg::is_comp_convertible<tg::vec3, float>, "");
 static_assert(tg::is_comp_convertible<tg::vec3, double>, "");
-static_assert(tg::is_comp_convertible<glm::vec3, float>, "");
 
 TEST("comp construction")
 {
@@ -20,8 +20,6 @@ TEST("comp construction")
         CHECK(ref_comp == tg::comp3(tg::size3(1, 2, 3)));
         CHECK(ref_comp == tg::comp3(tg::pos3(1, 2, 3)));
         CHECK(ref_comp == tg::comp3(tg::comp3(1, 2, 3)));
-        CHECK(ref_comp == tg::comp3(glm::vec3(1, 2, 3)));
-        CHECK(ref_comp == tg::comp3(glm::dvec3(1, 2, 3)));
         CHECK(ref_comp == tg::comp3(std::array<int, 3>{{1, 2, 3}}));
         CHECK(ref_comp == tg::comp3(std::vector<int>{1, 2, 3}));
         CHECK(ref_comp == tg::comp3(ref_array));
@@ -36,7 +34,6 @@ TEST("comp construction")
         CHECK(ref_comp == tg::comp4(tg::pos3(1, 2, 3)));
         CHECK(ref_comp == tg::comp4(tg::ipos3(1, 2, 3)));
         CHECK(ref_comp == tg::comp4(tg::comp3(1, 2, 3)));
-        CHECK(ref_comp == tg::comp4(glm::vec3(1, 2, 3)));
         CHECK(ref_comp == tg::comp4(std::array<int, 3>{{1, 2, 3}}));
         CHECK(ref_comp == tg::comp4(std::vector<int>{1, 2, 3}));
         CHECK(ref_comp == tg::comp4(ref_array));
