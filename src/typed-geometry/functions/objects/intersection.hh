@@ -1287,10 +1287,29 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(segment<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
 {
-    static_assert(always_false<ScalarT>, "not implemented");
-    (void)a;
-    (void)b;
-    return {}; // TODO
+    auto const l = line<D, ScalarT>(a.pos0, normalize(a.pos1 - a.pos0));
+    auto const params = intersection_parameter(l, b);
+
+    if (params.value().is_unbounded())
+        return {};
+
+    auto const dist = distance(a.pos0, a.pos1);
+    auto n_hits = 0;
+    tg::pos<D, ScalarT> ps[2];
+
+    if (params.value().start < dist && params.value().start > ScalarT(0))
+        ps[n_hits++] = l[params.value().start];
+
+    if (params.value().end < dist && params.value().end > ScalarT(0))
+        ps[n_hits++] = l[params.value().end];
+
+    if (n_hits == 1)
+        return segment<D, ScalarT>{ps[0], ps[0]};
+
+    if (n_hits == 2)
+        return segment<D, ScalarT>{ps[0], ps[1]};
+
+    // return {}; // TODO
 }
 
 template <int D, class ScalarT>
@@ -2131,8 +2150,8 @@ template <class ScalarT>
         return {};
 
     array<pos<3, ScalarT>, 2> insecs;
-    array<segment<3, ScalarT>, 3> segments_t1 = edges_of(t1); //{{t1.pos0, t1.pos1}, {t1.pos1, t1.pos2}, {t1.pos2, t1.pos0}};
-    array<segment<3, ScalarT>, 3> segments_t2 = edges_of(t2); //{{t2.pos0, t2.pos1}, {t2.pos1, t2.pos2}, {t2.pos2, t2.pos0}};
+    array<segment<3, ScalarT>, 3> segments_t1 = edges_of(t1);
+    array<segment<3, ScalarT>, 3> segments_t2 = edges_of(t2);
     int insec_count = 0;
 
     // check intersection of t1 segments with t2
@@ -2280,6 +2299,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, cylinder_boundary<3, ScalarT> const& cylinder_boundary)
 {
+    // TODO
     // This is a standard solution that can be applied to any boundary case
     auto const line = line3::from_points(segment.pos0, segment.pos1);
     auto const params = intersection_parameter(line, cylinder_boundary);
@@ -2391,131 +2411,6 @@ template <class ScalarT>
 
     return true;
 }
-
-// template <class ScalarT>
-//[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& a, box<3, ScalarT> const& b)
-//{
-//    if (a.center == b.center)
-//        return true;
-//
-//    auto const ab = b.center - a.center;
-//    auto const ba = -ab;
-//
-//    /// compute the smallest corner of box in direction d
-//    auto const min_point = [](tg::dir3 d, box<3, ScalarT> const& box) {
-//        auto point = box.center;
-//        if (dot(d, box.half_extents[0]) > 0)
-//            point -= box.half_extents[0];
-//        else
-//            point += box.half_extents[0];
-//        if (dot(d, box.half_extents[1]) > 0)
-//            point -= box.half_extents[1];
-//        else
-//            point += box.half_extents[1];
-//        if (dot(d, box.half_extents[2]) > 0)
-//            point -= box.half_extents[2];
-//        else
-//            point += box.half_extents[2];
-//        return point;
-//    };
-//
-//    // the idea here is that we need only check the two planes facing the center of the other bounding box
-//    // and only need to check against the smallest corner
-//
-//    // check planes of a vs smallest point of b
-//    if (dot(ab, a.half_extents[0]) > 0)
-//    {
-//        auto plane = tg::plane3(normalize(a.half_extents[0]), a.center + a.half_extents[0]);
-//        auto point_to_check = min_point(plane.normal, b);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//    else
-//    {
-//        auto plane = tg::plane3(normalize(-a.half_extents[0]), a.center - a.half_extents[0]);
-//        auto point_to_check = min_point(plane.normal, b);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//
-//    if (dot(ab, a.half_extents[1]) > 0)
-//    {
-//        auto plane = tg::plane3(normalize(a.half_extents[1]), a.center + a.half_extents[1]);
-//        auto point_to_check = min_point(plane.normal, b);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//    else
-//    {
-//        auto plane = tg::plane3(normalize(-a.half_extents[1]), a.center - a.half_extents[1]);
-//        auto point_to_check = min_point(plane.normal, b);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//
-//    if (dot(ab, a.half_extents[2]) > 0)
-//    {
-//        auto plane = tg::plane3(normalize(a.half_extents[2]), a.center + a.half_extents[2]);
-//        auto point_to_check = min_point(plane.normal, b);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//    else
-//    {
-//        auto plane = tg::plane3(normalize(-a.half_extents[2]), a.center - a.half_extents[2]);
-//        auto point_to_check = min_point(plane.normal, b);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//
-//    // check planes of b vs smallest point of a
-//    if (dot(ba, b.half_extents[0]) > 0)
-//    {
-//        auto plane = tg::plane3(normalize(b.half_extents[0]), b.center + b.half_extents[0]);
-//        auto point_to_check = min_point(plane.normal, a);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//    else
-//    {
-//        auto plane = tg::plane3(normalize(-b.half_extents[0]), b.center - b.half_extents[0]);
-//        auto point_to_check = min_point(plane.normal, a);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//
-//    if (dot(ba, b.half_extents[1]) > 0)
-//    {
-//        auto plane = tg::plane3(normalize(b.half_extents[1]), b.center + b.half_extents[1]);
-//        auto point_to_check = min_point(plane.normal, a);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//    else
-//    {
-//        auto plane = tg::plane3(normalize(-b.half_extents[1]), b.center - b.half_extents[1]);
-//        auto point_to_check = min_point(plane.normal, a);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//
-//    if (dot(ba, b.half_extents[2]) > 0)
-//    {
-//        auto plane = tg::plane3(normalize(b.half_extents[2]), b.center + b.half_extents[2]);
-//        auto point_to_check = min_point(plane.normal, a);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//    else
-//    {
-//        auto plane = tg::plane3(normalize(-b.half_extents[2]), b.center - b.half_extents[2]);
-//        auto point_to_check = min_point(plane.normal, a);
-//        if (signed_distance(point_to_check, plane) > 0)
-//            return false;
-//    }
-//
-//    return true;
-//}
 
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& a, box<3, ScalarT> const& b)
@@ -2677,23 +2572,185 @@ template <class ScalarT>
 }
 
 // template <class ScalarT>
-//[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& a, quad<3, ScalarT> const& b)
+//[[nodiscard]] constexpr bool intersects(box<2, ScalarT> const& box, sphere<2, ScalarT> const& sphere)
 //{
-//    segment<3, ScalarT> quad_segs[4] = {{b.pos00, b.pos10}, {b.pos10, b.pos11}, {b.pos11, b.pos01}, {b.pos01, b.pos00}};
+//    // segments of the box
+//    // tg::segment2 seg1 = {box.center - box.half_extents[0] - box.half_extents[1], box.center - box.half_extents[0] + box.half_extents[1]};
+//    // tg::segment2 seg2 = {box.center - box.half_extents[0] + box.half_extents[1], box.center + box.half_extents[0] + box.half_extents[1]};
+//    // tg::segment2 seg3 = {box.center + box.half_extents[0] + box.half_extents[1], box.center + box.half_extents[0] - box.half_extents[1]};
+//    // tg::segment2 seg4 = {box.center + box.half_extents[0] - box.half_extents[1], box.center - box.half_extents[0] - box.half_extents[1]};
 //
-//    for (auto& s : quad_segs)
+//    array<segment<2, ScalarT>, 4> segs = edges_of(box);
+//
+//    for (auto& seg : segs)
 //    {
-//        if (intersects(s, sphere))
-//            return true;
+//        auto line = tg::line2(seg.pos0, normalize(seg.pos1 - seg.pos0));
+//        auto seg_length = length(seg.pos1 - seg.pos0);
+//        // TODO: segment - sphere not implemented yet
+//        if (intersects(line, sphere))
+//        {
+//            auto param = intersection_parameters(line, sphere);
+//            if (param.has_value())
+//            {
+//                if (param.value().first < seg_length || param.value().second < seg_length)
+//                    return true;
+//            }
+//        }
 //    }
 //
 //    return false;
 //}
-
+//
 // template <class ScalarT>
-//[[nodiscard]] constexpr bool intersects(quad<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
-//{
-//    return intersects(b, a);
-//}
+// [[nodiscard]] constexpr bool intersects(sphere<2, ScalarT> const& sphere, box<2, ScalarT> const& box)
+// {
+//     return intersects(box, sphere);
+// }
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, plane<3, ScalarT> const& plane)
+{
+    float sign = 0;
+
+    // iterate over the vertices of the box
+    for (auto x : {-1, 1})
+        for (auto y : {-1, 1})
+            for (auto z : {-1, 1})
+            {
+                pos3 box_vertex = box.center + x * box.half_extents[0] + y * box.half_extents[1] + z * box.half_extents[2];
+                if (sign == 0)
+                {
+                    sign = dot(plane.normal, box_vertex) - plane.dis;
+
+                    if (sign == 0)
+                        return true;
+
+                    continue;
+                }
+
+                if ((dot(plane.normal, box_vertex) - plane.dis) * sign <= 0) // box vertices on different sides of the plane
+                    return true;
+            }
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& plane, box<3, ScalarT> const& box)
+{
+    return intersects(box, plane);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, triangle<3, ScalarT> const& triangle)
+{
+    // early out
+    tg::plane<3, ScalarT> plane_of_triangle = tg::plane_of(triangle);
+    if (!intersects(plane_of_triangle, box))
+        return false;
+
+    // segments of triangle
+    array<segment<3, ScalarT>, 3> edges_triangle = edges_of(triangle);
+    // segments of box
+    array<segment<3, ScalarT>, 12> edges_box = edges_of(box);
+
+    for (auto& e : edges_triangle)
+    {
+        if (intersects(e, box))
+            return true;
+    }
+
+    for (auto& e : edges_box)
+    {
+        if (intersects(e, triangle))
+            return true;
+    }
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& triangle, box<3, ScalarT> const& box)
+{
+    return intersects(box, triangle);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(box<2, ScalarT> const& box, sphere<2, ScalarT> const& sphere)
+{
+    // check if point is located on the right side of a segment
+    auto const point_on_right = [](segment<2, ScalarT> s, pos<2, ScalarT> p) -> bool {
+        return (((s.pos1.x - s.pos0.x) * (p.y - s.pos0.y) - (s.pos1.y - s.pos0.y) * (p.x - s.pos0.x)) < 0);
+    };
+
+    array<pos<2, ScalarT>, 4> vertices_box = vertices_of(box);
+    array<segment<2, ScalarT>, 4> edges_box
+        = {segment<2, ScalarT>{vertices_box[0], vertices_box[1]}, segment<2, ScalarT>{vertices_box[1], vertices_box[2]},
+           segment<2, ScalarT>{vertices_box[2], vertices_box[3]}, segment<2, ScalarT>{vertices_box[3], vertices_box[0]}};
+
+    auto d1 = point_on_right(edges_box[0], sphere.center);
+    auto d2 = point_on_right(edges_box[1], sphere.center);
+    auto d3 = point_on_right(edges_box[2], sphere.center);
+    auto d4 = point_on_right(edges_box[3], sphere.center);
+
+    if (d1 && d2 && d3 && d4)
+        return true; // circle center inside of the box
+
+    // box inside of the circle? necessary?
+    //for (auto const& v : vertices_box)
+    //{
+    //    if (distance(v, sphere.center) <= sphere.radius)
+    //        return true;
+    //}
+
+    for (auto const& e : edges_box)
+    {
+        if (intersects(e, sphere))
+            return true;
+    }
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT> const& sphere, box<2, ScalarT> const& box)
+{
+    return intersects(box, sphere);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& sphere, halfspace<3, ScalarT> const& hs)
+{
+    // Also applicable as universal solution for dimension D?
+    if (dot(hs.normal, sphere.center) - hs.dis <= sphere.radius)
+        return true;
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& hs, sphere<3, ScalarT> const& sphere)
+{
+    return intersects(sphere, hs);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, halfspace<3, ScalarT> const& hs)
+{
+    array<pos<3, ScalarT>, 8> vertices_box = vertices_of(box);
+    for (auto const& v : verices_box)
+    {
+        if (dot(hs.normal, v) - hs.dis <= 0)
+            return true;
+    }
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& hs, box<3, ScalarT> const& box)
+{
+    return intersects(box, hs);
+}
 
 } // namespace tg
