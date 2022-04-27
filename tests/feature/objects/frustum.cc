@@ -1,6 +1,7 @@
 #include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/feature/basic.hh>
+#include <typed-geometry/feature/intersections.hh>
 #include <typed-geometry/feature/matrix.hh>
 #include <typed-geometry/feature/objects.hh>
 
@@ -22,10 +23,88 @@ FUZZ_TEST("Frustum - BasicFuzzer")(tg::rng& rng)
     for (auto p : frustum.vertices)
         CHECK(contains(frustum, p, 0.01f));
 
+    //
+    // contains point
+    //
     for (auto i = 0; i < 10; ++i)
     {
         auto const p = inv_view_proj * uniform(rng, tg::aabb3::minus_one_to_one);
 
         CHECK(contains(frustum, p, 0.01f));
+    }
+
+    //
+    // not contains point
+    //
+    for (auto i = 0; i < 10; ++i)
+    {
+        auto const c = uniform(rng, tg::aabb3(-2, 2));
+        if (tg::max_element(tg::abs(c)) < 1.2f)
+            continue;
+
+        auto const p = inv_view_proj * c;
+
+        CHECK(!contains(frustum, p));
+    }
+
+    //
+    // intersects sphere
+    //
+    for (auto i = 0; i < 10; ++i)
+    {
+        auto const r = uniform(rng, 0.1f, 1.f);
+        auto const c = inv_view_proj * uniform(rng, tg::aabb3(-2, 2));
+        auto const sphere = tg::sphere3(c, r);
+        auto const p = uniform(rng, sphere);
+
+        auto const intersects = tg::intersects_conservative(frustum, sphere);
+        auto const contains_p = contains(frustum, p);
+
+        if (contains_p)
+            CHECK(intersects);
+
+        if (!intersects)
+            CHECK(!contains_p);
+    }
+
+    //
+    // intersects aabb
+    //
+    for (auto i = 0; i < 10; ++i)
+    {
+        auto const bb = aabb_of(inv_view_proj * uniform(rng, tg::aabb3(-2, 2)), inv_view_proj * uniform(rng, tg::aabb3(-2, 2)));
+        auto const p = uniform(rng, bb);
+
+        auto const intersects = tg::intersects_conservative(frustum, bb);
+        auto const contains_p = contains(frustum, p);
+
+        if (contains_p)
+            CHECK(intersects);
+
+        if (!intersects)
+            CHECK(!contains_p);
+    }
+
+    //
+    // intersects box
+    //
+    for (auto i = 0; i < 10; ++i)
+    {
+        auto const c = inv_view_proj * uniform(rng, tg::aabb3(-2, 2));
+        auto const d0 = tg::uniform<tg::dir3>(rng) * uniform(rng, 0.1f, 1.f);
+        auto d1 = tg::uniform<tg::dir3>(rng) * uniform(rng, 0.1f, 1.f);
+        auto d2 = normalize(cross(d1, d0));
+        d1 = normalize(cross(d1, d2)) * uniform(rng, {-1.f, 1.f});
+        auto const box = tg::box3(c, tg::mat3::from_cols(d0, d1, d2));
+        auto const p = uniform(rng, box);
+
+        auto const intersects = tg::intersects_conservative(frustum, box);
+        auto const contains_p = contains(frustum, p);
+
+        if (contains_p)
+            CHECK(intersects);
+
+        if (!intersects)
+            CHECK(!contains_p);
     }
 }

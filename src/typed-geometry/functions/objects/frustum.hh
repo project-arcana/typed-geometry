@@ -12,6 +12,9 @@ constexpr frustum<3, ScalarT, TraitsT> frustum<3, ScalarT, TraitsT>::from_view_p
 {
     // TODO: see if insight from http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf can be used
 
+    CC_ASSERT(tg::determinant(m) != 0 && "cannot create frustum from singular matrices");
+    CC_ASSERT((vec<3, ScalarT>(m.row(2)) != vec<3, ScalarT>::zero) && "cannot create frustum from reverse_z matrix. did you mean to use inf_frustum?");
+
     using frustum_t = frustum<3, ScalarT, TraitsT>;
     using comp_t = tg::comp<3, ScalarT>;
     using plane_t = tg::plane<3, ScalarT>;
@@ -29,7 +32,8 @@ constexpr frustum<3, ScalarT, TraitsT> frustum<3, ScalarT, TraitsT>::from_view_p
     f.vertices[frustum_t::vertex_idx_110] = invM * ndc[comp_t(1, 1, 0)];
     f.vertices[frustum_t::vertex_idx_111] = invM * ndc[comp_t(1, 1, 1)];
 
-    auto const build_plane = [&](int i0, int i1, int i2) {
+    auto const build_plane = [&](int i0, int i1, int i2)
+    {
         auto const p0 = f.vertices[i0];
         auto const p1 = f.vertices[i1];
         auto const p2 = f.vertices[i2];

@@ -39,6 +39,10 @@ template <int D, class ScalarT>
 struct ray;
 template <int D, class ScalarT>
 struct segment;
+template <int D, class ScalarT>
+struct plane;
+template <int D, class ScalarT>
+struct halfspace;
 
 // special types:
 struct splitmix;

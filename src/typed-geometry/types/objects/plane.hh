@@ -67,6 +67,10 @@ struct plane
     explicit constexpr plane(plane<D, OtherT> const& v) : normal(v.normal), dis(v.dis)
     {
     }
+    template <class OtherT>
+    explicit constexpr plane(halfspace<D, OtherT> const& v) : normal(v.normal), dis(v.dis)
+    {
+    }
 
     [[nodiscard]] bool operator==(plane const& rhs) const { return normal == rhs.normal && dis == rhs.dis; }
     [[nodiscard]] bool operator!=(plane const& rhs) const { return !operator==(rhs); }
