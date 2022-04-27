@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
 #include <typed-geometry/tg-std.hh>
 
@@ -61,66 +61,77 @@ void test_all(F&& f)
 
 TEST("StdIo")
 {
-    test_all([](auto v) {
-        std::stringstream ss;
-        ss << v;
-    });
+    test_all(
+        [](auto v)
+        {
+            std::stringstream ss;
+            ss << v;
+        });
 
     CHECK(true); // compile check only
 }
 
 TEST("StdLess")
 {
-    test_all([](auto v) {
-        using T = decltype(v);
-        std::map<T, int> m;
-        std::set<T> s;
-    });
+    test_all(
+        [](auto v)
+        {
+            using T = decltype(v);
+            std::map<T, int> m;
+            std::set<T> s;
+        });
 
     CHECK(true); // compile check only
 }
 
 TEST("StdHash")
 {
-    test_all([](auto v) {
-        using T = decltype(v);
-        std::unordered_map<T, int> um;
-        std::unordered_set<T> us;
-    });
+    test_all(
+        [](auto v)
+        {
+            using T = decltype(v);
+            std::unordered_map<T, int> um;
+            std::unordered_set<T> us;
+        });
 
     CHECK(true); // compile check only
 }
 
+// NOTE: currently, msvc has some internal error for this one
+#ifndef CC_OS_WINDOWS
 TEST("StdTrivialTypes")
 {
-    test_all([](auto v) {
-        using T = decltype(v);
+    test_all(
+        [](auto v)
+        {
+            using T = decltype(v);
 
-        static_assert(std::is_standard_layout<T>::value, "");
+            static_assert(std::is_standard_layout<T>::value);
 
-        static_assert(std::is_trivially_copyable<T>::value, "");
-        static_assert(std::is_trivially_assignable<T&, T>::value, "");
-        static_assert(std::is_trivially_destructible<T>::value, "");
-        static_assert(std::is_trivially_copy_constructible<T>::value, "");
-        static_assert(std::is_trivially_copy_assignable<T>::value, "");
-        static_assert(std::is_trivially_move_constructible<T>::value, "");
-        static_assert(std::is_trivially_move_assignable<T>::value, "");
+            static_assert(std::is_trivially_copyable<T>::value);
+            static_assert(std::is_trivially_assignable<T&, T>::value);
+            static_assert(std::is_trivially_destructible<T>::value);
+            static_assert(std::is_trivially_copy_constructible<T>::value);
+            static_assert(std::is_trivially_copy_assignable<T>::value);
+            static_assert(std::is_trivially_move_constructible<T>::value);
+            static_assert(std::is_trivially_move_assignable<T>::value);
 
-        static_assert(std::is_nothrow_assignable<T&, T>::value, "");
-        static_assert(std::is_nothrow_destructible<T>::value, "");
-        static_assert(std::is_nothrow_constructible<T>::value, "");
-        static_assert(std::is_nothrow_copy_assignable<T>::value, "");
-        static_assert(std::is_nothrow_copy_constructible<T>::value, "");
-        static_assert(std::is_nothrow_move_assignable<T>::value, "");
-        static_assert(std::is_nothrow_move_constructible<T>::value, "");
-        static_assert(std::is_nothrow_default_constructible<T>::value, "");
+            static_assert(std::is_nothrow_assignable<T&, T>::value);
+            static_assert(std::is_nothrow_destructible<T>::value);
+            static_assert(std::is_nothrow_constructible<T>::value);
+            static_assert(std::is_nothrow_copy_assignable<T>::value);
+            static_assert(std::is_nothrow_copy_constructible<T>::value);
+            static_assert(std::is_nothrow_move_assignable<T>::value);
+            static_assert(std::is_nothrow_move_constructible<T>::value);
+            static_assert(std::is_nothrow_default_constructible<T>::value);
 
-        // static_assert(std::has_unique_object_representations<T>::value, "");
+            // static_assert(std::has_unique_object_representations<T>::value);
 
-        // non-trivial ctor: we want zero-init!
-        static_assert(!std::is_trivially_default_constructible<T>::value, "");
-        static_assert(!std::is_trivially_constructible<T>::value, "");
-    });
+            // non-trivial ctor: we want zero-init!
+            static_assert(!std::is_trivially_default_constructible<T>::value);
+            static_assert(!std::is_trivially_constructible<T>::value);
+        });
 
     CHECK(true); // compile check only
 }
+#endif
