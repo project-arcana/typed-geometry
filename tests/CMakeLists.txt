@@ -11,7 +11,6 @@ target_include_directories(tests-typed-geometry PUBLIC ./)
 
 target_link_libraries(tests-typed-geometry PUBLIC
     clean-core
-    clean-ranges
     typed-geometry
     rich-log
     ctracer
