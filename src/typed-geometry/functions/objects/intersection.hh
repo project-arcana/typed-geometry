@@ -334,6 +334,14 @@ template <class A, class B>
     return {hits, ts.size()};
 }
 
+// if hits intersection parameter is available, use that
+template <class A, class B>
+[[nodiscard]] constexpr auto intersection(A const& a, B const& b) -> typename decltype(intersection_parameter(b, a))::template as_hits<typename A::pos_t>
+{
+    //TODO: Check if both way intersection is not destroyed. ambiguous overload?
+    return intersection(b, a);
+}
+
 // if an optional hit_interval intersection parameter is available, use that
 template <class A, class B, std::enable_if_t<decltype(intersection_parameter(std::declval<A>(), std::declval<B>()).value())::is_hit_interval, int> = 0>
 [[nodiscard]] constexpr auto intersection(A const& a, B const& b)
@@ -1309,7 +1317,7 @@ template <int D, class ScalarT>
     if (n_hits == 2)
         return segment<D, ScalarT>{ps[0], ps[1]};
 
-    // return {}; // TODO
+    return {};
 }
 
 template <int D, class ScalarT>
@@ -2696,12 +2704,6 @@ template <class ScalarT>
     if (d1 && d2 && d3 && d4)
         return true; // circle center inside of the box
 
-    // box inside of the circle? necessary?
-    //for (auto const& v : vertices_box)
-    //{
-    //    if (distance(v, sphere.center) <= sphere.radius)
-    //        return true;
-    //}
 
     for (auto const& e : edges_box)
     {
