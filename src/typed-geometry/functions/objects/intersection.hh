@@ -245,7 +245,7 @@ template <class ScalarT, class B>
     }
 
     // Case 3: both points of segment outside of the cylinder
-    if (0 < insec.value().start < length(s) && 0 < insec.value().end < length(s))
+    if (0 < insec.value().start && insec.value().start < length(s) && 0 < insec.value().end && insec.value().end < length(s))
         return segment<3, ScalarT>{segment_line.pos + segment_line.dir * insec.value().start, segment_line.pos + segment_line.dir * insec.value().end};
 
     return {};
@@ -334,13 +334,13 @@ template <class A, class B>
     return {hits, ts.size()};
 }
 
-// if hits intersection parameter is available, use that
-template <class A, class B>
-[[nodiscard]] constexpr auto intersection(A const& a, B const& b) -> typename decltype(intersection_parameter(b, a))::template as_hits<typename A::pos_t>
-{
-    //TODO: Check if both way intersection is not destroyed. ambiguous overload?
-    return intersection(b, a);
-}
+//// if hits intersection parameter is available, use that
+// template <class A, class B>
+//[[nodiscard]] constexpr auto intersection(A const& a, B const& b) -> typename decltype(intersection_parameter(b, a))::template as_hits<typename A::pos_t>
+//{
+//    // TODO: Check if both way intersection is not destroyed. ambiguous overload?
+//    return intersection(b, a);
+//}
 
 // if an optional hit_interval intersection parameter is available, use that
 template <class A, class B, std::enable_if_t<decltype(intersection_parameter(std::declval<A>(), std::declval<B>()).value())::is_hit_interval, int> = 0>
@@ -2073,34 +2073,32 @@ template <class ScalarT>
     // std::array<pos<3, ScalarT>, 3> triangle_pos = {t.pos0, t.pos1, t.pos2};
 
     // classify vertices,
-    auto sign_v1 = signed_distance(t.pos0, plane);
-    auto sign_v2 = signed_distance(t.pos1, plane);
-    auto sign_v3 = signed_distance(t.pos2, plane);
-
-    // TODO: Take booleans instead of float
+    auto sign_v1 = signed_distance(t.pos0, plane) < 0 ? false : true;
+    auto sign_v2 = signed_distance(t.pos1, plane) < 0 ? false : true;
+    auto sign_v3 = signed_distance(t.pos2, plane) < 0 ? false : true;
 
     // exclude some degenerate cases? e.g. vertices of triangle on same positions, angle constraints..
 
-    if (max(sign_v1, sign_v2, sign_v3) < 0 || min(sign_v1, sign_v2, sign_v3) > 0) // no intersection (early out)
+    if (sign_v1 == sign_v2 && sign_v2 == sign_v3) // no intersection (early out)
         return {};
 
     // isolated vertex
-    int iv = ((sign_v1 * sign_v2) > 0 ? sign_v3 : (sign_v1 * sign_v3) > 0 ? sign_v2 : sign_v1) < 0 ? -1 : 1;
+    bool iv = (sign_v1 == sign_v2) ? sign_v3 : (sign_v1 == sign_v3) ? sign_v2 : sign_v1;
 
     pos<3, ScalarT> i1, i2;
 
     // intersection exists (exactly 2 vertices on one side of the plane and exactly 1 vertex on the other side)
-    if (iv * sign_v1 > 0)
+    if (iv == sign_v1)
     {
         i1 = intersection(segment<3, ScalarT>(t.pos0, t.pos1), plane).value();
         i2 = intersection(segment<3, ScalarT>(t.pos0, t.pos2), plane).value();
     }
-    else if (iv * sign_v2 > 0)
+    else if (iv == sign_v2)
     {
         i1 = intersection(segment<3, ScalarT>(t.pos0, t.pos1), plane).value();
         i2 = intersection(segment<3, ScalarT>(t.pos1, t.pos2), plane).value();
     }
-    else if (iv * sign_v3 > 0)
+    else if (iv == sign_v3)
     {
         i1 = intersection(segment<3, ScalarT>(t.pos0, t.pos2), plane).value();
         i2 = intersection(segment<3, ScalarT>(t.pos1, t.pos2), plane).value();
@@ -2248,6 +2246,12 @@ template <class ScalarT>
     }
 
     return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(aabb<3, ScalarT> const& bb, segment<3, ScalarT> const& s)
+{
+    return intersection(s, bb);
 }
 
 template <class ScalarT>
@@ -2548,20 +2552,32 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& b, sphere<3, ScalarT> const& s)
 {
-    vec<3, ScalarT> box_vertices[8] = {{-1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {1, 1, 1}, {1, -1, 1}};
+    array<pos<3, ScalarT>, 8> box_vertices = vertices_of(b);
 
-    // as early-out
-    for (auto v : box_vertices)
+    // as early-out: box vertex inside the sphere
+    for (auto const& v : box_vertices)
     {
-        auto dist = length((b.half_extents * v) - b.center);
-
-        if (dist < b.radius)
+        if (length(v - s.center) < b.radius)
             return true;
     }
 
-    // TODO: Segment/Plane intersection
+    array<segment<3, ScalarT>, 12> box_edges = edges_of(b);
+
+    for (auto const& e : box_edges)
+    {
+        if (intersects(e, s))
+            return true;
+    }
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& s, box<3, ScalarT> const& b)
+{
+    return intersects(b, s);
 }
 
 template <class ScalarT>
@@ -2740,7 +2756,7 @@ template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, halfspace<3, ScalarT> const& hs)
 {
     array<pos<3, ScalarT>, 8> vertices_box = vertices_of(box);
-    for (auto const& v : verices_box)
+    for (auto const& v : vertices_box)
     {
         if (dot(hs.normal, v) - hs.dis <= 0)
             return true;
