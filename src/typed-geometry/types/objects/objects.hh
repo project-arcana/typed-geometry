@@ -11,6 +11,7 @@
 #include "hemisphere.hh"
 #include "inf_cone.hh"
 #include "inf_cylinder.hh"
+#include "inf_frustum.hh"
 #include "line.hh"
 #include "plane.hh"
 #include "polygon.hh"

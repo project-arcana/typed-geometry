@@ -2200,4 +2200,73 @@ template <class ScalarT>
     return true;
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& f, sphere<3, ScalarT> const& s, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    // if center is further away than radius, there cannot be any intersection
+
+    auto const d_nx = signed_distance(s.center, f.planes[f.plane_idx_neg_x]);
+    if (d_nx > s.radius + eps)
+        return false;
+
+    auto const d_ny = signed_distance(s.center, f.planes[f.plane_idx_neg_y]);
+    if (d_ny > s.radius + eps)
+        return false;
+
+    auto const d_px = signed_distance(s.center, f.planes[f.plane_idx_pos_x]);
+    if (d_px > s.radius + eps)
+        return false;
+
+    auto const d_py = signed_distance(s.center, f.planes[f.plane_idx_pos_y]);
+    if (d_py > s.radius + eps)
+        return false;
+
+    auto const d_pz = signed_distance(s.center, f.planes[f.plane_idx_pos_z]);
+    if (d_pz > s.radius + eps)
+        return false;
+
+    // conservative approximation!
+    return true;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& f, aabb<3, ScalarT> const& bb)
+{
+    using halfspace_t = halfspace<3, ScalarT>;
+
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_x]), bb))
+        return false;
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_y]), bb))
+        return false;
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_x]), bb))
+        return false;
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_y]), bb))
+        return false;
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_z]), bb))
+        return false;
+
+    // conservative approximation!
+    return true;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& f, box<3, ScalarT> const& bb)
+{
+    using halfspace_t = halfspace<3, ScalarT>;
+
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_x]), bb))
+        return false;
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_y]), bb))
+        return false;
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_x]), bb))
+        return false;
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_y]), bb))
+        return false;
+    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_z]), bb))
+        return false;
+
+    // conservative approximation!
+    return true;
+}
+
 } // namespace tg

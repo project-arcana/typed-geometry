@@ -4,6 +4,7 @@
 #include <typed-geometry/feature/vector.hh>
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/frustum.hh>
+#include <typed-geometry/types/objects/inf_frustum.hh>
 
 namespace tg
 {
@@ -62,4 +63,38 @@ constexpr frustum<3, ScalarT, TraitsT> frustum<3, ScalarT, TraitsT>::from_view_p
     return f;
 }
 
+template <class ScalarT, class TraitsT>
+constexpr inf_frustum<3, ScalarT, TraitsT> inf_frustum<3, ScalarT, TraitsT>::from_view_proj_reverse_z(mat<4, 4, ScalarT> const& m)
+{
+    // TODO: see if insight from http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf can be used
+
+    CC_ASSERT(tg::determinant(m) != 0 && "cannot create frustum from singular matrices");
+    CC_ASSERT((vec<3, ScalarT>(m.row(2)) == vec<3, ScalarT>::zero) && "requires reverse_z matrix. did you mean to use frustum?");
+
+    auto const p1 = m.row(0);
+    auto const p2 = m.row(1);
+    auto const p3 = m.row(2);
+    auto const p4 = m.row(3);
+
+    tg::vec4 planes[5];
+    // Gribb-Hartmann method
+    // https://fgiesen.wordpress.com/2012/08/31/frustum-planes-from-the-projection-matrix/
+    planes[0] = p4 + p1; // left
+    planes[1] = p4 - p1; // right
+    planes[2] = p4 + p2; // bottom
+    planes[3] = p4 - p2; // top
+    planes[4] = p4 - p3; // near
+
+    // normalize planes
+    inf_frustum<3, ScalarT, TraitsT> f;
+    for (auto i = 0; i < 5; ++i)
+    {
+        tg::vec4& plane = planes[i];
+        float const normalLengthInv = 1 / tg::sqrt(plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
+        plane *= normalLengthInv;
+        f.planes[i] = tg::plane3(-tg::dir3(plane), plane.w);
+    }
+
+    return f;
+}
 }
