@@ -30,6 +30,7 @@ asm_tester::asm_tester(const std::string& code, const std::string& compiler, con
         ss << " -msse2";
         ss << " -O2";
         ss << " -I" << curr_dir << "/../src";
+        ss << " -I" << curr_dir << "/../../clean-core/src";
         ss << " -c " << tmp_file << ".cc";
         ss << " -o " << tmp_file << ".o";
         compile_cmd = ss.str();
