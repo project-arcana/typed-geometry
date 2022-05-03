@@ -2257,7 +2257,10 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, box<3, ScalarT> const& bx)
 {
-    // TODO: some cases unhandled (one seg. point inside the box or both points inside of the box
+    // early-out: Both segment points inside of box
+    if (contains(bx, s.pos0) && contains(bx, s.pos1))
+        return s;
+
     line<3, ScalarT> segment_line = {s.pos0, normalize(s.pos1 - s.pos0)};
     auto param_insec = intersection_parameter(segment_line, bx);
 
@@ -2268,8 +2271,15 @@ template <class ScalarT>
     auto a = param_insec.value().start;
     auto b = param_insec.value().end;
 
+    // one point of the segment inside the box
+    if (contains(bx, s.pos0))
+        return segment<3, ScalarT>{s.pos0, segment_line.pos + segment_line.dir * b};
+
+    if (contains(bx, s.pos1))
+        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, s.pos1};
+
     // intersection may exist
-    if (a < length(s) && b < length(s) && a > 0 && b > 0)
+    if (a < length(s) && b < length(s) && a >= 0 && b > 0)
     {
         return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
     }
