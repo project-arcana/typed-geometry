@@ -3,6 +3,58 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectsBox3Plane3")(tg::rng& rng)
+{
+    tg::aabb1 scalar_range = tg::aabb1{-5.0f, 5.0f};
+    tg::aabb1 short_scalar_range = tg::aabb1{-2.0f, 2.0f};
+    tg::aabb1 rot = tg::aabb1{-180.0f, 180.0f};
+    tg::aabb3 bb = {{-10.0f, -10.0f, -10.0f}, {10.0f, 10.0f, 10.0f}};
+    tg::plane3 p = tg::plane3(tg::dir3(0, 1, 0), tg::pos3(0, 0, 0));
+
+    tg::aabb3 above_plane = {{-10.0f, p.dis + 10 * tg::epsilon<float>, -10.0f}, {10.0f, 10.0f + p.dis, 10.0f}};
+    tg::aabb3 below_plane = {{-10.0f, p.dis - 10.0f, -10.0f}, {10.0f, p.dis - 10 * tg::epsilon<float>, 10.0f}};
+    tg::aabb3 around_plane = {{-10.0f, -2.0f + 10.0f * tg::epsilon<float>, -10.0f}, {10.0f, 2.0f - 10.0f * tg::epsilon<float>, 10.0f}};
+
+    // 1st case: box entirely above plane
+    auto center_b1 = tg::uniform(rng, above_plane);
+    tg::mat3 box1_he;
+
+    // random box orientation
+    box1_he[0] = tg::uniform(rng, scalar_range).x * tg::uniform<tg::dir3>(rng);
+    box1_he[1].x = tg::uniform(rng, scalar_range).x;
+    box1_he[1].y = tg::uniform(rng, scalar_range).x;
+    box1_he[1].z = (-box1_he[0].x * box1_he[1].x - box1_he[0].y * box1_he[1].y) / box1_he[0].z;
+    box1_he[2] = tg::cross(box1_he[0], box1_he[1]);
+    // auto max_extent = tg::max(tg::length(box1_he[0]), tg::length(box1_he[1]), tg::length(box1_he[2]));
+    auto extent_th = tg::length(box1_he[0]) + tg::length(box1_he[1]) + tg::length(box1_he[2]);
+
+    // ensure that box is above of the plane:
+    tg::box3 b1 = tg::box3(center_b1 + (extent_th + 10 * tg::epsilon<float>)*p.normal, box1_he);
+
+    CHECK(!tg::intersects(b1, p));
+
+    // case 2: intersection exists
+    auto center_b2 = tg::uniform(rng, around_plane);
+    tg::mat3 b2_he;
+
+    // random box orientation
+    b2_he[0] = (2.0f + 10.0f * tg::epsilon<float>)*tg::uniform<tg::dir3>(rng);
+    b2_he[1].x = 2.0f;
+    b2_he[1].y = tg::uniform(rng, short_scalar_range).x;
+    b2_he[1].z = (-b2_he[0].x * b2_he[1].x - b2_he[0].y * b2_he[1].y) / b2_he[0].z;
+    b2_he[2] = tg::cross(b2_he[0], b2_he[1]);
+
+    // length of each extent is at least 2
+    CHECK(tg::length(b2_he[0]) >= 2.0f);
+    CHECK(tg::length(b2_he[1]) >= 2.0f);
+    CHECK(tg::length(b2_he[2]) >= 2.0f);
+
+    tg::box3 b2 = tg::box3(center_b2, b2_he);
+
+    // b2 and plane should intersect
+    CHECK(tg::intersects(b2, p));
+}
+
 TEST("IntersectionSegment3Triangle3")
 {
     // t in xy-plane
