@@ -3,6 +3,100 @@
 
 #include <typed-geometry/tg-std.hh>
 
+// TEMP
+#include <iostream>
+
+TEST("IntersectsSegment2Sphere2")
+{
+    tg::sphere2 s = tg::sphere2({0.0f, 0.0f}, 1.0f);
+
+    // 1st case: both seg points inside the sphere
+    tg::pos2 p1_s1 = {0.2f, -0.5f};
+    tg::pos2 p2_s1 = {0.4f, 0.4f};
+    tg::segment2 seg1 = {p1_s1, p2_s1};
+
+    CHECK(tg::intersects(seg1, s));
+
+    // 2nd case: one seg point inside the sphere and one outside
+    tg::pos2 p1_s2 = p1_s1;
+    tg::pos2 p2_s2 = {1.0f, 1.0f};
+    tg::segment2 seg2 = {p1_s2, p2_s2};
+
+    CHECK(tg::intersects(seg2, s));
+
+    // 3rd case: both seg points outside of the sphere but intersection exists
+    tg::pos2 p1_s3 = p2_s2;
+    tg::pos2 p2_s3 = {-1.0f, -1.0f};
+    tg::segment2 seg3 = {p1_s3, p2_s3};
+
+    CHECK(tg::intersects(seg3, s));
+}
+
+FUZZ_TEST("IntersectsBox2Sphere2")(tg::rng& rng)
+{
+    // unit sphere in two dimensions
+    tg::sphere2 s = tg::sphere2({0, 0}, 1.0f);
+    tg::aabb2 inside_sphere = tg::aabb2({-0.5f, -0.5f}, {0.5f, 0.5f});
+
+    // 1st case: box center inside the sphere
+    auto c_b1 = tg::uniform(rng, inside_sphere);
+    auto b1 = tg::box2::unit_centered;
+    b1.center = c_b1;
+
+    std::cout << b1.center << std::endl;
+    std::cout << b1.half_extents[0] << std::endl;
+    std::cout << b1.half_extents[1] << std::endl;
+
+    CHECK(tg::intersects(b1, s));
+
+    //// 2nd case: box: vertice inside the sphere
+    // auto v = tg::uniform<tg::dir2>(rng);
+    // auto b2 = tg::box2::unit_centered;
+    // auto c_b2 = tg::uniform(rng, inside_sphere);
+    // c_b2 += tg::sqrt(0.5f) * tg::normalize(c_b2 - tg::pos2::zero);
+    // b2.center = c_b2;
+
+    // CHECK(tg::intersects(b2, s));
+}
+
+
+FUZZ_TEST("IntersectsBox3Triangle3")(tg::rng& rng)
+{
+    tg::aabb3 env = {{-5.0f, -5.0f, -5.0f}, {5.0f, 5.0f, 5.0f}};
+    tg::aabb1 scalar_range = tg::aabb1(-5.0f, 5.0f);
+    tg::aabb1 pos_scalar_range = tg::aabb1(0.0f, 5.0f);
+
+    // center = (0,0,0), half_extents = {(0.5,0,0),(0,0.5,0),(0,0,0.5)}
+    tg::box3 b = tg::box3::unit_centered;
+
+    // 1st case: triangle insie of the box
+    auto pos1_t1 = tg::uniform(rng, b);
+    auto pos2_t1 = tg::uniform(rng, b);
+    auto pos3_t1 = tg::uniform(rng, b);
+    auto t1 = tg::triangle3(pos1_t1, pos2_t1, pos3_t1);
+
+    CHECK(tg::intersects(b, t1));
+
+    // 2nd case: at least one point inside the box
+    auto pos2_t2 = tg::uniform(rng, env);
+    auto pos3_t2 = tg::uniform(rng, env);
+    auto t2 = tg::triangle3(pos1_t1, pos2_t2, pos3_t2);
+
+    CHECK(tg::intersects(b, t2));
+
+    // 3rd case: box entirely above plane spanned by t1
+    tg::plane3 p = tg::plane_of(t1);
+    auto b2 = tg::box3::unit_centered;
+
+    if (p.dis >= 0)
+        b2.center = b2.center + (p.dis + tg::uniform(rng, pos_scalar_range).x + 1.0f + 10.0f * tg::epsilon<float>)*p.normal;
+
+    else
+        b2.center += (p.dis - tg::uniform(rng, pos_scalar_range).x - 1.0f - 10.0f * tg::epsilon<float>)*p.normal;
+
+    CHECK(!tg::intersects(b2, t1));
+}
+
 FUZZ_TEST("IntersectsBox3Plane3")(tg::rng& rng)
 {
     tg::aabb1 scalar_range = tg::aabb1{-5.0f, 5.0f};

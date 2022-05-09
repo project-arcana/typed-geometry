@@ -2869,24 +2869,11 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<2, ScalarT> const& box, sphere<2, ScalarT> const& sphere)
 {
-    // check if point is located on the right side of a segment
-    auto const point_on_right = [](segment<2, ScalarT> s, pos<2, ScalarT> p) -> bool {
-        return (((s.pos1.x - s.pos0.x) * (p.y - s.pos0.y) - (s.pos1.y - s.pos0.y) * (p.x - s.pos0.x)) < 0);
-    };
-
     array<pos<2, ScalarT>, 4> vertices_box = vertices_of(box);
-    array<segment<2, ScalarT>, 4> edges_box
-        = {segment<2, ScalarT>{vertices_box[0], vertices_box[1]}, segment<2, ScalarT>{vertices_box[1], vertices_box[2]},
-           segment<2, ScalarT>{vertices_box[2], vertices_box[3]}, segment<2, ScalarT>{vertices_box[3], vertices_box[0]}};
+    array<segment<2, ScalarT>, 4> edges_box = edges_of(box);
 
-    auto d1 = point_on_right(edges_box[0], sphere.center);
-    auto d2 = point_on_right(edges_box[1], sphere.center);
-    auto d3 = point_on_right(edges_box[2], sphere.center);
-    auto d4 = point_on_right(edges_box[3], sphere.center);
-
-    if (d1 && d2 && d3 && d4)
-        return true; // circle center inside of the box
-
+    if (contains(box, sphere.center))
+        return true;
 
     for (auto const& e : edges_box)
     {
@@ -2906,7 +2893,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& sphere, halfspace<3, ScalarT> const& hs)
 {
-    // Also applicable as universal solution for dimension D?
+    // TODO: Also applicable as universal solution for dimension D?
     if (dot(hs.normal, sphere.center) - hs.dis <= sphere.radius)
         return true;
 
@@ -2937,5 +2924,6 @@ template <class ScalarT>
 {
     return intersects(box, hs);
 }
+
 
 } // namespace tg
