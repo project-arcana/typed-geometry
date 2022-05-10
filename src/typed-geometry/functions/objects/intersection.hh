@@ -1287,6 +1287,10 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(segment<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
 {
+    // early-out: both segment points inside the sphere
+    if ((distance(a.pos0, b.center) < b.radius) && (distance(a.pos1, b.center) < b.radius))
+        return segment<D, ScalarT>{a.pos0, a.pos1};
+
     auto const l = line<D, ScalarT>(a.pos0, normalize(a.pos1 - a.pos0));
     auto const params = intersection_parameter(l, b);
 
@@ -2924,6 +2928,5 @@ template <class ScalarT>
 {
     return intersects(box, hs);
 }
-
 
 } // namespace tg
