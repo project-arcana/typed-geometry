@@ -3,8 +3,74 @@
 
 #include <typed-geometry/tg-std.hh>
 
-// TEMP
-#include <iostream>
+FUZZ_TEST("IntersectsBox3Halfspace3")(tg::rng& rng)
+{
+    tg::aabb1 scalar_range = tg::aabb1(1.0f, 5.0f);
+
+    // halfspace with random orientation through origin
+    tg::halfspace3 hs = tg::halfspace3(tg::uniform<tg::dir3>(rng), tg::pos3::zero);
+
+    // box with random halfextents and center at origin
+    auto b = tg::box3();
+    b.center = tg::pos3::zero;
+    b.half_extents[0] = tg::uniform(rng, scalar_range).x * tg::uniform<tg::dir3>(rng);
+    b.half_extents[1].x = tg::uniform(rng, scalar_range).x;
+    b.half_extents[1].y = tg::uniform(rng, scalar_range).x;
+    b.half_extents[1].z = (-b.half_extents[0].x * b.half_extents[1].x - b.half_extents[0].y * b.half_extents[1].y) / b.half_extents[0].z;
+    b.half_extents[2] = tg::cross(b.half_extents[0], b.half_extents[1]);
+
+    // rad of circumcircle
+    float rad_circum = tg::distance(b.center + b.half_extents[0] + b.half_extents[1] + b.half_extents[2], b.center);
+    float min_dist = tg::min(tg::length(b.half_extents[0]), tg::length(b.half_extents[1]), tg::length(b.half_extents[2]));
+
+    // 1st case: box entirely inside the halfspace
+    auto b1 = tg::box3();
+    b1.half_extents = b.half_extents;
+    b1.center = b.center - hs.normal * tg::uniform(rng, {rad_circum + 0.1f, rad_circum * 2});
+
+    CHECK(tg::intersects(b1, hs));
+
+    // 2nd case: box only partially inside the halfspace
+    auto b2 = tg::box3();
+    b2.half_extents = b.half_extents;
+    b2.center = b.center + hs.normal * tg::uniform(rng, {0.0f, min_dist - 0.1f});
+
+    CHECK(tg::intersects(b2, hs));
+
+    // 3rd case: box not intersecting the halfspace
+    auto b3 = tg::box3();
+    b3.half_extents = b.half_extents;
+    b3.center = b.center + hs.normal * tg::uniform(rng, {rad_circum + 0.1f, rad_circum * 2});
+
+    CHECK(!tg::intersects(b3, hs));
+}
+
+FUZZ_TEST("IntersectsSphere3Halfspace3")(tg::rng& rng)
+{
+    tg::aabb1 range_radius = tg::aabb1{0.5f, 5.0f};
+
+    // 1st case: sphere entirely in halfspace
+    tg::halfspace3 hs = tg::halfspace3(tg::uniform<tg::dir3>(rng), tg::pos3::zero);
+    tg::sphere3 s1 = tg::sphere3(tg::pos3::zero, tg::uniform(rng, range_radius).x);
+
+    // shift sphere inside the halfspace
+    s1.center += -hs.normal * (s1.radius + 10.0f * tg::epsilon<float>);
+
+    CHECK(tg::intersects(s1, hs));
+
+    // 2nd case: sphere only partially inside of the halfspace
+    tg::sphere3 s2 = tg::sphere3(tg::pos3::zero, tg::uniform(rng, range_radius).x);
+    s2.center += -hs.normal * tg::uniform(rng, {0.0f, s2.radius});
+
+    CHECK(tg::intersects(s2, hs));
+
+    // 3rd case: sphere not intersecting the halfspace
+    tg::sphere3 s3 = tg::sphere3(tg::pos3::zero, tg::uniform(rng, range_radius).x);
+    // shift sphere in normal direction of halspace
+    s3.center += hs.normal * tg::uniform(rng, {s3.radius + 0.1f, 2 * s3.radius});
+
+    CHECK(!tg::intersects(s3, hs));
+}
 
 TEST("IntersectsSegment2Sphere2")
 {
@@ -43,20 +109,36 @@ FUZZ_TEST("IntersectsBox2Sphere2")(tg::rng& rng)
     auto b1 = tg::box2::unit_centered;
     b1.center = c_b1;
 
-    std::cout << b1.center << std::endl;
-    std::cout << b1.half_extents[0] << std::endl;
-    std::cout << b1.half_extents[1] << std::endl;
-
     CHECK(tg::intersects(b1, s));
 
-    //// 2nd case: box: vertice inside the sphere
-    // auto v = tg::uniform<tg::dir2>(rng);
-    // auto b2 = tg::box2::unit_centered;
-    // auto c_b2 = tg::uniform(rng, inside_sphere);
-    // c_b2 += tg::sqrt(0.5f) * tg::normalize(c_b2 - tg::pos2::zero);
-    // b2.center = c_b2;
+    // 2nd case: box: vertice inside the sphere
+    auto b2 = tg::box2::unit_centered;
+    auto c_b2 = tg::uniform(rng, inside_sphere);
+    c_b2 += 0.5f * tg::normalize(c_b2 - tg::pos2::zero);
+    b2.center = c_b2;
 
-    // CHECK(tg::intersects(b2, s));
+    CHECK(tg::intersects(b2, s));
+
+    // 3rd case: circle inside box, but box center not inside the sphere
+
+    auto b3 = tg::box2();
+    b3.half_extents[0] = {2.0f, 0.0f};
+    b3.half_extents[1] = {0.0f, 2.0f};
+    b3.center = s.center;
+
+    CHECK(tg::intersects(b3, s));
+
+    // 4th case: no box vertice inside the sphere but intersec of one box edge with sphere
+    tg::aabb1 shift_range = tg::aabb1{1.01f, tg::sqrt(2.0f) - tg::epsilon<float>};
+
+    auto dir_1 = tg::uniform<bool>(rng) == false ? -1 : 1;
+    auto shift_x = dir_1 * tg::vec2(tg::uniform(rng, shift_range).x, 0.0f);
+    auto dir_2 = tg::uniform<bool>(rng) == false ? -1 : 1;
+    auto shift_y = dir_2 * tg::vec2(0.0f, tg::sqrt(2.0f) - shift_x.x);
+
+    b3.center += shift_x + shift_y;
+
+    CHECK(tg::intersects(b3, s));
 }
 
 

@@ -1294,6 +1294,9 @@ template <int D, class ScalarT>
     auto const l = line<D, ScalarT>(a.pos0, normalize(a.pos1 - a.pos0));
     auto const params = intersection_parameter(l, b);
 
+    if (!params.has_value())
+        return {};
+
     if (params.value().is_unbounded())
         return {};
 
