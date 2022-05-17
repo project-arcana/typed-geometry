@@ -71,13 +71,13 @@ FUZZ_TEST("Determinant")(tg::rng& rng)
         // confirm multiplicativity
         auto detA = determinant(matA);
         auto detB = determinant(matB);
-        CHECK(determinant(matA * matB) == nx::approx(detA * detB));
+        CHECK(determinant(matA * matB) == nx::approx(detA * detB).abs(0.01f));
 
         auto invA = inverse(matA);
         auto invB = inverse(matB);
 
-        CHECK(determinant(invA) == nx::approx(1.0f / detA));
-        CHECK(determinant(invB) == nx::approx(1.0f / detB));
+        CHECK(determinant(invA) == nx::approx(1.0f / detA).abs(0.01f));
+        CHECK(determinant(invB) == nx::approx(1.0f / detB).abs(0.01f));
     }
 
     // random DxD matrices for 2D

@@ -79,8 +79,8 @@ FUZZ_TEST("Triangle3 - BarycoordMatrix")(tg::rng& rng)
     CHECK(b2.w == nx::approx(offset));
 
     auto p_recon2 = tg::from_barycoord_matrix_of(t) * b2;
-    CHECK(tg::pos3(p_recon2) == nx::approx(p + n * offset));
-    CHECK(p_recon.w == nx::approx(1.f));
+    CHECK(tg::pos3(p_recon2) == nx::approx(p + n * offset).abs(0.01f));
+    CHECK(p_recon.w == nx::approx(1.f).abs(0.01f));
 }
 
 FUZZ_TEST("Triangle2 - TransformationFromTo")(tg::rng& rng)
