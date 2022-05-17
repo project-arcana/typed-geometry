@@ -2321,13 +2321,10 @@ template <class ScalarT>
     return true;
 }
 
-// NEW
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& t)
 {
-    // std::array<pos<3, ScalarT>, 3> triangle_pos = {t.pos0, t.pos1, t.pos2};
-
-    // classify vertices,
+    // classify vertices
     auto sign_v1 = signed_distance(t.pos0, plane) < 0 ? false : true;
     auto sign_v2 = signed_distance(t.pos1, plane) < 0 ? false : true;
     auto sign_v3 = signed_distance(t.pos2, plane) < 0 ? false : true;
@@ -2542,6 +2539,7 @@ template <class ScalarT>
     return {};
 }
 
+// segment3 - capsule3
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, capsule<3, ScalarT> const& c)
 {
@@ -2549,11 +2547,25 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(capsule<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_object_impl(s, c);
+}
+
+// segment3 - cylinder3
+template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder<3, ScalarT> const& c)
 {
     return detail::intersection_segment_object_impl(s, c);
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(cylinder<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_object_impl(s, c);
+}
+
+// segment3 - ellipse3
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, ellipse<3, ScalarT> const& e)
 {
@@ -2561,41 +2573,48 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(ellipse<3, ScalarT> const& e, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_object_impl(s, e);
+}
+
+// segment3 - sphere3
+template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, sphere<3, ScalarT> const& e)
 {
     return detail::intersection_segment_object_impl(s, e);
 }
 
 template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(sphere<3, ScalarT> const& e, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_object_impl(s, e);
+}
+
+// segment3 - tube3
+template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, tube<3, ScalarT> const& t)
+{
+    return detail::intersection_segment_object_impl(s, t);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(tube<3, ScalarT> const& t, segment<3, ScalarT> const& s)
 {
     return detail::intersection_segment_object_impl(s, t);
 }
 
 // segment3 - cylinder_boundary
 template <class ScalarT>
-[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, cylinder_boundary<3, ScalarT> const& cylinder_boundary)
+[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder_boundary<3, ScalarT> const& c)
 {
-    // TODO
-    // This is a standard solution that can be applied to any boundary case
-    auto const line = line3::from_points(segment.pos0, segment.pos1);
-    auto const params = intersection_parameter(line, cylinder_boundary);
+    return detail::intersection_segment_object_impl(s, c);
+}
 
-    if (!params.any())
-        return {};
-
-    auto const dist = distance(segment.pos0, segment.pos1);
-    auto n_hits = 0;
-    tg::pos<3, ScalarT> ps[2];
-    for (auto i = 0; i < params.size(); ++i)
-    {
-        auto const t = params[i];
-        if (ScalarT(0) <= t && t <= dist)
-        {
-            ps[n_hits++] = line[t];
-        }
-    }
-    return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(cylinder_boundary<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_object_impl(s, c);
 }
 
 template <class ScalarT>
@@ -2769,48 +2788,12 @@ template <class ScalarT>
     return intersects(b, a);
 }
 
-// template <class ScalarT>
-//[[nodiscard]] constexpr bool intersects(box<2, ScalarT> const& box, sphere<2, ScalarT> const& sphere)
-//{
-//    // segments of the box
-//    // tg::segment2 seg1 = {box.center - box.half_extents[0] - box.half_extents[1], box.center - box.half_extents[0] + box.half_extents[1]};
-//    // tg::segment2 seg2 = {box.center - box.half_extents[0] + box.half_extents[1], box.center + box.half_extents[0] + box.half_extents[1]};
-//    // tg::segment2 seg3 = {box.center + box.half_extents[0] + box.half_extents[1], box.center + box.half_extents[0] - box.half_extents[1]};
-//    // tg::segment2 seg4 = {box.center + box.half_extents[0] - box.half_extents[1], box.center - box.half_extents[0] - box.half_extents[1]};
-//
-//    array<segment<2, ScalarT>, 4> segs = edges_of(box);
-//
-//    for (auto& seg : segs)
-//    {
-//        auto line = tg::line2(seg.pos0, normalize(seg.pos1 - seg.pos0));
-//        auto seg_length = length(seg.pos1 - seg.pos0);
-//        // TODO: segment - sphere not implemented yet
-//        if (intersects(line, sphere))
-//        {
-//            auto param = intersection_parameters(line, sphere);
-//            if (param.has_value())
-//            {
-//                if (param.value().first < seg_length || param.value().second < seg_length)
-//                    return true;
-//            }
-//        }
-//    }
-//
-//    return false;
-//}
-//
-// template <class ScalarT>
-// [[nodiscard]] constexpr bool intersects(sphere<2, ScalarT> const& sphere, box<2, ScalarT> const& box)
-// {
-//     return intersects(box, sphere);
-// }
-
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, plane<3, ScalarT> const& plane)
 {
     float sign = 0;
 
-    // iterate over the vertices of the box
+    // iterate over box-vertices
     for (auto x : {-1, 1})
         for (auto y : {-1, 1})
             for (auto z : {-1, 1})
