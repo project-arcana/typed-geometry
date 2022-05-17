@@ -3,20 +3,6 @@
 
 #include <typed-geometry/tg-std.hh>
 
-TEST("IntersectionSegment3Triangle3")
-{
-    // t in xz-plane
-    tg::triangle3 t = {{-1.0f, 0.0f, -1.0f}, {-1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, -1.0f}};
-
-    // 1st case: intersection of segment through origin
-    tg::segment3 s = {{-1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}};
-
-    auto insec = tg::intersection(s, t);
-
-    CHECK(insec.has_value());
-    CHECK(insec.value() == nx::approx(tg::pos3{0, 0, 0}));
-}
-
 
 FUZZ_TEST("IntersectionSegment3Box3")(tg::rng& rng)
 {
@@ -409,6 +395,20 @@ TEST("IntersectionSphere3Sphere3")
         // intersection normal points from sphere a to sphere b (swapped here)
         CHECK(res.value().normal == tg::vec3(0, 0, -1));
     }
+}
+
+TEST("IntersectionSegment3Triangle3")
+{
+    // t in xz-plane
+    tg::triangle3 t = {{-1.0f, 0.0f, -1.0f}, {-1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, -1.0f}};
+
+    // 1st case: intersection of segment through origin
+    tg::segment3 s = {{-1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}};
+
+    auto insec = tg::intersection(s, t);
+
+    CHECK(insec.has_value());
+    CHECK(insec.value() == nx::approx(tg::pos3{0, 0, 0}));
 }
 
 TEST("IntersectionCircle2Circle2")
