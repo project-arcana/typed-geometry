@@ -2757,7 +2757,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
 {
-    if (distance(a, b.center) < b.radius)
+    if (distance(a, b.center) <= b.radius)
         return true;
 
     return false;
