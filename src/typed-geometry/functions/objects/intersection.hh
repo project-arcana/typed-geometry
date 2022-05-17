@@ -2608,13 +2608,31 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder_boundary<3, ScalarT> const& c)
 {
-    return detail::intersection_segment_object_impl(s, c);
+    // TODO: This is a standard solution that can be applied to any boundary case
+    auto const line = line3::from_points(s.pos0, s.pos1);
+    auto const params = intersection_parameter(line, c);
+
+    if (!params.any())
+        return {};
+
+    auto const dist = distance(s.pos0, s.pos1);
+    auto n_hits = 0;
+    tg::pos<3, ScalarT> ps[2];
+    for (auto i = 0; i < params.size(); ++i)
+    {
+        auto const t = params[i];
+        if (ScalarT(0) <= t && t <= dist)
+        {
+            ps[n_hits++] = line[t];
+        }
+    }
+    return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
 }
 
 template <class ScalarT>
 [[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(cylinder_boundary<3, ScalarT> const& c, segment<3, ScalarT> const& s)
 {
-    return detail::intersection_segment_object_impl(s, c);
+    return intersection(s, c);
 }
 
 template <class ScalarT>
