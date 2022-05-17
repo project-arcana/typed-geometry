@@ -406,9 +406,7 @@ TEST("IntersectionSegment3Triangle3")
     tg::segment3 s = {{-1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}};
 
     auto insec = tg::intersection(s, t);
-
     CHECK(insec.has_value());
-    CHECK(insec.value() == nx::approx(tg::pos3{0, 0, 0}));
 }
 
 TEST("IntersectionCircle2Circle2")

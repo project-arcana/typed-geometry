@@ -38,7 +38,7 @@ FUZZ_TEST("IntersectsSegment3Sphere3")(tg::rng& rng)
         auto param = tg::closest_intersection_parameter(line_seg3, s);
 
         bool insec = false;
-        if (!param.has_value())
+        if (param.has_value())
         {
             if (param.value() <= tg::length(seg3) && param.value() >= 0)
                 insec = true;
