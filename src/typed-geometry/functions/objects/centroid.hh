@@ -15,6 +15,7 @@
 
 #include <typed-geometry/detail/operators/ops_pos.hh>
 #include <typed-geometry/detail/operators/ops_vec.hh>
+#include <typed-geometry/functions/basic/constants.hh>
 
 // returns the arithmetic mean of all points contained in an object
 // has variadic versions
