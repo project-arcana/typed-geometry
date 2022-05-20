@@ -217,24 +217,25 @@ template <class ScalarT>
     return {tMin, tMax};
 }
 
+// segment - convex object
 template <class ScalarT, class B>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection_segment_object_impl(segment<3, ScalarT> const& s, B const& o)
 {
     bool con_pos0 = contains(o, s.pos0);
     bool con_pos1 = contains(o, s.pos1);
 
-    // Case 1: Both seg. points are inside the cylinder
+    // case 1: Both seg. points are inside the convex object
     if (con_pos0 && con_pos1)
         return segment<3, ScalarT>{s.pos0, s.pos1};
 
     line<3, ScalarT> segment_line = line<3, ScalarT>(s.pos0, normalize(s.pos1 - s.pos0));
     auto insec = intersection_parameter(segment_line, o);
 
-    // No intersection exists
+    // no intersection exists
     if (!insec.has_value())
         return {};
 
-    // Case 2: One seg. point inside the cylinder and one outside -> intersection with boundary must exist
+    // case 2: One seg. point inside the cylinder and one outside -> intersection with boundary must exist
     if (con_pos0 || con_pos1)
     {
         // one point of the segment is inside the cylinder and one is outside -> intersection must exist
@@ -242,7 +243,7 @@ template <class ScalarT, class B>
         return segment<3, ScalarT>{segment_line.pos + segment_line.dir * param, con_pos0 ? s.pos0 : s.pos1};
     }
 
-    // Case 3: both points of segment outside of the cylinder
+    // case 3: both points of segment outside of the convex object
     if (0 < insec.value().start && insec.value().start < length(s) && 0 < insec.value().end && insec.value().end < length(s))
         return segment<3, ScalarT>{segment_line.pos + segment_line.dir * insec.value().start, segment_line.pos + segment_line.dir * insec.value().end};
 
@@ -1289,7 +1290,7 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(segment<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
 {
     // early-out: both segment points inside the sphere
-    if ((distance(a.pos0, b.center) < b.radius) && (distance(a.pos1, b.center) < b.radius))
+    if ((distance_sqr(a.pos0, b.center) < pow2(b.radius)) && (distance_sqr(a.pos1, b.center) < pow2(b.radius)))
         return segment<D, ScalarT>{a.pos0, a.pos1};
 
     auto const l = line<D, ScalarT>(a.pos0, normalize(a.pos1 - a.pos0));
@@ -2364,7 +2365,7 @@ template <class ScalarT>
     else
         return {};
 
-    return tg::segment3(i1, i2);
+    return tg::segment<3, ScalarT>(i1, i2);
 }
 
 template <class ScalarT>
@@ -2377,20 +2378,20 @@ template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& t)
 {
     tg::array<pos<3, ScalarT>, 3> triangle_pos = {t.pos0, t.pos1, t.pos2};
-    float sign = 0;
+    ScalarT sign = 0;
 
     for (auto tr : triangle_pos)
     {
-        if (sign == 0)
+        if (sign == ScalarT(0))
         {
             sign = dot(plane.normal, tr) - plane.dis;
-            if (sign == 0)
+            if (sign == ScalarT(0))
                 return true;
         }
 
         else
         {
-            if ((dot(plane.normal, tr) - plane.dis) * sign < 0)
+            if ((dot(plane.normal, tr) - plane.dis) * sign < ScalarT(0))
                 return true;
         }
     }
@@ -2483,10 +2484,10 @@ template <class ScalarT>
     return intersection(seg, t);
 }
 
+// TODO: there might be a more effective way
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, aabb<3, ScalarT> const& bb) // NOT CONFIRMED
 {
-    // TODO: There might be a more effective way!
     line<3, ScalarT> segment_line = {s.pos0, normalize(s.pos1 - s.pos0)};
     auto param_insec = intersection_parameter(segment_line, bb);
 
@@ -2650,10 +2651,10 @@ template <class ScalarT>
     // Separating Axes Theorem
     auto const axis_check = [](tg::dir<3, ScalarT> d, box<3, ScalarT> const& box_a, box<3, ScalarT> const& box_b) -> bool
     {
-        float minProja = std::numeric_limits<float>::max();
-        float maxProja = std::numeric_limits<float>::min();
-        float minProjb = std::numeric_limits<float>::max();
-        float maxProjb = std::numeric_limits<float>::min();
+        ScalarT minProja = tg::max<ScalarT>();
+        ScalarT maxProja = tg::min<ScalarT>();
+        ScalarT minProjb = tg::max<ScalarT>();
+        ScalarT maxProjb = tg::min<ScalarT>();
 
         for (auto x : {-1, 1})
             for (auto y : {-1, 1})
@@ -2725,39 +2726,39 @@ template <class ScalarT>
         return true;
 
     // ax_bx
-    if (length(cross_ax_bx) > 0 ? axis_check(normalize(cross_ax_bx), a, b) : false)
+    if (length_sqr(cross_ax_bx) > 0 ? axis_check(normalize(cross_ax_bx), a, b) : false)
         return true;
 
     // ax_by
-    if (length(cross_ax_by) > 0 ? axis_check(normalize(cross_ax_by), a, b) : false)
+    if (length_sqr(cross_ax_by) > 0 ? axis_check(normalize(cross_ax_by), a, b) : false)
         return true;
 
     // ax_bz
-    if (length(cross_ax_bz) > 0 ? axis_check(normalize(cross_ax_bz), a, b) : false)
+    if (length_sqr(cross_ax_bz) > 0 ? axis_check(normalize(cross_ax_bz), a, b) : false)
         return true;
 
     // ay_by
-    if (length(cross_ay_bx) > 0 ? axis_check(normalize(cross_ay_bx), a, b) : false)
+    if (length_sqr(cross_ay_bx) > 0 ? axis_check(normalize(cross_ay_bx), a, b) : false)
         return true;
 
     // ay_by
-    if (length(cross_ay_by) > 0 ? axis_check(normalize(cross_ay_by), a, b) : false)
+    if (length_sqr(cross_ay_by) > 0 ? axis_check(normalize(cross_ay_by), a, b) : false)
         return true;
 
     // ay_bz
-    if (length(cross_ay_bz) > 0 ? axis_check(normalize(cross_ay_bz), a, b) : false)
+    if (length_sqr(cross_ay_bz) > 0 ? axis_check(normalize(cross_ay_bz), a, b) : false)
         return true;
 
     // az_bx
-    if (length(cross_az_bx) > 0 ? axis_check(normalize(cross_az_bx), a, b) : false)
+    if (length_sqr(cross_az_bx) > 0 ? axis_check(normalize(cross_az_bx), a, b) : false)
         return true;
 
     // az_by
-    if (length(cross_az_by) > 0 ? axis_check(normalize(cross_az_by), a, b) : false)
+    if (length_sqr(cross_az_by) > 0 ? axis_check(normalize(cross_az_by), a, b) : false)
         return true;
 
     // az_bz
-    if (length(cross_az_bz) > 0 ? axis_check(normalize(cross_az_bz), a, b) : false)
+    if (length_sqr(cross_az_bz) > 0 ? axis_check(normalize(cross_az_bz), a, b) : false)
         return true;
 
     return false;
@@ -2772,17 +2773,20 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& b, sphere<3, ScalarT> const& s)
 {
-    array<pos<3, ScalarT>, 8> box_vertices = vertices_of(b);
+    // early-out: sphere-center inside box
+    if (contains(b, s.center))
+        return true;
 
-    // as early-out: box vertex inside the sphere
+    array<pos<3, ScalarT>, 8> box_vertices = vertices_of(b);
+    // box vertex inside the sphere
     for (auto const& v : box_vertices)
     {
-        if (length(v - s.center) < s.radius)
+        if (length_sqr(v - s.center) < pow2(s.radius))
             return true;
     }
 
     array<segment<3, ScalarT>, 12> box_edges = edges_of(b);
-
+    // box edge intersects sphere
     for (auto const& e : box_edges)
     {
         if (intersects(e, s))
@@ -2823,7 +2827,7 @@ template <class ScalarT>
         for (auto y : {-1, 1})
             for (auto z : {-1, 1})
             {
-                pos3 box_vertex = box.center + x * box.half_extents[0] + y * box.half_extents[1] + z * box.half_extents[2];
+                pos<3, ScalarT> box_vertex = box.center + x * box.half_extents[0] + y * box.half_extents[1] + z * box.half_extents[2];
                 if (sign == 0)
                 {
                     sign = dot(plane.normal, box_vertex) - plane.dis;
@@ -2851,21 +2855,25 @@ template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, triangle<3, ScalarT> const& triangle)
 {
     // early out
+    if (contains(box, triangle))
+        return true;
+
+    // intersection of box with triangle-plane
     tg::plane<3, ScalarT> plane_of_triangle = tg::plane_of(triangle);
     if (!intersects(plane_of_triangle, box))
         return false;
 
-    // segments of triangle
     array<segment<3, ScalarT>, 3> edges_triangle = edges_of(triangle);
-    // segments of box
     array<segment<3, ScalarT>, 12> edges_box = edges_of(box);
 
+    // intersection of triangle edges with box
     for (auto& e : edges_triangle)
     {
         if (intersects(e, box))
             return true;
     }
 
+    // intersection of box edges with triangle
     for (auto& e : edges_box)
     {
         if (intersects(e, triangle))
@@ -2905,10 +2913,9 @@ template <class ScalarT>
     return intersects(box, sphere);
 }
 
-template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& sphere, halfspace<3, ScalarT> const& hs)
+template <int D, class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<D, ScalarT> const& sphere, halfspace<D, ScalarT> const& hs)
 {
-    // TODO: Also applicable as universal solution for dimension D?
     if (dot(hs.normal, sphere.center) - hs.dis <= sphere.radius)
         return true;
 
@@ -2921,6 +2928,7 @@ template <class ScalarT>
     return intersects(sphere, hs);
 }
 
+// TODO: optimized version
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, halfspace<3, ScalarT> const& hs)
 {
