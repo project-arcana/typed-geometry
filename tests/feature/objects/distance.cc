@@ -313,10 +313,12 @@ FUZZ_TEST("Distance - PosSeg2")(tg::rng& rng)
 
     auto d = distance(s, p);
 
-    auto dd = minimize_f1(rng, 0.5f, [&](float& a, float) {
-        a = tg::saturate(a);
-        return distance(s[a], p);
-    });
+    auto dd = minimize_f1(rng, 0.5f,
+                          [&](float& a, float)
+                          {
+                              a = tg::saturate(a);
+                              return distance(s[a], p);
+                          });
 
     CHECK(d == nx::approx(dd).abs(0.7f));
 }
@@ -330,11 +332,13 @@ FUZZ_TEST("Distance - SegSeg2")(tg::rng& rng)
 
     auto d = distance(s0, s1);
 
-    auto dd = minimize_f1(rng, 0.5f, [&](float& a, float& b) {
-        a = tg::saturate(a);
-        b = tg::saturate(b);
-        return distance(s0[a], s1[b]);
-    });
+    auto dd = minimize_f1(rng, 0.5f,
+                          [&](float& a, float& b)
+                          {
+                              a = tg::saturate(a);
+                              b = tg::saturate(b);
+                              return distance(s0[a], s1[b]);
+                          });
 
     if (d > 0)
         CHECK(!intersects(s0, s1));
@@ -351,11 +355,13 @@ FUZZ_TEST("Distance - SegSeg3")(tg::rng& rng)
 
     auto d = distance(s0, s1);
 
-    auto dd = minimize_f1(rng, 0.5f, [&](float& a, float& b) {
-        a = tg::saturate(a);
-        b = tg::saturate(b);
-        return distance(s0[a], s1[b]);
-    });
+    auto dd = minimize_f1(rng, 0.5f,
+                          [&](float& a, float& b)
+                          {
+                              a = tg::saturate(a);
+                              b = tg::saturate(b);
+                              return distance(s0[a], s1[b]);
+                          });
 
     CHECK(d == nx::approx(dd).abs(0.7f));
 }
@@ -401,4 +407,25 @@ FUZZ_TEST("Distance - TriangleAABB3")(tg::rng& rng)
         auto p = uniform(rng, tri) + tg::uniform<tg::dir3>(rng) * uniform(rng, 0.f, d);
         CHECK(!contains(bb, p));
     }
+}
+
+FUZZ_TEST("Distance - AABBAABB3")(tg::rng& rng)
+{
+    auto bounds = tg::aabb3(-10, 10);
+    auto bbA = tg::aabb_of(uniform(rng, bounds), uniform(rng, bounds));
+    auto bbB = tg::aabb_of(uniform(rng, bounds), uniform(rng, bounds));
+
+    auto dis = distance(bbA, bbB);
+    CHECK(dis >= 0);
+
+    // zero dis means they intersect
+    if (dis == 0)
+        CHECK(intersects(bbA, bbB));
+    else // otherwise they dont
+        CHECK(!intersects(bbA, bbB));
+
+    // dis is a lower bound of all point-wise distances
+    auto pA = uniform(rng, bbA);
+    auto pB = uniform(rng, bbB);
+    CHECK(distance(pA, pB) >= nx::approx(dis));
 }
