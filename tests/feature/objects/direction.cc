@@ -74,7 +74,7 @@ FUZZ_TEST("Direction")(tg::rng& rng)
         np = p + push; // move along perpendicular direction
         // compare calculated with given
         cdir = tg::dir3(direction(l, np));
-        CHECK(cdir == nx::approx(normalize(push)));
+        CHECK(cdir == nx::approx(normalize(push)).abs(0.001f));
     }
     // line2
     {

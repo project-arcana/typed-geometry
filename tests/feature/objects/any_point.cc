@@ -5,7 +5,7 @@
 
 FUZZ_TEST("AnyPoint")(tg::rng& rng)
 {
-    auto const tolerance = 0.01f;
+    auto const tolerance = 0.015f;
     auto const test_obj = [tolerance](auto const& o) {
         auto p = any_point(o);
         CHECK(contains(o, p, tolerance));
