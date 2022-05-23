@@ -147,18 +147,18 @@ template <class PrimA, class PrimB, class... PrimsT>
     return aabb_of(b, prims...);
 }
 
-template <class ContainerT>
-[[nodiscard]] constexpr auto aabb_of(ContainerT const& c) -> decltype(aabb_of(*c.begin()))
+template <class ContainerT, class TransformT = identity_fun>
+[[nodiscard]] constexpr auto aabb_of(ContainerT const& c, TransformT&& transform = {}) -> decltype(aabb_of(transform(*c.begin())))
 {
     auto it = c.begin();
     auto end = c.end();
     TG_ASSERT(it != end && "cannot build AABB of empty container");
 
-    auto bb = aabb_of(*it);
+    auto bb = aabb_of(transform(*it));
     ++it;
     while (it != end)
     {
-        auto rhs = aabb_of(*it);
+        auto rhs = aabb_of(transform(*it));
         bb = decltype(bb)(min(bb.min, rhs.min), max(bb.max, rhs.max));
 
         ++it;
