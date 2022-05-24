@@ -3,6 +3,75 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectsPlane3Cone3")(tg::rng& rng)
+{
+    // xz-plane
+    auto plane = tg::plane3(tg::dir3(0.f, 1.f, 0.f), tg::pos3(0.f, 0.f, 0.f));
+    auto on_plane = tg::aabb3({-10.f, .0f, -10.f}, {10.f, .0f, 10.f});
+    auto below_plane = tg::aabb3({-10.f, -10.f, -10.f}, {10.f, -0.1f, 10.f});
+    auto above_plane = tg::aabb3({-10.f, 0.1f, 10.f}, {10.f, 10.f, 10.f});
+    auto scalar_range = tg::aabb1{0.5, 5.f};
+
+    // a) cone base intersecting with plane
+    tg::pos3 circ_pos = tg::uniform(rng, on_plane);
+    auto rad = tg::uniform(rng, scalar_range).x;
+    auto shift_range = tg::aabb1(.0f, rad - 0.1f);
+    circ_pos += tg::uniform<tg::dir3>(rng) * tg::uniform(rng, shift_range).x;
+
+    auto circ1 = tg::sphere2in3(circ_pos, rad, {1.f, 0.f, 0.f});
+
+    CHECK(intersects(plane, circ1));
+}
+
+FUZZ_TEST("IntersectsSphere2in3Plane3")(tg::rng& rng)
+{
+    // xz-plane
+    auto plane = tg::plane3(tg::dir3(0.f, 1.f, 0.f), tg::pos3(0.f, 0.f, 0.f));
+    auto scalar_range = tg::aabb1{0.5, 5.f};
+    auto env_range = tg::aabb3{tg::pos3(-10.f, -10.f, -10.f), tg::pos3(10.f, 10.f, 10.f)};
+
+    // a) circle parallel to plane
+    auto n = tg::uniform<tg::dir3>(rng);
+    auto plane_pos = tg::uniform(rng, env_range);
+    auto plane1 = tg::plane3(n, plane_pos);
+    auto circ1 = tg::sphere2in3(plane_pos + n * tg::uniform(rng, scalar_range).x, tg::uniform(rng, scalar_range).x, n);
+
+    CHECK(!intersects(circ1, plane1));
+
+    // b) TODO
+}
+
+FUZZ_TEST("IntersectsTriangle3Sphere3")(tg::rng& rng)
+{
+    // unit sphere
+    tg::sphere3 s = tg::sphere3::unit;
+    tg::aabb1 scale_range = tg::aabb1{2.f * s.radius, 5.f};
+
+    // a) triangle inside sphere
+    auto pos0 = tg::uniform(rng, s);
+    auto pos1 = tg::uniform(rng, s);
+    auto pos2 = tg::uniform(rng, s);
+
+    auto t1 = tg::triangle3(pos0, pos1, pos2);
+
+    CHECK(tg::intersects(t1, s));
+
+    // b) no point inside the sphere but intersection exists
+    // shift point outside the sphere
+    tg::vec3 shift = tg::uniform<tg::dir3>(rng) * tg::uniform(rng, scale_range).x;
+    tg::vec3 shift_orthogonal = {shift.x, -shift.y, shift.z};
+
+    pos0 += shift;
+    pos1 -= shift;
+    pos2 += shift_orthogonal;
+
+    auto t2 = tg::triangle3(pos0, pos1, pos2);
+
+    CHECK(tg::intersects(t2, s));
+
+    // TODO: one more test: No point inside the sphere and no intersection exists
+}
+
 FUZZ_TEST("IntersectsSegment3Sphere3")(tg::rng& rng)
 {
     // unit sphere

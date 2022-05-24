@@ -2623,6 +2623,19 @@ template <class ScalarT>
     return detail::intersection_segment_object_impl(s, t);
 }
 
+// segment3 - cone3
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cone<3, ScalarT> const& c)
+{
+    return detail::intersection_segment_object_impl(s, c);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(cone<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_object_impl(s, c);
+}
+
 // segment3 - cylinder_boundary
 template <class ScalarT>
 [[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder_boundary<3, ScalarT> const& c)
@@ -2959,5 +2972,111 @@ template <class ScalarT>
 {
     return intersects(box, hs);
 }
+
+// NEW
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(segment<3, ScalarT> const& s, halfspace<3, ScalarT> const& hs)
+{
+    if ((dot(hs.normal, s.pos0) - hs.dis) <= 0 || (dot(hs.normal, s.pos1) - hs.dis) <= 0)
+        return true;
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& hs, segment<3, ScalarT> const& s)
+{
+    return intersects(s, hs);
+}
+
+// triangle3 - sphere3
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, sphere<3, ScalarT> const& s)
+{
+    // triangle vertex inside sphere
+    if (contains(s, t.pos0) || contains(s, t.pos1) || contains(s, t.pos2))
+        return true;
+
+    plane<3, ScalarT> plane_t = plane_of(t);
+
+    // TODO: Implement via closest_point!
+    // auto cp = closest_point(s.center, t);
+
+    // project sphere center onto triangle plane
+    auto dis = distance(s.center, plane_t);
+    auto proj_pos = s.center + dis * plane_t.normal;
+
+    // if proj_pos is within the triangle -> intersection exists
+    if (contains(t, proj_pos))
+        return true;
+
+    // triangle edge intersects sphere
+    for (auto const& e : edges_of(t))
+    {
+        if (intersects(e, s))
+            return true;
+    }
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& s, triangle<3, ScalarT> const& t)
+{
+    return intersects(t, s);
+}
+
+// sphere2in3 - plane3
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& s, plane<3, ScalarT> const& p)
+{
+    auto plane_s = tg::plane3(s.normal, s.center);
+
+    // no intersection if planes are parallel
+    if (plane_s.normal == p.normal && !contains(p, s.center))
+        return false;
+
+    // line intersection of two planes
+    auto insec = intersection(plane_s, p);
+    // closest point to circle center on the line
+    // auto cp = closest_point(insec, s.center);
+
+    if (distance_sqr(insec, s.center) <= pow2(s.radius))
+        return true;
+
+    return false;
+}
+
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& p, sphere<2, ScalarT, 3> const& s)
+{
+    return intersects(s, p);
+}
+
+// plane3 - cone3
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& p, cone<3, ScalarT> const& c)
+{
+    // cone base intersects the plane
+    if (intersects(c.base, p))
+        return true;
+
+    auto d_cone_tip = (dot(p.normal, apex_of(c)) - p.dis) >= 0;
+    auto d_cone_base = (dot(p.normal, c.base.center) - p.dis) >= 0;
+
+    // base and tip of the cone are on different sides of the plane
+    if (d_cone_tip != d_cone_base)
+        return true;
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(cone<3, ScalarT> const& c, plane<3, ScalarT> const& p)
+{
+    return intersects(p, c);
+}
+
 
 } // namespace tg
