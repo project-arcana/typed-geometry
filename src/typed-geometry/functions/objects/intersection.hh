@@ -2842,6 +2842,7 @@ template <class ScalarT>
     return intersects(b, a);
 }
 
+// box3 -plane3
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, plane<3, ScalarT> const& plane)
 {
@@ -2914,6 +2915,7 @@ template <class ScalarT>
     return intersects(box, triangle);
 }
 
+// box2 - sphere2
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<2, ScalarT> const& box, sphere<2, ScalarT> const& sphere)
 {
@@ -2999,15 +3001,10 @@ template <class ScalarT>
 
     plane<3, ScalarT> plane_t = plane_of(t);
 
-    // TODO: Implement via closest_point!
-    // auto cp = closest_point(s.center, t);
+    // check if the closest point on triangle to sphere center is inside the sphere
+    auto cp = closest_points(s.center, t);
 
-    // project sphere center onto triangle plane
-    auto dis = distance(s.center, plane_t);
-    auto proj_pos = s.center + dis * plane_t.normal;
-
-    // if proj_pos is within the triangle -> intersection exists
-    if (contains(t, proj_pos))
+    if (contains(s, cp.first) && contains(s, cp.second))
         return true;
 
     // triangle edge intersects sphere
@@ -3032,15 +3029,18 @@ template <class ScalarT>
 {
     auto plane_s = tg::plane3(s.normal, s.center);
 
+    // sphere center on plane
+    if (contains(p, s.center))
+        return true;
+
     // no intersection if planes are parallel
     if (plane_s.normal == p.normal && !contains(p, s.center))
         return false;
 
     // line intersection of two planes
     auto insec = intersection(plane_s, p);
-    // closest point to circle center on the line
-    // auto cp = closest_point(insec, s.center);
 
+    // if distance of plane intersection is inside the sphere, intersection exists
     if (distance_sqr(insec, s.center) <= pow2(s.radius))
         return true;
 

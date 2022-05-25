@@ -19,8 +19,23 @@ FUZZ_TEST("IntersectsPlane3Cone3")(tg::rng& rng)
     circ_pos += tg::uniform<tg::dir3>(rng) * tg::uniform(rng, shift_range).x;
 
     auto circ1 = tg::sphere2in3(circ_pos, rad, {1.f, 0.f, 0.f});
+    auto cone1 = tg::cone3(circ1, 3.f);
 
     CHECK(intersects(plane, circ1));
+    CHECK(intersects(plane, cone1));
+
+    // b) cone base and apex on different sides of the plane
+    tg::pos3 circ_pos2 = tg::uniform(rng, on_plane);
+    auto rad2 = tg::uniform(rng, scalar_range).x;
+    auto shift = tg::uniform(rng, scalar_range).x;
+    circ_pos2 += plane.normal * shift;
+
+    auto shift_range2 = tg::aabb1(shift + 0.1f, 2 * shift);
+    auto circ2 = tg::sphere2in3(circ_pos2, rad2, tg::dir3(.0f, 1.f, .0f));
+    auto cone2 = tg::cone3(circ2, -tg::uniform(rng, shift_range2).x);
+
+    CHECK(!intersects(plane, circ2));
+    CHECK(intersects(plane, cone2));
 }
 
 FUZZ_TEST("IntersectsSphere2in3Plane3")(tg::rng& rng)
@@ -29,8 +44,9 @@ FUZZ_TEST("IntersectsSphere2in3Plane3")(tg::rng& rng)
     auto plane = tg::plane3(tg::dir3(0.f, 1.f, 0.f), tg::pos3(0.f, 0.f, 0.f));
     auto scalar_range = tg::aabb1{0.5, 5.f};
     auto env_range = tg::aabb3{tg::pos3(-10.f, -10.f, -10.f), tg::pos3(10.f, 10.f, 10.f)};
+    auto rotation_range = tg::aabb1(0.f, 90.f);
 
-    // a) circle parallel to plane
+    // a) circle parallel to plane -> no intersection
     auto n = tg::uniform<tg::dir3>(rng);
     auto plane_pos = tg::uniform(rng, env_range);
     auto plane1 = tg::plane3(n, plane_pos);
@@ -38,7 +54,19 @@ FUZZ_TEST("IntersectsSphere2in3Plane3")(tg::rng& rng)
 
     CHECK(!intersects(circ1, plane1));
 
-    // b) TODO
+    // b) sphere center on plane -> intersection exists
+    auto plane_pos2 = tg::uniform(rng, env_range);
+    auto plane2 = tg::plane3(n, plane_pos2);
+
+    auto rot_mat = tg::rotation_mat3_of(tg::rotation_around(tg::degree(tg::uniform(rng, rotation_range).x), tg::uniform<tg::dir3>(rng)));
+    tg::vec3 non_parallel_n = rot_mat * n;
+    tg::dir3 n_orth = tg::normalize(tg::cross(n, non_parallel_n));
+
+    auto radius2 = tg::uniform(rng, scalar_range).x;
+    auto shift_range = tg::aabb1(0.1f, radius2);
+    auto circ2 = tg::sphere2in3(plane_pos2 + tg::uniform<tg::dir3>(rng) * tg::uniform(rng, shift_range).x, radius2, n_orth);
+
+    CHECK(intersects(circ2, plane2));
 }
 
 FUZZ_TEST("IntersectsTriangle3Sphere3")(tg::rng& rng)
@@ -69,7 +97,17 @@ FUZZ_TEST("IntersectsTriangle3Sphere3")(tg::rng& rng)
 
     CHECK(tg::intersects(t2, s));
 
-    // TODO: one more test: No point inside the sphere and no intersection exists
+    // c) no point inside the sphere and no intersection exists
+    // shift t2 in normal direction outside the sphere
+    auto n_t3 = tg::normalize(tg::cross(t2.pos1 - t2.pos0, t2.pos2 - t2.pos0));
+
+    pos0 += n_t3 * 2 * s.radius;
+    pos1 += n_t3 * 2 * s.radius;
+    pos2 += n_t3 * 2 * s.radius;
+
+    auto t3 = tg::triangle3(pos0, pos1, pos2);
+
+    CHECK(!tg::intersects(t3, s));
 }
 
 FUZZ_TEST("IntersectsSegment3Sphere3")(tg::rng& rng)
