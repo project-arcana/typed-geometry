@@ -3,6 +3,41 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectsTriangle3Halfspace3")(tg::rng& rng)
+{
+    // normal points away from the halfspace
+    tg::halfspace3 hs = tg::halfspace3({0.f, 1.f, 0.f}, tg::pos3::zero);
+    auto inside_hs = tg::aabb3({-10.f, -10.f, -10.f}, {10.f, 0.f, 10.f});
+    auto outside_hs = tg::aabb3({-10.f, 0.1f, -10.f}, {10.f, 10.f, 10.f});
+
+    // a)
+    auto pos0 = tg::uniform(rng, inside_hs);
+    auto pos1 = tg::uniform(rng, inside_hs);
+    auto pos2 = tg::uniform(rng, inside_hs);
+
+    auto t1 = tg::triangle(pos0, pos1, pos2);
+
+    CHECK(intersects(t1, hs));
+
+    // b)
+    auto pos0_2 = tg::uniform(rng, inside_hs);
+    auto pos1_2 = tg::uniform(rng, outside_hs);
+    auto pos2_2 = tg::uniform(rng, outside_hs);
+
+    auto t2 = tg::triangle3(pos0_2, pos1_2, pos2_2);
+
+    CHECK(intersects(t2, hs));
+
+    // c)
+    auto pos0_3 = tg::uniform(rng, outside_hs);
+    auto pos1_3 = tg::uniform(rng, outside_hs);
+    auto pos2_3 = tg::uniform(rng, outside_hs);
+
+    auto t3 = tg::triangle3(pos0_3, pos1_3, pos2_3);
+
+    CHECK(!intersects(t3, hs));
+}
+
 FUZZ_TEST("IntersectsPlane3Cone3")(tg::rng& rng)
 {
     // xz-plane

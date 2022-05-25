@@ -3078,5 +3078,20 @@ template <class ScalarT>
     return intersects(p, c);
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, halfspace<3, ScalarT> const hs)
+{
+    if ((dot(hs.normal, t.pos0) - hs.dis <= 0) || (dot(hs.normal, t.pos1) - hs.dis <= 0) || (dot(hs.normal, t.pos2) - hs.dis <= 0))
+        return true;
+
+    return false;
+}
+
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const hs, triangle<3, ScalarT> const& t)
+{
+    return intersects(t, hs);
+}
 
 } // namespace tg
