@@ -1,7 +1,203 @@
-#include <nexus/fuzz_test.hh>
 #include <nexus/ext/tg-approx.hh>
+#include <nexus/fuzz_test.hh>
 
 #include <typed-geometry/tg-std.hh>
+
+
+FUZZ_TEST("IntersectionSegment3Box3")(tg::rng& rng)
+{
+    // enlarged unit box
+    tg::aabb3 bb = {{-2.0f, -2.0f, -2.0f}, {2.0f, 2.0f, 2.0}};
+    tg::box3 box = tg::box3(bb);
+
+    tg::aabb3 above_box = {{-2.0f, 2.5f, -2.0f}, {2.0f, 5.0f, 2.0f}};
+    tg::aabb3 below_box = {{-2.0f, -5.0f, -2.0f}, {2.0f, -2.5f, 2.0f}};
+
+    { // a) intersection exists, segment vertices outside of box
+        auto p1 = tg::uniform(rng, above_box);
+        auto p2 = tg::uniform(rng, below_box);
+        tg::segment3 s1 = {p1, p2};
+
+        CHECK(tg::intersection(s1, box).has_value());
+    }
+
+    { // b) One point of segment inside the box and one point outside of the box
+        auto p3 = tg::uniform(rng, bb);
+        auto p4 = tg::uniform(rng, below_box);
+        tg::segment3 s2 = {p3, p4};
+
+        auto insec2 = tg::intersection(s2, box);
+
+        CHECK(insec2.has_value());
+        CHECK(insec2.value().pos0 == s2.pos0);
+    }
+
+    { // c) both points inside of box
+        auto p5 = tg::uniform(rng, bb);
+        auto p6 = tg::uniform(rng, bb);
+        tg::segment3 s3 = {p5, p6};
+
+        auto insec3 = tg::intersection(s3, box);
+
+        CHECK(insec3.has_value());
+        CHECK(insec3.value().pos0 == s3.pos0);
+        CHECK(insec3.value().pos1 == s3.pos1);
+    }
+}
+
+FUZZ_TEST("IntersectionSegment3Triangle3")(tg::rng& rng)
+{
+    tg::aabb3 tbb = {{-10.0f, -10.0f, -10.0f}, {10.0f, 10.0f, 10.0f}};
+    tg::triangle3 t1 = tg::triangle3(tg::uniform(rng, tbb), tg::uniform(rng, tbb), tg::uniform(rng, tbb));
+
+    tg::vec3 normal_t1 = tg::cross(t1.pos1 - t1.pos0, t1.pos2 - t1.pos0);
+    tg::pos3 center_t1 = (1.0f / 3.0f) * (t1.pos0 + t1.pos1 + t1.pos2);
+
+    auto p1 = center_t1 + normal_t1;
+    auto p2 = center_t1 - normal_t1;
+    tg::segment s1 = {p1, p2};
+
+    CHECK(tg::intersection(s1, t1).has_value());
+}
+
+FUZZ_TEST("IntersectionTriangle3Triangle3")(tg::rng& rng)
+{
+    tg::triangle3 t1 = {tg::pos3(-1.0f, 0.0f, 2.0f), tg::pos3(2.0f, 0.0f, -1.0f), tg::pos3(-1.0f, 0.0f, -1.0f)};
+
+    { // a) intersection with only one segment of each triangle
+        tg::triangle3 t2 = {tg::pos3(0.0f, -1.0f, 0.0f), tg::pos3(0.0f, 1.0f, 0.0f), tg::pos3(-5.0f, -1.0f, 0.0f)};
+
+        auto insec = tg::intersection(t1, t2);
+
+        CHECK(insec.has_value()); // How to further check if the segment is correct?
+    }
+
+    { // b) no intersection
+        tg::aabb3 above_plane = tg::aabb3({-15.0f, 0.0f, -15.0f}, {15.0f, 15.0f, 15.0f});
+
+        auto pos1 = tg::uniform(rng, above_plane);
+        auto pos2 = tg::uniform(rng, above_plane);
+        auto pos3 = tg::uniform(rng, above_plane);
+        tg::triangle3 t3 = {pos1, pos2, pos3};
+
+        CHECK(!tg::intersection(t1, t3).has_value());
+    }
+
+    { // c) intersection in one point
+        tg::aabb3 tbb = {{-10.0f, 0.0f, -10.0f}, {10.0f, 0.0f, 10.0f}};
+        // t4 in xz-plane
+        tg::triangle3 t4 = {tg::uniform(rng, tbb), tg::uniform(rng, tbb), tg::uniform(rng, tbb)};
+        auto n_t4 = tg::normalize(tg::cross(t4.pos1 - t4.pos0, t4.pos2 - t4.pos0));
+
+        auto pos4 = t4.pos0 + tg::vec3(0, 2.0f, 0);
+        auto pos5 = t4.pos0 - tg::vec3(0, 2.0f, 0);
+        auto pos6 = t4.pos0 + tg::cross(t4.pos1 - t4.pos0, n_t4);
+
+        tg::triangle3 t5 = tg::triangle(pos4, pos5, pos6);
+
+        CHECK(tg::intersection(t4, t5).has_value());
+    }
+}
+
+
+FUZZ_TEST("IntersectionSegment3ConvexShapes3")(tg::rng& rng)
+{
+    // segment3 - capsule3
+
+    tg::pos3 origin = tg::pos3(0.0f);
+    auto capsule = tg::capsule3({0, -1, 0}, {0, 1, 0}, 1.0);
+
+    { // a) seg: both points outside, but intersection exists
+        // intersection exists if segment passes (for ex.) through origin
+
+        auto dir = tg::uniform<tg::dir3>(rng);
+        // extent by factor -1 in other direction to get pos1 of the segment that passes through the origin with a random orientation
+        auto pos0 = origin + tg::vec3(5 * dir);
+        auto pos1 = origin - tg::vec3(5 * dir);
+        tg::segment3 rng_segment = {pos0, pos1};
+
+        CHECK(tg::intersection(rng_segment, capsule).has_value());
+    }
+
+    { // b) seg: both points outside, but no intersection exists
+        tg::aabb1 midaxis_range = tg::aabb1(-0.9f, 0.9f);
+        auto pos_midaxis = tg::pos3(0.0f, tg::uniform(rng, midaxis_range).x, 0.0f);
+        auto rng_normal = tg::uniform<tg::dir2>(rng);
+        tg::dir3 rng_normal3 = tg::dir3(rng_normal.x, 0.0f, rng_normal.y);
+
+        auto pos_surface = pos_midaxis + 1.1f * rng_normal3;
+        tg::dir3 tangent_vector = tg::dir3(-rng_normal.y, 0.0f, rng_normal.x);
+
+        tg::aabb1 segment_range = tg::aabb1(0.0f, 10.0f);
+
+        // points outside of capsule
+        auto pos0 = pos_surface + tg::uniform(rng, segment_range).x * tangent_vector;
+        auto pos1 = pos_surface - tg::uniform(rng, segment_range).x * tangent_vector;
+
+        // segment parallel to the tangent at a surface point -> no intersection
+        tg::segment3 rng_segment = {pos0, pos1};
+
+        CHECK(!tg::intersection(rng_segment, capsule).has_value());
+    }
+
+    { // c) seg: both points inside
+        auto pos0_2 = tg::uniform(rng, capsule);
+        auto pos1_2 = tg::uniform(rng, capsule);
+        tg::segment3 rng_segment_inside = {pos0_2, pos1_2};
+
+        CHECK(tg::intersection(rng_segment_inside, capsule).has_value());
+    }
+
+    { // d) seg: one point inside, one point outside
+        auto pos0 = tg::uniform(rng, capsule);
+
+        // point outside of the capsule
+        auto pos1 = tg::uniform(rng, capsule) + 2.0 * tg::uniform<tg::dir3>(rng);
+        tg::segment3 rng_segment = {pos0, pos1};
+
+        CHECK(tg::intersection(rng_segment, capsule).has_value());
+    }
+}
+
+FUZZ_TEST("IntersectionPlane3Triangle3")(tg::rng& rng)
+{
+    // plane is the xy-plane
+    tg::plane3 plane = tg::plane3(tg::dir3(0, 1, 0), tg::pos3(0, 0, 0));
+
+    // random triangle with intersection
+    tg::aabb3 above_plane = tg::aabb3({-15.0f, 0.0f, -15.0f}, {15.0f, 15.0f, 15.0f});
+    tg::aabb3 below_plane = tg::aabb3({-15.0f, -15.0f, -15.0f}, {15.0f, 0.0f, 15.0f});
+
+    { // a) one point above plane and two points below the plane
+        auto pos0 = tg::uniform(rng, above_plane);
+        auto pos1 = tg::uniform(rng, below_plane);
+        auto pos2 = tg::uniform(rng, below_plane);
+
+        tg::triangle3 triangle_1 = tg::triangle3(pos0, pos1, pos2);
+
+        CHECK(tg::intersection(plane, triangle_1).has_value());
+    }
+
+    { // b) all points below plane
+        auto pos0 = tg::uniform(rng, below_plane);
+        auto pos1 = tg::uniform(rng, below_plane);
+        auto pos2 = tg::uniform(rng, below_plane);
+
+        tg::triangle3 triangle_2 = tg::triangle(pos0, pos1, pos2);
+
+        CHECK(!tg::intersection(plane, triangle_2).has_value());
+    }
+
+    { // c) all points above plane
+        auto pos0 = tg::uniform(rng, above_plane);
+        auto pos1 = tg::uniform(rng, above_plane);
+        auto pos2 = tg::uniform(rng, above_plane);
+
+        tg::triangle3 triangle_3 = tg::triangle3(pos0, pos1, pos2);
+
+        CHECK(!tg::intersection(plane, triangle_3).has_value());
+    }
+}
 
 FUZZ_TEST("IntersectionRay3Sphere3")(tg::rng& rng)
 {
@@ -201,6 +397,18 @@ TEST("IntersectionSphere3Sphere3")
     }
 }
 
+TEST("IntersectionSegment3Triangle3")
+{
+    // t in xz-plane
+    tg::triangle3 t = {{-1.0f, 0.0f, -1.0f}, {-1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, -1.0f}};
+
+    // 1st case: intersection of segment through origin
+    tg::segment3 s = {{-1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}};
+
+    auto insec = tg::intersection(s, t);
+    CHECK(insec.has_value());
+}
+
 TEST("IntersectionCircle2Circle2")
 {
     { // touching circles 1 (side-by-side)
@@ -375,7 +583,7 @@ FUZZ_TEST("Triangle - Intersection")(tg::rng& rng)
     auto a = uniform(rng, -2.f, 2.f);
     auto b = uniform(rng, -2.f, 2.f);
     auto c = 1 - a - b;
-    auto p2 = t0[{a,b,c}];
+    auto p2 = t0[{a, b, c}];
     auto rdir2 = normalize(p2 - origin);
     auto ray2 = tg::ray(origin, rdir2);
     auto nray2 = tg::ray(origin, -rdir2);
