@@ -2975,7 +2975,7 @@ template <class ScalarT>
     return intersects(box, hs);
 }
 
-// NEW
+// segment3 - halfspace3
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(segment<3, ScalarT> const& s, halfspace<3, ScalarT> const& hs)
 {
@@ -3078,6 +3078,7 @@ template <class ScalarT>
     return intersects(p, c);
 }
 
+// triangle3 - halfspace3
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, halfspace<3, ScalarT> const hs)
 {
@@ -3087,11 +3088,71 @@ template <class ScalarT>
     return false;
 }
 
-
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const hs, triangle<3, ScalarT> const& t)
 {
     return intersects(t, hs);
 }
+
+// sphere2in3 - triangle3
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& s, triangle<3, ScalarT> const& t)
+{
+    // circle inside triangle or triangle vertex inside the circle
+    if (contains(s, centroid_of(t)) || contains(s, t.pos0) || contains(s, t.pos1) || contains(s, t.pos2))
+        return true;
+
+    // area of triangle intersects with circle
+    auto cp = closest_points(s.center, t);
+
+    if (contains(s, cp.first) && contains(s, cp.second))
+        return true;
+
+    // triangle edge intersects with circle
+    for (auto const& e : edges_of(t))
+    {
+        if (intersects(e, s))
+            return true;
+    }
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, sphere<2, ScalarT, 3> const& s)
+{
+    return intersects(s, t);
+}
+
+// cone3 - triangle3
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(cone<3, ScalarT> const& c, triangle<3, ScalarT> const& t)
+{
+    auto mid_axis = tg::segment<3, ScalarT>(c.base.center, apex_of(c));
+
+    // area of the triangle intersects with cone
+    if (intersects(mid_axis, t))
+        return true;
+
+    // triangle intersects with the cone base
+    if (intersects(c.base, t))
+        return true;
+
+    // at least one segment of triangle intersects with cone
+    for (auto const& e : edges_of(t))
+    {
+        if (intersects(e, c))
+            return true;
+    }
+
+    return false;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, cone<3, ScalarT> const& c)
+{
+    return intersects(c, t);
+}
+
 
 } // namespace tg

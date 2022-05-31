@@ -3,6 +3,90 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectsSphere2in3Triangle3")(tg::rng& rng)
+{
+    auto circ = tg::sphere2in3({0, 0, 0}, 1.f, {0.f, 1.f, 0.f});
+    auto above_circ = tg::aabb3({-0.5f, 0.1f, -0.5f}, {0.5f, 2.f, 0.5f});
+    auto below_circ = tg::aabb3({-0.5f, -2.f, -0.5f}, {0.5f, -0.1f, -0.5f});
+    auto env = tg::aabb3({-10.f, -10.f, -10.f}, {10.f, 10.f, 10.f});
+
+    // a) triangle area intersects with circle
+    auto pos0 = tg::pos3(-2.f, -0.5f, 0.f);
+    auto pos1 = tg::pos3(2.f, -0.5f, 0.f);
+    auto pos2 = tg::pos3(0.f, 1.f, 0.f);
+
+    auto t1 = tg::triangle3(pos0, pos1, pos2);
+
+    CHECK(tg::intersects(t1, circ));
+
+    // b) at least one triangle edge intersects with circle
+    pos0 = tg::uniform(rng, above_circ);
+    pos1 = tg::uniform(rng, below_circ);
+    pos2 = tg::uniform(rng, env);
+
+    auto t2 = tg::triangle3(pos0, pos1, pos2);
+
+    CHECK(tg::intersects(t2, circ));
+
+    // c) circ in plane of triangle and overlapping
+    pos0 = tg::uniform(rng, env);
+    pos1 = tg::uniform(rng, env);
+    pos2 = tg::uniform(rng, env);
+
+    auto t3 = tg::triangle3(pos0, pos1, pos2);
+
+    auto circ2 = tg::sphere2in3(tg::centroid_of(t3), tg::distance(pos0, pos1), tg::normalize(tg::cross(pos1 - pos0, pos2 - pos0)));
+
+    CHECK(tg::intersects(t3, circ2));
+
+    // d) no intersection (all triangle points above/below circ-plane)
+    pos0 = tg::uniform(rng, above_circ);
+    pos1 = tg::uniform(rng, above_circ);
+    pos2 = tg::uniform(rng, above_circ);
+
+    auto t4 = tg::triangle(pos0, pos1, pos2);
+
+    CHECK(!tg::intersects(t4, circ));
+}
+
+FUZZ_TEST("IntersectsCone3Triangle3")(tg::rng& rng)
+{
+    auto circ = tg::sphere2in3({0, 0, 0}, 1.f, {0.f, 1.f, 0.f});
+    auto cone = tg::cone3(circ, 2.f);
+
+    tg::aabb3 cone_box = tg::aabb3({-0.5f, 0.1f, -0.5f}, {0.5f, 2.f, 0.5f});
+    tg::aabb3 cone_box_low = tg::aabb3(cone_box.min - tg::vec3{0.f, 2.1f, 0.f}, cone_box.max - tg::vec3{0.f, 2.1f, 0.f});
+    tg::aabb3 cone_box_ext = tg::aabb3(cone_box_low.min, cone_box.max);
+    tg::aabb3 cone_box_left = tg::aabb3(cone_box.min - tg::vec3{1.1f, 0.f, 0.f}, cone_box.max - tg::vec3{1.1f, 0.f, 0.f});
+
+    // a) triangle intersects with cone base
+    auto pos0 = tg::uniform(rng, cone_box);
+    auto pos1 = tg::uniform(rng, cone_box_low);
+    auto pos2 = tg::uniform(rng, cone_box_ext);
+
+    auto t1 = tg::triangle(pos0, pos1, pos2);
+
+    CHECK(tg::intersects(t1, cone));
+
+    // b) area of triangle intersects with cone, but not the base
+    auto pos0_1 = tg::pos3{0.f, 1.f, -1.f};
+    auto pos1_1 = tg::pos3{0.f, 1.f, 1.f};
+    auto pos2_1 = tg::uniform(rng, cone_box_left);
+
+    auto t2 = tg::triangle(pos0_1, pos1_1, pos2_1);
+
+    CHECK(tg::intersects(t2, cone));
+
+    // c) no intersection (all triangle points below cone-base)
+    pos0 = tg::uniform(rng, cone_box_low);
+    pos1 = tg::uniform(rng, cone_box_low);
+    pos2 = tg::uniform(rng, cone_box_low);
+
+    auto t3 = tg::triangle(pos0, pos1, pos2);
+
+    CHECK(!intersects(t3, cone));
+}
+
 FUZZ_TEST("IntersectsTriangle3Halfspace3")(tg::rng& rng)
 {
     // normal points away from the halfspace
