@@ -3154,5 +3154,70 @@ template <class ScalarT>
     return intersects(c, t);
 }
 
+// segment3 - halfspace3
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, halfspace<3, ScalarT> const& hs)
+{
+    // both segment points inside the halfspace
+    if (contains(hs, s.pos0) && contains(hs, s.pos1))
+        return {s.pos0, s.pos1};
+
+    // check if there is an intersection with the plane of the halfspace
+    auto insec = intersection(s, plane_of(hs));
+
+    if (!insec.has_value())
+        return {};
+
+    if (contains(hs, s.pos0))
+        return {s.pos0, insec.value()};
+
+    if (contains(hs, s.pos1))
+        return {insec.value(), s.pos1};
+
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(halfspace<3, ScalarT> const& hs, segment<3, ScalarT> const& s)
+{
+    return intersection(s, hs);
+}
+
+// segment3 - sphere2in3
+template <class ScalarT>
+[[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(segment<3, ScalarT> const& seg, sphere<2, ScalarT, 3> const& s)
+{
+    auto plane = tg::plane3(s.normal, s.center);
+    // check if both seg points lie on same side of the circle
+    if (!intersects(s, plane))
+        return {};
+
+    // seg points on different sides of the circle
+    auto insec = intersection(seg, plane);
+    if (!insec.has_value())
+        return {};
+
+    if (distance_sqr(insec.value(), s.center) <= pow2(s.radius))
+        return insec.value();
+
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(sphere<2, ScalarT, 3> const& s, segment<3, ScalarT> const& seg)
+{
+    return intersection(seg, s);
+}
+
+// segment3 - hemisphere3
+// template <class ScalarT>
+//[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, hemisphere<3, ScalarT> const& hs)
+//{
+//    if (contains(hs, s.pos0) && contains(hs, s.pos1))
+//        return {s.pos0, s.pos1};
+//
+//
+//}
+
 
 } // namespace tg
