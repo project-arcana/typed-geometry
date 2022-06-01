@@ -3027,14 +3027,14 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& s, plane<3, ScalarT> const& p)
 {
-    auto plane_s = tg::plane3(s.normal, s.center);
+    auto plane_s = tg::plane<3, ScalarT>(s.normal, s.center);
 
     // sphere center on plane
     if (contains(p, s.center))
         return true;
 
     // no intersection if planes are parallel
-    if (plane_s.normal == p.normal && !contains(p, s.center))
+    if ((plane_s.normal == p.normal || plane_s.normal == -p.normal) && !contains(p, s.center))
         return false;
 
     // line intersection of two planes
