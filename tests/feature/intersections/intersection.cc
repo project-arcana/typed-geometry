@@ -3,6 +3,101 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectionSegment3Sphere2in3")(tg::rng& rng)
+{
+    auto circle = tg::sphere2in3({0.f, 0.f, 0.f}, 1.f, {0.f, 1.f, 0.f});
+    auto below_circle = tg::aabb3({-5.f, -5.f, -5.f}, {5.f, -0.1f, 5.f});
+    auto scalar_range = tg::aabb1({1.f}, {5.f});
+
+    { // a) both seg points below the circle -> no intersection
+        tg::pos3 pos0 = tg::uniform(rng, below_circle);
+        tg::pos3 pos1 = tg::uniform(rng, below_circle);
+
+        auto seg = tg::segment3{pos0, pos1};
+
+        auto insec = tg::intersection(seg, circle);
+
+        CHECK(!insec.has_value());
+    }
+
+    { // b) one seg point below the circle and one above with intersection
+
+        auto rng_dir = tg::uniform<tg::dir3>(rng);
+
+        tg::pos3 pos0 = tg::pos3::zero + tg::uniform(rng, scalar_range).x * rng_dir;
+        tg::pos3 pos1 = tg::pos3::zero - tg::uniform(rng, scalar_range).x * rng_dir;
+
+        auto seg = tg::segment3{pos0, pos1};
+
+        auto insec = tg::intersection(seg, circle);
+
+        CHECK(insec.has_value());
+        CHECK(distance(insec.value(), tg::pos3::zero) == nx::approx(0.f));
+    }
+
+    { // c) segment in plane of circle (degenerated)
+        tg::pos3 pos0 = tg::pos3::zero + tg::uniform(rng, scalar_range).x * tg::vec3{1.f, 0, 1.f};
+        tg::pos3 pos1 = tg::pos3::zero + tg::uniform(rng, scalar_range).x * tg::vec3{-1.f, 0, -1.f};
+
+        auto seg = tg::segment3{pos0, pos1};
+
+        auto insec = tg::intersection(seg, circle);
+
+        CHECK(!insec.has_value());
+    }
+}
+
+FUZZ_TEST("IntersectionSegment3Halfspace3")(tg::rng& rng)
+{
+    auto env = tg::aabb3({-10.f, -10.f, -10.f}, {10.f, 10.f, 10.f});
+    auto scalar_range = tg::aabb1({1.f}, {5.f});
+
+    auto hs_pos = tg::uniform(rng, env);
+    auto hs = tg::halfspace3(tg::uniform<tg::dir3>(rng), hs_pos);
+
+    { // a) one point inside and one point outside of the halfspace
+        tg::pos3 pos1 = hs_pos + (hs.normal * tg::uniform(rng, scalar_range).x);
+        tg::pos3 pos2 = hs_pos - (hs.normal * tg::uniform(rng, scalar_range).x);
+
+        auto seg = tg::segment3{pos1, pos2};
+
+        auto insec = tg::intersection(seg, hs);
+
+        CHECK(insec.has_value());
+        CHECK(distance(insec.value().pos0, hs_pos) == nx::approx(0.f));
+        CHECK(distance(insec.value().pos1, pos2) == nx::approx(0.f));
+    }
+
+    { // b) both points inside of the halfspace
+        auto rng_dir = tg::uniform<tg::dir3>(rng);
+        auto in_plane = tg::cross(rng_dir, hs.normal);
+
+        tg::pos3 pos1 = hs_pos + tg::uniform(rng, scalar_range).x * in_plane - tg::uniform(rng, scalar_range).x * hs.normal;
+        tg::pos3 pos2 = hs_pos - tg::uniform(rng, scalar_range).x * in_plane - tg::uniform(rng, scalar_range).x * hs.normal;
+
+        auto seg = tg::segment3{pos1, pos2};
+
+        auto insec = tg::intersection(seg, hs);
+
+        CHECK(insec.has_value());
+        CHECK(distance(insec.value().pos0, pos1) == nx::approx(0.f));
+        CHECK(distance(insec.value().pos1, pos2) == nx::approx(0.f));
+    }
+
+    { // c) both points outside of the halfspace -> no intersection
+        auto rng_dir = tg::uniform<tg::dir3>(rng);
+        auto in_plane = tg::cross(rng_dir, hs.normal);
+
+        tg::pos3 pos1 = hs_pos + tg::uniform(rng, scalar_range).x * in_plane + tg::uniform(rng, scalar_range).x * hs.normal;
+        tg::pos3 pos2 = hs_pos - tg::uniform(rng, scalar_range).x * in_plane + tg::uniform(rng, scalar_range).x * hs.normal;
+
+        auto seg = tg::segment3{pos1, pos2};
+
+        auto insec = tg::intersection(seg, hs);
+
+        CHECK(!insec.has_value());
+    }
+}
 
 FUZZ_TEST("IntersectionSegment3Box3")(tg::rng& rng)
 {
