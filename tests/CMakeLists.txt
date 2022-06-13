@@ -18,5 +18,5 @@ target_link_libraries(tests-typed-geometry PUBLIC
 )
 
 if (NOT MSVC)
-    target_compile_options(tests-typed-geometry PUBLIC -mavx2 -mbmi2 -mlzcnt)
+    target_compile_options(tests-typed-geometry PUBLIC -msse2 -msse3 -mavx2 -mbmi -mbmi2 -mlzcnt)
 endif()

@@ -185,16 +185,16 @@ fixed_uint<w_res> mul(T0 lhs, T1 rhs);
 // utility
 
 template <int w>
-[[nodiscard]] constexpr u64 leading_zeros_count(fixed_uint<w> const& v);
+[[nodiscard]] u64 leading_zeros_count(fixed_uint<w> const& v);
 
 template <int w>
-[[nodiscard]] constexpr u64 leading_ones_count(fixed_uint<w> const& v);
+[[nodiscard]] u64 leading_ones_count(fixed_uint<w> const& v);
 
 template <int w>
-[[nodiscard]] constexpr u64 trailing_zeros_count(fixed_uint<w> const& v);
+[[nodiscard]] u64 trailing_zeros_count(fixed_uint<w> const& v);
 
 template <int w>
-[[nodiscard]] constexpr u64 trailing_ones_count(fixed_uint<w> const& v);
+[[nodiscard]] u64 trailing_ones_count(fixed_uint<w> const& v);
 
 template <int w>
 [[nodiscard]] constexpr bool is_zero(fixed_int<w> const& v);
@@ -1301,7 +1301,7 @@ constexpr fixed_uint<w>& operator<<=(fixed_uint<w>& lhs, int shift) noexcept
 // utility
 
 template <int w>
-constexpr u64 leading_zeros_count(fixed_uint<w> const& v)
+u64 leading_zeros_count(fixed_uint<w> const& v)
 {
     u64 zeros = 0;
     if constexpr (w > 3)
@@ -1326,7 +1326,7 @@ constexpr u64 leading_zeros_count(fixed_uint<w> const& v)
 }
 
 template <int w>
-constexpr u64 leading_ones_count(fixed_uint<w> const& v)
+u64 leading_ones_count(fixed_uint<w> const& v)
 {
     u64 ones = 0;
     if constexpr (w > 3)
@@ -1351,7 +1351,7 @@ constexpr u64 leading_ones_count(fixed_uint<w> const& v)
 }
 
 template <int w>
-constexpr u64 trailing_zeros_count(fixed_uint<w> const& v)
+u64 trailing_zeros_count(fixed_uint<w> const& v)
 {
     u64 zeros = 0;
     zeros += _tzcnt_u64(v.d[0]);
@@ -1377,7 +1377,7 @@ constexpr u64 trailing_zeros_count(fixed_uint<w> const& v)
 }
 
 template <int w>
-constexpr u64 trailing_ones_count(fixed_uint<w> const& v)
+u64 trailing_ones_count(fixed_uint<w> const& v)
 {
     u64 ones = 0;
     ones += _tzcnt_u64(~v.d[0]);
