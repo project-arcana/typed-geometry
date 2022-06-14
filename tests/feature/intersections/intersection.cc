@@ -3,11 +3,39 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectionSegment3Hemisphere3")(tg::rng& rng)
+{
+    // upper part of the unit sphere
+    auto hemis = tg::hemisphere3({0.f, 0.f, 0.f}, 1.f, {0.f, 1.f, 0.f});
+    auto below_hemis = tg::aabb3({-0.5f, -5.f, -0.5f}, {0.5f, -0.1f, 0.5f});
+    auto above_hemis_base = tg::aabb3({-0.5f, 0.1f, -0.5f}, {0.5f, 5.f, 0.5f});
+    auto scalar_range = tg::aabb1(1.f, 5.f);
+
+    { // a) intersection with the circle base
+        auto pos0 = tg::uniform(rng, below_hemis);
+        auto pos1 = tg::uniform(rng, above_hemis_base);
+
+        auto seg = tg::segment3{pos0, pos1};
+
+        auto insec = tg::intersection(seg, hemis);
+
+        CHECK(insec.has_value());
+    }
+
+    {
+        // b) intersection with sphere extension (and with hemisphere part)
+
+    }
+
+    { // c) intersection with sphere extension (but not with the hemisphere)
+    }
+}
+
 FUZZ_TEST("IntersectionSegment3Sphere2in3")(tg::rng& rng)
 {
     auto circle = tg::sphere2in3({0.f, 0.f, 0.f}, 1.f, {0.f, 1.f, 0.f});
     auto below_circle = tg::aabb3({-5.f, -5.f, -5.f}, {5.f, -0.1f, 5.f});
-    auto scalar_range = tg::aabb1({1.f}, {5.f});
+    auto scalar_range = tg::aabb1(1.f, 5.f);
 
     { // a) both seg points below the circle -> no intersection
         tg::pos3 pos0 = tg::uniform(rng, below_circle);

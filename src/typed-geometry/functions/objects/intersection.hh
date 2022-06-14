@@ -3214,7 +3214,7 @@ template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, hemisphere<3, ScalarT> const& hs)
 {
     if (contains(hs, s.pos0) && contains(hs, s.pos1))
-        return {s.pos0, s.pos1};
+        return segment<3, ScalarT>{s.pos0, s.pos1};
 
     pos<3, ScalarT> insec1;
     pos<3, ScalarT> insec2;
@@ -3234,28 +3234,28 @@ template <class ScalarT>
         insec1 = intersection(base, s).value();
 
         if (contains(hs, s.pos0))
-            return {insec1, s.pos0};
+            return segment<3, ScalarT>{insec1, s.pos0};
 
         if (contains(hs, s.pos1))
-            return {insec1, s.pos1};
+            return segment<3, ScalarT>{insec1, s.pos1};
 
         // insec2
         // find point below the base plane of the hemisphere
-        line<3, ScalarT> l = (distance(base, s.po0) <= 0) ? line<3, ScalarT>(s.pos0, normalize(s.pos1 - s.pos0))
-                                                          : line<3, ScalarT>(s.pos1, normalize(s.pos0 - s.pos1));
+        line<3, ScalarT> l = (distance(base, s.pos0) <= 0) ? line<3, ScalarT>(s.pos0, normalize(s.pos1 - s.pos0))
+                                                           : line<3, ScalarT>(s.pos1, normalize(s.pos0 - s.pos1));
 
-        auto param = intersection_parameters(l, sp);
+        auto insec = intersection(s, sp);
 
-        if (!param.has_value())
+        if (!insec.has_value())
             return {};
 
         // if (contains(sp, s.pos0) && param.has_value())
         //     insec2 = l[param.value().start];
 
         // else
-        insec2 = l[param.value().end];
+        insec2 = (distance(base, insec.value().pos0) > 0) ? insec.value().pos0 : insec.value().pos1;
 
-        return {insec1, insec2};
+        return segment<3, ScalarT>{insec1, insec2};
     }
 
     return {};
