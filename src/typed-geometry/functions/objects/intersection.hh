@@ -3160,7 +3160,7 @@ template <class ScalarT>
 {
     // both segment points inside the halfspace
     if (contains(hs, s.pos0) && contains(hs, s.pos1))
-        return {s.pos0, s.pos1};
+        return segment<3, ScalarT>{s.pos0, s.pos1};
 
     // check if there is an intersection with the plane of the halfspace
     auto insec = intersection(s, plane_of(hs));
@@ -3169,10 +3169,10 @@ template <class ScalarT>
         return {};
 
     if (contains(hs, s.pos0))
-        return {s.pos0, insec.value()};
+        return segment<3, ScalarT>{insec.value(), s.pos0};
 
     if (contains(hs, s.pos1))
-        return {insec.value(), s.pos1};
+        return segment<3, ScalarT>{insec.value(), s.pos1};
 
     return {};
 }
@@ -3210,14 +3210,77 @@ template <class ScalarT>
 }
 
 // segment3 - hemisphere3
-// template <class ScalarT>
-//[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, hemisphere<3, ScalarT> const& hs)
-//{
-//    if (contains(hs, s.pos0) && contains(hs, s.pos1))
-//        return {s.pos0, s.pos1};
-//
-//
-//}
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, hemisphere<3, ScalarT> const& hs)
+{
+    if (contains(hs, s.pos0) && contains(hs, s.pos1))
+        return segment<3, ScalarT>{s.pos0, s.pos1};
+
+    pos<3, ScalarT> insec1;
+    pos<3, ScalarT> insec2;
+
+    auto sp = sphere<3, ScalarT>(hs.center, hs.radius);
+    auto base = sphere<2, ScalarT, 3>(hs.center, hs.radius, hs.normal);
+
+    if (!intersects(s, sp))
+        return {};
+
+    // both segment points above the base plane
+    if ((distance(base, s.pos0) > 0) && (distance(base, s.pos1) > 0))
+        return intersection(s, sp);
+
+    if (intersects(base, s))
+    {
+        insec1 = intersection(base, s).value();
+
+        if (contains(hs, s.pos0))
+            return segment<3, ScalarT>{insec1, s.pos0};
+
+        if (contains(hs, s.pos1))
+            return segment<3, ScalarT>{insec1, s.pos1};
+
+        // insec2
+        // find point below the base plane of the hemisphere
+        line<3, ScalarT> l = (distance(base, s.pos0) <= 0) ? line<3, ScalarT>(s.pos0, normalize(s.pos1 - s.pos0))
+                                                           : line<3, ScalarT>(s.pos1, normalize(s.pos0 - s.pos1));
+
+        auto insec = intersection(s, sp);
+
+        if (!insec.has_value())
+            return {};
+
+        // if (contains(sp, s.pos0) && param.has_value())
+        //     insec2 = l[param.value().start];
+
+        // else
+        insec2 = (distance(base, insec.value().pos0) > 0) ? insec.value().pos0 : insec.value().pos1;
+
+        return segment<3, ScalarT>{insec1, insec2};
+    }
+
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(hemisphere<3, ScalarT> const& hs, segment<3, ScalarT> const& s)
+{
+    return intersection(s, hs);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<sphere<2, ScalarT, 3>> intersection(sphere<3, ScalarT> const& s, plane<3, ScalarT> const& p)
+{
+    if (!intersects(s, p))
+        return {};
+
+    // project sphere center onto plane
+    tg::pos<3, ScalarT> disk_center = project(s.center, p);
+
+    // find radius
+    // line with random orientation in plane -> intersection with sphere boundary -> distance to disk_center = radius
+
+    return {};
+}
 
 
 } // namespace tg
