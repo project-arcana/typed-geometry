@@ -10,6 +10,8 @@ FUZZ_TEST("IntersectionSegment3Hemisphere3")(tg::rng& rng)
     auto below_hemis = tg::aabb3({-0.5f, -5.f, -0.5f}, {0.5f, -0.1f, 0.5f});
     auto above_hemis_base = tg::aabb3({-0.5f, 0.1f, -0.5f}, {0.5f, 5.f, 0.5f});
     auto scalar_range = tg::aabb1(1.f, 5.f);
+    auto short_scalar_range = tg::aabb1(0.1f, 0.99f);
+    auto sphere_hemis = tg::sphere3(hemis.center, hemis.radius);
 
     { // a) intersection with the circle base
         auto pos0 = tg::uniform(rng, below_hemis);
@@ -22,12 +24,46 @@ FUZZ_TEST("IntersectionSegment3Hemisphere3")(tg::rng& rng)
         CHECK(insec.has_value());
     }
 
-    {
-        // b) intersection with sphere extension (and with hemisphere part)
+    { // b) intersection with sphere extension (and with hemisphere part)
+        auto rng_dir = tg::uniform<tg::dir3>(rng);
+        auto pos0 = hemis.center + tg::uniform(rng, scalar_range).x * rng_dir;
+        auto pos1 = hemis.center - tg::uniform(rng, scalar_range).x * rng_dir;
 
+        auto seg = tg::segment3{pos0, pos1};
+
+        auto insec = tg::intersection(seg, hemis);
+
+        CHECK(insec.has_value());
+        CHECK(distance(insec.value(), tg::pos3::zero) == nx::approx(0.f));
     }
 
     { // c) intersection with sphere extension (but not with the hemisphere)
+        auto rot_range = tg::aabb1(0.f, 89.f);
+        auto rot_mat = tg::rotation_mat3_of(tg::rotation_z(tg::degree(tg::uniform(rng, rot_range).x)));
+
+        tg::dir3 inv_normal_rot = tg::normalize(rot_mat * hemis.normal);
+
+        auto pos0 = hemis.center - tg::uniform(rng, short_scalar_range).x * inv_normal_rot;
+        auto pos1 = tg::uniform(rng, below_hemis);
+
+        auto seg = tg::segment3{pos0, pos1};
+
+        auto insec = tg::intersection(seg, hemis);
+
+        CHECK(!insec.has_value());
+    }
+
+    { // d) both segment points inside the hemisphere
+        auto pos0 = tg::uniform(rng, hemis);
+        auto pos1 = tg::uniform(rng, hemis);
+
+        auto seg = tg::segment3{pos0, pos1};
+
+        auto insec = tg::intersection(seg, hemis);
+
+        CHECK(insec.has_value());
+        CHECK(distance(insec.value().pos0, pos0) == nx::approx(0.f));
+        CHECK(distance(insec.value().pos1, pos1) == nx::approx(0.f));
     }
 }
 

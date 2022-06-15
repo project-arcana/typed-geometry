@@ -3213,6 +3213,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, hemisphere<3, ScalarT> const& hs)
 {
+    // early-out: both seg points insider hemisphere
     if (contains(hs, s.pos0) && contains(hs, s.pos1))
         return segment<3, ScalarT>{s.pos0, s.pos1};
 
@@ -3225,35 +3226,29 @@ template <class ScalarT>
     if (!intersects(s, sp))
         return {};
 
-    // both segment points above the base plane
-    if ((distance(base, s.pos0) > 0) && (distance(base, s.pos1) > 0))
+    // both segment points above the base plane -> intersection with sphere extension
+    if (dot(hs.normal, s.pos0) - distance(hs, tg::pos<3, ScalarT>(0.f, 0.f, 0.f)) >= 0.f
+        && dot(hs.normal, s.pos1) - distance(hs, tg::pos<3, ScalarT>(0.f, 0.f, 0.f)) >= 0.f)
         return intersection(s, sp);
 
+    // segment intersects hemisphere base
     if (intersects(base, s))
     {
         insec1 = intersection(base, s).value();
 
+        // find point inside the hemisphere
         if (contains(hs, s.pos0))
             return segment<3, ScalarT>{insec1, s.pos0};
 
         if (contains(hs, s.pos1))
             return segment<3, ScalarT>{insec1, s.pos1};
 
-        // insec2
-        // find point below the base plane of the hemisphere
-        line<3, ScalarT> l = (distance(base, s.pos0) <= 0) ? line<3, ScalarT>(s.pos0, normalize(s.pos1 - s.pos0))
-                                                           : line<3, ScalarT>(s.pos1, normalize(s.pos0 - s.pos1));
-
         auto insec = intersection(s, sp);
 
         if (!insec.has_value())
             return {};
 
-        // if (contains(sp, s.pos0) && param.has_value())
-        //     insec2 = l[param.value().start];
-
-        // else
-        insec2 = (distance(base, insec.value().pos0) > 0) ? insec.value().pos0 : insec.value().pos1;
+        insec2 = (dot(hs.normal, insec.value().pos0) - distance(hs, tg::pos<3, ScalarT>(0.f, 0.f, 0.f))) >= 0.f ? insec.value().pos0 : insec.value().pos1;
 
         return segment<3, ScalarT>{insec1, insec2};
     }
@@ -3278,6 +3273,10 @@ template <class ScalarT>
 
     // find radius
     // line with random orientation in plane -> intersection with sphere boundary -> distance to disk_center = radius
+    line<3, ScalarT> l = line<3, ScalarT>(pos<3, ScalarT>::zero, p.normal);
+    pos<3, ScalarT> pos1 = l[p.dis];
+
+    // find second point on plane to construct a line in plane
 
     return {};
 }
