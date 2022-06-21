@@ -3,6 +3,67 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectionSegment3Tube3")(tg::rng& rng)
+{
+    auto tube = tg::tube3({{0.f, -1.f, 0.f}, {0.f, 1.f, 0.f}}, 1.f);
+    auto scalar_range = tg::aabb1(1.1f, 3.f);
+
+    { // a) intersection through origin
+        auto orth_vec = tg::vec3(1.f, 0.f, 0.f);
+        auto pos1 = tg::pos3::zero + tg::uniform(rng, scalar_range).x * orth_vec;
+        auto pos2 = tg::pos3::zero - tg::uniform(rng, scalar_range).x * orth_vec;
+
+        tg::segment3 seg = {pos1, pos2};
+
+        auto insec = tg::intersection(seg, tube);
+
+        CHECK(insec.any());
+        CHECK(insec.size() == 2);
+        CHECK(tg::distance_sqr(tg::pos3::zero, insec.first()) > 0.f);
+        CHECK(tg::distance_sqr(tg::pos3::zero, insec.last()) > 0.f);
+    }
+
+    { // b) segment inside the tube
+        auto cylinder = tg::cylinder3({{0.f, -1.f, 0.f}, {0.f, 1.f, 0.f}}, 1.f);
+        auto pos1 = tg::uniform(rng, cylinder);
+        auto pos2 = tg::uniform(rng, cylinder);
+
+        tg::segment3 seg = {pos1, pos2};
+
+        auto insec = tg::intersection(seg, tube);
+
+        CHECK(!insec.any());
+    }
+}
+
+FUZZ_TEST("IntersectionSphere3Plane3")(tg::rng& rng)
+{
+    auto sphere = tg::sphere3::unit;
+    auto scalar_range = tg::aabb1(1.1f, 5.f);
+
+    { // a) intersection (through center of sphere)
+        tg::dir3 normal = tg::uniform<tg::dir3>(rng);
+        auto plane = tg::plane3(normal, {0.f, 0.f, 0.f});
+
+        auto insec = tg::intersection(sphere, plane);
+
+        CHECK(insec.has_value());
+        CHECK(tg::distance_sqr(insec.value().center, {0.f, 0.f, 0.f}) == nx::approx(0.f));
+        CHECK(insec.value().radius == nx::approx(1.f));
+    }
+
+    { // b) no intersection
+        auto normal = tg::uniform<tg::dir3>(rng);
+        auto pos = tg::pos3::zero + tg::uniform(rng, scalar_range).x * normal;
+
+        auto plane = tg::plane3(normal, pos);
+
+        auto insec = tg::intersection(sphere, plane);
+
+        CHECK(!insec.has_value());
+    }
+}
+
 FUZZ_TEST("IntersectionSegment3Hemisphere3")(tg::rng& rng)
 {
     // upper part of the unit sphere

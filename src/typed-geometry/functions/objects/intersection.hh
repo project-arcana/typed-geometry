@@ -254,6 +254,33 @@ template <class ScalarT, class B>
     return {};
 }
 
+// segment - boundary object
+template <class ScalarT, class B>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection_segment_boundary_impl(segment<3, ScalarT> const& s, B const& b)
+{
+    // line extension of segment
+    auto const line = line3::from_points(s.pos0, s.pos1);
+    // intersection of line with boundary object
+    auto const params = intersection_parameter(line, b);
+
+    if (!params.any())
+        return {};
+
+    auto const dist = distance(s.pos0, s.pos1);
+    auto n_hits = 0;
+    tg::pos<3, ScalarT> ps[2];
+    // check if line intersections are within the segment range
+    for (auto i = 0; i < params.size(); ++i)
+    {
+        auto const p = params[i];
+        if (ScalarT(0) <= p && p <= dist)
+        {
+            ps[n_hits++] = line[p];
+        }
+    }
+    return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
+}
+
 template <class A, class B>
 using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
 }
@@ -2610,19 +2637,6 @@ template <class ScalarT>
     return detail::intersection_segment_object_impl(s, e);
 }
 
-// segment3 - tube3
-template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, tube<3, ScalarT> const& t)
-{
-    return detail::intersection_segment_object_impl(s, t);
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(tube<3, ScalarT> const& t, segment<3, ScalarT> const& s)
-{
-    return detail::intersection_segment_object_impl(s, t);
-}
-
 // segment3 - cone3
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cone<3, ScalarT> const& c)
@@ -2634,6 +2648,19 @@ template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(cone<3, ScalarT> const& c, segment<3, ScalarT> const& s)
 {
     return detail::intersection_segment_object_impl(s, c);
+}
+
+// segment3 - tube3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, tube<3, ScalarT> const& t)
+{
+    return detail::intersection_segment_boundary_impl(s, t);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(tube<3, ScalarT> const& t, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_boundary_impl(s, t);
 }
 
 // segment3 - cylinder_boundary
@@ -3265,20 +3292,43 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr optional<sphere<2, ScalarT, 3>> intersection(sphere<3, ScalarT> const& s, plane<3, ScalarT> const& p)
 {
+    // get orthogonal vector for a given vector
+    auto const get_orthogonal = [](dir<3, ScalarT> normal) -> vec<3, ScalarT>
+    {
+        if (normal.x != ScalarT(0) || normal.y != ScalarT(0))
+            return vec<3, ScalarT>(cross(vec<3, ScalarT>(normal), vec<3, ScalarT>{0.f, 0.f, 1.f}));
+
+        else
+            return vec<3, ScalarT>(cross(vec<3, ScalarT>(normal), vec<3, ScalarT>{1.f, 0.f, 0.f}));
+    };
+
     if (!intersects(s, p))
         return {};
 
     // project sphere center onto plane
     tg::pos<3, ScalarT> disk_center = project(s.center, p);
 
-    // find radius
-    // line with random orientation in plane -> intersection with sphere boundary -> distance to disk_center = radius
-    line<3, ScalarT> l = line<3, ScalarT>(pos<3, ScalarT>::zero, p.normal);
-    pos<3, ScalarT> pos1 = l[p.dis];
+    // line in plane
+    auto dir = normalize(get_orthogonal(p.normal));
+    auto l = line<3, ScalarT>(pos<3, ScalarT>(p.normal * p.dis), dir);
 
-    // find second point on plane to construct a line in plane
+    auto s_bound = boundary_of(s);
+    // intersection with sphere boundary
+    auto insec = intersection(l, s_bound);
 
-    return {};
+    if (!insec.any())
+        return {};
+
+    // distance to disk_center = radius
+    float rad = distance(disk_center, insec.first());
+
+    return sphere2in3(disk_center, rad, p.normal);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<sphere<2, ScalarT, 3>> intersection(plane<3, ScalarT> const& p, sphere<3, ScalarT> const& s)
+{
+    return intersection(s, p);
 }
 
 
