@@ -2912,7 +2912,7 @@ template <class ScalarT>
         return true;
 
     // intersection of box with triangle-plane
-    tg::plane<3, ScalarT> plane_of_triangle = tg::plane_of(triangle);
+    plane<3, ScalarT> plane_of_triangle = plane_of(triangle);
     if (!intersects(plane_of_triangle, box))
         return false;
 
@@ -3289,6 +3289,7 @@ template <class ScalarT>
     return intersection(s, hs);
 }
 
+// sphere3 - plane3
 template <class ScalarT>
 [[nodiscard]] constexpr optional<sphere<2, ScalarT, 3>> intersection(sphere<3, ScalarT> const& s, plane<3, ScalarT> const& p)
 {
@@ -3329,6 +3330,65 @@ template <class ScalarT>
 [[nodiscard]] constexpr optional<sphere<2, ScalarT, 3>> intersection(plane<3, ScalarT> const& p, sphere<3, ScalarT> const& s)
 {
     return intersection(s, p);
+}
+
+// plane3 - tube3
+template <class ScalarT>
+[[nodiscard]] constexpr optional<ellipse<2, ScalarT, 3>> intersection(plane<3, ScalarT> const& p, tube<3, ScalarT> const& t)
+{
+    // early-out: plane normal and tube axis are orthogonal
+    // if (dot(p.normal, normalize(t.axis.pos1 - t.axis.pos0)))
+    //    return {};
+
+    // ellipse mid_point = intersection tube axis and plane
+    auto insec_mid_axis = tg::intersection(t.axis, p);
+    if (!insec_mid_axis.has_value())
+        return {};
+
+    auto mid_point = insec_mid_axis.value();
+
+    // find semi axes
+    // vector orthogonal to tube axis and plane normal
+    auto orth_vec1 = cross(t.axis.pos1 - t.axis.pos0, vec<3, ScalarT>(p.normal));
+
+    if (length(orth_vec1) == 0)
+    {
+        // return will be a cycle (i.e. ellipse with identical sized semi axes)
+        auto vec_temp = (p.normal.x == 0 || p.normal.y == 0) ? vec<3, ScalarT>{0.f, 0.f, 1.f} : vec<3, ScalarT>{1.0f, 0.f, 0.f};
+        orth_vec1 = cross(t.axis.pos1 - t.axis.pos0, vec_temp);
+    }
+
+    // intersection along orthogonal vector with regard to plane_normal and tube_axis
+    auto insec_tube1 = tg::intersection(line<3, ScalarT>(mid_point, normalize(orth_vec1)), t);
+
+    if (!insec_tube1.any())
+        return {};
+
+    // first semi-axis
+    vec<3, ScalarT> semi_vec1 = insec_tube1.first() - mid_point;
+
+    auto rot_mat = rotation_around(degree(90.f), p.normal);
+    // vector orthogonal to plane_normal and orthogonal to orth_vec1
+    // orth_vec2 = rot_mat * orth_vec1;
+    vec<3, ScalarT> orth_vec2 = cross(orth_vec1, p.normal);
+    // intersection along orthogonal vector with regard to plane_normal
+    auto insec_tube2 = tg::intersection(line<3, ScalarT>(mid_point, normalize(orth_vec2)), t);
+
+    if (!insec_tube2.any())
+        return {};
+
+    // second semi-axis
+    vec<3, ScalarT> semi_vec2 = insec_tube2.first() - mid_point;
+
+    auto semi_axes = mat<2, 3, ScalarT>::from_cols(semi_vec1, semi_vec2);
+
+    return ellipse<2, ScalarT, 3>(mid_point, semi_axes);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<ellipse<2, ScalarT, 3>> intersection(tube<3, ScalarT> const& t, plane<3, ScalarT> const& p)
+{
+    return intersection(p, t);
 }
 
 
