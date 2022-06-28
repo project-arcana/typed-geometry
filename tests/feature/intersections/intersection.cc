@@ -5,30 +5,30 @@
 
 FUZZ_TEST("IntersectionPlane3Tube3")(tg::rng& rng)
 {
-    auto tube = tg::tube3({{0.f, -1.f, 0.f}, {0.f, 1.f, 0.f}}, 1.f);
-    auto tube_env = tg::aabb3({0.f, -0.9f, 0.f}, {0.f, 0.9f, 0.f});
+    auto inf_cyl = tg::inf_cylinder3(tg::line3({0, 0, 0}, {0, 1.f, 0}), 1.f);
+    auto cylinder_env = tg::aabb3({0.f, -5.f, 0.f}, {0.f, 5.f, 0.f});
 
     { // a) plane with random orientation through tube (intersection might not exist if exceeding tube on one side)
-        auto p_pos = tg::uniform(rng, tube_env);
+        auto p_pos = tg::uniform(rng, cylinder_env);
         auto normal = tg::uniform<tg::dir3>(rng);
 
         auto plane = tg::plane3(normal, p_pos);
 
-        bool insec_exists = dot(normal, normalize(tube.axis.pos1 - tube.axis.pos0)) == 0 ? false : true;
+        bool insec_exists = dot(normal, inf_cyl.axis.dir) == 0 ? false : true;
 
-        auto insec = tg::intersection(plane, tube);
+        auto insec = tg::intersection(plane, inf_cyl);
 
         if (insec.has_value())
             CHECK(distance(insec.value().center, p_pos) == nx::approx(0.f));
     }
 
-    { // b) plane normal parallel to tub axis -> results in a circle
-        auto p_pos = tg::uniform(rng, tube_env);
-        auto normal = normalize(tube.axis.pos1 - tube.axis.pos0);
+    { // b) plane normal parallel to tub axis -> results in a circle/disk
+        auto p_pos = tg::uniform(rng, cylinder_env);
+        auto normal = inf_cyl.axis.dir;
 
         auto plane = tg::plane3(normal, p_pos);
 
-        auto insec = tg::intersection(plane, tube);
+        auto insec = tg::intersection(plane, inf_cyl);
 
         CHECK(insec.has_value());
         CHECK(tg::length_sqr(insec.value().semi_axes[0]) == tg::length_sqr(insec.value().semi_axes[1]));
