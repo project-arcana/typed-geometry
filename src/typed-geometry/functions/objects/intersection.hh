@@ -3389,5 +3389,38 @@ template <class ScalarT>
     return intersection(p, t);
 }
 
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(sphere<2, ScalarT, 3> const& s, plane<3, ScalarT> const& p)
+{
+    if (s.normal == p.normal)
+        return {};
 
+    // plane extension of disk
+    auto circle_plane = plane_of(s);
+
+    // intersection of circle_plane and plane results in line parallel to intersection of disk and plane
+    line<3, ScalarT> insec_line = intersection(p, circle_plane);
+
+    // solve problem in 2D -> insec_line.pos = origin, plane.normal = 0,1,0 -> omit y
+    auto t = translation(pos<3, ScalarT>::zero - insec_line.pos);
+    auto a = angle_between(circle_plane.normal, dir<3, ScalarT>(0.f, 1.f, 0.f));
+    auto r = rotation_around(a, normalize(cross(circle_plane.normal, dir<3, ScalarT>(0, 1, 0))));
+    auto transform = r * t;
+    auto inv_transform = inverse(transform);
+
+    dir<3, ScalarT> dir_transformed = normalize(transform * insec_line.dir);
+    line<2, ScalarT> insec_line2D = line<2, ScalarT>(pos<2, ScalarT>::zero, normalize(vec<2, ScalarT>{dir_transformed.x, dir_transformed.z}));
+    pos<3, ScalarT> circle_center_transformed = transform * s.center;
+    circle<2, ScalarT> circ = circle<2, ScalarT>({circle_center_transformed.x, circle_center_transformed.z}, s.radius);
+
+    // find intersection in 2D and apply inv_transform -> intersection between circle and line
+    auto insec_2D = intersection(insec_line2D, circ);
+
+    if (!insec_2D.any())
+        return {};
+
+    // return segment from 2D by inverse transformation
+    return segment<3, ScalarT>(inv_transform * pos<3, ScalarT>(insec_2D.first().x, 0.f, insec_2D.first().y),
+                               inv_transform * pos<3, ScalarT>(insec_2D.last().x, 0.f, insec_2D.last().y));
+}
 } // namespace tg

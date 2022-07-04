@@ -3,6 +3,22 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectionSphere2in3Plane3")(tg::rng& rng)
+{
+    auto disky = tg::sphere2in3({0.f, 0.f, 0.f}, 1.f, tg::uniform<tg::dir3>(rng));
+    auto plane = tg::plane3({0.f, 1.f, 0.f}, {0.f, 0.f, 0.f});
+
+    { // a) xz-plane and orthogonal circle. Intersection through origin
+        bool insec_exists = (disky.normal == plane.normal) ? false : true;
+        auto insec = tg::intersection(disky, plane);
+
+        CHECK(insec.has_value() == insec_exists);
+        CHECK(tg::contains(insec.value(), tg::pos3::zero));
+    }
+
+    // some more tests missing
+}
+
 FUZZ_TEST("IntersectionPlane3Tube3")(tg::rng& rng)
 {
     auto inf_cyl = tg::inf_cylinder3(tg::line3({0, 0, 0}, {0, 1.f, 0}), 1.f);
@@ -207,7 +223,7 @@ FUZZ_TEST("IntersectionSegment3Sphere2in3")(tg::rng& rng)
 FUZZ_TEST("IntersectionSegment3Halfspace3")(tg::rng& rng)
 {
     auto env = tg::aabb3({-10.f, -10.f, -10.f}, {10.f, 10.f, 10.f});
-    auto scalar_range = tg::aabb1({1.f}, {5.f});
+    auto scalar_range = tg::aabb1(1.f, 5.f);
 
     auto hs_pos = tg::uniform(rng, env);
     auto hs = tg::halfspace3(tg::uniform<tg::dir3>(rng), hs_pos);
