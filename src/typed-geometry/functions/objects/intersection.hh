@@ -3249,7 +3249,7 @@ template <class ScalarT>
 
     // sphere extension of hemisphere
     auto sp = sphere<3, ScalarT>(hs.center, hs.radius);
-    auto base = sphere<2, ScalarT, 3>(hs.center, hs.radius, hs.normal);
+    auto base = disk<3, ScalarT>(hs.center, hs.radius, hs.normal);
 
     if (!intersects(s, sp))
         return {};
@@ -3324,7 +3324,7 @@ template <class ScalarT>
     // distance to disk_center = radius
     float rad = distance(disk_center, insec.first());
 
-    return sphere2in3(disk_center, rad, p.normal);
+    return disk<3, ScalarT>(disk_center, rad, p.normal);
 }
 
 template <class ScalarT>
