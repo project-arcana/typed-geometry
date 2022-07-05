@@ -3389,13 +3389,13 @@ template <class ScalarT>
     return intersection(p, t);
 }
 
+// disk3 - plane3
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(sphere<2, ScalarT, 3> const& s, plane<3, ScalarT> const& p)
 {
     if (s.normal == p.normal)
         return {};
 
-    // plane extension of disk
     auto circle_plane = plane_of(s);
 
     // intersection of circle_plane and plane results in line parallel to intersection of disk and plane
@@ -3413,7 +3413,7 @@ template <class ScalarT>
     pos<3, ScalarT> circle_center_transformed = transform * s.center;
     circle<2, ScalarT> circ = circle<2, ScalarT>({circle_center_transformed.x, circle_center_transformed.z}, s.radius);
 
-    // find intersection in 2D and apply inv_transform -> intersection between circle and line
+    // find intersection in 2D and apply inv_transform
     auto insec_2D = intersection(insec_line2D, circ);
 
     if (!insec_2D.any())
@@ -3422,5 +3422,11 @@ template <class ScalarT>
     // return segment from 2D by inverse transformation
     return segment<3, ScalarT>(inv_transform * pos<3, ScalarT>(insec_2D.first().x, 0.f, insec_2D.first().y),
                                inv_transform * pos<3, ScalarT>(insec_2D.last().x, 0.f, insec_2D.last().y));
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& p, sphere<2, ScalarT, 3> const& s)
+{
+    return intersection(s, p);
 }
 } // namespace tg

@@ -5,7 +5,7 @@
 #include <map>
 #include <sstream>
 
-#if 1
+#if TG_IMPLEMENTATION_REPORT
 
 #include <typed-geometry/tg-std.hh>
 

@@ -5,15 +5,37 @@
 
 FUZZ_TEST("IntersectionSphere2in3Plane3")(tg::rng& rng)
 {
-    auto disky = tg::sphere2in3({0.f, 0.f, 0.f}, 1.f, tg::uniform<tg::dir3>(rng));
-    auto plane = tg::plane3({0.f, 1.f, 0.f}, {0.f, 0.f, 0.f});
+    auto plane_xz = tg::plane3({0.f, 1.f, 0.f}, tg::pos3::zero);
 
-    { // a) xz-plane and orthogonal circle. Intersection through origin
-        bool insec_exists = (disky.normal == plane.normal) ? false : true;
-        auto insec = tg::intersection(disky, plane);
+    { // a) xz-plane and orthogonal disk
+        auto disk = tg::sphere2in3(tg::pos3::zero, 1.f, {1.f, 0.f, 0.f});
+
+        auto insec = tg::intersection(disk, plane_xz);
+
+        CHECK(insec.has_value());
+        CHECK(distance(insec.value().pos0, tg::pos3(0.f, 0.f, 1.f)) == nx::approx(0.f));
+        CHECK(distance(insec.value().pos1, tg::pos3(0.f, 0.f, -1.f)) == nx::approx(0.f));
+    }
+
+    { // b) xz-plane and disk with random orientation - intersection through origin
+        auto disk = tg::sphere2in3(tg::pos3::zero, 1.f, tg::uniform<tg::dir3>(rng));
+
+
+        bool insec_exists = (disk.normal == plane_xz.normal) ? false : true;
+        auto insec = tg::intersection(disk, plane_xz);
 
         CHECK(insec.has_value() == insec_exists);
         CHECK(tg::contains(insec.value(), tg::pos3::zero));
+    }
+
+    { // c) disk in plane - no intersection
+        auto rng_dir = tg::uniform<tg::dir3>(rng);
+        auto disk = tg::sphere2in3(tg::pos3::zero, 1.f, rng_dir);
+        auto plane = tg::plane3(rng_dir, tg::pos3::zero);
+
+        auto insec = tg::intersection(disk, plane);
+
+        CHECK(!insec.has_value());
     }
 
     // some more tests missing
