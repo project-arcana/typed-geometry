@@ -3050,9 +3050,9 @@ template <class ScalarT>
     return intersects(t, s);
 }
 
-// sphere2in3 - plane3
+// disk3 - plane3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& s, plane<3, ScalarT> const& p)
+[[nodiscard]] constexpr bool intersects(disk<3, ScalarT> const& s, plane<3, ScalarT> const& p)
 {
     auto plane_s = tg::plane<3, ScalarT>(s.normal, s.center);
 
@@ -3076,7 +3076,7 @@ template <class ScalarT>
 
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& p, sphere<2, ScalarT, 3> const& s)
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& p, disk<3, ScalarT> const& s)
 {
     return intersects(s, p);
 }
@@ -3121,9 +3121,9 @@ template <class ScalarT>
     return intersects(t, hs);
 }
 
-// sphere2in3 - triangle3
+// disk3 - triangle3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& s, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr bool intersects(disk<3, ScalarT> const& s, triangle<3, ScalarT> const& t)
 {
     // circle inside triangle or triangle vertex inside the circle
     if (contains(s, centroid_of(t)) || contains(s, t.pos0) || contains(s, t.pos1) || contains(s, t.pos2))
@@ -3146,7 +3146,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, sphere<2, ScalarT, 3> const& s)
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, disk<3, ScalarT> const& s)
 {
     return intersects(s, t);
 }
@@ -3210,9 +3210,9 @@ template <class ScalarT>
     return intersection(s, hs);
 }
 
-// segment3 - sphere2in3
+// segment3 - disk3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(segment<3, ScalarT> const& seg, sphere<2, ScalarT, 3> const& s)
+[[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(segment<3, ScalarT> const& seg, disk<3, ScalarT> const& s)
 {
     auto plane = tg::plane3(s.normal, s.center);
     // check if both seg points lie on same side of the circle
@@ -3231,7 +3231,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(sphere<2, ScalarT, 3> const& s, segment<3, ScalarT> const& seg)
+[[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(disk<3, ScalarT> const& s, segment<3, ScalarT> const& seg)
 {
     return intersection(seg, s);
 }
@@ -3240,13 +3240,14 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, hemisphere<3, ScalarT> const& hs)
 {
-    // early-out: both seg points insider hemisphere
+    // early-out: both seg points inside hemisphere
     if (contains(hs, s.pos0) && contains(hs, s.pos1))
         return segment<3, ScalarT>{s.pos0, s.pos1};
 
     pos<3, ScalarT> insec1;
     pos<3, ScalarT> insec2;
 
+    // sphere extension of hemisphere
     auto sp = sphere<3, ScalarT>(hs.center, hs.radius);
     auto base = sphere<2, ScalarT, 3>(hs.center, hs.radius, hs.normal);
 
@@ -3291,7 +3292,7 @@ template <class ScalarT>
 
 // sphere3 - plane3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<sphere<2, ScalarT, 3>> intersection(sphere<3, ScalarT> const& s, plane<3, ScalarT> const& p)
+[[nodiscard]] constexpr optional<disk<3, ScalarT>> intersection(sphere<3, ScalarT> const& s, plane<3, ScalarT> const& p)
 {
     // get orthogonal vector for a given vector
     auto const get_orthogonal = [](dir<3, ScalarT> normal) -> vec<3, ScalarT>
@@ -3391,8 +3392,9 @@ template <class ScalarT>
 
 // disk3 - plane3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(sphere<2, ScalarT, 3> const& s, plane<3, ScalarT> const& p)
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(disk<3, ScalarT> const& s, plane<3, ScalarT> const& p)
 {
+    // TODO: Better solution may be possible
     if (s.normal == p.normal)
         return {};
 
@@ -3425,7 +3427,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& p, sphere<2, ScalarT, 3> const& s)
+[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& p, disk<3, ScalarT> const& s)
 {
     return intersection(s, p);
 }

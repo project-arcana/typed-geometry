@@ -3,12 +3,12 @@
 
 #include <typed-geometry/tg-std.hh>
 
-FUZZ_TEST("IntersectionSphere2in3Plane3")(tg::rng& rng)
+FUZZ_TEST("IntersectionDisk3Plane3")(tg::rng& rng)
 {
     auto plane_xz = tg::plane3({0.f, 1.f, 0.f}, tg::pos3::zero);
 
     { // a) xz-plane and orthogonal disk
-        auto disk = tg::sphere2in3(tg::pos3::zero, 1.f, {1.f, 0.f, 0.f});
+        auto disk = tg::disk3(tg::pos3::zero, 1.f, {1.f, 0.f, 0.f});
 
         auto insec = tg::intersection(disk, plane_xz);
 
@@ -18,8 +18,7 @@ FUZZ_TEST("IntersectionSphere2in3Plane3")(tg::rng& rng)
     }
 
     { // b) xz-plane and disk with random orientation - intersection through origin
-        auto disk = tg::sphere2in3(tg::pos3::zero, 1.f, tg::uniform<tg::dir3>(rng));
-
+        auto disk = tg::disk3(tg::pos3::zero, 1.f, tg::uniform<tg::dir3>(rng));
 
         bool insec_exists = (disk.normal == plane_xz.normal) ? false : true;
         auto insec = tg::intersection(disk, plane_xz);
@@ -30,15 +29,13 @@ FUZZ_TEST("IntersectionSphere2in3Plane3")(tg::rng& rng)
 
     { // c) disk in plane - no intersection
         auto rng_dir = tg::uniform<tg::dir3>(rng);
-        auto disk = tg::sphere2in3(tg::pos3::zero, 1.f, rng_dir);
+        auto disk = tg::disk3(tg::pos3::zero, 1.f, rng_dir);
         auto plane = tg::plane3(rng_dir, tg::pos3::zero);
 
         auto insec = tg::intersection(disk, plane);
 
         CHECK(!insec.has_value());
     }
-
-    // some more tests missing
 }
 
 FUZZ_TEST("IntersectionPlane3Tube3")(tg::rng& rng)
@@ -149,10 +146,10 @@ FUZZ_TEST("IntersectionSegment3Hemisphere3")(tg::rng& rng)
         auto pos1 = tg::uniform(rng, above_hemis_base);
 
         auto seg = tg::segment3{pos0, pos1};
-
+        bool insec_exists = tg::length(pos1 - pos0) > 0.f ? true : false;
         auto insec = tg::intersection(seg, hemis);
 
-        CHECK(insec.has_value());
+        CHECK(insec.has_value() == insec_exists);
     }
 
     { // b) intersection with sphere extension (and with hemisphere part)
@@ -198,9 +195,9 @@ FUZZ_TEST("IntersectionSegment3Hemisphere3")(tg::rng& rng)
     }
 }
 
-FUZZ_TEST("IntersectionSegment3Sphere2in3")(tg::rng& rng)
+FUZZ_TEST("IntersectionSegment3Disk3")(tg::rng& rng)
 {
-    auto circle = tg::sphere2in3({0.f, 0.f, 0.f}, 1.f, {0.f, 1.f, 0.f});
+    auto disk = tg::disk3({0.f, 0.f, 0.f}, 1.f, {0.f, 1.f, 0.f});
     auto below_circle = tg::aabb3({-5.f, -5.f, -5.f}, {5.f, -0.1f, 5.f});
     auto scalar_range = tg::aabb1(1.f, 5.f);
 
@@ -210,7 +207,7 @@ FUZZ_TEST("IntersectionSegment3Sphere2in3")(tg::rng& rng)
 
         auto seg = tg::segment3{pos0, pos1};
 
-        auto insec = tg::intersection(seg, circle);
+        auto insec = tg::intersection(seg, disk);
 
         CHECK(!insec.has_value());
     }
@@ -224,7 +221,7 @@ FUZZ_TEST("IntersectionSegment3Sphere2in3")(tg::rng& rng)
 
         auto seg = tg::segment3{pos0, pos1};
 
-        auto insec = tg::intersection(seg, circle);
+        auto insec = tg::intersection(seg, disk);
 
         CHECK(insec.has_value());
         CHECK(distance(insec.value(), tg::pos3::zero) == nx::approx(0.f));
@@ -236,7 +233,7 @@ FUZZ_TEST("IntersectionSegment3Sphere2in3")(tg::rng& rng)
 
         auto seg = tg::segment3{pos0, pos1};
 
-        auto insec = tg::intersection(seg, circle);
+        auto insec = tg::intersection(seg, disk);
 
         CHECK(!insec.has_value());
     }
