@@ -235,16 +235,19 @@ template <class ScalarT, class B>
     line<3, ScalarT> segment_line = line<3, ScalarT>(s.pos0, normalize(s.pos1 - s.pos0));
     auto insec = intersection_parameter(segment_line, o);
 
-    // no intersection exists
     if (!insec.has_value())
         return {};
 
-    // case 2: One seg. point inside the cylinder and one outside -> intersection with boundary must exist
-    if (con_pos0 || con_pos1)
+    // case 2: One seg. point inside the convex object and one outside -> intersection with boundary must exist
+    if (con_pos0)
     {
-        // one point of the segment is inside the cylinder and one is outside -> intersection must exist
-        auto param = con_pos0 ? max(insec.value().start, insec.value().end) : min(insec.value().start, insec.value().end);
-        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * param, con_pos0 ? s.pos0 : s.pos1};
+        float param = (dot(s.pos1 - s.pos0, segment_line[insec.value().start]) > 0) ? insec.value().start : insec.value().end;
+        return segment<3, ScalarT>{s.pos0, segment_line.pos + segment_line.dir * param};
+    }
+    else if (con_pos1)
+    {
+        float param = (dot(s.pos0 - s.pos1, segment_line[insec.value().start]) > 0) ? insec.value().start : insec.value().end;
+        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * param, s.pos1};
     }
 
     // case 3: both points of segment outside of the convex object
@@ -2665,34 +2668,56 @@ template <class ScalarT>
 
 // segment3 - cylinder_boundary
 template <class ScalarT>
-[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder_boundary<3, ScalarT> const& c)
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder_boundary<3, ScalarT> const& c)
 {
-    // TODO: This is a standard solution that can be applied to any boundary case
-    auto const line = line3::from_points(s.pos0, s.pos1);
-    auto const params = intersection_parameter(line, c);
-
-    if (!params.any())
-        return {};
-
-    auto const dist = distance(s.pos0, s.pos1);
-    auto n_hits = 0;
-    tg::pos<3, ScalarT> ps[2];
-    for (auto i = 0; i < params.size(); ++i)
-    {
-        auto const t = params[i];
-        if (ScalarT(0) <= t && t <= dist)
-        {
-            ps[n_hits++] = line[t];
-        }
-    }
-    return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
+    return detail::intersection_segment_boundary_impl(s, c);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(cylinder_boundary<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(cylinder_boundary<3, ScalarT> const& c, segment<3, ScalarT> const& s)
 {
-    return intersection(s, c);
+    return detail::intersection_segment_boundary_impl(s, c);
 }
+
+// segment3 - box_boundary3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, box_boundary<3, ScalarT> const& b)
+{
+    return detail::intersection_segment_boundary_impl(s, b);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(box_boundary<3, ScalarT> const& b, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_boundary_impl(s, b);
+}
+
+// segment3 - capsule_boundary3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, capsule_boundary<3, ScalarT> const& c)
+{
+    return detail::intersection_segment_boundary_impl(s, c);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(capsule_boundary<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_boundary_impl(s, c);
+}
+
+// segment3 - cone_boundary3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersecion(segment<3, ScalarT> const& s, cone_boundary<3, ScalarT> const& c)
+{
+    return detail::intersection_segment_boundary_impl(s, c);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersecion(cone_boundary<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+{
+    return detail::intersection_segment_boundary_impl(s, c);
+}
+
 
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& a, box<3, ScalarT> const& b)
@@ -3244,42 +3269,37 @@ template <class ScalarT>
     if (contains(hs, s.pos0) && contains(hs, s.pos1))
         return segment<3, ScalarT>{s.pos0, s.pos1};
 
-    pos<3, ScalarT> insec1;
-    pos<3, ScalarT> insec2;
-
     // sphere extension of hemisphere
     auto sp = sphere<3, ScalarT>(hs.center, hs.radius);
-    auto base = disk<3, ScalarT>(hs.center, hs.radius, hs.normal);
+    // plane extension of hemisphere base
+    auto base_plane = plane<3, ScalarT>(hs.normal, hs.center);
 
-    if (!intersects(s, sp))
+    // intersection with sphere extension
+    auto insec_sp = intersection(s, sp);
+
+    if (!insec_sp.has_value())
         return {};
 
-    // both segment points above the base plane -> intersection with sphere extension
-    if (dot(hs.normal, s.pos0) - distance(hs, tg::pos<3, ScalarT>(0.f, 0.f, 0.f)) >= 0.f
-        && dot(hs.normal, s.pos1) - distance(hs, tg::pos<3, ScalarT>(0.f, 0.f, 0.f)) >= 0.f)
-        return intersection(s, sp);
+    float dis_pos0 = dot(hs.normal, insec_sp.value().pos0) - distance(hs.center, pos<3, ScalarT>::zero); // signed distance plane extension - insec segment 1st position
+    float dis_pos1 = dot(hs.normal, insec_sp.value().pos1) - distance(hs.center, pos<3, ScalarT>::zero); // signed distance plane extension - insec segment 2nd position
 
-    // segment intersects hemisphere base
-    if (intersects(base, s))
-    {
-        insec1 = intersection(base, s).value();
+    // cases depending on which segment point is inside of halfspace deduced by the hemisphere
+    if (dis_pos0 >= 0 && dis_pos1 >= 0)
+        return insec_sp;
 
-        // find point inside the hemisphere
-        if (contains(hs, s.pos0))
-            return segment<3, ScalarT>{insec1, s.pos0};
+    if (dis_pos0 < 0 && dis_pos1 < 0)
+        return {};
 
-        if (contains(hs, s.pos1))
-            return segment<3, ScalarT>{insec1, s.pos1};
+    auto insec_base_plane = intersection(s, base_plane);
 
-        auto insec = intersection(s, sp);
+    if (!insec_base_plane.has_value())
+        return {};
 
-        if (!insec.has_value())
-            return {};
+    if (dis_pos0 < 0) // replace first segment position
+        return segment<3, ScalarT>{insec_base_plane.value(), insec_sp.value().pos1};
 
-        insec2 = (dot(hs.normal, insec.value().pos0) - distance(hs, tg::pos<3, ScalarT>(0.f, 0.f, 0.f))) >= 0.f ? insec.value().pos0 : insec.value().pos1;
-
-        return segment<3, ScalarT>{insec1, insec2};
-    }
+    if (dis_pos1 < 0) // replace second segment positon
+        return segment<3, ScalarT>{insec_sp.value().pos0, insec_base_plane.value()};
 
     return {};
 }

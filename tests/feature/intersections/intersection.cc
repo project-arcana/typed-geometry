@@ -70,6 +70,40 @@ FUZZ_TEST("IntersectionPlane3Tube3")(tg::rng& rng)
     }
 }
 
+FUZZ_TEST("IntersectionSegment3BoundaryObject")(tg::rng& rng)
+{
+    { // a) segment3 - cylinder_boundary3
+        auto cylinder_b = tg::cylinder_boundary<3, float>({0.f, -2.f, 0.f}, {0.f, 2.f, 0.f}, 1.f);
+
+        auto rng_pos = tg::uniform(rng, cylinder_b);
+        auto rng_dir = tg::uniform<tg::dir3>(rng);
+
+        auto pos0 = rng_pos + 4.1f * rng_dir;
+        auto pos1 = rng_pos - 4.1f * rng_dir;
+        auto seg = tg::segment3(pos0, pos1);
+
+        auto insec = tg::intersection(seg, cylinder_b);
+
+        CHECK(insec.any());
+    }
+
+    { // b) segment3 - box_boundary3
+        // boundary of unit cube
+        auto box_b = tg::box_boundary<3, float>(tg::pos3::zero, tg::mat3::identity);
+
+        auto rng_pos = tg::uniform(rng, box_b);
+        auto rng_dir = tg::uniform<tg::dir3>(rng);
+
+        auto pos0 = rng_pos + 4.1f * rng_dir;
+        auto pos1 = rng_pos - 4.1f * rng_dir;
+        auto seg = tg::segment3(pos0, pos1);
+
+        auto insec = tg::intersection(seg, box_b);
+
+        CHECK(insec.any());
+    }
+}
+
 FUZZ_TEST("IntersectionSegment3Tube3")(tg::rng& rng)
 {
     auto tube = tg::tube3({{0.f, -1.f, 0.f}, {0.f, 1.f, 0.f}}, 1.f);
