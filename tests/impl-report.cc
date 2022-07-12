@@ -1,11 +1,12 @@
 #include <nexus/test.hh>
 
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <map>
 #include <sstream>
 
-#if TG_IMPLEMENTATION_REPORT
+#if defined(TG_IMPLEMENTATION_REPORT)
 
 #include <typed-geometry/tg-std.hh>
 
