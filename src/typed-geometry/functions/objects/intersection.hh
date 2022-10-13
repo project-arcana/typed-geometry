@@ -1,6 +1,7 @@
 #pragma once
 
-#include <typed-geometry/detail/optional.hh>
+#include <clean-core/optional.hh>
+
 #include <typed-geometry/feature/assert.hh>
 #include <typed-geometry/functions/basic/scalar_math.hh>
 
@@ -49,12 +50,12 @@
 // intersects(a, b)              -> bool
 // intersects_conservative(a, b) -> bool
 // intersection(a, b)            -> ???
-// intersection_safe(a, b)       -> optional<???>
-// intersection_parameter(a, b)  -> coords? (for a line or a ray: hits<N, ScalarT> or optional<hit_interval> (when b is solid))
+// intersection_safe(a, b)       -> cc::optional<???>
+// intersection_parameter(a, b)  -> coords? (for a line or a ray: hits<N, ScalarT> or cc::optional<hit_interval> (when b is solid))
 // intersection_parameters(a, b) -> pair<coords, coords>?
 // intersection_exact(a, b)      -> variant
-// closest_intersection(a, b)            -> position/object (for a ray: optional<pos>)
-// closest_intersection_parameter(a, b)  -> coords (for a ray: optional<ScalarT>)
+// closest_intersection(a, b)            -> position/object (for a ray: cc::optional<pos>)
+// closest_intersection_parameter(a, b)  -> coords (for a ray: cc::optional<ScalarT>)
 
 // "intersects" returns true iff any point lies in a and in b
 // "intersects_conservative" returns true if any point lies in a and in b, but might also return true if they are disjoint
@@ -223,7 +224,7 @@ template <class ScalarT>
 
 // segment - convex object
 template <class ScalarT, class B>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection_segment_object_impl(segment<3, ScalarT> const& s, B const& o)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection_segment_object_impl(segment<3, ScalarT> const& s, B const& o)
 {
     bool con_pos0 = contains(o, s.pos0);
     bool con_pos1 = contains(o, s.pos1);
@@ -306,7 +307,7 @@ template <class A, class B>
 
 // if an optional intersection parameter is available and applicable, use that
 template <class A, class B>
-[[nodiscard]] constexpr auto intersection(A const& a, B const& b) -> optional<decltype(a[intersection_parameter(a, b).value()])>
+[[nodiscard]] constexpr auto intersection(A const& a, B const& b) -> cc::optional<decltype(a[intersection_parameter(a, b).value()])>
 {
     if (auto t = intersection_parameter(a, b); t.has_value())
         return a[t.value()];
@@ -322,7 +323,7 @@ template <class A, class B>
 
 // if an optional closest intersection parameter is available and applicable, use that
 template <class A, class B>
-[[nodiscard]] constexpr auto closest_intersection(A const& a, B const& b) -> optional<decltype(a[closest_intersection_parameter(a, b).value()])>
+[[nodiscard]] constexpr auto closest_intersection(A const& a, B const& b) -> cc::optional<decltype(a[closest_intersection_parameter(a, b).value()])>
 {
     if (auto t = closest_intersection_parameter(a, b); t.has_value())
         return a[t.value()];
@@ -351,7 +352,7 @@ template <class A, class B>
 // if an optional hit_interval intersection parameter is available, use that
 template <class A, class B, std::enable_if_t<decltype(intersection_parameter(std::declval<A>(), std::declval<B>()).value())::is_hit_interval, int> = 0>
 [[nodiscard]] constexpr auto intersection(A const& a, B const& b)
-    -> optional<segment<object_traits<A>::domain_dimension, typename object_traits<A>::scalar_t>>
+    -> cc::optional<segment<object_traits<A>::domain_dimension, typename object_traits<A>::scalar_t>>
 {
     using seg_t = segment<object_traits<A>::domain_dimension, typename object_traits<A>::scalar_t>;
     auto ts = intersection_parameter(a, b);
@@ -362,7 +363,7 @@ template <class A, class B, std::enable_if_t<decltype(intersection_parameter(std
 
 // if hits intersection parameter is available, use that
 template <class A, class B>
-[[nodiscard]] constexpr auto closest_intersection_parameter(A const& a, B const& b) -> optional<typename decltype(intersection_parameter(a, b))::hit_t>
+[[nodiscard]] constexpr auto closest_intersection_parameter(A const& a, B const& b) -> cc::optional<typename decltype(intersection_parameter(a, b))::hit_t>
 {
     const auto hits = intersection_parameter(a, b);
     if (hits.any())
@@ -372,7 +373,7 @@ template <class A, class B>
 
 // if an optional hit_interval intersection parameter is available, use that
 template <class A, class B>
-[[nodiscard]] constexpr auto closest_intersection_parameter(A const& a, B const& b) -> optional<decltype(intersection_parameter(a, b).value().start)>
+[[nodiscard]] constexpr auto closest_intersection_parameter(A const& a, B const& b) -> cc::optional<decltype(intersection_parameter(a, b).value().start)>
 {
     const auto hits = intersection_parameter(a, b);
     if (hits.has_value())
@@ -383,7 +384,7 @@ template <class A, class B>
 // if boundary_of a solid object returns hits, use this to construct the hit_interval result of the solid intersection
 template <int D, class ScalarT, class Obj>
 [[nodiscard]] constexpr auto intersection_parameter(line<D, ScalarT> const& l, Obj const& obj)
-    -> enable_if<!std::is_same_v<Obj, decltype(boundary_of(obj))>, optional<hit_interval<ScalarT>>>
+    -> enable_if<!std::is_same_v<Obj, decltype(boundary_of(obj))>, cc::optional<hit_interval<ScalarT>>>
 {
     const hits<2, ScalarT> inter = intersection_parameter(l, boundary_of(obj));
 
@@ -413,7 +414,7 @@ template <int D, class ScalarT, class Obj>
 
 // intersection between point and obj is same as contains
 template <int D, class ScalarT, class Obj, class = void_t<decltype(contains(std::declval<pos<D, ScalarT>>(), std::declval<Obj>()))>>
-constexpr optional<pos<D, ScalarT>> intersection(pos<D, ScalarT> const& p, Obj const& obj)
+constexpr cc::optional<pos<D, ScalarT>> intersection(pos<D, ScalarT> const& p, Obj const& obj)
 {
     if (contains(obj, p))
         return p;
@@ -422,7 +423,7 @@ constexpr optional<pos<D, ScalarT>> intersection(pos<D, ScalarT> const& p, Obj c
 
 // intersection between point and obj is same as contains
 template <int D, class ScalarT, class Obj, class = void_t<decltype(contains(std::declval<pos<D, ScalarT>>(), std::declval<Obj>()))>>
-constexpr optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT> const& p)
+constexpr cc::optional<pos<D, ScalarT>> intersection(Obj const& obj, pos<D, ScalarT> const& p)
 {
     if (contains(obj, p))
         return p;
@@ -534,7 +535,7 @@ template <int D, class ScalarT>
 
 // line - halfspace
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<hit_interval<ScalarT>> intersection_parameter(line<D, ScalarT> const& l, halfspace<D, ScalarT> const& h)
+[[nodiscard]] constexpr cc::optional<hit_interval<ScalarT>> intersection_parameter(line<D, ScalarT> const& l, halfspace<D, ScalarT> const& h)
 {
     const auto dotND = dot(h.normal, l.dir);
     const auto dist = signed_distance(l.pos, h);
@@ -552,7 +553,7 @@ template <int D, class ScalarT>
     return {{tg::min<ScalarT>(), t}};     // line goes out of the halfspace
 }
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> closest_intersection_parameter(ray<D, ScalarT> const& r, halfspace<D, ScalarT> const& h)
+[[nodiscard]] constexpr cc::optional<ScalarT> closest_intersection_parameter(ray<D, ScalarT> const& r, halfspace<D, ScalarT> const& h)
 {
     // check if ray origin is already contained in the halfspace
     const auto dist = signed_distance(r.origin, h);
@@ -882,7 +883,7 @@ template <class BaseT>
 
 // line - triangle2
 template <class ScalarT>
-[[nodiscard]] constexpr optional<hit_interval<ScalarT>> intersection_parameter(line<2, ScalarT> const& l, triangle<2, ScalarT> const& t)
+[[nodiscard]] constexpr cc::optional<hit_interval<ScalarT>> intersection_parameter(line<2, ScalarT> const& l, triangle<2, ScalarT> const& t)
 {
     ScalarT closestIntersection = tg::max<ScalarT>();
     ScalarT furtherIntersection = tg::min<ScalarT>();
@@ -998,7 +999,7 @@ template <class ScalarT>
 // returns intersection circle of sphere and sphere (normal points from a to b)
 // for now does not work if spheres are identical (result would be a sphere3 again)
 template <class ScalarT>
-[[nodiscard]] constexpr optional<sphere_boundary<2, ScalarT, 3>> intersection(sphere_boundary<3, ScalarT> const& a, sphere_boundary<3, ScalarT> const& b)
+[[nodiscard]] constexpr cc::optional<sphere_boundary<2, ScalarT, 3>> intersection(sphere_boundary<3, ScalarT> const& a, sphere_boundary<3, ScalarT> const& b)
 {
     auto d2 = distance_sqr(a.center, b.center);
 
@@ -1052,7 +1053,8 @@ template <class ScalarT>
 // returns intersection points of two circles in 2D
 // for now does not work if circles are identical (result would be a circle2 again)
 template <class ScalarT>
-[[nodiscard]] constexpr optional<pair<pos<2, ScalarT>, pos<2, ScalarT>>> intersection(sphere_boundary<2, ScalarT> const& a, sphere_boundary<2, ScalarT> const& b)
+[[nodiscard]] constexpr cc::optional<pair<pos<2, ScalarT>, pos<2, ScalarT>>> intersection(sphere_boundary<2, ScalarT> const& a,
+                                                                                          sphere_boundary<2, ScalarT> const& b)
 {
     if (a.center == b.center && a.radius == b.radius)
         return {}; // degenerate case
@@ -1092,7 +1094,7 @@ template <class ScalarT>
 // returns intersection circle of sphere and sphere (normal points from a to b)
 // for now does not work if spheres are identical (result would be a sphere3 again)
 template <class ScalarT>
-[[nodiscard]] constexpr optional<sphere_boundary<2, ScalarT, 3>> intersection(sphere_boundary<3, ScalarT> const& a, plane<3, ScalarT> const& b)
+[[nodiscard]] constexpr cc::optional<sphere_boundary<2, ScalarT, 3>> intersection(sphere_boundary<3, ScalarT> const& a, plane<3, ScalarT> const& b)
 {
     auto const d = dot(a.center, b.normal) - b.dis;
     if (d > a.radius)
@@ -1107,7 +1109,7 @@ template <class ScalarT>
     return r;
 }
 template <class ScalarT>
-[[nodiscard]] constexpr optional<sphere_boundary<2, ScalarT, 3>> intersection(plane<3, ScalarT> const& a, sphere_boundary<3, ScalarT> const& b)
+[[nodiscard]] constexpr cc::optional<sphere_boundary<2, ScalarT, 3>> intersection(plane<3, ScalarT> const& a, sphere_boundary<3, ScalarT> const& b)
 {
     auto r = intersection(b, a);
     if (r.has_value())
@@ -1217,7 +1219,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<pair<ScalarT, ScalarT>> intersection_parameters(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
+[[nodiscard]] constexpr cc::optional<pair<ScalarT, ScalarT>> intersection_parameters(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
 {
     /// https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
     auto const denom = (seg_0.pos0.x - seg_0.pos1.x) * (seg_1.pos0.y - seg_1.pos1.y) - (seg_0.pos0.y - seg_0.pos1.y) * (seg_1.pos0.x - seg_1.pos1.x);
@@ -1239,7 +1241,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
+[[nodiscard]] constexpr cc::optional<ScalarT> intersection_parameter(segment<2, ScalarT> const& seg_0, segment<2, ScalarT> const& seg_1)
 {
     auto ip = intersection_parameters(seg_0, seg_1);
     if (ip.has_value())
@@ -1256,7 +1258,7 @@ template <class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<aabb<D, ScalarT>> intersection(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
+[[nodiscard]] constexpr cc::optional<aabb<D, ScalarT>> intersection(aabb<D, ScalarT> const& a, aabb<D, ScalarT> const& b)
 {
     for (auto i = 0; i < D; ++i)
     {
@@ -1286,7 +1288,7 @@ template <class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<ScalarT> intersection_parameter(segment<D, ScalarT> const& a, plane<D, ScalarT> const& p)
+[[nodiscard]] constexpr cc::optional<ScalarT> intersection_parameter(segment<D, ScalarT> const& a, plane<D, ScalarT> const& p)
 {
     auto denom = dot(p.normal, a.pos1 - a.pos0);
     if (denom == ScalarT(0))
@@ -1299,7 +1301,7 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(segment<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
+[[nodiscard]] constexpr cc::optional<segment<D, ScalarT>> intersection(segment<D, ScalarT> const& a, sphere<D, ScalarT> const& b)
 {
     // early-out: both segment points inside the sphere
     if ((distance_sqr(a.pos0, b.center) < pow2(b.radius)) && (distance_sqr(a.pos1, b.center) < pow2(b.radius)))
@@ -1334,7 +1336,7 @@ template <int D, class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr optional<segment<D, ScalarT>> intersection(sphere<D, ScalarT> const& b, segment<D, ScalarT> const& a)
+[[nodiscard]] constexpr cc::optional<segment<D, ScalarT>> intersection(sphere<D, ScalarT> const& b, segment<D, ScalarT> const& a)
 {
     return intersection(b, a);
 }
@@ -2341,7 +2343,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& t)
 {
     // classify vertices
     auto sign_v1 = signed_distance(t.pos0, plane) < 0 ? false : true;
@@ -2381,7 +2383,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(triangle<3, ScalarT> const& t, plane<3, ScalarT> const& plane)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(triangle<3, ScalarT> const& t, plane<3, ScalarT> const& plane)
 {
     return intersection(plane, t);
 }
@@ -2418,7 +2420,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(triangle<3, ScalarT> const& t1, triangle<3, ScalarT> const& t2)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(triangle<3, ScalarT> const& t1, triangle<3, ScalarT> const& t2)
 {
     // early out: check with plane clamped by triangle t1
     auto const plane_t1 = plane_of(t1);
@@ -2465,7 +2467,7 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(segment<3, ScalarT> const& seg, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr cc::optional<pos<3, ScalarT>> intersection(segment<3, ScalarT> const& seg, triangle<3, ScalarT> const& t)
 {
     dir<3, ScalarT> normal_t = normalize(cross((t.pos1 - t.pos0), (t.pos2 - t.pos0)));
 
@@ -2491,14 +2493,14 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<pos<3, ScalarT>> intersection(triangle<3, ScalarT> const& t, segment<3, ScalarT> const& seg)
+[[nodiscard]] constexpr cc::optional<pos<3, ScalarT>> intersection(triangle<3, ScalarT> const& t, segment<3, ScalarT> const& seg)
 {
     return intersection(seg, t);
 }
 
 // TODO: there might be a more effective way
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, aabb<3, ScalarT> const& bb) // NOT CONFIRMED
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, aabb<3, ScalarT> const& bb) // NOT CONFIRMED
 {
     line<3, ScalarT> segment_line = {s.pos0, normalize(s.pos1 - s.pos0)};
     auto param_insec = intersection_parameter(segment_line, bb);
@@ -2520,13 +2522,13 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(aabb<3, ScalarT> const& bb, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(aabb<3, ScalarT> const& bb, segment<3, ScalarT> const& s)
 {
     return intersection(s, bb);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, box<3, ScalarT> const& bx)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, box<3, ScalarT> const& bx)
 {
     // early-out: Both segment points inside of box
     if (contains(bx, s.pos0) && contains(bx, s.pos1))
@@ -2560,78 +2562,78 @@ template <class ScalarT>
 
 // segment3 - capsule3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, capsule<3, ScalarT> const& c)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, capsule<3, ScalarT> const& c)
 {
     return detail::intersection_segment_object_impl(s, c);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(capsule<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(capsule<3, ScalarT> const& c, segment<3, ScalarT> const& s)
 {
     return detail::intersection_segment_object_impl(s, c);
 }
 
 // segment3 - cylinder3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder<3, ScalarT> const& c)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder<3, ScalarT> const& c)
 {
     return detail::intersection_segment_object_impl(s, c);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(cylinder<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(cylinder<3, ScalarT> const& c, segment<3, ScalarT> const& s)
 {
     return detail::intersection_segment_object_impl(s, c);
 }
 
 // segment3 - ellipse3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, ellipse<3, ScalarT> const& e)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, ellipse<3, ScalarT> const& e)
 {
     return detail::intersection_segment_object_impl(s, e);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(ellipse<3, ScalarT> const& e, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(ellipse<3, ScalarT> const& e, segment<3, ScalarT> const& s)
 {
     return detail::intersection_segment_object_impl(s, e);
 }
 
 // segment3 - sphere3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, sphere<3, ScalarT> const& e)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, sphere<3, ScalarT> const& e)
 {
     return detail::intersection_segment_object_impl(s, e);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(sphere<3, ScalarT> const& e, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(sphere<3, ScalarT> const& e, segment<3, ScalarT> const& s)
 {
     return detail::intersection_segment_object_impl(s, e);
 }
 
 // segment3 - tube3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, tube<3, ScalarT> const& t)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, tube<3, ScalarT> const& t)
 {
     return detail::intersection_segment_object_impl(s, t);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(tube<3, ScalarT> const& t, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(tube<3, ScalarT> const& t, segment<3, ScalarT> const& s)
 {
     return detail::intersection_segment_object_impl(s, t);
 }
 
 // segment3 - cone3
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cone<3, ScalarT> const& c)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cone<3, ScalarT> const& c)
 {
     return detail::intersection_segment_object_impl(s, c);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr optional<segment<3, ScalarT>> intersection(cone<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(cone<3, ScalarT> const& c, segment<3, ScalarT> const& s)
 {
     return detail::intersection_segment_object_impl(s, c);
 }
