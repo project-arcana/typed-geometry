@@ -2,6 +2,10 @@
 
 #include <typed-geometry/tg-lean.hh>
 
+#include <typed-geometry/detail/color-literals.hh>
+
+#include <typed-geometry/functions/color/string-conversions.hh>
+
 // Feature/Color:
 // - color spaces (rgb, srgb, hsv, lab, ...)
 // - static handling of srgb (via types)

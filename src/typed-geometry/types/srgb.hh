@@ -1,5 +1,7 @@
 #pragma once
 
+#include <clean-core/fwd.hh>
+
 #include <typed-geometry/detail/color_traits.hh>
 #include <typed-geometry/types/scalars/default.hh>
 
@@ -40,7 +42,30 @@ struct srgb
 
     constexpr bool operator==(srgb const& v) const { return r == v.r && b == v.b && g == v.g; }
     constexpr bool operator!=(srgb const& v) const { return r != v.r || b != v.b || g != v.g; }
+
+    // NOTE: requires feature/color included
+    constexpr static srgb from_hex_string(cc::string_view s);
 };
+
+// TODO: 1 vs 255
+
+template <class T>
+const srgb<T> srgb<T>::black = {T(0), T(0), T(0)};
+template <class T>
+const srgb<T> srgb<T>::white = {T(255), T(255), T(255)};
+template <class T>
+const srgb<T> srgb<T>::red = {T(255), T(0), T(0)};
+template <class T>
+const srgb<T> srgb<T>::green = {T(0), T(255), T(0)};
+template <class T>
+const srgb<T> srgb<T>::blue = {T(0), T(0), T(255)};
+template <class T>
+const srgb<T> srgb<T>::cyan = {T(0), T(255), T(255)};
+template <class T>
+const srgb<T> srgb<T>::magenta = {T(255), T(0), T(255)};
+template <class T>
+const srgb<T> srgb<T>::yellow = {T(255), T(255), T(0)};
+
 
 template <class ScalarT>
 struct srgba
@@ -65,7 +90,29 @@ struct srgba
 
     constexpr bool operator==(srgba const& v) const { return r == v.r && b == v.b && g == v.g && a == v.a; }
     constexpr bool operator!=(srgba const& v) const { return r != v.r || b != v.b || g != v.g || a != v.a; }
+
+    // NOTE: requires feature/color included
+    constexpr static srgba from_hex_string(cc::string_view s);
 };
+
+template <class T>
+const srgba<T> srgba<T>::black = {T(0), T(0), T(0), T(255)};
+template <class T>
+const srgba<T> srgba<T>::white = {T(255), T(255), T(255), T(255)};
+template <class T>
+const srgba<T> srgba<T>::red = {T(255), T(0), T(0), T(255)};
+template <class T>
+const srgba<T> srgba<T>::green = {T(0), T(255), T(0), T(255)};
+template <class T>
+const srgba<T> srgba<T>::blue = {T(0), T(0), T(255), T(255)};
+template <class T>
+const srgba<T> srgba<T>::cyan = {T(0), T(255), T(255), T(255)};
+template <class T>
+const srgba<T> srgba<T>::magenta = {T(255), T(0), T(255), T(255)};
+template <class T>
+const srgba<T> srgba<T>::yellow = {T(255), T(255), T(0), T(255)};
+template <class T>
+const srgba<T> srgba<T>::transparent = {T(0), T(0), T(0), T(0)};
 
 // reflection
 template <class I, class ScalarT>

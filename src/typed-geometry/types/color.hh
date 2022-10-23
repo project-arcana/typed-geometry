@@ -1,5 +1,7 @@
 #pragma once
 
+#include <clean-core/fwd.hh>
+
 #include <typed-geometry/types/scalars/default.hh>
 #include "../detail/color_traits.hh"
 #include "../detail/comp_traits.hh"
@@ -39,6 +41,9 @@ struct color<3, ScalarT>
     static const color yellow;  ///< a solid yellow (1,1,0) color (NOTE: this is a static member, NOT a property)
 
     TG_DECLARE_COMP_TYPE_3(color);
+
+    // NOTE: requires feature/color included
+    constexpr static color from_hex_string(cc::string_view s);
 };
 
 template <class T>
@@ -80,6 +85,9 @@ struct color<4, ScalarT>
 
     constexpr color(ScalarT r, ScalarT g, ScalarT b) : r(r), g(g), b(b) {}
     constexpr color(color<3, ScalarT> const& rgb, ScalarT a = ScalarT(1)) : r(rgb.r), g(rgb.g), b(rgb.b), a(a) {}
+
+    // NOTE: requires feature/color included
+    constexpr static color from_hex_string(cc::string_view s);
 };
 
 template <class T>

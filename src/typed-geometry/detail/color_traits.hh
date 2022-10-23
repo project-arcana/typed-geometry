@@ -1,5 +1,7 @@
 #pragma once
 
+#include <clean-core/macros.hh>
+
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/detail/utility.hh>
 #include <typed-geometry/types/fwd.hh>
@@ -54,6 +56,8 @@ struct color_scalar<f32>
 {
     static constexpr f32 to_float(f32 v) { return v; }
     static constexpr f32 from_float(f32 v) { return v; }
+
+    static constexpr f32 one() { return 1.f; }
 };
 template <>
 struct color_scalar<u8>
@@ -64,6 +68,8 @@ struct color_scalar<u8>
         v *= 256;
         return u8(v < 0 ? 0 : v > 255 ? 255 : int(v));
     }
+
+    static constexpr u8 one() { return 255; }
 };
 }
 
