@@ -16,7 +16,7 @@ template <int D>
     else if constexpr (D == 4)
         return c.comp0 || c.comp1 || c.comp2 || c.comp3;
     else
-        static_assert(always_false<D>, "only up to 4D supported");
+        static_assert(always_false_v<D>, "only up to 4D supported");
 }
 
 template <int D>
@@ -31,6 +31,6 @@ template <int D>
     else if constexpr (D == 4)
         return c.comp0 && c.comp1 && c.comp2 && c.comp3;
     else
-        static_assert(always_false<D>, "only up to 4D supported");
+        static_assert(always_false_v<D>, "only up to 4D supported");
 }
 }

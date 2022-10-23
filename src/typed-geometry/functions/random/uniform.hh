@@ -7,6 +7,7 @@
 
 #include <typed-geometry/types/color.hh>
 #include <typed-geometry/types/pos.hh>
+#include <typed-geometry/types/quat.hh>
 #include <typed-geometry/types/range.hh>
 #include <typed-geometry/types/scalars/scalars.hh>
 
@@ -218,7 +219,7 @@ template <class Rng, class T>
 }
 
 template <class Rng, class Container>
-[[nodiscard]] constexpr auto uniform(Rng& rng, Container& c) -> decltype(c[c.size()])
+[[nodiscard]] constexpr auto uniform(Rng& rng, Container&& c) -> decltype(c[c.size()])
 {
     TG_CONTRACT(c.size() > 0 && "cannot pick from an empty container");
     return c[uniform(rng, u64(0), u64(c.size() - 1))];
@@ -492,7 +493,7 @@ template <int ObjectD, class ScalarT, int DomainD, class Rng>
     else if constexpr (ObjectD == 4)
         coeffs = {ls.y * ls.z * ls.w, ls.x * ls.z * ls.w, ls.x * ls.y * ls.w, ls.x * ls.y * ls.z};
     else
-        static_assert(always_false<ObjectD>, "dimension not supported");
+        static_assert(always_false_v<ObjectD>, "dimension not supported");
 
     auto probMax = max_element(coeffs);
 
@@ -832,6 +833,22 @@ struct sampler<dir<D, ScalarT>>
             auto l = length_sqr(p);
             if (l > ScalarT(0) && l <= ScalarT(1))
                 return tg::dir<D, ScalarT>(p / sqrt(l));
+        }
+    }
+};
+template <class ScalarT>
+struct sampler<quaternion<ScalarT>>
+{
+    template <class Rng>
+    constexpr static quaternion<ScalarT> uniform(Rng& rng)
+    {
+        auto ub = aabb<4, ScalarT>::minus_one_to_one;
+        while (true)
+        {
+            auto p = uniform_vec(rng, ub);
+            auto l = length_sqr(p);
+            if (l > ScalarT(0) && l <= ScalarT(1))
+                return tg::quaternion<ScalarT>(p / sqrt(l));
         }
     }
 };

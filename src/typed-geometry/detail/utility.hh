@@ -1,13 +1,14 @@
 #pragma once
 
+#include <cstdint>
 #include <type_traits>
 
 namespace tg
 {
-using u8 = unsigned char;
-using u16 = unsigned short;
-using u32 = unsigned int;
-using u64 = unsigned long long;
+using u8 = std::uint8_t;
+using u16 = std::uint16_t;
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
 
 using size_t = decltype(sizeof(0));
 
@@ -51,6 +52,9 @@ constexpr bool can_apply = detail::can_apply<Z, void, Ts...>::value;
 
 template <class...>
 constexpr bool always_false = false;
+/// same as always_false, but for non-type template parameters, e.g. always_false_v<Dimension>
+template <auto...>
+constexpr bool always_false_v = false;
 
 template <class...>
 using void_t = void;
@@ -81,7 +85,7 @@ struct pair
     }
 };
 template <class A, class B>
-pair(A const&, B const&)->pair<A, B>;
+pair(A const&, B const&) -> pair<A, B>;
 template <class I, class A, class B>
 constexpr void introspect(I&& i, pair<A, B>& p)
 {
@@ -179,7 +183,8 @@ To bit_cast(From f)
     static_assert(sizeof(From) == sizeof(To), "can only bitcast between same-size types");
 
     // NOTE: std::memcpy includes an std header which we want to avoid
-    union {
+    union
+    {
         From from;
         To to;
     } u;
@@ -391,11 +396,8 @@ using compact_size_t_typed = size_t_for<N, alignof(T)>;
 template <unsigned... digits>
 struct digits_to_string_literal
 {
-    static const char value[];
+    static constexpr const char value[] = {('0' + digits)..., 0};
 };
-
-template <unsigned... digits>
-constexpr char digits_to_string_literal<digits...>::value[] = {('0' + digits)..., 0};
 
 template <unsigned rem, unsigned... digits>
 struct number_to_string_literal_t : number_to_string_literal_t<rem / 10, rem % 10, digits...>

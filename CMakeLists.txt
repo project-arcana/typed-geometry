@@ -1,15 +1,18 @@
 cmake_minimum_required(VERSION 3.8)
 project(TypedGeometry)
 
-include(cmake/SourceGroup.cmake)
+if (NOT TARGET clean-core)
+    message(FATAL_ERROR "[typed-geometry] clean-core must be available")
+endif()
+
 include(cmake/IsCPUExtensionSupported.cmake)
 is_cpu_extension_supported(BMI2_SUPPORTED "bmi2")
 is_cpu_extension_supported(LZCNT_SUPPORTED "lzcnt")
 
 option(TG_EXPORT_LITERALS "if true, spills tg::literals into the global namespace (i.e. 180_deg works out of the box)" ON)
-option(TG_ENABLE_ASSERTIONS "if true, enables assertions (also in RelWithDebInfo)" ON)
-option(TG_ENABLE_INTERNAL_ASSERTIONS "if true, enables internally used assertions (requires TG_ENABLE_ASSERTIONS)" ON)
-option(TG_ENABLE_CONTRACTS "if true, enables contract assertions (requires TG_ENABLE_ASSERTIONS)" ON)
+option(TG_EIGEN_TESTS "Build typed-geometry tests that require eigen" OFF)
+option(TG_IMPLEMENTATION_REPORT "Test-case that generates implementation coverage" OFF)
+
 if(BMI2_SUPPORTED AND LZCNT_SUPPORTED)
     option(TG_ENABLE_FIXED_INT "if true, enables TGs fixed_int feature. Requires a modern CPU" ON)
 else()
@@ -30,29 +33,21 @@ if(NOT TG_ENABLE_FIXED_INT)
     list(FILTER SOURCES EXCLUDE REGEX ".*fixed_uint.*")
 endif()
 
-arcana_source_group(SOURCES)
 
-add_library(typed-geometry STATIC ${SOURCES})
-set_property(TARGET typed-geometry PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(typed-geometry PUBLIC "src")
+# =========================================
+# define library
 
-target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:DEBUG>:TG_DEBUG>)
-target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:RELEASE>:TG_RELEASE>)
-target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:RELWITHDEBINFO>:TG_RELWITHDEBINFO>)
+file(GLOB_RECURSE SOURCES "src/*.cc")
+file(GLOB_RECURSE HEADERS "src/*.hh")
 
-if (TG_ENABLE_ASSERTIONS)
-    target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:DEBUG>:TG_ENABLE_ASSERTIONS>)
-    target_compile_definitions(typed-geometry PUBLIC $<$<CONFIG:RELWITHDEBINFO>:TG_ENABLE_ASSERTIONS>)
-endif()
+arcana_add_library(TG typed-geometry SOURCES HEADERS)
 
-if (TG_ENABLE_INTERNAL_ASSERTIONS)
-    target_compile_definitions(typed-geometry PUBLIC TG_ENABLE_INTERNAL_ASSERTIONS)
-endif()
+target_include_directories(typed-geometry PUBLIC src/)
 
-if (TG_ENABLE_CONTRACTS)
-    target_compile_definitions(typed-geometry PUBLIC TG_ENABLE_CONTRACTS)
-endif()
+target_link_libraries(typed-geometry PUBLIC
+    clean-core
+)
 
 if (TG_EXPORT_LITERALS)
     target_compile_definitions(typed-geometry PUBLIC TG_EXPORT_LITERALS)

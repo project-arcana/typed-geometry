@@ -42,47 +42,46 @@ TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, f16, "f16");
 TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, f32, ""); // vec3, not fvec3
 TG_IMPL_ADD_TRAIT(type_name_prefix, char const*, f64, "d");
 
-TG_IMPL_ADD_TRAIT(is_scalar, bool, i8, true);
-TG_IMPL_ADD_TRAIT(is_scalar, bool, i16, true);
-TG_IMPL_ADD_TRAIT(is_scalar, bool, i32, true);
-TG_IMPL_ADD_TRAIT(is_scalar, bool, i64, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, signed char, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, signed short int, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, signed int, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, signed long int, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, signed long long int, true);
 
-TG_IMPL_ADD_TRAIT(is_scalar, bool, u8, true);
-TG_IMPL_ADD_TRAIT(is_scalar, bool, u16, true);
-TG_IMPL_ADD_TRAIT(is_scalar, bool, u32, true);
-TG_IMPL_ADD_TRAIT(is_scalar, bool, u64, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, unsigned char, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, unsigned short int, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, unsigned int, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, unsigned long int, true);
+TG_IMPL_ADD_TRAIT(is_scalar, bool, unsigned long long int, true);
 
 TG_IMPL_ADD_TRAIT(is_scalar, bool, f8, true);
 TG_IMPL_ADD_TRAIT(is_scalar, bool, f16, true);
 TG_IMPL_ADD_TRAIT(is_scalar, bool, f32, true);
 TG_IMPL_ADD_TRAIT(is_scalar, bool, f64, true);
 
-TG_IMPL_ADD_TRAIT(is_scalar, bool, long, true);
-TG_IMPL_ADD_TRAIT(is_scalar, bool, unsigned long, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, signed char, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, signed short int, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, signed int, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, signed long int, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, signed long long int, true);
 
-TG_IMPL_ADD_TRAIT(is_integer, bool, i8, true);
-TG_IMPL_ADD_TRAIT(is_integer, bool, i16, true);
-TG_IMPL_ADD_TRAIT(is_integer, bool, i32, true);
-TG_IMPL_ADD_TRAIT(is_integer, bool, i64, true);
-TG_IMPL_ADD_TRAIT(is_integer, bool, long, true);
+TG_IMPL_ADD_TRAIT(is_signed_integer, bool, signed char, true);
+TG_IMPL_ADD_TRAIT(is_signed_integer, bool, signed short int, true);
+TG_IMPL_ADD_TRAIT(is_signed_integer, bool, signed int, true);
+TG_IMPL_ADD_TRAIT(is_signed_integer, bool, signed long int, true);
+TG_IMPL_ADD_TRAIT(is_signed_integer, bool, signed long long int, true);
 
-TG_IMPL_ADD_TRAIT(is_signed_integer, bool, i8, true);
-TG_IMPL_ADD_TRAIT(is_signed_integer, bool, i16, true);
-TG_IMPL_ADD_TRAIT(is_signed_integer, bool, i32, true);
-TG_IMPL_ADD_TRAIT(is_signed_integer, bool, i64, true);
-TG_IMPL_ADD_TRAIT(is_signed_integer, bool, long, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, unsigned char, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, unsigned short int, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, unsigned int, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, unsigned long int, true);
+TG_IMPL_ADD_TRAIT(is_integer, bool, unsigned long long int, true);
 
-TG_IMPL_ADD_TRAIT(is_integer, bool, u8, true);
-TG_IMPL_ADD_TRAIT(is_integer, bool, u16, true);
-TG_IMPL_ADD_TRAIT(is_integer, bool, u32, true);
-TG_IMPL_ADD_TRAIT(is_integer, bool, u64, true);
-TG_IMPL_ADD_TRAIT(is_integer, bool, unsigned long, true);
-
-TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, u8, true);
-TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, u16, true);
-TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, u32, true);
-TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, u64, true);
-TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, unsigned long, true);
+TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, unsigned char, true);
+TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, unsigned short int, true);
+TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, unsigned int, true);
+TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, unsigned long int, true);
+TG_IMPL_ADD_TRAIT(is_unsigned_integer, bool, unsigned long long int, true);
 
 TG_IMPL_ADD_TRAIT(is_floating_point, bool, f8, true);
 TG_IMPL_ADD_TRAIT(is_floating_point, bool, f16, true);

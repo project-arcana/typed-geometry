@@ -170,6 +170,12 @@ template <class T>
 }
 
 template <class T>
+[[nodiscard]] constexpr fwd_diff<T> pow(fwd_diff<T> const& v, dont_deduce<T> const& p)
+{
+    return {pow(v.value, p), v.derivative * p * pow(v.value, p - 1)};
+}
+
+template <class T>
 [[nodiscard]] constexpr fwd_diff<T> log(fwd_diff<T> const& v)
 {
     return {log(v.value), v.derivative / v.value};

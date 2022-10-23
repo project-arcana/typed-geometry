@@ -137,30 +137,44 @@ template <class BaseT, class TraitsT>
     return aabb_of(p.base, apex_of(p));
 }
 
+namespace detail
+{
+template <int D, class T>
+constexpr void update_aabb_for(aabb<D, T>& bb, pos<D, T> const& p)
+{
+    bb.min = min(bb.min, p);
+    bb.max = max(bb.max, p);
+}
+template <int D, class T, class Prim>
+constexpr void update_aabb_for(aabb<D, T>& bb, Prim const& p)
+{
+    auto pbb = aabb_of(p);
+    bb.min = min(bb.min, pbb.min);
+    bb.max = max(bb.max, pbb.max);
+}
+}
+
 template <class PrimA, class PrimB, class... PrimsT>
 [[nodiscard]] constexpr auto aabb_of(PrimA const& pa, PrimB const& pb, PrimsT const&... prims) -> decltype(aabb_of(pa))
 {
-    auto ba = aabb_of(pa);
-    auto bb = aabb_of(pb);
-    static_assert(is_same<decltype(ba), decltype(bb)>, "all arguments must have the same aabb aabb type");
-    auto b = decltype(ba)(min(ba.min, bb.min), max(ba.max, bb.max));
-    return aabb_of(b, prims...);
+    auto bb = aabb_of(pa);
+    detail::update_aabb_for(bb, pb);
+    (detail::update_aabb_for(bb, prims), ...);
+    return bb;
 }
 
-template <class ContainerT>
-[[nodiscard]] constexpr auto aabb_of(ContainerT const& c) -> decltype(aabb_of(*c.begin()))
+template <class ContainerT, class TransformT = identity_fun>
+[[nodiscard]] constexpr auto aabb_of(ContainerT const& c, TransformT&& transform = {}) -> decltype(aabb_of(transform(*c.begin())))
 {
     auto it = c.begin();
     auto end = c.end();
     TG_ASSERT(it != end && "cannot build AABB of empty container");
 
-    auto bb = aabb_of(*it);
+    auto bb = aabb_of(transform(*it));
     ++it;
     while (it != end)
     {
-        auto rhs = aabb_of(*it);
-        bb = decltype(bb)(min(bb.min, rhs.min), max(bb.max, rhs.max));
-
+        detail::update_aabb_for(bb, transform(*it));
         ++it;
     }
 

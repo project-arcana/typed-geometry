@@ -26,6 +26,7 @@ public:
         TG_CONTRACT(has_value());
         return _value;
     }
+    [[nodiscard]] constexpr T value_or(T const& default_val) const { return has_value() ? _value : default_val; }
 
     [[nodiscard]] constexpr bool operator==(T const& rhs) const { return _has_value && _value == rhs; }
     [[nodiscard]] constexpr bool operator!=(T const& rhs) const { return !_has_value || _value != rhs; }
