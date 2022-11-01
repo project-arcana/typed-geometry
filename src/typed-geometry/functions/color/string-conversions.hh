@@ -43,7 +43,7 @@ constexpr int hex_from_str12(cc::string_view s)
         if (i0 == -1 || i1 == -1)
             return -1;
 
-        return i1 * 16 + i0;
+        return i0 * 16 + i1;
     }
 
     return -1;

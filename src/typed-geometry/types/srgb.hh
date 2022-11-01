@@ -73,7 +73,7 @@ struct srgba
     ScalarT r = static_cast<ScalarT>(0);
     ScalarT g = static_cast<ScalarT>(0);
     ScalarT b = static_cast<ScalarT>(0);
-    ScalarT a = color_scalar_from_float<ScalarT>(0);
+    ScalarT a = color_scalar_from_float<ScalarT>(1);
 
     static const srgba black;       ///< a solid opaque black (0,0,0,1) color (NOTE: this is a static member, NOT a property)
     static const srgba white;       ///< a solid opaque white (1,1,1,1) color (NOTE: this is a static member, NOT a property)

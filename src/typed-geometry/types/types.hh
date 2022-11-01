@@ -29,6 +29,7 @@
 
 #include "bezier.hh"
 
+#include "hsl.hh"
 #include "srgb.hh"
 
 #include "capped_array.hh"
