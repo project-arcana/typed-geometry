@@ -26,7 +26,7 @@ namespace
 {
     return "inline u64 mul(u64 lhs, u64 rhs, u64* high)\n"
            "{\n"
-           "    return _mulx_u64(lhs, rhs, high);\n"
+           "    return TG_MUL_U128(lhs, rhs, high);\n"
            "}\n";
 }
 
@@ -94,7 +94,7 @@ std::string generate_mul(int w_r, int w_a, int w_b)
 
     for (auto const& m : mul_intrin)
     {
-        result += "    " + l_of(m) + " = _mulx_u64(" + lhs_of(m.first) + ", " + rhs_of(m.second) + ", &" + h_of(m) + ");\n";
+        result += "    " + l_of(m) + " = TG_MUL_U128(" + lhs_of(m.first) + ", " + rhs_of(m.second) + ", &" + h_of(m) + ");\n";
     }
     for (auto const& m : mul)
     {
@@ -275,7 +275,7 @@ std::string generate_imul(int w_r, int w_a, int w_b)
 
     for (auto const& m : mul_intrin)
     {
-        result += "    " + l_of(m) + " = _mulx_u64(u64(" + lhs_of(m.first) + "), u64(" + rhs_of(m.second) + "), &" + h_of(m) + ");\n";
+        result += "    " + l_of(m) + " = TG_MUL_U128(u64(" + lhs_of(m.first) + "), u64(" + rhs_of(m.second) + "), &" + h_of(m) + ");\n";
     }
     for (auto const& m : mul)
     {
