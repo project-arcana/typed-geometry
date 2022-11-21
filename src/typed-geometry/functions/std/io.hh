@@ -9,7 +9,7 @@
 
 namespace tg
 {
-template <class T>
+template <class T, class = std::void_t<decltype(std::ostringstream() << std::declval<T>())>>
 std::string to_string(T const& v)
 {
     std::ostringstream ss;
