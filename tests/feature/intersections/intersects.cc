@@ -705,6 +705,30 @@ FUZZ_TEST("IntersectsBox2Box2")(tg::rng& rng)
     CHECK(intersects(box1, box2) == insec);
 }
 
+TEST("IntersectsTriangle2Triangle2")
+{
+    auto t1 = tg::triangle2({0.f, 0.f}, {2.f, 0.f}, {2.f, 2.f});
+    auto t2 = tg::triangle2({-1.f, -1.f}, {1.f, -1.f}, {1.f, 1.f});
+
+    CHECK(tg::intersects(t1, t2));
+
+    auto t3 = tg::triangle2({-2.f, -2.f}, {0.f, -0.5f}, {-2.f, -0.5f});
+
+    CHECK(!tg::intersects(t1, t3));
+}
+
+TEST("IntersectsTriangle3Triangle3")
+{
+    auto t1 = tg::triangle3({0.f, 0.f, 0.f}, {2.f, 0.f, 0.f}, {2.f, 2.f, 0.f});
+    auto t2 = tg::triangle3({-1.f, -1.f, 0.f}, {1.f, -1.f, 0.f}, {1.f, 1.f, 0.f});
+
+    CHECK(tg::intersects(t1, t2));
+
+    auto t3 = tg::triangle3({-2.f, -2.f, 0.f}, {0.f, -0.5f, 0.f}, {-2.f, -0.5f, 0.f});
+
+    CHECK(!tg::intersects(t1, t3));
+}
+
 TEST("IntersectsBox3Sphere3")
 {
     tg::sphere3 s1 = tg::sphere3(tg::pos3(0.0f, 0.0f, 0.0f), 5.0f);

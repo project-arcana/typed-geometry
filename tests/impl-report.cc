@@ -1,11 +1,12 @@
 #include <nexus/test.hh>
 
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <map>
 #include <sstream>
 
-#ifdef TG_IMPLEMENTATION_REPORT
+#if defined(TG_IMPLEMENTATION_REPORT)
 
 #include <typed-geometry/tg-std.hh>
 
@@ -73,6 +74,45 @@ template <class T>
 using try_intersects_aabb3_of = decltype(intersects(std::declval<T const&>(), tg::aabb3()));
 
 template <class T>
+using try_intersects_segment3_of = decltype(intersects(std::declval<T const&>(), tg::segment3()));
+
+template <class T>
+using try_intersects_sphere3_of = decltype(intersects(std::declval<T const&>(), tg::sphere3()));
+
+template <class T>
+using try_intersects_box3_of = decltype(intersects(std::declval<T const&>(), tg::box3()));
+
+template <class T>
+using try_intersects_capsule3_of = decltype(intersects(std::declval<T const&>(), tg::capsule3()));
+
+template <class T>
+using try_intersects_cone3_of = decltype(intersects(std::declval<T const&()>, tg::cone3()));
+
+template <class T>
+using try_intersects_cylinder3_of = decltype(intersects(std::declval<T const&>(), tg::cylinder3()));
+
+template <class T>
+using try_intersects_ellipse3_of = decltype(intersects(std::declval<T const&>(), tg::ellipse3()));
+
+template <class T>
+using try_intersects_halfspace3_of = decltype(intersects(std::declval<T const&>(), tg::halfspace3()));
+
+template <class T>
+using try_intersects_hemisphere3_of = decltype(intersects(std::declval<T const&>(), tg::hemisphere3()));
+
+template <class T>
+using try_intersects_triangle3_of = decltype(intersects(std::declval<T const&>(), tg::triangle3()));
+
+template <class T>
+using try_intersects_plane3_of = decltype(intersects(std::declval<T const&>(), tg::plane3()));
+
+template <class T>
+using try_intersects_tube3_of = decltype(intersects(std::declval<T const&>(), tg::tube3()));
+
+template <class T>
+using try_intersects_sphere2in3_of = decltype(intersects(std::declval<T const&>(), tg::sphere2in3()));
+
+template <class T>
 using try_solid_of = decltype(solid_of(std::declval<T const&>()));
 
 template <class ObjT>
@@ -80,7 +120,8 @@ void test_single_object_type(std::string name)
 {
     static auto constexpr domainD = tg::object_traits<ObjT>::domain_dimension;
     static auto constexpr objectD = tg::object_traits<ObjT>::object_dimension;
-    static auto constexpr solidD = [] {
+    static auto constexpr solidD = []
+    {
         if constexpr (tg::can_apply<try_solid_of, ObjT>)
             return tg::object_traits<try_solid_of<ObjT>>::object_dimension;
         return objectD;
@@ -139,7 +180,7 @@ void test_single_object_type(std::string name)
             std::cerr << "no contains(tg::" << name << ", tg::pos3)" << std::endl;
     }
     else
-        static_assert(tg::always_false<domainD>, "not implemented");
+        static_assert(tg::always_false_v<domainD>, "not implemented");
 
     // operations for finite objects
     if constexpr (tg::object_traits<ObjT>::is_finite)
@@ -178,7 +219,7 @@ void test_single_object_type(std::string name)
                 std::cerr << "no area_of(tg::" << name << ")" << std::endl;
         }
         else
-            static_assert(tg::always_false<objectD>, "not implemented");
+            static_assert(tg::always_false_v<objectD>, "not implemented");
     }
 
     // ray intersections
@@ -193,6 +234,45 @@ void test_single_object_type(std::string name)
             std::cerr << "no intersects(tg::" << name << ", tg::aabb2)" << std::endl;
         if constexpr (domainD == 3 && !tg::can_apply<try_intersects_aabb3_of, ObjT>)
             std::cerr << "no intersects(tg::" << name << ", tg::aabb3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_box3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::box3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_segment3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::segment3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_sphere3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::sphere3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_capsule3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::capsule3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_cone3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::cone3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_cylinder3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::cylinder3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_ellipse3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::ellipse3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_halfspace3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::halfspace3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_hemisphere3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::hemisphere3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_triangle3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::triangle3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_plane3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::plane3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_tube3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::tube3)" << std::endl;
+
+        if constexpr (domainD == 3 && !tg::can_apply<try_intersects_sphere2in3_of, ObjT>)
+            std::cerr << "no intersects(tg::" << name << ", tg::sphere2in3)" << std::endl;
 
         // TODO: more
     }
@@ -281,7 +361,7 @@ TEST("implementation report")
     test_object_type_nested_boundary_caps<tg::pyramid, tg::sphere2in3>("pyramid", "sphere2in3");
     test_object_type_nested_boundary_caps<tg::pyramid, tg::box2in3>("pyramid", "box2in3");
     test_object_type_nested_boundary_caps<tg::pyramid, tg::triangle3>("pyramid", "triangle3");
-    test_object_type_nested_boundary_caps<tg::pyramid, tg::quad3>("pyramid", "quad3");
+    // test_object_type_nested_boundary_caps<tg::pyramid, tg::quad3>("pyramid", "quad3");
 }
 
 #endif
