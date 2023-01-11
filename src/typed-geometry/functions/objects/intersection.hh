@@ -2450,6 +2450,8 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(tg::triangle<2, ScalarT> const& t1, tg::triangle<2, ScalarT> const& t2)
 {
+    // https://hal.inria.fr/inria-00072100/document
+
     auto const determin = [](tg::pos<2, ScalarT> pa, tg::pos<2, ScalarT> pb, tg::pos<2, ScalarT> pc) -> float
     {
         auto m = tg::mat<2, 2, ScalarT>::from_data_colwise({pa.x - pc.x, pb.x - pc.x, pa.y - pc.y, pb.y - pc.y});
@@ -2504,7 +2506,7 @@ template <class ScalarT>
     if (det_12 == 0 && (det_01 > 0 || det_02 > 0))
         return true;
 
-    // R1 or R2?
+    // R1 or R2
     if (!((det_ta0[0] > 0 && det_ta0[1] < 0 && det_ta0[2] < 0) || (det_ta0[0] > 0 && det_ta0[1] > 0 && det_ta0[2] < 0)))
         rotate(tb, ta, det_ta0);
 
@@ -2591,93 +2593,67 @@ template <class ScalarT>
     return true;
 }
 
-// triangle-triangle algorithm of devillers and guigue
 template <class ScalarT>
-bool devillers_tri(tg::triangle<3, ScalarT>& t1, tg::triangle<3, ScalarT>& t2)
+void rotate_devillers_triangle(tg::triangle<3, ScalarT>& ta, tg::triangle<3, ScalarT>& tb, tg::comp3& determinants, tg::comp3& determinants_t2)
 {
-    /// https://hal.inria.fr/inria-00072100/document
+    // https://hal.inria.fr/inria-00072100/document
+
+    ScalarT d01 = determinants[0] * determinants[1];
+    ScalarT d02 = determinants[0] * determinants[2];
+
+    if (d01 > 0.0f) // vertices 0 and 1 on one side
+    {
+        ta = {ta.pos2, ta.pos0, ta.pos1};
+        determinants = {determinants[2], determinants[0], determinants[1]};
+    }
+    else if (d02 > 0.0f) // vertices 0 and 2 on one side
+    {
+        ta = {ta.pos1, ta.pos2, ta.pos0};
+        determinants = {determinants[1], determinants[2], determinants[0]};
+    }
+    else if (determinants[0] == 0.f)
+    {
+        if (determinants[1] * determinants[2] < 0.f || determinants[1] == 0.f) // vertices 1 and 2 on different sides of plane and vertex 0 on plane
+        {
+            ta = {ta.pos2, ta.pos0, ta.pos1};
+            determinants = {determinants[2], determinants[0], determinants[1]};
+        }
+        else if (determinants[2] == 0.f) // vertices 0 and 2 on the plane
+        {
+            ta = {ta.pos1, ta.pos2, ta.pos0};
+            determinants = {determinants[1], determinants[2], determinants[0]};
+        }
+    }
+
+    // swap operation to map triangle1.pos0 to positive halfspace induced by plane of triangle2
+    if (determinants[0] < 0.f)
+    {
+        tb = {tb.pos0, tb.pos2, tb.pos1};
+        determinants = {-determinants[0], -determinants[1], -determinants[2]};
+        determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
+    }
+
+    else if (determinants[0] == 0.f && (determinants[1] * determinants[2] > 0))
+    {
+        if (determinants[1] > 0) // swap
+        {
+            tb = {tb.pos0, tb.pos2, tb.pos1};
+            determinants = {-determinants[0], -determinants[1], -determinants[2]};
+            determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
+        }
+    }
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(tg::triangle<3, ScalarT> const& t1, tg::triangle<3, ScalarT> const& t2)
+{
+    // https://hal.inria.fr/inria-00072100/document
+
     auto const determin = [](tg::pos<3, ScalarT> pa, tg::pos<3, ScalarT> pb, tg::pos<3, ScalarT> pc, tg::pos<3, ScalarT> pd) -> float
     {
         auto m = tg::mat<3, 3, ScalarT>::from_data_colwise(
             {pa.x - pd.x, pb.x - pd.x, pc.x - pd.x, pa.y - pd.y, pb.y - pd.y, pc.y - pd.y, pa.z - pd.z, pb.z - pd.z, pc.z - pd.z});
         return tg::determinant(m);
-    };
-
-    // rotate triangle so that pos0 is always the single vertex on one side
-    auto const rotate = [](tg::triangle<3, ScalarT>& triangle1, tg::triangle<3, ScalarT>& triangle2, tg::comp3& determinants, tg::comp3& determinants_t2) -> void
-    {
-        float d01 = determinants[0] * determinants[1];
-        float d02 = determinants[0] * determinants[2];
-
-        if (d01 > 0.0f) // vertices 0 and 1 on one side
-        {
-            triangle1 = {triangle1.pos2, triangle1.pos0, triangle1.pos1};
-            // determinants = {determinants[2], determinants[0], determinants[1]};
-            determinants = {determinants[2], determinants[0], determinants[1]};
-        }
-        else if (d02 > 0.0f) // vertices 0 and 2 on one side
-        {
-            triangle1 = {triangle1.pos1, triangle1.pos2, triangle1.pos0};
-            // determinants = {determinants[1], determinants[2], determinants[0]};
-            determinants = {determinants[1], determinants[2], determinants[0]};
-        }
-        else if (determinants[0] == 0.f)
-        {
-            if (determinants[1] * determinants[2] < 0.f || determinants[1] == 0.f) // vertices 1 and 2 on different sides of plane and vertex 0 on plane
-            {
-                triangle1 = {triangle1.pos2, triangle1.pos0, triangle1.pos1};
-                determinants = {determinants[2], determinants[0], determinants[1]};
-            }
-            else if (determinants[2] == 0.f) // vertices 0 and 2 on the plane
-            {
-                triangle1 = {triangle1.pos1, triangle1.pos2, triangle1.pos0};
-                determinants = {determinants[1], determinants[2], determinants[0]};
-            }
-        }
-
-        // swap operation to map triangle1.pos0 to positive halfspace induced by plane of triangle2
-        if (determinants[0] < 0.f)
-        {
-            triangle2 = {triangle2.pos0, triangle2.pos2, triangle2.pos1};
-            determinants = {-determinants[0], -determinants[1], -determinants[2]};
-            determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
-        }
-
-        else if (determinants[0] == 0.f && (determinants[1] * determinants[2] > 0))
-        {
-            if (determinants[1] > 0) // swap
-            {
-                triangle2 = {triangle2.pos0, triangle2.pos2, triangle2.pos1};
-                determinants = {-determinants[0], -determinants[1], -determinants[2]};
-                determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
-            }
-        }
-
-        // else if (determinants[1] == 0.f && (determinants[0] * determinants[2] > 0))
-        // {
-        //     triangle1 = {triangle1.pos1, triangle1.pos2, triangle1.pos0};
-        //     determinants = {determinants[1], determinants[2], determinants[0]};
-
-        //     if (determinants[0] > 0)
-        //     {
-        //         triangle2 = {triangle2.pos0, triangle2.pos2, triangle2.pos1};
-        //         determinants = {-determinants[0], -determinants[1], -determinants[2]};
-        //         determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
-        //     }
-        // }
-
-        // else if (determinants[2] == 0.f && (determinants[0] * determinants[1] > 0))
-        // {
-        //     triangle1 = {triangle1.pos2, triangle1.pos0, triangle1.pos1};
-        //     determinants = {determinants[2], determinants[0], determinants[1]};
-
-        //     if (determinants[0] > 0)
-        //     {
-        //         triangle2 = {triangle2.pos0, triangle2.pos2, triangle2.pos1};
-        //         determinants = {-determinants[0], -determinants[1], -determinants[2]};
-        //         determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
-        //     }
-        // }
     };
 
     auto det_t2_t1 = tg::comp3(determin(t2.pos0, t2.pos1, t2.pos2, t1.pos0), determin(t2.pos0, t2.pos1, t2.pos2, t1.pos1),
@@ -2706,37 +2682,19 @@ bool devillers_tri(tg::triangle<3, ScalarT>& t1, tg::triangle<3, ScalarT>& t2)
     auto det_t1_t2 = tg::comp3(determin(t1.pos0, t1.pos1, t1.pos2, t2.pos0), determin(t1.pos0, t1.pos1, t1.pos2, t2.pos1),
                                determin(t1.pos0, t1.pos1, t1.pos2, t2.pos2));
 
-    // auto dt1_01 = det_t1_t2[0] * det_t1_t2[1];
-    // auto dt1_02 = det_t1_t2[0] * det_t1_t2[2];
+    auto const dt1_01 = det_t1_t2[0] * det_t1_t2[1];
+    auto const dt1_02 = det_t1_t2[0] * det_t1_t2[2];
 
-    // // a) no insec of t2 with plane of t1
-    // if (dt1_01 > 0.f && dt1_02 > 0.f)
-    //     return false;
-
-    // circular permutation
-    rotate(t1, t2, det_t2_t1, det_t1_t2);
-    rotate(t2, t1, det_t1_t2, det_t2_t1);
-
-    return true;
-}
-
-
-template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(tg::triangle<3, ScalarT> const& t1, tg::triangle<3, ScalarT> const& t2)
-{
-    auto const determin = [](tg::pos<3, ScalarT> pa, tg::pos<3, ScalarT> pb, tg::pos<3, ScalarT> pc, tg::pos<3, ScalarT> pd) -> float
-    {
-        auto m = tg::mat<3, 3, ScalarT>::from_data_colwise(
-            {pa.x - pd.x, pb.x - pd.x, pc.x - pd.x, pa.y - pd.y, pb.y - pd.y, pc.y - pd.y, pa.z - pd.z, pb.z - pd.z, pc.z - pd.z});
-        return tg::determinant(m);
-    };
+    // a) no insec of t2 with plane of t1
+    if (dt1_01 > 0.f && dt1_02 > 0.f)
+        return false;
 
     tg::triangle<3, ScalarT> ta = t1;
     tg::triangle<3, ScalarT> tb = t2;
 
-    // setup for algorithm of devillers
-    if (!devillers_tri(ta, tb))
-        return false;
+    // circular permutation
+    rotate_devillers_triangle(ta, tb, det_t2_t1, det_t1_t2);
+    rotate_devillers_triangle(tb, ta, det_t1_t2, det_t2_t1);
 
     // decision tree
     if (determin(ta.pos0, ta.pos1, tb.pos0, tb.pos1) > 0)
@@ -2758,16 +2716,44 @@ template <class ScalarT>
         return tg::determinant(m);
     };
 
+    auto det_t2_t1 = tg::comp3(determin(t2.pos0, t2.pos1, t2.pos2, t1.pos0), determin(t2.pos0, t2.pos1, t2.pos2, t1.pos1),
+                               determin(t2.pos0, t2.pos1, t2.pos2, t1.pos2));
+
+    auto const dt2_01 = det_t2_t1[0] * det_t2_t1[1];
+    auto const dt2_02 = det_t2_t1[0] * det_t2_t1[2];
+
+    // a) no insec of t1 with plane of t2
+    if (dt2_01 > 0.f && dt2_02 > 0.f)
+        return {};
+
+    // b) coplanar -> case not yet handled (arbitrary polygonal return type required)
+    if (det_t2_t1[0] == det_t2_t1[1] && det_t2_t1[1] == det_t2_t1[2] && det_t2_t1[2] == 0.f)
+        return {};
+
+    auto det_t1_t2 = tg::comp3(determin(t1.pos0, t1.pos1, t1.pos2, t2.pos0), determin(t1.pos0, t1.pos1, t1.pos2, t2.pos1),
+                               determin(t1.pos0, t1.pos1, t1.pos2, t2.pos2));
+
+    auto const dt1_01 = det_t1_t2[0] * det_t1_t2[1];
+    auto const dt1_02 = det_t1_t2[0] * det_t1_t2[2];
+
+    // a) no insec of t2 with plane of t1
+    if (dt1_01 > 0.f && dt1_02 > 0.f)
+        return {};
+
     tg::triangle<3, ScalarT> ta = t1;
     tg::triangle<3, ScalarT> tb = t2;
 
-    // setup for algorithm of devillers and guigue -> triangle in general position
-    if (!tg::devillers_tri(ta, tb))
-        return {};
+    // circular permutation for triangle orientation
+    rotate_devillers_triangle(ta, tb, det_t2_t1, det_t1_t2);
+    rotate_devillers_triangle(tb, ta, det_t1_t2, det_t2_t1);
 
-    // check if coplanar -> case not handled (complex return types)
-    if (length(cross(normal_of(ta), normal_of(tb))) == 0.f)
-        return {};
+    // // setup for algorithm of devillers and guigue -> triangle in general position
+    // if (!tg::devillers_tri(ta, tb))
+    //     return {};
+
+    // // check if coplanar -> case not handled (complex return types)
+    // if (length(cross(normal_of(ta), normal_of(tb))) == 0.f)
+    //     return {};
 
     // decision tree
     tg::plane<3, ScalarT> p1 = plane_of(ta);

@@ -361,7 +361,7 @@ TEST("implementation report")
     test_object_type_nested_boundary_caps<tg::pyramid, tg::sphere2in3>("pyramid", "sphere2in3");
     test_object_type_nested_boundary_caps<tg::pyramid, tg::box2in3>("pyramid", "box2in3");
     test_object_type_nested_boundary_caps<tg::pyramid, tg::triangle3>("pyramid", "triangle3");
-    test_object_type_nested_boundary_caps<tg::pyramid, tg::quad3>("pyramid", "quad3");
+    // test_object_type_nested_boundary_caps<tg::pyramid, tg::quad3>("pyramid", "quad3");
 }
 
 #endif

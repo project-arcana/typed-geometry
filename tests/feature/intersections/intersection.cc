@@ -394,13 +394,12 @@ FUZZ_TEST("IntersectionTriangle3Triangle3")(tg::rng& rng)
     }
 
     { // b) no intersection
-        tg::aabb3 above_plane = tg::aabb3({-15.0f, 0.0f, -15.0f}, {15.0f, 15.0f, 15.0f});
+        tg::aabb3 above_plane = tg::aabb3({-15.0f, 0.5f, -15.0f}, {15.0f, 15.0f, 15.0f});
 
         auto pos1 = tg::uniform(rng, above_plane);
         auto pos2 = tg::uniform(rng, above_plane);
         auto pos3 = tg::uniform(rng, above_plane);
         tg::triangle3 t3 = {pos1, pos2, pos3};
-
         CHECK(!tg::intersection(t1, t3).has_value());
     }
 
@@ -419,7 +418,6 @@ FUZZ_TEST("IntersectionTriangle3Triangle3")(tg::rng& rng)
         CHECK(tg::intersection(t4, t5).has_value());
     }
 }
-
 
 FUZZ_TEST("IntersectionSegment3ConvexShapes3")(tg::rng& rng)
 {
