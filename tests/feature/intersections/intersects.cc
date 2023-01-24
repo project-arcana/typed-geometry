@@ -726,6 +726,7 @@ TEST("IntersectsTriangle3Triangle3")
 
     auto t3 = tg::triangle3({-2.f, -2.f, 0.f}, {0.f, -0.5f, 0.f}, {-2.f, -0.5f, 0.f});
 
+    auto insec = intersects(t1, t3);
     CHECK(!tg::intersects(t1, t3));
 }
 

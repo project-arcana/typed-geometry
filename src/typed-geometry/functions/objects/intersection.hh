@@ -286,6 +286,58 @@ template <class ScalarT, class B>
 
 template <class A, class B>
 using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
+
+// TODO: Signatur oke? Julius fragen
+template <class ScalarT>
+void rotate_devillers_triangle(tg::triangle<3, ScalarT>& ta, tg::triangle<3, ScalarT>& tb, tg::comp3& determinants, tg::comp3& determinants_t2)
+{
+    // https://hal.inria.fr/inria-00072100/document
+
+    ScalarT d01 = determinants[0] * determinants[1];
+    ScalarT d02 = determinants[0] * determinants[2];
+
+    if (d01 > 0.0f) // vertices 0 and 1 on one side
+    {
+        ta = {ta.pos2, ta.pos0, ta.pos1};
+        determinants = {determinants[2], determinants[0], determinants[1]};
+    }
+    else if (d02 > 0.0f) // vertices 0 and 2 on one side
+    {
+        ta = {ta.pos1, ta.pos2, ta.pos0};
+        determinants = {determinants[1], determinants[2], determinants[0]};
+    }
+    else if (determinants[0] == 0.f)
+    {
+        if (determinants[1] * determinants[2] < 0.f || determinants[1] == 0.f) // vertices 1 and 2 on different sides of plane and vertex 0 on plane
+        {
+            ta = {ta.pos2, ta.pos0, ta.pos1};
+            determinants = {determinants[2], determinants[0], determinants[1]};
+        }
+        else if (determinants[2] == 0.f) // vertices 0 and 2 on the plane
+        {
+            ta = {ta.pos1, ta.pos2, ta.pos0};
+            determinants = {determinants[1], determinants[2], determinants[0]};
+        }
+    }
+
+    // swap operation to map triangle1.pos0 to positive halfspace induced by plane of triangle2
+    if (determinants[0] < 0.f)
+    {
+        tb = {tb.pos0, tb.pos2, tb.pos1};
+        determinants = {-determinants[0], -determinants[1], -determinants[2]};
+        determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
+    }
+
+    else if (determinants[0] == 0.f && (determinants[1] * determinants[2] > 0))
+    {
+        if (determinants[1] > 0) // swap
+        {
+            tb = {tb.pos0, tb.pos2, tb.pos1};
+            determinants = {-determinants[0], -determinants[1], -determinants[2]};
+            determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
+        }
+    }
+}
 }
 
 
@@ -2594,57 +2646,6 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-void rotate_devillers_triangle(tg::triangle<3, ScalarT>& ta, tg::triangle<3, ScalarT>& tb, tg::comp3& determinants, tg::comp3& determinants_t2)
-{
-    // https://hal.inria.fr/inria-00072100/document
-
-    ScalarT d01 = determinants[0] * determinants[1];
-    ScalarT d02 = determinants[0] * determinants[2];
-
-    if (d01 > 0.0f) // vertices 0 and 1 on one side
-    {
-        ta = {ta.pos2, ta.pos0, ta.pos1};
-        determinants = {determinants[2], determinants[0], determinants[1]};
-    }
-    else if (d02 > 0.0f) // vertices 0 and 2 on one side
-    {
-        ta = {ta.pos1, ta.pos2, ta.pos0};
-        determinants = {determinants[1], determinants[2], determinants[0]};
-    }
-    else if (determinants[0] == 0.f)
-    {
-        if (determinants[1] * determinants[2] < 0.f || determinants[1] == 0.f) // vertices 1 and 2 on different sides of plane and vertex 0 on plane
-        {
-            ta = {ta.pos2, ta.pos0, ta.pos1};
-            determinants = {determinants[2], determinants[0], determinants[1]};
-        }
-        else if (determinants[2] == 0.f) // vertices 0 and 2 on the plane
-        {
-            ta = {ta.pos1, ta.pos2, ta.pos0};
-            determinants = {determinants[1], determinants[2], determinants[0]};
-        }
-    }
-
-    // swap operation to map triangle1.pos0 to positive halfspace induced by plane of triangle2
-    if (determinants[0] < 0.f)
-    {
-        tb = {tb.pos0, tb.pos2, tb.pos1};
-        determinants = {-determinants[0], -determinants[1], -determinants[2]};
-        determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
-    }
-
-    else if (determinants[0] == 0.f && (determinants[1] * determinants[2] > 0))
-    {
-        if (determinants[1] > 0) // swap
-        {
-            tb = {tb.pos0, tb.pos2, tb.pos1};
-            determinants = {-determinants[0], -determinants[1], -determinants[2]};
-            determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
-        }
-    }
-}
-
-template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(tg::triangle<3, ScalarT> const& t1, tg::triangle<3, ScalarT> const& t2)
 {
     // https://hal.inria.fr/inria-00072100/document
@@ -2670,11 +2671,16 @@ template <class ScalarT>
     if (det_t2_t1[0] == det_t2_t1[1] && det_t2_t1[1] == det_t2_t1[2] && det_t2_t1[2] == 0.f)
     {
         auto n = normal_of(t1);
+        // find appropriate projection plane
         auto proj_plane = dot(n, tg::dir<3, ScalarT>(0.f, 1.f, 0.f)) == 0.f ? tg::plane<3, ScalarT>({0.f, 0.f, 1.f}, tg::pos<3, ScalarT>::zero)
                                                                             : tg::plane<3, ScalarT>({0.f, 1.f, 0.f}, tg::pos<3, ScalarT>::zero);
-
-        auto t1_2D = tg::triangle<2, ScalarT>(xz(project(t1.pos0, proj_plane)), xz(project(t1.pos1, proj_plane)), xz(project(t1.pos2, proj_plane)));
-        auto t2_2D = tg::triangle<2, ScalarT>(xz(project(t2.pos0, proj_plane)), xz(project(t2.pos1, proj_plane)), xz(project(t2.pos2, proj_plane)));
+        // project triangles onto plane
+        auto t1_2D = proj_plane.normal.z == 0
+                         ? tg::triangle<2, ScalarT>(xz(project(t1.pos0, proj_plane)), xz(project(t1.pos1, proj_plane)), xz(project(t1.pos2, proj_plane)))
+                         : tg::triangle<2, ScalarT>(xy(project(t1.pos0, proj_plane)), xy(project(t1.pos1, proj_plane)), xy(project(t1.pos2, proj_plane)));
+        auto t2_2D = proj_plane.normal.z == 0
+                         ? tg::triangle<2, ScalarT>(xz(project(t2.pos0, proj_plane)), xz(project(t2.pos1, proj_plane)), xz(project(t2.pos2, proj_plane)))
+                         : tg::triangle<2, ScalarT>(xy(project(t2.pos0, proj_plane)), xy(project(t2.pos1, proj_plane)), xy(project(t2.pos2, proj_plane)));
 
         return intersects(t1_2D, t2_2D);
     }
@@ -2693,8 +2699,8 @@ template <class ScalarT>
     tg::triangle<3, ScalarT> tb = t2;
 
     // circular permutation
-    rotate_devillers_triangle(ta, tb, det_t2_t1, det_t1_t2);
-    rotate_devillers_triangle(tb, ta, det_t1_t2, det_t2_t1);
+    detail::rotate_devillers_triangle(ta, tb, det_t2_t1, det_t1_t2);
+    detail::rotate_devillers_triangle(tb, ta, det_t1_t2, det_t2_t1);
 
     // decision tree
     if (determin(ta.pos0, ta.pos1, tb.pos0, tb.pos1) > 0)
@@ -2744,8 +2750,8 @@ template <class ScalarT>
     tg::triangle<3, ScalarT> tb = t2;
 
     // circular permutation for triangle orientation
-    rotate_devillers_triangle(ta, tb, det_t2_t1, det_t1_t2);
-    rotate_devillers_triangle(tb, ta, det_t1_t2, det_t2_t1);
+    detail::rotate_devillers_triangle(ta, tb, det_t2_t1, det_t1_t2);
+    detail::rotate_devillers_triangle(tb, ta, det_t1_t2, det_t2_t1);
 
     // // setup for algorithm of devillers and guigue -> triangle in general position
     // if (!tg::devillers_tri(ta, tb))
