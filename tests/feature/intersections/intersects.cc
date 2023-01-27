@@ -3,6 +3,45 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectionTriangle3Triangle3")(tg::rng& rng)
+{
+    // a) Triangles in xz-plane and not intersecting
+    auto bb_l_planar = tg::aabb3({-10, 0, -10}, {-0.1f, 0, 10});
+    auto bb_r_planar = tg::aabb3({0.1f, 0, -10}, {10, 0, 10});
+
+    auto ta = tg::triangle3(tg::uniform(rng, bb_l_planar), tg::uniform(rng, bb_l_planar), tg::uniform(rng, bb_l_planar));
+    auto tb = tg::triangle3(tg::uniform(rng, bb_r_planar), tg::uniform(rng, bb_r_planar), tg::uniform(rng, bb_r_planar));
+
+    CHECK(!intersects(ta, tb));
+
+    // b) Tris in x-plane and intersecting
+    auto centroid_ta = tg::centroid_of(ta);
+    auto tc = tg::triangle3(tg::uniform(rng, bb_r_planar), tg::uniform(rng, bb_r_planar), centroid_ta);
+    auto insec = tg::intersects(ta, tc);
+
+    CHECK(intersects(ta, tc));
+
+    // c) non-coplanar and not intersecting
+    auto bb_l = tg::aabb3({-10, -10, -10}, {-0.1f, 10, 10});
+    auto bb_r = tg::aabb3({0.1f, -10, -10}, {10, 10, 10});
+
+    auto td = tg::triangle3(tg::uniform(rng, bb_l), tg::uniform(rng, bb_l), tg::uniform(rng, bb_l));
+    auto te = tg::triangle3(tg::uniform(rng, bb_r), tg::uniform(rng, bb_r), tg::uniform(rng, bb_r));
+
+    CHECK(!intersects(td, te));
+
+    // d) non-coplanar and intersecting
+    auto bb = tg::aabb3(-10, 10);
+
+    auto tf = tg::triangle3(tg::uniform(rng, bb), tg::uniform(rng, bb), tg::uniform(rng, bb));
+    auto tg_pos0 = tg::uniform(rng, bb);
+    auto centroid_tf = tg::centroid_of(tf);
+    auto p_elong_centroid = centroid_tf + (centroid_tf - tg_pos0);
+    auto tg = tg::triangle3(tg_pos0, p_elong_centroid, tg::uniform(rng, bb));
+
+    CHECK(intersects(tf, tg));
+}
+
 FUZZ_TEST("IntersectsSphere2in3Triangle3")(tg::rng& rng)
 {
     auto circ = tg::sphere2in3({0, 0, 0}, 1.f, {0.f, 1.f, 0.f});

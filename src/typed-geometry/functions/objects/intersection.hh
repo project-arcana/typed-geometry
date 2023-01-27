@@ -287,11 +287,11 @@ template <class ScalarT, class B>
 template <class A, class B>
 using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
 
-// TODO: Signatur oke? Julius fragen
+// circular permutation to the vertices of triangle ta such that ta.pos0 is the only vertex that lies on positive halfspace induced by tb
 template <class ScalarT>
 void rotate_devillers_triangle(tg::triangle<3, ScalarT>& ta, tg::triangle<3, ScalarT>& tb, tg::comp3& determinants, tg::comp3& determinants_t2)
 {
-    // https://hal.inria.fr/inria-00072100/document
+    // implementation of triangle permutation according to: https://hal.inria.fr/inria-00072100/document
 
     ScalarT d01 = determinants[0] * determinants[1];
     ScalarT d02 = determinants[0] * determinants[2];
@@ -2502,7 +2502,7 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(tg::triangle<2, ScalarT> const& t1, tg::triangle<2, ScalarT> const& t2)
 {
-    // https://hal.inria.fr/inria-00072100/document
+    // Implementation of: https://hal.inria.fr/inria-00072100/document
 
     auto const determin = [](tg::pos<2, ScalarT> pa, tg::pos<2, ScalarT> pb, tg::pos<2, ScalarT> pc) -> float
     {
@@ -2510,27 +2510,18 @@ template <class ScalarT>
         return tg::determinant(m);
     };
 
-    auto const counter_clock = [](tg::triangle<2, ScalarT>& tri_a) -> void
+    auto const counter_clock = [determin](tg::triangle<2, ScalarT>& tri_a) -> void
     {
-        if (tg::cross(tri_a.pos1 - tri_a.pos0, tri_a.pos2 - tri_a.pos0) < 0)
-            tri_a = tg::triangle<2, ScalarT>(tri_a.pos0, tri_a.pos2, tri_a.pos1);
+        // if (tg::cross(vec<2, ScalarT>(tri_a.pos1 - tri_a.pos0), vec<2, ScalarT>(tri_a.pos2 - tri_a.pos0)) < 0)
+        if (determin(tri_a.pos0, tri_a.pos1, tri_a.pos2) < 0)
+            tri_a = tg::triangle<2, ScalarT>(tri_a.pos0, tri_a.pos2, tri_a.pos1); // swap
     };
 
     auto const rotate = [determin](tg::triangle<2, ScalarT>& tri_b, tg::triangle<2, ScalarT>& tri_a, tg::comp3& determinants_a) -> void
     {
-        if (determinants_a[1] < 0 && determinants_a[2] > 0)
-        {
-            // rotate once
-            tri_b = tg::triangle<2, ScalarT>(tri_b.pos2, tri_b.pos0, tri_b.pos1);
-            // recompute determinants
-            determinants_a = tg::comp3(determin(tri_b.pos0, tri_b.pos1, tri_a.pos0), determin(tri_b.pos1, tri_b.pos2, tri_a.pos0),
-                                       determin(tri_b.pos2, tri_b.pos0, tri_a.pos0));
+        // rotate triangle vertices by one
+        tri_b = tg::triangle<2, ScalarT>(tri_b.pos2, tri_b.pos0, tri_b.pos1);
 
-            return;
-        }
-
-        // rotate twice
-        tri_b = tg::triangle<2, ScalarT>(tri_b.pos1, tri_b.pos2, tri_b.pos0);
         // recompute determinants
         determinants_a = tg::comp3(determin(tri_b.pos0, tri_b.pos1, tri_a.pos0), determin(tri_b.pos1, tri_b.pos2, tri_a.pos0),
                                    determin(tri_b.pos2, tri_b.pos0, tri_a.pos0));
@@ -2549,19 +2540,23 @@ template <class ScalarT>
     auto det_02 = det_ta0[0] * det_ta0[2];
 
 
-    if (det_01 > 0.f && det_12 > 0.f)
+    if (det_01 > 0.f && det_12 > 0.f) // ta.pos0 interior of tb
         return true;
 
-    if (det_01 == 0 && (det_12 > 0 || det_02 > 0))
+    if (det_01 == 0 && det_12 == 0 && det_02 == 0) // ta.pos0 lies on vertex of tb
         return true;
 
-    if (det_12 == 0 && (det_01 > 0 || det_02 > 0))
+    if (det_01 == 0 && ((det_ta0[1] > 0 && det_ta0[2] > 0) || (det_ta0[0] > 0 && det_ta0[2] > 0))) // ta.pos0 interior of edge of tb
         return true;
 
-    // R1 or R2
-    if (!((det_ta0[0] > 0 && det_ta0[1] < 0 && det_ta0[2] < 0) || (det_ta0[0] > 0 && det_ta0[1] > 0 && det_ta0[2] < 0)))
+    if (det_12 == 0 && ((det_ta0[0] > 0 && det_ta0[1] > 0) || (det_ta0[0] > 0 && det_ta0[2] > 0))) // ta.pos0 interior of edge of tb
+        return true;
+
+    // Rotate to Region1 or Region2
+    while (!(det_ta0[0] > 0 && det_ta0[2] < 0))
         rotate(tb, ta, det_ta0);
 
+    // decision tree
     // R1
     if (det_ta0[1] > 0)
     {
@@ -2581,6 +2576,7 @@ template <class ScalarT>
                 else if (determin(ta.pos1, ta.pos2, tb.pos0) < 0)
                     return false;
             }
+            return true;
         }
         // II.b
         else if (determin(tb.pos2, tb.pos0, ta.pos2) < 0)
@@ -2589,7 +2585,7 @@ template <class ScalarT>
         else if (determin(ta.pos1, ta.pos2, tb.pos2) < 0)
             return false;
         // IV.b
-        else if (determin(ta.pos0, tb.pos0, ta.pos2) > 0)
+        else if (determin(ta.pos0, tb.pos0, ta.pos2) < 0)
             return false;
 
         return true;
@@ -2607,13 +2603,20 @@ template <class ScalarT>
                 // IV.a
                 if (determin(ta.pos0, tb.pos1, ta.pos1) > 0)
                     return false;
+
+                return true;
             }
             // IV.b
             else if (determin(ta.pos0, tb.pos0, ta.pos2) < 0)
                 return false;
             // V.a
             else if (determin(tb.pos2, tb.pos0, ta.pos2) < 0)
-                return false;
+            {
+                if (determin(ta.pos1, tb.pos0, ta.pos2) > 0)
+                    return false;
+            }
+
+            return true;
         }
         // III.b
         else if (determin(ta.pos0, tb.pos1, ta.pos1) > 0)
@@ -2624,6 +2627,8 @@ template <class ScalarT>
         // V.b
         else if (determin(ta.pos1, ta.pos2, tb.pos1) < 0)
             return false;
+
+        return true;
     }
     // II.b
     else if (determin(tb.pos2, tb.pos0, ta.pos2) < 0)
