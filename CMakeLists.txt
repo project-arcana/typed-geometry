@@ -52,3 +52,7 @@ target_link_libraries(typed-geometry PUBLIC
 if (TG_EXPORT_LITERALS)
     target_compile_definitions(typed-geometry PUBLIC TG_EXPORT_LITERALS)
 endif()
+
+if(TG_IMPLEMENTATION_REPORT)
+    target_compile_definitions(typed-geometry PUBLIC TG_IMPLEMENTATION_REPORT)
+endif()
