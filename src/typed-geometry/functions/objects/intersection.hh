@@ -240,12 +240,16 @@ template <class ScalarT, class B>
     if (!insec.has_value())
         return {};
 
-    // case 2: One seg. point inside the cylinder and one outside -> intersection with boundary must exist
-    if (con_pos0 || con_pos1)
+    // case 2: One seg. point inside the convex object and one outside -> intersection with boundary must exist
+    if (con_pos0)
     {
-        // one point of the segment is inside the cylinder and one is outside -> intersection must exist
-        auto param = con_pos0 ? max(insec.value().start, insec.value().end) : min(insec.value().start, insec.value().end);
-        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * param, con_pos0 ? s.pos0 : s.pos1};
+        float param = (dot(s.pos1 - s.pos0, segment_line[insec.value().start]) > 0) ? insec.value().start : insec.value().end;
+        return segment<3, ScalarT>{s.pos0, segment_line.pos + segment_line.dir * param};
+    }
+    else if (con_pos1)
+    {
+        float param = (dot(s.pos0 - s.pos1, segment_line[insec.value().start]) > 0) ? insec.value().start : insec.value().end;
+        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * param, s.pos1};
     }
 
     // case 3: both points of segment outside of the convex object
@@ -253,6 +257,33 @@ template <class ScalarT, class B>
         return segment<3, ScalarT>{segment_line.pos + segment_line.dir * insec.value().start, segment_line.pos + segment_line.dir * insec.value().end};
 
     return {};
+}
+
+// segment - boundary object
+template <class ScalarT, class B>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection_segment_boundary_impl(segment<3, ScalarT> const& s, B const& b)
+{
+    // line extension of segment
+    auto const line = line3::from_points(s.pos0, s.pos1);
+    // intersection of line with boundary object
+    auto const params = intersection_parameter(line, b);
+
+    if (!params.any())
+        return {};
+
+    auto const dist = distance(s.pos0, s.pos1);
+    auto n_hits = 0;
+    tg::pos<3, ScalarT> ps[2];
+    // check if line intersections are within the segment range
+    for (auto i = 0; i < params.size(); ++i)
+    {
+        auto const p = params[i];
+        if (ScalarT(0) <= p && p <= dist)
+        {
+            ps[n_hits++] = line[p];
+        }
+    }
+    return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
 }
 
 template <class A, class B>
@@ -652,7 +683,7 @@ template <class ScalarT>
     return t;
 }
 
-// line - sphere
+// line - sphere_boundary
 template <int D, class ScalarT>
 [[nodiscard]] constexpr hits<2, ScalarT> intersection_parameter(line<D, ScalarT> const& l, sphere_boundary<D, ScalarT> const& s)
 {
@@ -2093,15 +2124,15 @@ template <class ScalarT>
 // ====================================== Checks if Object Intersects Object ======================================
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(segment<3, ScalarT> const& seg, sphere<2, ScalarT, 3> const& disk)
+[[nodiscard]] constexpr bool intersects(segment<3, ScalarT> const& segment, sphere<2, ScalarT, 3> const& disk)
 {
-    auto t = intersection(seg, tg::plane<3, ScalarT>(disk.normal, disk.center));
+    auto t = intersection(segment, tg::plane<3, ScalarT>(disk.normal, disk.center));
     return t.has_value() && distance_sqr(t.value(), disk.center) <= pow2(disk.radius);
 }
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& disk, segment<3, ScalarT> const& seg)
+[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& disk, segment<3, ScalarT> const& segment)
 {
-    return intersects(seg, disk);
+    return intersects(segment, disk);
 }
 
 template <class ScalarT>
@@ -2197,32 +2228,32 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects_conservative(frustum<3, ScalarT> const& f, sphere<3, ScalarT> const& s, dont_deduce<ScalarT> eps = ScalarT(0))
+[[nodiscard]] constexpr bool intersects_conservative(frustum<3, ScalarT> const& frustum, sphere<3, ScalarT> const& sphere, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     // if center is further away than radius, there cannot be any intersection
 
-    auto const d_nx = signed_distance(s.center, f.planes[f.plane_idx_neg_x]);
-    if (d_nx > s.radius + eps)
+    auto const d_nx = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_neg_x]);
+    if (d_nx > sphere.radius + eps)
         return false;
 
-    auto const d_ny = signed_distance(s.center, f.planes[f.plane_idx_neg_y]);
-    if (d_ny > s.radius + eps)
+    auto const d_ny = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_neg_y]);
+    if (d_ny > sphere.radius + eps)
         return false;
 
-    auto const d_nz = signed_distance(s.center, f.planes[f.plane_idx_neg_z]);
-    if (d_nz > s.radius + eps)
+    auto const d_nz = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_neg_z]);
+    if (d_nz > sphere.radius + eps)
         return false;
 
-    auto const d_px = signed_distance(s.center, f.planes[f.plane_idx_pos_x]);
-    if (d_px > s.radius + eps)
+    auto const d_px = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_pos_x]);
+    if (d_px > sphere.radius + eps)
         return false;
 
-    auto const d_py = signed_distance(s.center, f.planes[f.plane_idx_pos_y]);
-    if (d_py > s.radius + eps)
+    auto const d_py = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_pos_y]);
+    if (d_py > sphere.radius + eps)
         return false;
 
-    auto const d_pz = signed_distance(s.center, f.planes[f.plane_idx_pos_z]);
-    if (d_pz > s.radius + eps)
+    auto const d_pz = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_pos_z]);
+    if (d_pz > sphere.radius + eps)
         return false;
 
     // conservative approximation!
@@ -2230,21 +2261,21 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects_conservative(frustum<3, ScalarT> const& f, aabb<3, ScalarT> const& bb)
+[[nodiscard]] constexpr bool intersects_conservative(frustum<3, ScalarT> const& frustum, aabb<3, ScalarT> const& bb)
 {
     using halfspace_t = halfspace<3, ScalarT>;
 
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_x]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_x]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_y]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_y]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_z]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_z]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_x]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_x]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_y]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_y]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_z]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_z]), bb))
         return false;
 
     // conservative approximation!
@@ -2252,21 +2283,21 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects_conservative(frustum<3, ScalarT> const& f, box<3, ScalarT> const& bb)
+[[nodiscard]] constexpr bool intersects_conservative(frustum<3, ScalarT> const& frustum, box<3, ScalarT> const& box)
 {
     using halfspace_t = halfspace<3, ScalarT>;
 
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_x]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_x]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_y]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_y]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_z]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_z]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_x]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_x]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_y]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_y]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_z]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_z]), box))
         return false;
 
     // conservative approximation!
@@ -2274,28 +2305,28 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& f, sphere<3, ScalarT> const& s, dont_deduce<ScalarT> eps = ScalarT(0))
+[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& frustum, sphere<3, ScalarT> const& sphere, dont_deduce<ScalarT> eps = ScalarT(0))
 {
     // if center is further away than radius, there cannot be any intersection
 
-    auto const d_nx = signed_distance(s.center, f.planes[f.plane_idx_neg_x]);
-    if (d_nx > s.radius + eps)
+    auto const d_nx = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_neg_x]);
+    if (d_nx > sphere.radius + eps)
         return false;
 
-    auto const d_ny = signed_distance(s.center, f.planes[f.plane_idx_neg_y]);
-    if (d_ny > s.radius + eps)
+    auto const d_ny = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_neg_y]);
+    if (d_ny > sphere.radius + eps)
         return false;
 
-    auto const d_px = signed_distance(s.center, f.planes[f.plane_idx_pos_x]);
-    if (d_px > s.radius + eps)
+    auto const d_px = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_pos_x]);
+    if (d_px > sphere.radius + eps)
         return false;
 
-    auto const d_py = signed_distance(s.center, f.planes[f.plane_idx_pos_y]);
-    if (d_py > s.radius + eps)
+    auto const d_py = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_pos_y]);
+    if (d_py > sphere.radius + eps)
         return false;
 
-    auto const d_pz = signed_distance(s.center, f.planes[f.plane_idx_pos_z]);
-    if (d_pz > s.radius + eps)
+    auto const d_pz = signed_distance(sphere.center, frustum.planes[frustum.plane_idx_pos_z]);
+    if (d_pz > sphere.radius + eps)
         return false;
 
     // conservative approximation!
@@ -2303,19 +2334,19 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& f, aabb<3, ScalarT> const& bb)
+[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& frustum, aabb<3, ScalarT> const& bb)
 {
     using halfspace_t = halfspace<3, ScalarT>;
 
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_x]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_x]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_y]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_y]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_x]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_x]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_y]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_y]), bb))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_z]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_z]), bb))
         return false;
 
     // conservative approximation!
@@ -2323,19 +2354,19 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& f, box<3, ScalarT> const& bb)
+[[nodiscard]] constexpr bool intersects_conservative(inf_frustum<3, ScalarT> const& frustum, box<3, ScalarT> const& box)
 {
     using halfspace_t = halfspace<3, ScalarT>;
 
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_x]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_x]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_neg_y]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_neg_y]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_x]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_x]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_y]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_y]), box))
         return false;
-    if (!intersects(halfspace_t(f.planes[f.plane_idx_pos_z]), bb))
+    if (!intersects(halfspace_t(frustum.planes[frustum.plane_idx_pos_z]), box))
         return false;
 
     // conservative approximation!
@@ -2343,12 +2374,12 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& triangle)
 {
     // classify vertices
-    auto sign_v1 = signed_distance(t.pos0, plane) < 0 ? false : true;
-    auto sign_v2 = signed_distance(t.pos1, plane) < 0 ? false : true;
-    auto sign_v3 = signed_distance(t.pos2, plane) < 0 ? false : true;
+    auto sign_v1 = signed_distance(triangle.pos0, plane) < 0 ? false : true;
+    auto sign_v2 = signed_distance(triangle.pos1, plane) < 0 ? false : true;
+    auto sign_v3 = signed_distance(triangle.pos2, plane) < 0 ? false : true;
 
     // exclude some degenerate cases? e.g. vertices of triangle on same positions, angle constraints..
 
@@ -2363,18 +2394,18 @@ template <class ScalarT>
     // intersection exists (exactly 2 vertices on one side of the plane and exactly 1 vertex on the other side)
     if (iv == sign_v1)
     {
-        i1 = intersection(segment<3, ScalarT>(t.pos0, t.pos1), plane).value();
-        i2 = intersection(segment<3, ScalarT>(t.pos0, t.pos2), plane).value();
+        i1 = intersection(segment<3, ScalarT>(triangle.pos0, triangle.pos1), plane).value();
+        i2 = intersection(segment<3, ScalarT>(triangle.pos0, triangle.pos2), plane).value();
     }
     else if (iv == sign_v2)
     {
-        i1 = intersection(segment<3, ScalarT>(t.pos0, t.pos1), plane).value();
-        i2 = intersection(segment<3, ScalarT>(t.pos1, t.pos2), plane).value();
+        i1 = intersection(segment<3, ScalarT>(triangle.pos0, triangle.pos1), plane).value();
+        i2 = intersection(segment<3, ScalarT>(triangle.pos1, triangle.pos2), plane).value();
     }
     else if (iv == sign_v3)
     {
-        i1 = intersection(segment<3, ScalarT>(t.pos0, t.pos2), plane).value();
-        i2 = intersection(segment<3, ScalarT>(t.pos1, t.pos2), plane).value();
+        i1 = intersection(segment<3, ScalarT>(triangle.pos0, triangle.pos2), plane).value();
+        i2 = intersection(segment<3, ScalarT>(triangle.pos1, triangle.pos2), plane).value();
     }
     else
         return {};
@@ -2383,15 +2414,15 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(triangle<3, ScalarT> const& t, plane<3, ScalarT> const& plane)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(triangle<3, ScalarT> const& triangle, plane<3, ScalarT> const& plane)
 {
-    return intersection(plane, t);
+    return intersection(plane, triangle);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& plane, triangle<3, ScalarT> const& triangle)
 {
-    tg::array<pos<3, ScalarT>, 3> triangle_pos = {t.pos0, t.pos1, t.pos2};
+    tg::array<pos<3, ScalarT>, 3> triangle_pos = {triangle.pos0, triangle.pos1, triangle.pos2};
     ScalarT sign = 0;
 
     for (auto tr : triangle_pos)
@@ -2414,9 +2445,9 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, plane<3, ScalarT> const& plane)
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& triangle, plane<3, ScalarT> const& plane)
 {
-    return intersects(plane, t);
+    return intersects(plane, triangle);
 }
 
 template <class ScalarT>
@@ -2467,24 +2498,24 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<pos<3, ScalarT>> intersection(segment<3, ScalarT> const& seg, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr cc::optional<pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, triangle<3, ScalarT> const& triangle)
 {
-    dir<3, ScalarT> normal_t = normalize(cross((t.pos1 - t.pos0), (t.pos2 - t.pos0)));
+    dir<3, ScalarT> normal_t = normalize(cross((triangle.pos1 - triangle.pos0), (triangle.pos2 - triangle.pos0)));
 
-    plane<3, ScalarT> plane_t = plane<3, ScalarT>(normal_t, t.pos0);
+    plane<3, ScalarT> plane_t = plane<3, ScalarT>(normal_t, triangle.pos0);
     // intersection point segment-plane
-    auto insec = intersection(seg, plane_t);
+    auto insec = intersection(segment, plane_t);
     // early out
     if (!insec.has_value())
         return {};
 
     // insec in triangle?
-    dir<3, ScalarT> a = normalize(cross(t.pos1 - t.pos0, normal_t));
-    dir<3, ScalarT> b = normalize(cross(t.pos2 - t.pos1, normal_t));
-    dir<3, ScalarT> c = normalize(cross(t.pos0 - t.pos2, normal_t));
-    bool b_a = signed_distance(insec.value(), plane<3, ScalarT>(a, t.pos1)) <= 0 ? false : true;
-    bool b_b = signed_distance(insec.value(), plane<3, ScalarT>(b, t.pos2)) <= 0 ? false : true;
-    bool b_c = signed_distance(insec.value(), plane<3, ScalarT>(c, t.pos0)) <= 0 ? false : true;
+    dir<3, ScalarT> a = normalize(cross(triangle.pos1 - triangle.pos0, normal_t));
+    dir<3, ScalarT> b = normalize(cross(triangle.pos2 - triangle.pos1, normal_t));
+    dir<3, ScalarT> c = normalize(cross(triangle.pos0 - triangle.pos2, normal_t));
+    bool b_a = signed_distance(insec.value(), plane<3, ScalarT>(a, triangle.pos1)) <= 0 ? false : true;
+    bool b_b = signed_distance(insec.value(), plane<3, ScalarT>(b, triangle.pos2)) <= 0 ? false : true;
+    bool b_c = signed_distance(insec.value(), plane<3, ScalarT>(c, triangle.pos0)) <= 0 ? false : true;
 
     if (b_a == b_b && b_b == b_c)
         return insec;
@@ -2493,16 +2524,16 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<pos<3, ScalarT>> intersection(triangle<3, ScalarT> const& t, segment<3, ScalarT> const& seg)
+[[nodiscard]] constexpr cc::optional<pos<3, ScalarT>> intersection(triangle<3, ScalarT> const& triangle, segment<3, ScalarT> const& segment)
 {
-    return intersection(seg, t);
+    return intersection(segment, triangle);
 }
 
 // TODO: there might be a more effective way
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, aabb<3, ScalarT> const& bb) // NOT CONFIRMED
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, aabb<3, ScalarT> const& bb) // NOT CONFIRMED
 {
-    line<3, ScalarT> segment_line = {s.pos0, normalize(s.pos1 - s.pos0)};
+    line<3, ScalarT> segment_line = {segment.pos0, normalize(segment.pos1 - segment.pos0)};
     auto param_insec = intersection_parameter(segment_line, bb);
 
     if (!param_insec.has_value())
@@ -2513,29 +2544,29 @@ template <class ScalarT>
     auto b = param_insec.value().end;
 
     // intersection may exist
-    if (param_insec.value().start < length(s) && param_insec.value().end < length(s))
+    if (param_insec.value().start < length(segment) && param_insec.value().end < length(segment))
     {
-        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
+        return tg::segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
     }
 
     return {};
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(aabb<3, ScalarT> const& bb, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(aabb<3, ScalarT> const& bb, segment<3, ScalarT> const& segment)
 {
-    return intersection(s, bb);
+    return intersection(segment, bb);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, box<3, ScalarT> const& bx)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, box<3, ScalarT> const& box)
 {
     // early-out: Both segment points inside of box
-    if (contains(bx, s.pos0) && contains(bx, s.pos1))
-        return s;
+    if (contains(box, segment.pos0) && contains(box, segment.pos1))
+        return segment;
 
-    line<3, ScalarT> segment_line = {s.pos0, normalize(s.pos1 - s.pos0)};
-    auto param_insec = intersection_parameter(segment_line, bx);
+    line<3, ScalarT> segment_line = {segment.pos0, normalize(segment.pos1 - segment.pos0)};
+    auto param_insec = intersection_parameter(segment_line, box);
 
     if (!param_insec.has_value())
         return {};
@@ -2545,16 +2576,16 @@ template <class ScalarT>
     auto b = param_insec.value().end;
 
     // one point of the segment inside the box
-    if (contains(bx, s.pos0))
-        return segment<3, ScalarT>{s.pos0, segment_line.pos + segment_line.dir * b};
+    if (contains(box, segment.pos0))
+        return tg::segment<3, ScalarT>{segment.pos0, segment_line.pos + segment_line.dir * b};
 
-    if (contains(bx, s.pos1))
-        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, s.pos1};
+    if (contains(box, segment.pos1))
+        return tg::segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment.pos1};
 
     // intersection may exist
-    if (a < length(s) && b < length(s) && a >= 0 && b > 0)
+    if (a < length(segment) && b < length(segment) && a >= 0 && b > 0)
     {
-        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
+        return tg::segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
     }
 
     return {};
@@ -2562,112 +2593,134 @@ template <class ScalarT>
 
 // segment3 - capsule3
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, capsule<3, ScalarT> const& c)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, capsule<3, ScalarT> const& capsule)
 {
-    return detail::intersection_segment_object_impl(s, c);
+    return detail::intersection_segment_object_impl(segment, capsule);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(capsule<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(capsule<3, ScalarT> const& capsule, segment<3, ScalarT> const& segment)
 {
-    return detail::intersection_segment_object_impl(s, c);
+    return detail::intersection_segment_object_impl(segment, capsule);
 }
 
 // segment3 - cylinder3
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder<3, ScalarT> const& c)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, cylinder<3, ScalarT> const& cylinder)
 {
-    return detail::intersection_segment_object_impl(s, c);
+    return detail::intersection_segment_object_impl(segment, cylinder);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(cylinder<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(cylinder<3, ScalarT> const& cylinder, segment<3, ScalarT> const& segment)
 {
-    return detail::intersection_segment_object_impl(s, c);
+    return detail::intersection_segment_object_impl(segment, cylinder);
 }
 
 // segment3 - ellipse3
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, ellipse<3, ScalarT> const& e)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, ellipse<3, ScalarT> const& ellipse)
 {
-    return detail::intersection_segment_object_impl(s, e);
+    return detail::intersection_segment_object_impl(segment, ellipse);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(ellipse<3, ScalarT> const& e, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(ellipse<3, ScalarT> const& ellipse, segment<3, ScalarT> const& segment)
 {
-    return detail::intersection_segment_object_impl(s, e);
+    return detail::intersection_segment_object_impl(segment, ellipse);
 }
 
 // segment3 - sphere3
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, sphere<3, ScalarT> const& e)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, sphere<3, ScalarT> const& sphere)
 {
-    return detail::intersection_segment_object_impl(s, e);
+    return detail::intersection_segment_object_impl(segment, sphere);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(sphere<3, ScalarT> const& e, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(sphere<3, ScalarT> const& sphere, segment<3, ScalarT> const& segment)
 {
-    return detail::intersection_segment_object_impl(s, e);
-}
-
-// segment3 - tube3
-template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, tube<3, ScalarT> const& t)
-{
-    return detail::intersection_segment_object_impl(s, t);
-}
-
-template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(tube<3, ScalarT> const& t, segment<3, ScalarT> const& s)
-{
-    return detail::intersection_segment_object_impl(s, t);
+    return detail::intersection_segment_object_impl(segment, sphere);
 }
 
 // segment3 - cone3
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cone<3, ScalarT> const& c)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, cone<3, ScalarT> const& cone)
 {
-    return detail::intersection_segment_object_impl(s, c);
+    return detail::intersection_segment_object_impl(segment, cone);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(cone<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(cone<3, ScalarT> const& cone, segment<3, ScalarT> const& segment)
 {
-    return detail::intersection_segment_object_impl(s, c);
+    return detail::intersection_segment_object_impl(segment, cone);
+}
+
+// segment3 - tube3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, tube<3, ScalarT> const& tube)
+{
+    return detail::intersection_segment_boundary_impl(segment, tube);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(tube<3, ScalarT> const& tube, segment<3, ScalarT> const& segment)
+{
+    return detail::intersection_segment_boundary_impl(segment, tube);
 }
 
 // segment3 - cylinder_boundary
 template <class ScalarT>
-[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(segment<3, ScalarT> const& s, cylinder_boundary<3, ScalarT> const& c)
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, cylinder_boundary<3, ScalarT> const& cylinder)
 {
-    // TODO: This is a standard solution that can be applied to any boundary case
-    auto const line = line3::from_points(s.pos0, s.pos1);
-    auto const params = intersection_parameter(line, c);
-
-    if (!params.any())
-        return {};
-
-    auto const dist = distance(s.pos0, s.pos1);
-    auto n_hits = 0;
-    tg::pos<3, ScalarT> ps[2];
-    for (auto i = 0; i < params.size(); ++i)
-    {
-        auto const t = params[i];
-        if (ScalarT(0) <= t && t <= dist)
-        {
-            ps[n_hits++] = line[t];
-        }
-    }
-    return hits<2, tg::pos<3, ScalarT>>(ps, n_hits);
+    return detail::intersection_segment_boundary_impl(segment, cylinder);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr hits<2, tg::pos<3, ScalarT>> intersection(cylinder_boundary<3, ScalarT> const& c, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(cylinder_boundary<3, ScalarT> const& cylinder, segment<3, ScalarT> const& segment)
 {
-    return intersection(s, c);
+    return detail::intersection_segment_boundary_impl(segment, cylinder);
 }
+
+// segment3 - box_boundary3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, box_boundary<3, ScalarT> const& box)
+{
+    return detail::intersection_segment_boundary_impl(segment, box);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(box_boundary<3, ScalarT> const& box, segment<3, ScalarT> const& segment)
+{
+    return detail::intersection_segment_boundary_impl(segment, box);
+}
+
+// segment3 - capsule_boundary3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, capsule_boundary<3, ScalarT> const& capsule)
+{
+    return detail::intersection_segment_boundary_impl(segment, capsule);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersection(capsule_boundary<3, ScalarT> const& capsule, segment<3, ScalarT> const& segment)
+{
+    return detail::intersection_segment_boundary_impl(segment, capsule);
+}
+
+// segment3 - cone_boundary3
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersecion(segment<3, ScalarT> const& segment, cone_boundary<3, ScalarT> const& cone)
+{
+    return detail::intersection_segment_boundary_impl(segment, cone);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr hits<2, pos<3, ScalarT>> intersecion(cone_boundary<3, ScalarT> const& cone, segment<3, ScalarT> const& segment)
+{
+    return detail::intersection_segment_boundary_impl(segment, cone);
+}
+
 
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& a, box<3, ScalarT> const& b)
@@ -2792,31 +2845,31 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& s0, sphere<3, ScalarT> const& s1)
 {
-    return distance(a.center, b.center) <= (a.radius + b.radius);
+    return distance(s0.center, s1.center) <= (s0.radius + s1.radius);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& b, sphere<3, ScalarT> const& s)
+[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, sphere<3, ScalarT> const& sphere)
 {
     // early-out: sphere-center inside box
-    if (contains(b, s.center))
+    if (contains(box, sphere.center))
         return true;
 
-    array<pos<3, ScalarT>, 8> box_vertices = vertices_of(b);
+    array<pos<3, ScalarT>, 8> box_vertices = vertices_of(box);
     // box vertex inside the sphere
     for (auto const& v : box_vertices)
     {
-        if (length_sqr(v - s.center) < pow2(s.radius))
+        if (length_sqr(v - sphere.center) < pow2(sphere.radius))
             return true;
     }
 
-    array<segment<3, ScalarT>, 12> box_edges = edges_of(b);
+    array<segment<3, ScalarT>, 12> box_edges = edges_of(box);
     // box edge intersects sphere
     for (auto const& e : box_edges)
     {
-        if (intersects(e, s))
+        if (intersects(e, sphere))
             return true;
     }
 
@@ -2824,24 +2877,24 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& s, box<3, ScalarT> const& b)
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& sphere, box<3, ScalarT> const& box)
 {
-    return intersects(b, s);
+    return intersects(box, sphere);
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& a, sphere<3, ScalarT> const& b)
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& plane, sphere<3, ScalarT> const& sphere)
 {
-    if (distance(a, b.center) <= b.radius)
+    if (distance(plane, sphere.center) <= sphere.radius)
         return true;
 
     return false;
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& a, plane<3, ScalarT> const& b)
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& sphere, plane<3, ScalarT> const& plane)
 {
-    return intersects(b, a);
+    return intersects(plane, sphere);
 }
 
 // box3 -plane3
@@ -2887,7 +2940,7 @@ template <class ScalarT>
         return true;
 
     // intersection of box with triangle-plane
-    tg::plane<3, ScalarT> plane_of_triangle = tg::plane_of(triangle);
+    plane<3, ScalarT> plane_of_triangle = plane_of(triangle);
     if (!intersects(plane_of_triangle, box))
         return false;
 
@@ -2921,7 +2974,6 @@ template <class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr bool intersects(box<2, ScalarT> const& box, sphere<2, ScalarT> const& sphere)
 {
-    array<pos<2, ScalarT>, 4> vertices_box = vertices_of(box);
     array<segment<2, ScalarT>, 4> edges_box = edges_of(box);
 
     if (contains(box, sphere.center))
@@ -2943,28 +2995,28 @@ template <class ScalarT>
 }
 
 template <int D, class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<D, ScalarT> const& sphere, halfspace<D, ScalarT> const& hs)
+[[nodiscard]] constexpr bool intersects(sphere<D, ScalarT> const& sphere, halfspace<D, ScalarT> const& halfspace)
 {
-    if (dot(hs.normal, sphere.center) - hs.dis <= sphere.radius)
+    if (dot(halfspace.normal, sphere.center) - halfspace.dis <= sphere.radius)
         return true;
 
     return false;
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& hs, sphere<3, ScalarT> const& sphere)
+[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& halfspace, sphere<3, ScalarT> const& sphere)
 {
-    return intersects(sphere, hs);
+    return intersects(sphere, halfspace);
 }
 
 // TODO: optimized version
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, halfspace<3, ScalarT> const& hs)
+[[nodiscard]] constexpr bool intersects(box<3, ScalarT> const& box, halfspace<3, ScalarT> const& halfspace)
 {
     array<pos<3, ScalarT>, 8> vertices_box = vertices_of(box);
     for (auto const& v : vertices_box)
     {
-        if (dot(hs.normal, v) - hs.dis <= 0)
+        if (dot(halfspace.normal, v) - halfspace.dis <= 0)
             return true;
     }
 
@@ -2972,47 +3024,47 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& hs, box<3, ScalarT> const& box)
+[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& halfspace, box<3, ScalarT> const& box)
 {
-    return intersects(box, hs);
+    return intersects(box, halfspace);
 }
 
 // segment3 - halfspace3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(segment<3, ScalarT> const& s, halfspace<3, ScalarT> const& hs)
+[[nodiscard]] constexpr bool intersects(segment<3, ScalarT> const& segment, halfspace<3, ScalarT> const& halfspace)
 {
-    if ((dot(hs.normal, s.pos0) - hs.dis) <= 0 || (dot(hs.normal, s.pos1) - hs.dis) <= 0)
+    if ((dot(halfspace.normal, segment.pos0) - halfspace.dis) <= 0 || (dot(halfspace.normal, segment.pos1) - halfspace.dis) <= 0)
         return true;
 
     return false;
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& hs, segment<3, ScalarT> const& s)
+[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const& halfspace, segment<3, ScalarT> const& segment)
 {
-    return intersects(s, hs);
+    return intersects(segment, halfspace);
 }
 
 // triangle3 - sphere3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, sphere<3, ScalarT> const& s)
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& triangle, sphere<3, ScalarT> const& sphere)
 {
     // triangle vertex inside sphere
-    if (contains(s, t.pos0) || contains(s, t.pos1) || contains(s, t.pos2))
+    if (contains(sphere, triangle.pos0) || contains(sphere, triangle.pos1) || contains(sphere, triangle.pos2))
         return true;
 
-    plane<3, ScalarT> plane_t = plane_of(t);
+    plane<3, ScalarT> plane_t = plane_of(triangle);
 
     // check if the closest point on triangle to sphere center is inside the sphere
-    auto cp = closest_points(s.center, t);
+    auto cp = closest_points(sphere.center, triangle);
 
-    if (contains(s, cp.first) && contains(s, cp.second))
+    if (contains(sphere, cp.first) && contains(sphere, cp.second))
         return true;
 
     // triangle edge intersects sphere
-    for (auto const& e : edges_of(t))
+    for (auto const& e : edges_of(triangle))
     {
-        if (intersects(e, s))
+        if (intersects(e, sphere))
             return true;
     }
 
@@ -3020,30 +3072,30 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& s, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr bool intersects(sphere<3, ScalarT> const& sphere, triangle<3, ScalarT> const& triangle)
 {
-    return intersects(t, s);
+    return intersects(triangle, sphere);
 }
 
-// sphere2in3 - plane3
+// disk3 - plane3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& s, plane<3, ScalarT> const& p)
+[[nodiscard]] constexpr bool intersects(disk<3, ScalarT> const& disk, plane<3, ScalarT> const& plane)
 {
-    auto plane_s = tg::plane<3, ScalarT>(s.normal, s.center);
+    auto plane_s = tg::plane<3, ScalarT>(disk.normal, disk.center);
 
     // sphere center on plane
-    if (contains(p, s.center))
+    if (contains(plane, disk.center))
         return true;
 
     // no intersection if planes are parallel
-    if ((plane_s.normal == p.normal || plane_s.normal == -p.normal) && !contains(p, s.center))
+    if ((plane_s.normal == plane.normal || plane_s.normal == -plane.normal) && !contains(plane, disk.center))
         return false;
 
     // line intersection of two planes
-    auto insec = intersection(plane_s, p);
+    auto insec = intersection(plane_s, plane);
 
     // if distance of plane intersection is inside the sphere, intersection exists
-    if (distance_sqr(insec, s.center) <= pow2(s.radius))
+    if (distance_sqr(insec, disk.center) <= pow2(disk.radius))
         return true;
 
     return false;
@@ -3051,21 +3103,21 @@ template <class ScalarT>
 
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& p, sphere<2, ScalarT, 3> const& s)
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& plane, disk<3, ScalarT> const& disk)
 {
-    return intersects(s, p);
+    return intersects(disk, plane);
 }
 
 // plane3 - cone3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& p, cone<3, ScalarT> const& c)
+[[nodiscard]] constexpr bool intersects(plane<3, ScalarT> const& plane, cone<3, ScalarT> const& cone)
 {
     // cone base intersects the plane
-    if (intersects(c.base, p))
+    if (intersects(cone.base, plane))
         return true;
 
-    auto d_cone_tip = (dot(p.normal, apex_of(c)) - p.dis) >= 0;
-    auto d_cone_base = (dot(p.normal, c.base.center) - p.dis) >= 0;
+    auto d_cone_tip = (dot(plane.normal, apex_of(cone)) - plane.dis) >= 0;
+    auto d_cone_base = (dot(plane.normal, cone.base.center) - plane.dis) >= 0;
 
     // base and tip of the cone are on different sides of the plane
     if (d_cone_tip != d_cone_base)
@@ -3075,45 +3127,46 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(cone<3, ScalarT> const& c, plane<3, ScalarT> const& p)
+[[nodiscard]] constexpr bool intersects(cone<3, ScalarT> const& cone, plane<3, ScalarT> const& plane)
 {
-    return intersects(p, c);
+    return intersects(plane, cone);
 }
 
 // triangle3 - halfspace3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, halfspace<3, ScalarT> const hs)
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& triangle, halfspace<3, ScalarT> const halfspace)
 {
-    if ((dot(hs.normal, t.pos0) - hs.dis <= 0) || (dot(hs.normal, t.pos1) - hs.dis <= 0) || (dot(hs.normal, t.pos2) - hs.dis <= 0))
+    if ((dot(halfspace.normal, triangle.pos0) - halfspace.dis <= 0) || (dot(halfspace.normal, triangle.pos1) - halfspace.dis <= 0)
+        || (dot(halfspace.normal, triangle.pos2) - halfspace.dis <= 0))
         return true;
 
     return false;
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const hs, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr bool intersects(halfspace<3, ScalarT> const halfspace, triangle<3, ScalarT> const& triangle)
 {
-    return intersects(t, hs);
+    return intersects(triangle, halfspace);
 }
 
-// sphere2in3 - triangle3
+// disk3 - triangle3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(sphere<2, ScalarT, 3> const& s, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr bool intersects(disk<3, ScalarT> const& disk, triangle<3, ScalarT> const& triangle)
 {
-    // circle inside triangle or triangle vertex inside the circle
-    if (contains(s, centroid_of(t)) || contains(s, t.pos0) || contains(s, t.pos1) || contains(s, t.pos2))
+    // circle inside triangle or triangle vertex inside the disk
+    if (contains(disk, centroid_of(triangle)) || contains(disk, triangle.pos0) || contains(disk, triangle.pos1) || contains(disk, triangle.pos2))
         return true;
 
-    // area of triangle intersects with circle
-    auto cp = closest_points(s.center, t);
+    // area of triangle intersects with disk
+    auto cp = closest_points(disk.center, triangle);
 
-    if (contains(s, cp.first) && contains(s, cp.second))
+    if (contains(disk, cp.first) && contains(disk, cp.second))
         return true;
 
-    // triangle edge intersects with circle
-    for (auto const& e : edges_of(t))
+    // triangle edge intersects with disk
+    for (auto const& e : edges_of(triangle))
     {
-        if (intersects(e, s))
+        if (intersects(e, disk))
             return true;
     }
 
@@ -3121,29 +3174,29 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, sphere<2, ScalarT, 3> const& s)
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& triangle, disk<3, ScalarT> const& disk)
 {
-    return intersects(s, t);
+    return intersects(disk, triangle);
 }
 
 // cone3 - triangle3
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(cone<3, ScalarT> const& c, triangle<3, ScalarT> const& t)
+[[nodiscard]] constexpr bool intersects(cone<3, ScalarT> const& cone, triangle<3, ScalarT> const& triangle)
 {
-    auto mid_axis = tg::segment<3, ScalarT>(c.base.center, apex_of(c));
+    auto mid_axis = tg::segment<3, ScalarT>(cone.base.center, apex_of(cone));
 
     // area of the triangle intersects with cone
-    if (intersects(mid_axis, t))
+    if (intersects(mid_axis, triangle))
         return true;
 
     // triangle intersects with the cone base
-    if (intersects(c.base, t))
+    if (intersects(cone.base, triangle))
         return true;
 
     // at least one segment of triangle intersects with cone
-    for (auto const& e : edges_of(t))
+    for (auto const& e : edges_of(triangle))
     {
-        if (intersects(e, c))
+        if (intersects(e, cone))
             return true;
     }
 
@@ -3151,10 +3204,200 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
-[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t, cone<3, ScalarT> const& c)
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& triangle, cone<3, ScalarT> const& cone)
 {
-    return intersects(c, t);
+    return intersects(cone, triangle);
 }
 
+// segment3 - halfspace3
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, halfspace<3, ScalarT> const& halfspace)
+{
+    bool cont_pos0 = contains(halfspace, segment.pos0);
+    bool cont_pos1 = contains(halfspace, segment.pos1);
 
+    // both segment points inside the halfspace
+    if (cont_pos0 && cont_pos1)
+        return segment;
+
+    // check if there is an intersection with the plane of the halfspace
+    auto insec = intersection(segment, plane_of(halfspace));
+
+    if (!insec.has_value())
+        return {};
+
+    if (cont_pos0)
+        return tg::segment<3, ScalarT>{insec.value(), segment.pos0};
+
+    if (cont_pos1)
+        return tg::segment<3, ScalarT>{insec.value(), segment.pos1};
+
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(halfspace<3, ScalarT> const& halfspace, segment<3, ScalarT> const& segment)
+{
+    return intersection(segment, halfspace);
+}
+
+// segment3 - disk3
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<pos<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, disk<3, ScalarT> const& disk)
+{
+    auto plane = tg::plane3(disk.normal, disk.center);
+    // check if both seg points lie on same side of the circle
+    if (!intersects(segment, plane))
+        return {};
+
+    // seg points on different sides of the circle
+    auto insec = intersection(segment, plane);
+    if (!insec.has_value())
+        return {};
+
+    if (distance_sqr(insec.value(), disk.center) <= pow2(disk.radius))
+        return insec.value();
+
+    return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<pos<3, ScalarT>> intersection(disk<3, ScalarT> const& disk, segment<3, ScalarT> const& segment)
+{
+    return intersection(segment, disk);
+}
+
+// segment3 - hemisphere3
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& segment, hemisphere<3, ScalarT> const& hemisphere)
+{
+    // early-out: both seg points inside hemisphere
+    if (contains(hemisphere, segment.pos0) && contains(hemisphere, segment.pos1))
+        return segment;
+
+    // sphere extension of hemisphere
+    auto sp = sphere<3, ScalarT>(hemisphere.center, hemisphere.radius);
+
+    // intersection with sphere extension
+    auto insec_sp = intersection(segment, sp);
+
+    if (!insec_sp.has_value())
+        return {};
+
+    // halfspace spanned by hemisphere base containing the hemisphere
+    auto halfspace_hs = tg::halfspace<3, ScalarT>(-hemisphere.normal, hemisphere.center);
+
+    // intersection with halfspace
+    auto insec_hs = intersection(insec_sp.value(), halfspace_hs);
+
+    if (insec_hs.has_value())
+        return insec_hs.value();
+
+    else
+        return {};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(hemisphere<3, ScalarT> const& halfspace, segment<3, ScalarT> const& segment)
+{
+    return intersection(segment, halfspace);
+}
+
+// sphere3 - plane3
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<disk<3, ScalarT>> intersection(sphere<3, ScalarT> const& sphere, plane<3, ScalarT> const& plane)
+{
+    if (!intersects(sphere, plane))
+        return {};
+
+    // project sphere center onto plane
+    tg::pos<3, ScalarT> disk_center = project(sphere.center, plane);
+
+    // pythagoras
+    auto rad = sqrt(sphere.radius * sphere.radius - distance_sqr(sphere.center, disk_center));
+
+    return tg::disk<3, ScalarT>(disk_center, rad, plane.normal);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<sphere<2, ScalarT, 3>> intersection(plane<3, ScalarT> const& plane, sphere<3, ScalarT> const& sphere)
+{
+    return intersection(sphere, plane);
+}
+
+// plane3 - inf_cylinder3
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<ellipse<2, ScalarT, 3>> intersection(plane<3, ScalarT> const& plane, inf_cylinder<3, ScalarT> const& cylinder)
+{
+    // early-out: plane normal and cylinder axis are orthogonal
+    if (dot(plane.normal, cylinder.axis.dir) == 0)
+        return {};
+
+    // ellipse mid_point = intersection cylinder axis and plane
+    auto insec_mid_axis = tg::intersection(cylinder.axis, plane);
+    auto mid_point = insec_mid_axis.first();
+
+    // find semi axes
+    // vector orthogonal to cylinder axis and plane normal
+    vec<3, ScalarT> orth_vec1 = cross(cylinder.axis.dir, plane.normal);
+
+    if (length(orth_vec1) == 0)
+    {
+        // return will be a disk (i.e. ellipse with identical sized semi axes)
+        auto semi_vec1 = any_normal(cylinder.axis.dir) * cylinder.radius;
+        auto semi_vec2 = cylinder.radius * normalize(cross(semi_vec1, cylinder.axis.dir));
+        auto semi_axes = mat<2, 3, ScalarT>::from_cols(semi_vec1, semi_vec2);
+
+        return ellipse<2, ScalarT, 3>(mid_point, semi_axes);
+    }
+
+    // first semi-axis
+    vec<3, ScalarT> semi_vec1 = cylinder.radius * normalize(orth_vec1);
+
+    // vector orthogonal to plane_normal and orthogonal to orth_vec1
+    vec<3, ScalarT> orth_vec2 = cross(orth_vec1, plane.normal);
+
+    // second semi-axis
+    vec<3, ScalarT> semi_vec2 = cylinder.radius / (tg::sin(tg::angle_between(cylinder.axis.dir, plane.normal))) * normalize(orth_vec2);
+
+    auto semi_axes = mat<2, 3, ScalarT>::from_cols(semi_vec1, semi_vec2);
+
+    return ellipse<2, ScalarT, 3>(mid_point, semi_axes);
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<ellipse<2, ScalarT, 3>> intersection(inf_cylinder<3, ScalarT> const& t, plane<3, ScalarT> const& p)
+{
+    return intersection(p, t);
+}
+
+// disk3 - plane3
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(disk<3, ScalarT> const& disk, plane<3, ScalarT> const& plane)
+{
+    if (length(cross(disk.normal, plane.normal)) == 0)
+        return {};
+
+    auto disk_plane = plane_of(disk);
+
+    // intersection of circle_plane and plane results in line parallel to intersection of disk and plane
+    line<3, ScalarT> insec_line = intersection(plane, disk_plane);
+    auto sphere_disk = tg::sphere<3, ScalarT>(disk.center, disk.radius);
+
+    auto insec_sphere = intersection_parameter(insec_line, boundary_of(sphere_disk));
+
+    if (insec_sphere.size() < 1)
+        return {};
+
+    if (insec_sphere.size() == 1)
+        return segment<3, ScalarT>{insec_line[insec_sphere[0]], insec_line[insec_sphere[0]]};
+
+    return segment<3, ScalarT>{insec_line[insec_sphere[0]], insec_line[insec_sphere[1]]};
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(plane<3, ScalarT> const& plane, disk<3, ScalarT> const& disk)
+{
+    return intersection(disk, plane);
+}
 } // namespace tg
