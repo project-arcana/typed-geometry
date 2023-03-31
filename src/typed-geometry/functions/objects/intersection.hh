@@ -290,6 +290,61 @@ template <class ScalarT, class B>
 
 template <class A, class B>
 using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
+
+template <class A, class B>
+using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
+
+// circular permutation to the vertices of triangle ta such that ta.pos0 is the only vertex that lies on positive halfspace induced by tb
+template <class ScalarT>
+void rotate_devillers_triangle(triangle<3, ScalarT>& ta, triangle<3, ScalarT>& tb, comp<3, ScalarT>& determinants, comp<3, ScalarT>& determinants_t2)
+{
+    // implementation of triangle permutation according to: https://hal.inria.fr/inria-00072100/document
+
+    ScalarT d01 = determinants[0] * determinants[1];
+    ScalarT d02 = determinants[0] * determinants[2];
+
+    if (d01 > ScalarT(0)) // vertices 0 and 1 on one side
+    {
+        ta = {ta.pos2, ta.pos0, ta.pos1};
+        determinants = {determinants[2], determinants[0], determinants[1]};
+    }
+    else if (d02 > ScalarT(0)) // vertices 0 and 2 on one side
+    {
+        ta = {ta.pos1, ta.pos2, ta.pos0};
+        determinants = {determinants[1], determinants[2], determinants[0]};
+    }
+    else if (determinants[0] == ScalarT(0))
+    {
+        if (determinants[1] * determinants[2] < ScalarT(0) || determinants[1] == ScalarT(0)) // vertices 1 and 2 on different sides of plane and vertex 0 on plane
+        {
+            ta = {ta.pos2, ta.pos0, ta.pos1};
+            determinants = {determinants[2], determinants[0], determinants[1]};
+        }
+        else if (determinants[2] == ScalarT(0)) // vertices 0 and 2 on the plane
+        {
+            ta = {ta.pos1, ta.pos2, ta.pos0};
+            determinants = {determinants[1], determinants[2], determinants[0]};
+        }
+    }
+
+    // swap operation to map triangle1.pos0 to positive halfspace induced by plane of triangle2
+    if (determinants[0] < ScalarT(0))
+    {
+        tb = {tb.pos0, tb.pos2, tb.pos1};
+        determinants = {-determinants[0], -determinants[1], -determinants[2]};
+        determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
+    }
+
+    else if (determinants[0] == ScalarT(0) && (determinants[1] * determinants[2] > ScalarT(0)))
+    {
+        if (determinants[1] > 0) // swap
+        {
+            tb = {tb.pos0, tb.pos2, tb.pos1};
+            determinants = {-determinants[0], -determinants[1], -determinants[2]};
+            determinants_t2 = {determinants_t2[0], determinants_t2[2], determinants_t2[1]};
+        }
+    }
+}
 }
 
 
@@ -2453,50 +2508,295 @@ template <class ScalarT>
 }
 
 template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<2, ScalarT> const& t1, triangle<2, ScalarT> const& t2)
+{
+    // Implementation of: https://hal.inria.fr/inria-00072100/document
+
+    auto const determin = [](pos<2, ScalarT> pa, pos<2, ScalarT> pb, pos<2, ScalarT> pc) -> float
+    {
+        auto m = mat<2, 2, ScalarT>::from_data_colwise({pa.x - pc.x, pb.x - pc.x, pa.y - pc.y, pb.y - pc.y});
+        return determinant(m);
+    };
+
+    auto const counter_clock = [determin](tg::triangle<2, ScalarT>& tri_a) -> void
+    {
+        if (determin(tri_a.pos0, tri_a.pos1, tri_a.pos2) < ScalarT(0))
+            tri_a = triangle<2, ScalarT>(tri_a.pos0, tri_a.pos2, tri_a.pos1); // swap
+    };
+
+    auto const rotate = [determin](triangle<2, ScalarT>& tri_b, triangle<2, ScalarT>& tri_a, comp<3, ScalarT>& determinants_a) -> void
+    {
+        // rotate triangle vertices by one
+        tri_b = triangle<2, ScalarT>(tri_b.pos2, tri_b.pos0, tri_b.pos1);
+
+        // recompute determinants
+        determinants_a = comp<3, ScalarT>(determin(tri_b.pos0, tri_b.pos1, tri_a.pos0), determin(tri_b.pos1, tri_b.pos2, tri_a.pos0),
+                                          determin(tri_b.pos2, tri_b.pos0, tri_a.pos0));
+    };
+
+    triangle<2, ScalarT> ta = t1;
+    triangle<2, ScalarT> tb = t2;
+
+    // ensure counter-clockwise orientation
+    counter_clock(ta);
+    counter_clock(tb);
+
+    auto det_ta0 = tg::comp<3, ScalarT>(determin(tb.pos0, tb.pos1, ta.pos0), determin(tb.pos1, tb.pos2, ta.pos0), determin(tb.pos2, tb.pos0, ta.pos0));
+    auto det_01 = det_ta0[0] * det_ta0[1];
+    auto det_12 = det_ta0[1] * det_ta0[2];
+    auto det_02 = det_ta0[0] * det_ta0[2];
+
+
+    if (det_01 > ScalarT(0) && det_12 > ScalarT(0)) // ta.pos0 interior of tb
+        return true;
+
+    if (det_01 == ScalarT(0) && det_12 == ScalarT(0) && det_02 == ScalarT(0)) // ta.pos0 lies on vertex of tb
+        return true;
+
+    if (det_01 == ScalarT(0) && ((det_ta0[1] > ScalarT(0) && det_ta0[2] > ScalarT(0)) || (det_ta0[0] > ScalarT(0) && det_ta0[2] > ScalarT(0)))) // ta.pos0 interior of edge of tb
+        return true;
+
+    if (det_12 == 0 && ((det_ta0[0] > ScalarT(0) && det_ta0[1] > ScalarT(0)) || (det_ta0[0] > ScalarT(0) && det_ta0[2] > ScalarT(0)))) // ta.pos0 interior of edge of tb
+        return true;
+
+    // Rotate to Region1 or Region2
+    while (!(det_ta0[0] > ScalarT(0) && det_ta0[2] < ScalarT(0)))
+        rotate(tb, ta, det_ta0);
+
+    // decision tree
+    // R1
+    if (det_ta0[1] > ScalarT(0))
+    {
+        // I
+        if (determin(tb.pos2, tb.pos0, ta.pos1) >= ScalarT(0))
+        {
+            // II.a
+            if (determin(tb.pos2, ta.pos0, ta.pos1) < ScalarT(0))
+                return false;
+            // III.a
+            else if (determin(ta.pos0, tb.pos0, ta.pos1) < ScalarT(0))
+            {
+                // IV.a
+                if (determin(ta.pos0, tb.pos0, ta.pos2) < ScalarT(0))
+                    return false;
+                // V
+                else if (determin(ta.pos1, ta.pos2, tb.pos0) < ScalarT(0))
+                    return false;
+            }
+            return true;
+        }
+        // II.b
+        else if (determin(tb.pos2, tb.pos0, ta.pos2) < ScalarT(0))
+            return false;
+        // III.b
+        else if (determin(ta.pos1, ta.pos2, tb.pos2) < ScalarT(0))
+            return false;
+        // IV.b
+        else if (determin(ta.pos0, tb.pos0, ta.pos2) < ScalarT(0))
+            return false;
+
+        return true;
+    }
+
+    // R2
+    else if (determin(tb.pos2, tb.pos0, ta.pos1) >= ScalarT(0))
+    {
+        // II.a
+        if (determin(tb.pos1, tb.pos2, ta.pos1) >= ScalarT(0))
+        {
+            // III.a
+            if (determin(ta.pos0, tb.pos0, ta.pos1) >= ScalarT(0))
+            {
+                // IV.a
+                if (determin(ta.pos0, tb.pos1, ta.pos1) > ScalarT(0))
+                    return false;
+
+                return true;
+            }
+            // IV.b
+            else if (determin(ta.pos0, tb.pos0, ta.pos2) < ScalarT(0))
+                return false;
+            // V.a
+            else if (determin(tb.pos2, tb.pos0, ta.pos2) < ScalarT(0))
+            {
+                if (determin(ta.pos1, tb.pos0, ta.pos2) > ScalarT(0))
+                    return false;
+            }
+
+            return true;
+        }
+        // III.b
+        else if (determin(ta.pos0, tb.pos1, ta.pos1) > ScalarT(0))
+            return false;
+        // IV.c
+        else if (determin(tb.pos1, tb.pos2, ta.pos2) < ScalarT(0))
+            return false;
+        // V.b
+        else if (determin(ta.pos1, ta.pos2, tb.pos1) < ScalarT(0))
+            return false;
+
+        return true;
+    }
+    // II.b
+    else if (determin(tb.pos2, tb.pos0, ta.pos2) < ScalarT(0))
+        return false;
+    // III.c
+    else if (determin(ta.pos1, ta.pos2, tb.pos2) >= ScalarT(0))
+    {
+        // IV.d
+        if (determin(ta.pos2, ta.pos0, tb.pos0) < ScalarT(0))
+            return false;
+    }
+    // IV.e
+    else if (determin(ta.pos1, ta.pos2, tb.pos1) < ScalarT(0))
+        return false;
+    // V.c
+    else if (determin(tb.pos1, tb.pos2, ta.pos2) < ScalarT(0))
+        return false;
+
+    return true;
+}
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool intersects(triangle<3, ScalarT> const& t1, triangle<3, ScalarT> const& t2)
+{
+    // Implementation of https://hal.inria.fr/inria-00072100/document
+
+    auto const determin = [](pos<3, ScalarT> pa, pos<3, ScalarT> pb, pos<3, ScalarT> pc, pos<3, ScalarT> pd) -> float
+    {
+        auto m = mat<3, 3, ScalarT>::from_data_colwise(
+            {pa.x - pd.x, pb.x - pd.x, pc.x - pd.x, pa.y - pd.y, pb.y - pd.y, pc.y - pd.y, pa.z - pd.z, pb.z - pd.z, pc.z - pd.z});
+        return determinant(m);
+    };
+
+    auto det_t2_t1 = comp<3, ScalarT>(determin(t2.pos0, t2.pos1, t2.pos2, t1.pos0), determin(t2.pos0, t2.pos1, t2.pos2, t1.pos1),
+                                      determin(t2.pos0, t2.pos1, t2.pos2, t1.pos2));
+
+    auto const dt2_01 = det_t2_t1[0] * det_t2_t1[1];
+    auto const dt2_02 = det_t2_t1[0] * det_t2_t1[2];
+
+    // a) no insec of t1 with plane of t2
+    if (dt2_01 > ScalarT(0) && dt2_02 > ScalarT(0))
+        return false;
+
+    // b) coplanar -> all dets are 0
+    if (det_t2_t1[0] == det_t2_t1[1] && det_t2_t1[1] == det_t2_t1[2] && det_t2_t1[2] == ScalarT(0))
+    {
+        auto n = normal_of(t1);
+        // find appropriate projection plane
+        auto proj_plane = dot(n, tg::dir<3, ScalarT>(0.f, 1.f, 0.f)) == 0.f ? plane<3, ScalarT>({0.f, 0.f, 1.f}, pos<3, ScalarT>::zero)
+                                                                            : plane<3, ScalarT>({0.f, 1.f, 0.f}, pos<3, ScalarT>::zero);
+        // project triangles onto plane
+        auto t1_2D = proj_plane.normal.z == ScalarT(0)
+                         ? triangle<2, ScalarT>(xz(project(t1.pos0, proj_plane)), xz(project(t1.pos1, proj_plane)), xz(project(t1.pos2, proj_plane)))
+                         : triangle<2, ScalarT>(xy(project(t1.pos0, proj_plane)), xy(project(t1.pos1, proj_plane)), xy(project(t1.pos2, proj_plane)));
+        auto t2_2D = proj_plane.normal.z == ScalarT(0)
+                         ? triangle<2, ScalarT>(xz(project(t2.pos0, proj_plane)), xz(project(t2.pos1, proj_plane)), xz(project(t2.pos2, proj_plane)))
+                         : triangle<2, ScalarT>(xy(project(t2.pos0, proj_plane)), xy(project(t2.pos1, proj_plane)), xy(project(t2.pos2, proj_plane)));
+
+        return intersects(t1_2D, t2_2D);
+    }
+
+    auto det_t1_t2 = comp<3, ScalarT>(determin(t1.pos0, t1.pos1, t1.pos2, t2.pos0), determin(t1.pos0, t1.pos1, t1.pos2, t2.pos1),
+                                      determin(t1.pos0, t1.pos1, t1.pos2, t2.pos2));
+
+    auto const dt1_01 = det_t1_t2[0] * det_t1_t2[1];
+    auto const dt1_02 = det_t1_t2[0] * det_t1_t2[2];
+
+    // a) no insec of t2 with plane of t1
+    if (dt1_01 > ScalarT(0) && dt1_02 > ScalarT(0))
+        return false;
+
+    triangle<3, ScalarT> ta = t1;
+    triangle<3, ScalarT> tb = t2;
+
+    // circular permutation
+    detail::rotate_devillers_triangle(ta, tb, det_t2_t1, det_t1_t2);
+    detail::rotate_devillers_triangle(tb, ta, det_t1_t2, det_t2_t1);
+
+    // decision tree
+    if (determin(ta.pos0, ta.pos1, tb.pos0, tb.pos1) > ScalarT(0))
+        return false;
+
+    if (determin(ta.pos0, ta.pos2, tb.pos2, tb.pos0) > ScalarT(0))
+        return false;
+
+    return true;
+}
+
+template <class ScalarT>
 [[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(triangle<3, ScalarT> const& t1, triangle<3, ScalarT> const& t2)
 {
-    // early out: check with plane clamped by triangle t1
-    auto const plane_t1 = plane_of(t1);
+    // Implementation of https://hal.inria.fr/inria-00072100/document
 
-    if (!intersects(t2, plane_t1))
+    auto const determin = [](pos<3, ScalarT> pa, pos<3, ScalarT> pb, pos<3, ScalarT> pc, pos<3, ScalarT> pd) -> float
+    {
+        auto m = mat<3, 3, ScalarT>::from_data_colwise(
+            {pa.x - pd.x, pb.x - pd.x, pc.x - pd.x, pa.y - pd.y, pb.y - pd.y, pc.y - pd.y, pa.z - pd.z, pb.z - pd.z, pc.z - pd.z});
+        return determinant(m);
+    };
+
+    auto det_t2_t1 = comp<3, ScalarT>(determin(t2.pos0, t2.pos1, t2.pos2, t1.pos0), determin(t2.pos0, t2.pos1, t2.pos2, t1.pos1),
+                                      determin(t2.pos0, t2.pos1, t2.pos2, t1.pos2));
+
+    auto const dt2_01 = det_t2_t1[0] * det_t2_t1[1];
+    auto const dt2_02 = det_t2_t1[0] * det_t2_t1[2];
+
+    // a) no insec of t1 with plane of t2
+    if (dt2_01 > ScalarT(0) && dt2_02 > ScalarT(0))
         return {};
 
-    array<pos<3, ScalarT>, 2> insecs;
-    array<segment<3, ScalarT>, 3> segments_t1 = edges_of(t1);
-    array<segment<3, ScalarT>, 3> segments_t2 = edges_of(t2);
-    int insec_count = 0;
+    // b) coplanar -> case not yet handled (arbitrary polygonal return type required)
+    if (det_t2_t1[0] == det_t2_t1[1] && det_t2_t1[1] == det_t2_t1[2] && det_t2_t1[2] == 0.f)
+        return {};
 
-    // check intersection of t1 segments with t2
-    for (auto const& s : segments_t1)
+    auto det_t1_t2 = comp<3, ScalarT>(determin(t1.pos0, t1.pos1, t1.pos2, t2.pos0), determin(t1.pos0, t1.pos1, t1.pos2, t2.pos1),
+                                      determin(t1.pos0, t1.pos1, t1.pos2, t2.pos2));
+
+    auto const dt1_01 = det_t1_t2[0] * det_t1_t2[1];
+    auto const dt1_02 = det_t1_t2[0] * det_t1_t2[2];
+
+    // a) no insec of t2 with plane of t1
+    if (dt1_01 > ScalarT(0) && dt1_02 > ScalarT(0))
+        return {};
+
+    triangle<3, ScalarT> ta = t1;
+    triangle<3, ScalarT> tb = t2;
+
+    // circular permutation for triangle orientation
+    detail::rotate_devillers_triangle(ta, tb, det_t2_t1, det_t1_t2);
+    detail::rotate_devillers_triangle(tb, ta, det_t1_t2, det_t2_t1);
+
+    // decision tree
+    plane<3, ScalarT> p1 = plane_of(ta);
+    plane<3, ScalarT> p2 = plane_of(tb);
+
+    // intersects tests
+    if (determin(ta.pos0, ta.pos1, tb.pos0, tb.pos1) > ScalarT(0))
+        return {};
+
+    else if (determin(ta.pos0, ta.pos2, tb.pos2, tb.pos0) > ScalarT(0))
+        return {};
+
+    // decision tree to find intersection segment
+    else if (determin(ta.pos0, ta.pos2, tb.pos1, tb.pos0) > ScalarT(0))
     {
-        auto insec = intersection(s, t2);
-
-        if (insec.has_value())
+        if (determin(ta.pos0, ta.pos1, tb.pos2, tb.pos0) > ScalarT(0))
         {
-            insecs[insec_count++] = insec.value();
+            return segment<3, ScalarT>{intersection(tg::inf_of(segment<3, ScalarT>{ta.pos0, ta.pos2}), p2).first(),
+                                       intersection(tg::inf_of(segment<3, ScalarT>{tb.pos0, tb.pos2}), p1).first()};
         }
 
-        if (insec_count >= 2)
-            return segment<3, ScalarT>{insecs[0], insecs[1]};
+        return segment<3, ScalarT>{intersection(tg::inf_of(segment<3, ScalarT>{ta.pos0, ta.pos2}), p2).first(),
+                                   intersection(tg::inf_of(segment<3, ScalarT>{tb.pos0, tb.pos1}), p1).first()};
     }
 
-    // check intersection of t2 segments with t1
-    for (auto const& s : segments_t2)
-    {
-        auto insec = intersection(s, t1);
-        if (insec.has_value())
-        {
-            insecs[insec_count++] = insec.value();
-        }
+    else if (determin(ta.pos0, ta.pos1, tb.pos2, tb.pos0) > ScalarT(0))
+        return segment<3, ScalarT>{intersection(tg::inf_of(segment<3, ScalarT>{tb.pos0, tb.pos1}), p1).first(),
+                                   intersection(tg::inf_of(segment<3, ScalarT>{tb.pos0, tb.pos2}), p1).first()};
 
-        if (insec_count >= 2)
-            return segment<3, ScalarT>{insecs[0], insecs[1]};
-    }
-
-    if (insec_count == 1)
-        return segment<3, ScalarT>{insecs[0], insecs[0]};
-
-    return {};
+    return segment<3, ScalarT>{intersection(tg::inf_of(segment<3, ScalarT>{tb.pos0, tb.pos1}), p1).first(),
+                               intersection(tg::inf_of(segment<3, ScalarT>{ta.pos0, ta.pos1}), p2).first()};
 }
 
 template <class ScalarT>
@@ -2533,9 +2833,13 @@ template <class ScalarT>
 
 // TODO: there might be a more effective way
 template <class ScalarT>
-[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& seg, aabb<3, ScalarT> const& bb) // NOT CONFIRMED
+[[nodiscard]] constexpr cc::optional<segment<3, ScalarT>> intersection(segment<3, ScalarT> const& seg, aabb<3, ScalarT> const& bb)
 {
-    line<3, ScalarT> segment_line = {seg.pos0, normalize(seg.pos1 - seg.pos0)};
+    // segment entirely inside the bounding box
+    if (contains(bb, seg.pos0) && contains(bb, seg.pos1))
+        return seg;
+
+    auto segment_line = line<3, ScalarT>(seg.pos0, normalize(seg.pos1 - seg.pos0));
     auto param_insec = intersection_parameter(segment_line, bb);
 
     if (!param_insec.has_value())
@@ -2544,9 +2848,10 @@ template <class ScalarT>
     // parameters
     auto a = param_insec.value().start;
     auto b = param_insec.value().end;
+    auto length_seg = length(seg);
 
     // intersection may exist
-    if (param_insec.value().start < length(seg) && param_insec.value().end < length(seg))
+    if (a < length_seg && b < length_seg)
     {
         return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
     }

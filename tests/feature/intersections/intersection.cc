@@ -3,6 +3,47 @@
 
 #include <typed-geometry/tg-std.hh>
 
+FUZZ_TEST("IntersectionSegment3AABB3", reproduce(3861400383))(tg::rng& rng)
+{
+    auto bb = tg::aabb3(-10.f, 10.f);
+    auto bb_up = tg::aabb3({-10.f, 10.5f, -10.f}, {10.f, 20.f, 10.f});
+    auto bb_low = tg::aabb3({-10.f, -20.f, -10.f}, {10.f, -10.5f, 10.f});
+
+    { // a) segment inside the bounding box
+        auto seg = tg::segment3(tg::uniform(rng, bb), tg::uniform(rng, bb));
+
+        auto insec = tg::intersection(seg, bb);
+
+        CHECK(insec.has_value());
+        CHECK(tg::distance_sqr(insec.value().pos0, seg.pos0) == nx::approx(0.f));
+        CHECK(tg::distance_sqr(insec.value().pos1, seg.pos1) == nx::approx(0.f));
+    }
+
+    { // b) one segment point inside the bounding box
+        auto seg = tg::segment3(tg::uniform(rng, bb), tg::pos3(15.f, 15.f, 15.f));
+
+        auto insec = tg::intersection(seg, bb);
+
+        CHECK(insec.has_value());
+    }
+
+    { // c) both segment points outside, but intersecting the bounding box
+        auto seg = tg::segment3(tg::uniform(rng, bb_up), tg::uniform(rng, bb_low));
+
+        auto insec = tg::intersection(seg, bb);
+
+        CHECK(insec.has_value());
+    }
+
+    { // d) both segment points outside and not intersecting the bounding box
+        auto seg = tg::segment3(tg::uniform(rng, bb_up), tg::uniform(rng, bb_up));
+
+        auto insec = tg::intersection(seg, bb);
+
+        CHECK(!insec.has_value());
+    }
+}
+
 FUZZ_TEST("IntersectionDisk3Plane3")(tg::rng& rng)
 {
     auto plane_xz = tg::plane3({0.f, 1.f, 0.f}, tg::pos3::zero);
@@ -71,7 +112,7 @@ FUZZ_TEST("IntersectionPlane3Tube3")(tg::rng& rng)
     }
 }
 
-FUZZ_TEST("IntersectionSegment3BoundaryObject", reproduce(1350042543))(tg::rng& rng)
+FUZZ_TEST("IntersectionSegment3BoundaryObject")(tg::rng& rng)
 {
     { // a) segment3 - cylinder_boundary3
         auto cylinder_b = tg::cylinder_boundary<3, float>({0.f, -2.f, 0.f}, {0.f, 2.f, 0.f}, 1.f);
