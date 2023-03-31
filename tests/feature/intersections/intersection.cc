@@ -20,13 +20,13 @@ FUZZ_TEST("IntersectionDisk3Plane3")(tg::rng& rng)
     { // b) xz-plane and disk with random orientation - intersection through origin
         auto disk = tg::disk3(tg::pos3::zero, 1.f, tg::uniform<tg::dir3>(rng));
 
-        bool insec_exists = (disk.normal == plane_xz.normal) ? false : true;
+        bool insec_exists = !(disk.normal == plane_xz.normal);
         auto insec = tg::intersection(disk, plane_xz);
 
         CHECK(insec.has_value() == insec_exists);
         CHECK(tg::contains(insec.value(), tg::pos3::zero));
     }
-    //
+
     { // c) disk in plane - no intersection
         auto rng_dir = tg::uniform<tg::dir3>(rng);
         auto disk = tg::disk3(tg::pos3::zero, 1.f, rng_dir);
@@ -71,7 +71,7 @@ FUZZ_TEST("IntersectionPlane3Tube3")(tg::rng& rng)
     }
 }
 
-FUZZ_TEST("IntersectionSegment3BoundaryObject")(tg::rng& rng)
+FUZZ_TEST("IntersectionSegment3BoundaryObject", reproduce(1350042543))(tg::rng& rng)
 {
     { // a) segment3 - cylinder_boundary3
         auto cylinder_b = tg::cylinder_boundary<3, float>({0.f, -2.f, 0.f}, {0.f, 2.f, 0.f}, 1.f);
@@ -181,7 +181,7 @@ FUZZ_TEST("IntersectionSegment3Hemisphere3")(tg::rng& rng)
         auto pos1 = tg::uniform(rng, above_hemis_base);
 
         auto seg = tg::segment3{pos0, pos1};
-        bool insec_exists = tg::length(pos1 - pos0) > 0.f ? true : false;
+        bool insec_exists = tg::length(pos1 - pos0) > 0.f;
         auto insec = tg::intersection(seg, hemis);
 
         CHECK(insec.has_value() == insec_exists);
