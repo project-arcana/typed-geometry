@@ -18,9 +18,10 @@ CC_FORCE_INLINE char add_with_carry(char carry, unsigned long long a, unsigned l
     return _addcarry_u64(carry, a, b, out);
 #else
 #pragma message("[typed-geometry] Using fallback for add_with_carry(...). This may be slow!")
-    unsigned long long tmp = a + b;
-    unsigned long long vector = (a & b) ^ ((a ^ b) & ~tmp);
-    return char(vector >> 63);
+    unsigned long long tmp = b + carry;
+    a += tmp;
+    *out = a;
+    return (tmp < carry) + (a < tmp);
 #endif
 }
 
