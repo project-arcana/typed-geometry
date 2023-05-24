@@ -438,7 +438,7 @@ template <class A, class B>
 //}
 
 // if an optional hit_interval intersection parameter is available, use that
-template <class A, class B, std::enable_if_t<decltype(intersection_parameter(std::declval<A>(), std::declval<B>()).value())::is_hit_interval, int> = 0>
+template <class A, class B, std::enable_if_t<std::decay_t<decltype(intersection_parameter(std::declval<A>(), std::declval<B>()).value())>::is_hit_interval, int> = 0>
 [[nodiscard]] constexpr auto intersection(A const& a, B const& b)
     -> cc::optional<segment<object_traits<A>::domain_dimension, typename object_traits<A>::scalar_t>>
 {

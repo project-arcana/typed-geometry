@@ -191,7 +191,7 @@ FUZZ_TEST("IntersectionSphere3Plane3")(tg::rng& rng)
         auto insec = tg::intersection(sphere, plane);
 
         CHECK(insec.has_value());
-        CHECK(tg::distance_sqr(insec.value().center, {0.f, 0.f, 0.f}) == nx::approx(0.f));
+        CHECK(tg::distance_sqr(insec.value().center, tg::pos3{0.f, 0.f, 0.f}) == nx::approx(0.f));
         CHECK(insec.value().radius == nx::approx(1.f));
     }
 
