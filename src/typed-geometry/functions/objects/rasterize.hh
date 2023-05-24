@@ -1,5 +1,6 @@
 #pragma once
 
+#include <typed-geometry/detail/operators/ops_pos.hh>
 #include <typed-geometry/functions/basic/limits.hh>
 #include <typed-geometry/functions/vector/math.hh>
 #include <typed-geometry/types/objects/triangle.hh>
@@ -91,6 +92,44 @@ constexpr void rasterize(segment<2, ScalarT> const& l, F&& f)
 
             f(tg::ipos2(x0, y0), min(length(tg::pos2(x0, y0) - l.pos0) / length(l.pos1 - l.pos0), ScalarT(1)));
         }
+    }
+}
+
+/// F: (tg::ipos2) -> void
+/// Note: Points may be emitted multiple times
+template <class F>
+constexpr void rasterize(tg::icircle2 const& circle, F&& f)
+{
+    int error = 1 - circle.radius;
+    int x = 0;
+    int y = circle.radius;
+    int dx = 0;
+    int dy = -2 * circle.radius;
+
+    f({circle.center.x, circle.center.y + circle.radius});
+    f({circle.center.x, circle.center.y - circle.radius});
+    f({circle.center.x + circle.radius, circle.center.y});
+    f({circle.center.x - circle.radius, circle.center.y});
+
+    while (x < y)
+    {
+        if (error >= 0)
+        {
+            --y;
+            dy += 2;
+            error += dy;
+        }
+        ++x;
+        dx += 2;
+        error += dx + 1;
+        f(circle.center + tg::ivec2(+x, +y));
+        f(circle.center + tg::ivec2(-x, +y));
+        f(circle.center + tg::ivec2(+x, -y));
+        f(circle.center + tg::ivec2(-x, -y));
+        f(circle.center + tg::ivec2(+y, +x));
+        f(circle.center + tg::ivec2(-y, +x));
+        f(circle.center + tg::ivec2(+y, -x));
+        f(circle.center + tg::ivec2(-y, -x));
     }
 }
 

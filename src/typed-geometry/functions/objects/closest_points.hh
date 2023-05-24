@@ -63,6 +63,14 @@ template <class ScalarT>
     return {tClamped / len, coordinates(l, ls[tClamped])};
 }
 
+template <int D, class ScalarT>
+[[nodiscard]] constexpr pair<pos<3, ScalarT>, pos<3, ScalarT>> closest_points(aabb<D, ScalarT> const& bb0, aabb<D, ScalarT> const& bb1)
+{
+    auto p1 = project(bb0.min, bb1);
+    auto p0 = project(p1, bb0);
+    return {p0, p1};
+}
+
 
 // =========== Other Implementations ===========
 

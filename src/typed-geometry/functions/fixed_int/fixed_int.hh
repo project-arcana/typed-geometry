@@ -188,10 +188,10 @@ fixed_int<w_res> imul(T0 lhs, T1 rhs);
 // utility
 
 template <int w>
-[[nodiscard]] constexpr u64 leading_zeros_count(fixed_int<w> const& v);
+[[nodiscard]] u64 leading_zeros_count(fixed_int<w> const& v);
 
 template <int w>
-[[nodiscard]] constexpr u64 leading_ones_count(fixed_int<w> const& v);
+[[nodiscard]] u64 leading_ones_count(fixed_int<w> const& v);
 
 template <int w>
 [[nodiscard]] constexpr bool is_zero(fixed_int<w> const& v);
@@ -1204,7 +1204,7 @@ constexpr fixed_int<w>& operator<<=(fixed_int<w>& lhs, int shift) noexcept
 // utility
 
 template <int w>
-constexpr u64 leading_zeros_count(fixed_int<w> const& v)
+u64 leading_zeros_count(fixed_int<w> const& v)
 {
     u64 zeros = 0;
     if constexpr (w > 3)
@@ -1229,7 +1229,7 @@ constexpr u64 leading_zeros_count(fixed_int<w> const& v)
 }
 
 template <int w>
-constexpr u64 leading_ones_count(fixed_int<w> const& v)
+u64 leading_ones_count(fixed_int<w> const& v)
 {
     u64 ones = 0;
     if constexpr (w > 3)

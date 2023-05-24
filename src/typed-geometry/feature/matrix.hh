@@ -20,3 +20,5 @@
 #include <typed-geometry/functions/matrix/trace.hh>
 #include <typed-geometry/functions/matrix/translation.hh>
 #include <typed-geometry/functions/matrix/transpose.hh>
+
+#include <typed-geometry/functions/tests/mat_tests.hh>

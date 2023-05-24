@@ -8,6 +8,8 @@
 #include <typed-geometry/functions/objects/edges.hh>
 #include <typed-geometry/functions/objects/vertices.hh>
 #include <typed-geometry/functions/vector/distance.hh>
+#include <typed-geometry/types/objects/aabb.hh>
+#include <typed-geometry/types/objects/box.hh>
 #include <typed-geometry/types/objects/halfspace.hh>
 #include <typed-geometry/types/objects/line.hh>
 #include <typed-geometry/types/objects/plane.hh>

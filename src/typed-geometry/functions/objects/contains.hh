@@ -486,4 +486,14 @@ template <class ScalarT>
 
     return true;
 }
+
+template <class ScalarT>
+[[nodiscard]] constexpr bool contains(inf_frustum<3, ScalarT> const& f, pos<3, ScalarT> const& p, dont_deduce<ScalarT> eps = ScalarT(0))
+{
+    for (auto const& pl : f.planes)
+        if (signed_distance(p, pl) > eps)
+            return false;
+
+    return true;
+}
 } // namespace tg

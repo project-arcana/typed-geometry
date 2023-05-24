@@ -1,6 +1,5 @@
 #pragma once
 
-#include <typed-geometry/detail/optional.hh>
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/types/dir.hh>
 #include <typed-geometry/types/vec.hh>
