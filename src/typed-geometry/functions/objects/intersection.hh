@@ -291,9 +291,6 @@ template <class ScalarT, class B>
 template <class A, class B>
 using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
 
-template <class A, class B>
-using try_closest_intersection_parameter = decltype(closest_intersection_parameter(std::declval<A const&>(), std::declval<B const&>()));
-
 // circular permutation to the vertices of triangle ta such that ta.pos0 is the only vertex that lies on positive halfspace induced by tb
 template <class ScalarT>
 void rotate_devillers_triangle(triangle<3, ScalarT>& ta, triangle<3, ScalarT>& tb, comp<3, ScalarT>& determinants, comp<3, ScalarT>& determinants_t2)
