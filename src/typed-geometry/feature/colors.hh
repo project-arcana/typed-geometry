@@ -431,7 +431,7 @@ template <class Color>
     cc.r = tg::saturate(cc.r + amount);
     cc.g = tg::saturate(cc.g + amount);
     cc.b = tg::saturate(cc.b + amount);
-    return tg::from_linear_color<Color>(color);
+    return tg::from_linear_color<Color>(cc);
 }
 
 /// saturates a color by a relative value (changes S in HSL)
