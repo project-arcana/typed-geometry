@@ -48,15 +48,15 @@ constexpr bool operator>=(fixed_int<w> const& lhs, i64 rhs) noexcept;
 template <int w>
 constexpr fixed_int<w> operator-(fixed_int<w> const& lhs) noexcept;
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator+(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
+constexpr auto operator+(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator-(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
+constexpr auto operator-(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator*(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
+constexpr auto operator*(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator/(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
+constexpr auto operator/(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator%(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
+constexpr auto operator%(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
 
 template <int w>
 constexpr fixed_int<w> operator+(i64 lhs, fixed_int<w> const& rhs) noexcept;
@@ -118,11 +118,11 @@ constexpr fixed_int<w> operator--(fixed_int<w>& lhs, int) noexcept;
 // bitwise logic
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator|(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
+constexpr auto operator|(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator&(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
+constexpr auto operator&(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator^(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
+constexpr auto operator^(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept;
 template <int w>
 constexpr fixed_int<w> operator~(fixed_int<w> const& lhs) noexcept;
 
@@ -407,7 +407,7 @@ constexpr fixed_int<w> operator-(fixed_int<w> const& lhs) noexcept
 }
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator+(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+constexpr auto operator+(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
 {
     constexpr int w_out = max(w0, w1);
     fixed_int<w_out> res;
@@ -437,7 +437,7 @@ constexpr fixed_int<w> operator+(fixed_int<w> const& lhs, i64 rhs) noexcept
 }
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator-(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+constexpr auto operator-(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
 {
     constexpr int w_out = max(w0, w1);
     fixed_int<w_out> res;
@@ -467,7 +467,7 @@ constexpr fixed_int<w> operator-(fixed_int<w> const& lhs, i64 rhs) noexcept
 }
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator*(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+constexpr auto operator*(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
 {
     constexpr int w_out = max(w0, w1);
     fixed_int<w_out> l = lhs;
@@ -488,7 +488,7 @@ constexpr fixed_int<w> operator*(fixed_int<w> const& lhs, i64 rhs) noexcept
 }
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator/(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+constexpr auto operator/(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
 {
     TG_ASSERT(rhs != 0 && "division by zero!");
 
@@ -531,7 +531,7 @@ constexpr fixed_int<w> operator/(fixed_int<w> const& lhs, i64 rhs) noexcept
 }
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator%(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+constexpr auto operator%(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
 {
     TG_ASSERT(rhs != 0 && "division by zero!");
 
@@ -721,11 +721,11 @@ constexpr fixed_int<w> operator--(fixed_int<w>& lhs, int) noexcept
 // bitwise logic
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator|(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+constexpr auto operator|(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
 {
-    fixed_int<max(w0, w1)> res;
-    fixed_int<max(w0, w1)> l = lhs;
-    fixed_int<max(w0, w1)> r = rhs;
+    auto res;
+    auto l = lhs;
+    auto r = rhs;
 
     res.d[0] = l.d[0] | r.d[0];
     if constexpr (max(w0, w1) > 1)
@@ -755,11 +755,11 @@ constexpr fixed_int<w> operator|(fixed_int<w> const& lhs, i64 rhs) noexcept
 }
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator&(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+constexpr auto operator&(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
 {
-    fixed_int<max(w0, w1)> res;
-    fixed_int<max(w0, w1)> l = lhs;
-    fixed_int<max(w0, w1)> r = rhs;
+    auto res;
+    auto l = lhs;
+    auto r = rhs;
 
     res.d[0] = l.d[0] & r.d[0];
     if constexpr (max(w0, w1) > 1)
@@ -803,11 +803,11 @@ constexpr fixed_int<w> operator&(fixed_int<w> const& lhs, i64 rhs) noexcept
 }
 
 template <int w0, int w1>
-constexpr fixed_int<max(w0, w1)> operator^(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
+constexpr auto operator^(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noexcept
 {
-    fixed_int<max(w0, w1)> res;
-    fixed_int<max(w0, w1)> l = lhs;
-    fixed_int<max(w0, w1)> r = rhs;
+    auto res;
+    auto l = lhs;
+    auto r = rhs;
 
     res.d[0] = l.d[0] ^ r.d[0];
     if constexpr (max(w0, w1) > 1)
