@@ -208,9 +208,9 @@ template <int w>
 template <int w>
 [[nodiscard]] fixed_uint<w> gcd(fixed_uint<w> const& a, u64 b);
 
-//#############################################################################
-//#                             implemenation                                 #
-//#############################################################################
+// #############################################################################
+// #                             implemenation                                 #
+// #############################################################################
 
 template <int words>
 template <int rhs_words, class, class>
@@ -1435,16 +1435,19 @@ template <int w0, int w1>
 [[nodiscard]] auto gcd(fixed_uint<w0> const& a, fixed_uint<w1> const& b)
 {
     // todo: I think we can return fixed_uint<min(w0, w1)> (note the min instead of the max)
+    //       I think not because the two is_zero clauses
+    using ret_t = fixed_uint<max(w0, w1)>;
 
     // https://lemire.me/blog/2013/12/26/fastest-way-to-compute-the-greatest-common-divisor/
     auto u = a;
     auto v = b;
 
-    int shift;
     if (is_zero(u))
-        return v;
+        return ret_t(v);
     if (is_zero(v))
-        return u;
+        return ret_t(u);
+
+    int shift;
     shift = int(trailing_zeros_count(u | v));
     u >>= int(trailing_zeros_count(u));
     do
@@ -1458,7 +1461,8 @@ template <int w0, int w1>
         }
         v = v - u;
     } while (!is_zero(v));
-    return u << shift;
+
+    return ret_t(u << shift);
 }
 
 } // namespace tg
