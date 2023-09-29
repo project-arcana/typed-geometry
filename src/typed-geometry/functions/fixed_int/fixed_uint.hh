@@ -720,7 +720,7 @@ constexpr fixed_uint<w> operator--(fixed_uint<w>& lhs, int) noexcept
 template <int w0, int w1>
 constexpr auto operator|(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
-    auto res;
+    fixed_uint<max(w0, w1)> res;
     auto l = lhs;
     auto r = rhs;
 
@@ -754,7 +754,7 @@ constexpr fixed_uint<w> operator|(fixed_uint<w> const& lhs, u64 rhs) noexcept
 template <int w0, int w1>
 constexpr auto operator&(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
-    auto res;
+    fixed_uint<max(w0, w1)> res;
     auto l = lhs;
     auto r = rhs;
 
@@ -802,7 +802,7 @@ constexpr fixed_uint<w> operator&(fixed_uint<w> const& lhs, u64 rhs) noexcept
 template <int w0, int w1>
 constexpr auto operator^(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
-    auto res;
+    fixed_uint<max(w0, w1)> res;
     auto l = lhs;
     auto r = rhs;
 
