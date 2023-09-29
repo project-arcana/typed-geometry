@@ -1439,13 +1439,14 @@ template <int w0, int w1>
     using ret_t = fixed_uint<max(w0, w1)>;
 
     // https://lemire.me/blog/2013/12/26/fastest-way-to-compute-the-greatest-common-divisor/
-    auto u = a;
-    auto v = b;
+    // NOTE: for now we promote to bigger type
+    auto u = ret_t(a);
+    auto v = ret_t(b);
 
     if (is_zero(u))
-        return ret_t(v);
+        return v;
     if (is_zero(v))
-        return ret_t(u);
+        return u;
 
     int shift;
     shift = int(trailing_zeros_count(u | v));
@@ -1462,7 +1463,7 @@ template <int w0, int w1>
         v = v - u;
     } while (!is_zero(v));
 
-    return ret_t(u << shift);
+    return u << shift;
 }
 
 } // namespace tg
