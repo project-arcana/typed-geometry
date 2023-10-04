@@ -1,5 +1,6 @@
 #pragma once
 
+#include <typed-geometry/functions/vector/math.hh>
 #include <typed-geometry/types/vec.hh>
 
 namespace tg
