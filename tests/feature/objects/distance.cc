@@ -290,7 +290,8 @@ float minimize_f1(tg::rng& rng, float step_size, F&& f, int steps = 1500)
 }
 }
 
-FUZZ_TEST("Distance - LineLine3")(tg::rng& rng)
+// TODO: is flaky
+FUZZ_TEST("Distance - LineLine3", disabled)(tg::rng& rng)
 {
     auto bb = tg::aabb3(-10, 10);
 

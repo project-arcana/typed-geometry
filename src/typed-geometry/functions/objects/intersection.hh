@@ -157,6 +157,17 @@ struct hit_interval
     ScalarT end;
 
     [[nodiscard]] constexpr bool is_unbounded() const { return end == tg::max<ScalarT>() || start == tg::min<ScalarT>(); }
+
+    cc::optional<hit_interval> clamped(ScalarT s, ScalarT e) const
+    {
+        CC_ASSERT(start <= end);
+        CC_ASSERT(s <= e);
+        auto new_s = max(start, s);
+        auto new_e = min(end, e);
+        if (new_e < new_s)
+            return cc::nullopt;
+        return hit_interval{new_s, new_e};
+    }
 };
 
 
@@ -2842,18 +2853,11 @@ template <class ScalarT>
     if (!param_insec.has_value())
         return {};
 
-    // parameters
-    auto a = param_insec.value().start;
-    auto b = param_insec.value().end;
-    auto length_seg = length(seg);
+    auto interval = param_insec.value().clamped(ScalarT(0), length(seg));
+    if (!interval.has_value())
+        return {};
 
-    // intersection may exist
-    if (a < length_seg && b < length_seg)
-    {
-        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
-    }
-
-    return {};
+    return segment<3, ScalarT>(segment_line[interval.value().start], segment_line[interval.value().end]);
 }
 
 template <class ScalarT>
@@ -2875,24 +2879,11 @@ template <class ScalarT>
     if (!param_insec.has_value())
         return {};
 
-    // parameters
-    auto a = param_insec.value().start;
-    auto b = param_insec.value().end;
+    auto interval = param_insec.value().clamped(ScalarT(0), length(seg));
+    if (!interval.has_value())
+        return {};
 
-    // one point of the segment inside the box
-    if (contains(box, seg.pos0))
-        return segment<3, ScalarT>{seg.pos0, segment_line.pos + segment_line.dir * b};
-
-    if (contains(box, seg.pos1))
-        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, seg.pos1};
-
-    // intersection may exist
-    if (a < length(seg) && b < length(seg) && a >= 0 && b > 0)
-    {
-        return segment<3, ScalarT>{segment_line.pos + segment_line.dir * a, segment_line.pos + segment_line.dir * b};
-    }
-
-    return {};
+    return segment<3, ScalarT>(segment_line[interval.value().start], segment_line[interval.value().end]);
 }
 
 // segment3 - capsule3

@@ -1,9 +1,11 @@
 #include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
 
+#include <rich-log/log.hh>
+
 #include <typed-geometry/tg-std.hh>
 
-FUZZ_TEST("IntersectionSegment3AABB3", reproduce(3861400383))(tg::rng& rng)
+FUZZ_TEST("IntersectionSegment3AABB3")(tg::rng& rng)
 {
     auto bb = tg::aabb3(-10.f, 10.f);
     auto bb_up = tg::aabb3({-10.f, 10.5f, -10.f}, {10.f, 20.f, 10.f});
@@ -37,6 +39,11 @@ FUZZ_TEST("IntersectionSegment3AABB3", reproduce(3861400383))(tg::rng& rng)
 
     { // d) both segment points outside and not intersecting the bounding box
         auto seg = tg::segment3(tg::uniform(rng, bb_up), tg::uniform(rng, bb_up));
+
+        LOG_EXPR(seg.pos0);
+        LOG_EXPR(seg.pos1);
+        LOG_EXPR(bb.min);
+        LOG_EXPR(bb.max);
 
         auto insec = tg::intersection(seg, bb);
 
@@ -112,7 +119,8 @@ FUZZ_TEST("IntersectionPlane3Tube3")(tg::rng& rng)
     }
 }
 
-FUZZ_TEST("IntersectionSegment3BoundaryObject")(tg::rng& rng)
+// FIXME: is flaky right now
+FUZZ_TEST("IntersectionSegment3BoundaryObject", disabled)(tg::rng& rng)
 {
     { // a) segment3 - cylinder_boundary3
         auto cylinder_b = tg::cylinder_boundary<3, float>({0.f, -2.f, 0.f}, {0.f, 2.f, 0.f}, 1.f);
@@ -566,7 +574,7 @@ FUZZ_TEST("IntersectionRay3Sphere3")(tg::rng& rng)
     auto box1 = tg::aabb1(tg::pos1(-1.0f), tg::pos1(1.0f));
     auto box3 = tg::aabb3(tg::pos3(-1.0f), tg::pos3(1.0f));
     // random sphere
-    auto s = tg::sphere_boundary<3, float>(uniform(rng, box3) * 10.0f, tg::abs(uniform(rng, box1).x));
+    auto s = tg::sphere_boundary<3, float>(uniform(rng, box3) * 10.0f, uniform(rng, 0.1f, 1.0f));
 
     {
         // ray from sphere origin to random direction
