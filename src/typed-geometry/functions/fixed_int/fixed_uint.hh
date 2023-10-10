@@ -721,8 +721,8 @@ template <int w0, int w1>
 constexpr auto operator|(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
     fixed_uint<max(w0, w1)> res;
-    auto l = lhs;
-    auto r = rhs;
+    fixed_uint<max(w0, w1)> l = lhs; // NOTE: promotion is important
+    fixed_uint<max(w0, w1)> r = rhs;
 
     res.d[0] = l.d[0] | r.d[0];
     if constexpr (max(w0, w1) > 1)
@@ -755,8 +755,8 @@ template <int w0, int w1>
 constexpr auto operator&(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
     fixed_uint<max(w0, w1)> res;
-    auto l = lhs;
-    auto r = rhs;
+    fixed_uint<max(w0, w1)> l = lhs; // NOTE: promotion is important
+    fixed_uint<max(w0, w1)> r = rhs;
 
     res.d[0] = l.d[0] & r.d[0];
     if constexpr (max(w0, w1) > 1)
@@ -803,8 +803,8 @@ template <int w0, int w1>
 constexpr auto operator^(fixed_uint<w0> const& lhs, fixed_uint<w1> const& rhs) noexcept
 {
     fixed_uint<max(w0, w1)> res;
-    auto l = lhs;
-    auto r = rhs;
+    fixed_uint<max(w0, w1)> l = lhs; // NOTE: promotion is important
+    fixed_uint<max(w0, w1)> r = rhs;
 
     res.d[0] = l.d[0] ^ r.d[0];
     if constexpr (max(w0, w1) > 1)
