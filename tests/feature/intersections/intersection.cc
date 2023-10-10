@@ -40,11 +40,6 @@ FUZZ_TEST("IntersectionSegment3AABB3")(tg::rng& rng)
     { // d) both segment points outside and not intersecting the bounding box
         auto seg = tg::segment3(tg::uniform(rng, bb_up), tg::uniform(rng, bb_up));
 
-        LOG_EXPR(seg.pos0);
-        LOG_EXPR(seg.pos1);
-        LOG_EXPR(bb.min);
-        LOG_EXPR(bb.max);
-
         auto insec = tg::intersection(seg, bb);
 
         CHECK(!insec.has_value());

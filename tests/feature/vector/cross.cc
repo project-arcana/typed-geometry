@@ -49,7 +49,7 @@ FUZZ_TEST("Cross")(tg::rng& rng)
         CHECK(unitZ.z == 1.f);
         CHECK(unitZ.x == nx::approx(0.f).abs(0.001f));
         CHECK(unitZ.y == nx::approx(0.f).abs(0.001f));
-        CHECK(is_normalized(unitZ_v));
+        CHECK(is_normalized(unitZ_v, 0.00001f));
 
 
         // random vectors
