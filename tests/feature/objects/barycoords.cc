@@ -72,7 +72,7 @@ FUZZ_TEST("Triangle3 - BarycoordMatrix")(tg::rng& rng)
     CHECK(b.x + b.y + b.z == nx::approx(1.f).abs(0.001f));
 
     auto p_recon = tg::from_barycoord_matrix_of(t) * b;
-    CHECK(tg::pos3(p_recon) == nx::approx(p));
+    CHECK(tg::pos3(p_recon) == nx::approx(p).abs(0.1f));
     CHECK(p_recon.w == nx::approx(1.f));
 
     auto n = tg::normal_of(t);

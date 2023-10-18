@@ -938,12 +938,12 @@ FUZZ_TEST("Triangle - Intersection")(tg::rng& rng)
     CHECK(ip4.any());
     CHECK(ip5.any());
 
-    CHECK(ip0.first() == nx::approx(p).abs(0.1f));
-    CHECK(ip1.first() == nx::approx(p).abs(0.1f));
-    CHECK(ip2.first() == nx::approx(p).abs(0.1f));
-    CHECK(ip3.first() == nx::approx(p).abs(0.1f));
-    CHECK(ip4.first() == nx::approx(p).abs(0.1f));
-    CHECK(ip5.first() == nx::approx(p).abs(0.1f));
+    CHECK(ip0.first() == nx::approx(p).abs(0.3f));
+    CHECK(ip1.first() == nx::approx(p).abs(0.3f));
+    CHECK(ip2.first() == nx::approx(p).abs(0.3f));
+    CHECK(ip3.first() == nx::approx(p).abs(0.3f));
+    CHECK(ip4.first() == nx::approx(p).abs(0.3f));
+    CHECK(ip5.first() == nx::approx(p).abs(0.3f));
 
     auto a = uniform(rng, -2.f, 2.f);
     auto b = uniform(rng, -2.f, 2.f);

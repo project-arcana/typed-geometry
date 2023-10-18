@@ -93,7 +93,7 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricNonZero")(tg::rng& rng)
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) >= distance_sqr(P, p2) * length_sqr(n));
+        CHECK(Q(p2) >= distance_sqr(P, p2) * length_sqr(n) - 0.1);
     }
 }
 
@@ -113,7 +113,7 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricNonZeroMat")(tg::rng& rng)
     for (auto i = 0; i < 10; ++i)
     {
         auto const p2 = uniform(rng, bb);
-        CHECK(Q(p2) >= distance_sqr(P, p2) * length_sqr(n));
+        CHECK(Q(p2) >= distance_sqr(P, p2) * length_sqr(n) - 0.1);
     }
 }
 

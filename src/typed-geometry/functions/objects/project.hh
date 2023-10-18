@@ -508,6 +508,7 @@ template <int D, class ScalarT>
 template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> project(pos<3, ScalarT> const& p, inf_cone_boundary<3, ScalarT> const& icone)
 {
+    using vec_t = vec<3, ScalarT>;
     using dir_t = dir<3, ScalarT>;
     using vec2_t = vec<2, ScalarT>;
     using dir2_t = dir<2, ScalarT>;
@@ -539,8 +540,8 @@ template <class ScalarT>
 
     // construct a 2D coordinate system in the plane spanned by the c (origin), apex, and p
     dir_t y_axis = -icone.opening_dir;
-    dir_t plane_normal = normalize(cross(p - c, vec<3, ScalarT>(y_axis)));
-    dir_t x_axis = normalize(cross(y_axis, plane_normal));
+    vec_t plane_normal = normalize_safe(cross(p - c, vec<3, ScalarT>(y_axis)));
+    vec_t x_axis = normalize_safe(cross(y_axis, plane_normal));
     if (dot(p - c, x_axis) < ScalarT(0))
         x_axis = -x_axis;
 

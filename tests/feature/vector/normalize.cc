@@ -59,6 +59,13 @@ FUZZ_TEST("BigNormalize")(tg::rng& rng)
         auto v1 = uniform_vec(rng, range2);
         auto v2 = uniform_vec(rng, range3);
 
+        if (length(v0) <= 1e-20f)
+            return;
+        if (length(v1) <= 1e-20f)
+            return;
+        if (length(v2) <= 1e-20f)
+            return;
+
         auto d0 = normalize(v0);
         auto d1 = normalize(v1);
         auto d2 = normalize(v2);

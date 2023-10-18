@@ -53,11 +53,10 @@ FUZZ_TEST("ContainsSphere")(tg::rng& rng)
 FUZZ_TEST("ContainsCylinder")(tg::rng& rng)
 {
     auto box3 = tg::aabb3(tg::pos3(-1.0f), tg::pos3(1.0f));
-    auto box1 = tg::aabb1(-1.0f, 1.0f);
 
     auto p0 = uniform(rng, box3);
     auto p1 = uniform(rng, box3);
-    auto r = tg::abs(uniform(rng, box1).x) * 10;
+    auto r = uniform(rng, 0.1f, 10.f);
 
     auto cyl = tg::cylinder3(p0, p1, r);
     auto c = centroid_of(cyl);

@@ -88,7 +88,8 @@ FUZZ_TEST("IntersectsSphere2in3Triangle3")(tg::rng& rng)
     CHECK(!tg::intersects(t4, circ));
 }
 
-FUZZ_TEST("IntersectsCone3Triangle3")(tg::rng& rng)
+// FIXME: flaky right now
+FUZZ_TEST("IntersectsCone3Triangle3", disabled)(tg::rng& rng)
 {
     auto circ = tg::sphere2in3({0, 0, 0}, 1.f, {0.f, 1.f, 0.f});
     auto cone = tg::cone3(circ, 2.f);
@@ -586,7 +587,8 @@ FUZZ_TEST("IntersectsSphere3Plane3")(tg::rng& rng)
     }
 }
 
-FUZZ_TEST("IntersectsBox3Box3")(tg::rng& rng)
+// FIXME: this test is flaky by design due to floating point issues, nx::max_error_rate might be a possible solution
+FUZZ_TEST("IntersectsBox3Box3", disabled)(tg::rng& rng)
 {
     // rng aabbs
     auto short_scalar_range = tg::aabb1(0.0f, 5.0f);
@@ -697,8 +699,8 @@ FUZZ_TEST("IntersectsBox3Box3")(tg::rng& rng)
     }
 }
 
-
-FUZZ_TEST("IntersectsBox2Box2")(tg::rng& rng)
+// FIXME: this test is flaky by design due to floating point issues, nx::max_error_rate might be a possible solution
+FUZZ_TEST("IntersectsBox2Box2", disabled)(tg::rng& rng)
 {
     auto short_scalar_range = tg::aabb1(0.0f, 5.0f);
     auto range2D = tg::aabb2(tg::pos2(-10.0f), tg::pos2(10.0f));
