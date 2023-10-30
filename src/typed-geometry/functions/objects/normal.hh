@@ -68,8 +68,10 @@ template <class ScalarT>
 [[nodiscard]] constexpr dir<3, fractional_result<ScalarT>> normal_of(quad<3, ScalarT> const& q)
 {
     // Assumes the quad is planar, as it is a requirement for pyramid<quad>
-    const auto res = normalize(cross(q.pos01 - q.pos00, q.pos10 - q.pos00));
-    TG_ASSERT(tg::are_orthogonal(q.pos11 - q.pos00, vec(res))); // Checks that the four points are indeed coplanar
+    // FIXME: currently assumes a convex quad
+    //        but should also work with concave ones
+    //        however, this has performance implications
+    const auto res = normalize(cross(q.pos10 - q.pos00, q.pos11 - q.pos00));
     return res;
 }
 
