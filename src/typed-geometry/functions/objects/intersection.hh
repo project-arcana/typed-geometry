@@ -1834,6 +1834,8 @@ template <int D, class ScalarT>
     if (outside < 2)
         return false; // cannot cross the boundary without intersecting the caps_of(h)
 
+    (void)under; // note: where was this intended?
+
     // note: outside and under cannot cross hemisphere through the inside due to Thales' theorem
     // now only a secant is left to check. Since inside == 0, we can check the closest projection onto the aabb
     auto const closestP = project(h.center, b);
