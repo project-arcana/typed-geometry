@@ -42,7 +42,6 @@ SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles: false
 SpacesInCStyleCastParentheses: false
-SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 #SpacesInSquareBrackets: false
 UseTab: Never
