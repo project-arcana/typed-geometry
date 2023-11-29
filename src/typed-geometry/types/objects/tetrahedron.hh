@@ -83,7 +83,7 @@ struct tetrahedron
 };
 
 template <class I, int D, class ScalarT, class TraitsT>
-constexpr void introspect(I&& i, tetrahedron<D, ScalarT>& v)
+constexpr void introspect(I&& i, tetrahedron<D, ScalarT, TraitsT>& v)
 {
     i(v.pos0, "pos0");
     i(v.pos1, "pos1");
