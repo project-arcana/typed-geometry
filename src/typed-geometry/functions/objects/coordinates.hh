@@ -8,11 +8,13 @@
 #include <typed-geometry/types/objects/plane.hh>
 #include <typed-geometry/types/objects/ray.hh>
 #include <typed-geometry/types/objects/segment.hh>
+#include <typed-geometry/types/objects/tetrahedron.hh>
 #include <typed-geometry/types/objects/triangle.hh>
 #include <typed-geometry/types/pos.hh>
 
 #include <typed-geometry/functions/vector/length.hh>
-
+#include <typed-geometry/functions/vector/cross.hh>
+#include <typed-geometry/functions/vector/dot.hh>
 // For a given primitive and a position, return the position's relative coordinates
 
 // Contained functions:
@@ -102,6 +104,32 @@ template <class ScalarT, class TraitsT>
     pLocal.comp0 = len0 == ScalarT(0) ? ScalarT(0) : dot(b.half_extents[0] / len0, r) / len0;
     pLocal.comp1 = len1 == ScalarT(0) ? ScalarT(0) : dot(b.half_extents[1] / len1, r) / len1;
     return pLocal;
+}
+
+template <class ScalarT, class TraitsT>
+[[nodiscard]] constexpr comp<4, ScalarT> coordinates(tetrahedron<3, ScalarT, TraitsT> const& t, pos<3, ScalarT> const& p)
+{
+    // see https://www.cdsimpson.net/2014/10/barycentric-coordinates.html
+    // the 1/6 factor is canceled as it appears in all subvolumes and the total volume
+
+    auto const v0p = p - t.pos0;
+    auto const v1p = p - t.pos1;
+
+    auto const v01 = t.pos1 - t.pos0;
+    auto const v02 = t.pos2 - t.pos0;
+    auto const v03 = t.pos3 - t.pos0;
+
+    auto const v12 = t.pos2 - t.pos1;
+    auto const v13 = t.pos3 - t.pos1;
+
+    float volume0 = dot(v1p, cross(v13, v12));
+    float volume1 = dot(v0p, cross(v02, v03));
+    float volume2 = dot(v0p, cross(v03, v01));
+    float volume3 = dot(v0p, cross(v01, v02));
+    float volume_inv = 1.0f / dot(v01, cross(v02, v03));
+
+    return {volume0 * volume_inv, volume1 * volume_inv, volume2 * volume_inv, volume3 * volume_inv};
+
 }
 
 } // namespace tg
