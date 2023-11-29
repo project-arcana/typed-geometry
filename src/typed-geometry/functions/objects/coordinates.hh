@@ -122,11 +122,11 @@ template <class ScalarT, class TraitsT>
     auto const v12 = t.pos2 - t.pos1;
     auto const v13 = t.pos3 - t.pos1;
 
-    float volume0 = dot(v1p, cross(v13, v12));
-    float volume1 = dot(v0p, cross(v02, v03));
-    float volume2 = dot(v0p, cross(v03, v01));
-    float volume3 = dot(v0p, cross(v01, v02));
-    float volume_inv = 1.0f / dot(v01, cross(v02, v03));
+    auto const volume0 = dot(v1p, cross(v13, v12));
+    auto const volume1 = dot(v0p, cross(v02, v03));
+    auto const volume2 = dot(v0p, cross(v03, v01));
+    auto const volume3 = dot(v0p, cross(v01, v02));
+    auto const volume_inv = ScalarT(1) / dot(v01, cross(v02, v03));
 
     return {volume0 * volume_inv, volume1 * volume_inv, volume2 * volume_inv, volume3 * volume_inv};
 
