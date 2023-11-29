@@ -163,6 +163,11 @@ struct hash<tg::sphere<ObjectD, ScalarT, DomainD, TraitsT>> : tg::detail::hash
 {
 };
 
+template <int D, class ScalarT, class TraitsT>
+struct hash<tg::tetrahedron<D, ScalarT, TraitsT>> : tg::detail::hash
+{
+};
+
 template <int D, class ScalarT>
 struct hash<tg::triangle<D, ScalarT>> : tg::detail::hash
 {

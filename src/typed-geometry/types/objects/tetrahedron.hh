@@ -82,5 +82,15 @@ struct tetrahedron
     [[nodiscard]] bool operator!=(tetrahedron const& rhs) const { return !operator==(rhs); }
 };
 
+template <class I, int D, class ScalarT, class TraitsT>
+constexpr void introspect(I&& i, tetrahedron<D, ScalarT>& v)
+{
+    i(v.pos0, "pos0");
+    i(v.pos1, "pos1");
+    i(v.pos2, "pos2");
+    i(v.pos3, "pos3");
+}
+
+// TODO: object_traits?
 
 }
