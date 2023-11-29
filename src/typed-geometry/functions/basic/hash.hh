@@ -22,10 +22,9 @@ struct hash_inspector
     size_t hash = 0x987654321;
 
     template <class T, class... Args>
-    constexpr size_t operator()(T const& v, Args&&...)
+    constexpr void operator()(T const& v, Args&&...)
     {
         add(v);
-        return hash;
     }
 
 private:
@@ -53,7 +52,7 @@ private:
     }
 };
 
-//// universal hasher for tg types
+// universal hasher for tg types
 struct hash
 {
     template <class T>
