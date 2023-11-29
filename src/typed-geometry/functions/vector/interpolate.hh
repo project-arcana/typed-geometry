@@ -2,6 +2,7 @@
 
 #include <typed-geometry/types/objects/aabb.hh>
 #include <typed-geometry/types/objects/triangle.hh>
+#include <typed-geometry/types/objects/tetrahedron.hh>
 #include <typed-geometry/types/pos.hh>
 #include <typed-geometry/types/vec.hh>
 
@@ -65,4 +66,19 @@ template <int D, class ScalarT>
     auto z = pos<D, ScalarT>::zero;
     return z + (t.pos0 - z) * wa + (t.pos1 - z) * wb + (t.pos2 - z) * wc;
 }
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, ScalarT> interpolate(tetrahedron<D, ScalarT, TraitsT> const& t, ScalarT wa, ScalarT wb, ScalarT wc, ScalarT wd)
+{
+    auto z = pos<D, ScalarT>::zero;
+    return z + (t.pos0 - z) * wa + (t.pos1 - z) * wb + (t.pos2 - z) * wc + (t.pos3 - z) * wd;
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, ScalarT> interpolate(tetrahedron<D, ScalarT, TraitsT> const& t, ScalarT wa, ScalarT wb, ScalarT wc)
+{
+    auto z = pos<D, ScalarT>::zero;
+    return z + (t.pos0 - z) * wa + (t.pos1 - z) * wb + (t.pos2 - z) * wc + (t.pos3 - z) * (ScalarT(1) - wb - wa - wc);
+}
+
 } // namespace tg

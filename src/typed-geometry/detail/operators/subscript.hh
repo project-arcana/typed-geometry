@@ -61,6 +61,18 @@ template <int D, class ScalarT>
 template <int D, class ScalarT>
 [[nodiscard]] constexpr pos<D, ScalarT> triangle<D, ScalarT>::operator[](comp<2, ScalarT> const& barycoords) const
 {
-    return interpolate(*this, barycoords[0], barycoords[1], 1 - barycoords[0] - barycoords[1]);
+    return interpolate(*this, barycoords[0], barycoords[1], ScalarT(1) - barycoords[0] - barycoords[1]);
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, ScalarT> tetrahedron<D, ScalarT, TraitsT>::operator[](comp<4, ScalarT> const& barycoords) const
+{
+    return interpolate(*this, barycoords[0], barycoords[1], barycoords[2], barycoords[3]);
+}
+
+template <int D, class ScalarT, class TraitsT>
+[[nodiscard]] constexpr pos<D, ScalarT> tetrahedron<D, ScalarT, TraitsT>::operator[](comp<3, ScalarT> const& barycoords) const
+{
+    return interpolate(*this, barycoords[0], barycoords[1], barycoords[2], ScalarT(1) - barycoords[0] - barycoords[1] - barycoords[2]);
 }
 }
