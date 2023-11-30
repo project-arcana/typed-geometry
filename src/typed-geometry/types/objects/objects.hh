@@ -21,5 +21,6 @@
 #include "ray.hh"
 #include "segment.hh"
 #include "sphere.hh"
+#include "tetrahedron.hh"
 #include "triangle.hh"
 #include "tube.hh"
