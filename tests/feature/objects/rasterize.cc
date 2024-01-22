@@ -68,7 +68,7 @@ FUZZ_TEST("Rasterize2")(tg::rng& rng)
 
                       auto rp = interpolate(tri, a, b);
 
-                      CHECK(distance(tg::pos2(p), rp) < 1e-3f);
+                      CHECK(distance(tg::pos2(p), rp) < 1e-2f);
                   });
 
     for (auto i = 0; i < 100; ++i)

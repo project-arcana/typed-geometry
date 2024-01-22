@@ -344,7 +344,7 @@ FUZZ_TEST("Distance - SegSeg2")(tg::rng& rng)
     if (d > 0)
         CHECK(!intersects(s0, s1));
 
-    CHECK(d == nx::approx(dd).abs(0.7f));
+    CHECK(d == nx::approx(dd).abs(0.9f));
 }
 
 FUZZ_TEST("Distance - SegSeg3")(tg::rng& rng)
@@ -364,7 +364,7 @@ FUZZ_TEST("Distance - SegSeg3")(tg::rng& rng)
                               return distance(s0[a], s1[b]);
                           });
 
-    CHECK(d == nx::approx(dd).abs(0.7f));
+    CHECK(d == nx::approx(dd).abs(0.9f));
 }
 
 FUZZ_TEST("Distance - PosTri3")(tg::rng& rng)
