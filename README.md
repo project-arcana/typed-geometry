@@ -2,17 +2,6 @@
 
 Header-only strongly typed math library for graphics and geometry.
 
-> :warning: this repository is an old version (and the last version without clean-core dependency). typed-geometry is being actively developed at https://github.com/project-arcana/typed-geometry. 
-
-:warning: How to update :warning: 
-
-```
-cd your-project/extern/typed-geometry
-git remote set-url origin git@github.com:project-arcana/typed-geometry.git
-git pull
-```
-
-
 ## Usage / Example
 
 Type definitions only, no functions:
