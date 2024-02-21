@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cstring>
 
 #include <typed-geometry/detail/scalar_traits.hh>
 #include <typed-geometry/detail/utility.hh>
@@ -240,8 +241,20 @@ template <class T>
 [[nodiscard]] inline f32 log2(f32 v) { return std::log2(v); }
 [[nodiscard]] inline f64 log2(f64 v) { return std::log2(v); }
 
-[[nodiscard]] inline i32 ilog2(f32 v) { return i32((reinterpret_cast<uint32_t&>(v) & (0b1111'1111u << 23)) >> 23) - 127; }
-[[nodiscard]] inline i32 ilog2(f64 v) { return i32((reinterpret_cast<uint64_t&>(v) & (0b111'1111'1111uLL << 52)) >> 52) - 1023; }
+static_assert(sizeof(f32) == sizeof(uint32_t));
+[[nodiscard]] inline i32 ilog2(f32 v)
+{
+    uint32_t bits;
+    std::memcpy(&bits, &v, sizeof(v));
+    return i32((bits & (0b1111'1111u << 23)) >> 23) - 127;
+}
+static_assert(sizeof(f64) == sizeof(uint64_t));
+[[nodiscard]] inline i32 ilog2(f64 v)
+{
+    uint64_t bits;
+    std::memcpy(&bits, &v, sizeof(v));
+    return i32((bits & (0b111'1111'1111uLL << 52)) >> 52) - 1023;
+}
 
 [[nodiscard]] inline f32 log10(f32 v) { return std::log10(v); }
 [[nodiscard]] inline f64 log10(f64 v) { return std::log10(v); }
