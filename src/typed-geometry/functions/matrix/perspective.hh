@@ -7,7 +7,7 @@
 #include <typed-geometry/feature/assert.hh>
 #include <typed-geometry/functions/basic/scalar_math.hh>
 
-namespace
+namespace tg::detail
 {
 template <class ScalarT>
 ScalarT x_scale_from_horizontal_fov(tg::angle_t<ScalarT> horizontal_fov)
@@ -32,7 +32,7 @@ template <class ScalarT>
 
     auto m = mat<4, 4, ScalarT>::zero;
 
-    auto const x_scale = x_scale_from_horizontal_fov(horizontal_fov);
+    auto const x_scale = tg::detail::x_scale_from_horizontal_fov(horizontal_fov);
     m[0][0] = x_scale;
     m[1][1] = x_scale * aspect_ratio;
     m[2][3] = -ScalarT(1);
@@ -51,7 +51,7 @@ template <class ScalarT>
 
     auto m = mat<4, 4, ScalarT>::zero;
 
-    auto const x_scale = x_scale_from_horizontal_fov(horizontal_fov);
+    auto const x_scale = tg::detail::x_scale_from_horizontal_fov(horizontal_fov);
     m[0][0] = x_scale;
     m[1][1] = x_scale * aspect_ratio;
     m[2][3] = ScalarT(1);
@@ -71,7 +71,7 @@ template <class ScalarT>
 
     auto m = mat<4, 4, ScalarT>::zero;
 
-    auto const x_scale = x_scale_from_horizontal_fov(horizontal_fov);
+    auto const x_scale = tg::detail::x_scale_from_horizontal_fov(horizontal_fov);
     m[0][0] = x_scale;
     m[1][1] = x_scale * aspect_ratio;
     m[2][2] = far_plane / (far_plane - near_plane);
@@ -92,7 +92,7 @@ template <class ScalarT>
 
     auto m = mat<4, 4, ScalarT>::zero;
 
-    auto const x_scale = x_scale_from_horizontal_fov(horizontal_fov);
+    auto const x_scale = tg::detail::x_scale_from_horizontal_fov(horizontal_fov);
     m[0][0] = x_scale;
     m[1][1] = x_scale * aspect_ratio;
     m[2][2] = -(far_plane + near_plane) / (far_plane - near_plane);
