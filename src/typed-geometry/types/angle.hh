@@ -1,15 +1,15 @@
 #pragma once
 
 #include <typed-geometry/types/scalars/default.hh>
+#include <typed-geometry/types/fwd.hh>
 
 namespace tg
 {
-template <class T>
-struct angle_t;
-
 using angle = angle_t<f32>;
 using angle32 = angle_t<f32>;
 using angle64 = angle_t<f64>;
+
+using horizontal_fov = horizontal_fov_t<f32>;
 
 /// An opaque type representing an angle
 ///
@@ -72,4 +72,16 @@ constexpr void introspect(I&& i, angle_t<ScalarT>& v)
 {
     i(v.radians(), "rad");
 }
+
+/// a strong type wrapper for angles that are meant as "hoirzontal field-of-view"
+/// this forces more explicit calls to prevent easy horizontal vs. vertical mistakes
+template <class ScalarT>
+struct horizontal_fov_t
+{
+    angle_t<ScalarT> angle;
+
+    horizontal_fov_t() = default;
+    explicit horizontal_fov_t(angle_t<ScalarT> angle) : angle(angle) {}
+};
+
 } // namespace tg

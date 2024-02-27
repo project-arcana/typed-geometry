@@ -12,6 +12,12 @@ struct array;
 template <class T>
 struct span;
 
+// scalar types
+template <class T>
+struct angle_t;
+template <class ScalarT>
+struct horizontal_fov_t;
+
 // component-like types:
 template <int D, class ScalarT>
 struct vec;

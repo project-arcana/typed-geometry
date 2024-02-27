@@ -118,7 +118,7 @@ FUZZ_TEST("Frustum - BasicFuzzer")(tg::rng& rng)
     //
     {
         auto const view = tg::look_at_opengl(eye, target, tg::dir3::pos_y);
-        auto const proj = tg::perspective_opengl(uniform(rng, 30_deg, 80_deg), uniform(rng, 0.5f, 2.0f), uniform(rng, 0.1f, 1.f), uniform(rng, 100.f, 500.f));
+        auto const proj = tg::perspective_opengl(tg::horizontal_fov(uniform(rng, 30_deg, 80_deg)), uniform(rng, 0.5f, 2.0f), uniform(rng, 0.1f, 1.f), uniform(rng, 100.f, 500.f));
 
         auto const view_proj = proj * view;
         auto const inv_view_proj = inverse(view_proj);
@@ -133,7 +133,7 @@ FUZZ_TEST("Frustum - BasicFuzzer")(tg::rng& rng)
     //
     {
         auto const view = tg::look_at_opengl(eye, target, tg::dir3::pos_y);
-        auto const proj = tg::perspective_reverse_z_opengl(uniform(rng, 30_deg, 80_deg), uniform(rng, 0.5f, 2.0f), uniform(rng, 0.1f, 1.f));
+        auto const proj = tg::perspective_reverse_z_opengl(tg::horizontal_fov(uniform(rng, 30_deg, 80_deg)), uniform(rng, 0.5f, 2.0f), uniform(rng, 0.1f, 1.f));
 
         auto const view_proj = proj * view;
         auto const inv_view_proj = inverse(view_proj);
