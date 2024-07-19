@@ -1168,8 +1168,7 @@ template <class ScalarT>
     TG_INTERNAL_ASSERT(d > ScalarT(0));
 
     auto t = (ar * ar - br * br + d2) / (2 * d);
-    auto h2 = ar * ar - t * t;
-    TG_INTERNAL_ASSERT(h2 >= ScalarT(0));
+    auto h2 = max(ScalarT(0), ar * ar - t * t);
 
     auto h = sqrt(h2);
     auto h_by_d = h / d;
