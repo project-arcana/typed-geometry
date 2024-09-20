@@ -80,7 +80,7 @@ struct horizontal_fov_t
 {
     angle_t<ScalarT> angle;
 
-    horizontal_fov_t() = default;
+    constexpr horizontal_fov_t() = default;
     explicit constexpr horizontal_fov_t(angle_t<ScalarT> angle) : angle(angle) {}
 };
 
