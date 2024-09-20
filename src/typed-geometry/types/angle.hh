@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typed-geometry/types/scalars/default.hh>
 #include <typed-geometry/types/fwd.hh>
+#include <typed-geometry/types/scalars/default.hh>
 
 namespace tg
 {
@@ -81,7 +81,7 @@ struct horizontal_fov_t
     angle_t<ScalarT> angle;
 
     horizontal_fov_t() = default;
-    explicit horizontal_fov_t(angle_t<ScalarT> angle) : angle(angle) {}
+    explicit constexpr horizontal_fov_t(angle_t<ScalarT> angle) : angle(angle) {}
 };
 
 } // namespace tg
