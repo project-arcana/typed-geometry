@@ -78,39 +78,47 @@ template <class ScalarT>
 [[nodiscard]] constexpr pos<3, ScalarT> closest_point(quadric<3, ScalarT> const& q)
 {
     // Returns a point minimizing this quadric
-    // (Point is unique if any plane was added with sigma > 0)
-    // Solving Ax = r with some common subexpressions precomputed
+    // Solving Ax = r with using an unrolled https://en.wikipedia.org/wiki/Cholesky_decomposition
+    // Thanks to @jdumas and @sarah-ek for this optimized implementation!
+    using std::fma;
 
-    auto a = q.A00;
-    auto b = q.A01;
-    auto c = q.A02;
-    auto d = q.A11;
-    auto e = q.A12;
-    auto f = q.A22;
-    auto r0 = q.b0;
-    auto r1 = q.b1;
-    auto r2 = q.b2;
+    auto a00 = A00;
+    auto a10 = A01;
+    auto a20 = A02;
+    auto a11 = A11;
+    auto a21 = A12;
+    auto a22 = A22;
+    auto x0 = b0;
+    auto x1 = b1;
+    auto x2 = b2;
 
-    auto ad = a * d;
-    auto ae = a * e;
-    auto af = a * f;
-    auto bc = b * c;
-    auto be = b * e;
-    auto bf = b * f;
-    auto df = d * f;
-    auto ce = c * e;
-    auto cd = c * d;
+    auto d0 = ScalarT(1.0) / a00;
+    auto l10 = a10 * -d0;
+    auto l20 = a20 * -d0;
 
-    auto be_cd = be - cd;
-    auto bc_ae = bc - ae;
-    auto ce_bf = ce - bf;
+    a11 = fma(a10, l10, a11);
+    a21 = fma(a20, l10, a21);
+    a22 = fma(a20, l20, a22);
 
-    auto denom = 1 / (a * df + 2 * b * ce - ae * e - bf * b - cd * c);
-    auto nom0 = r0 * (df - e * e) + r1 * ce_bf + r2 * be_cd;
-    auto nom1 = r0 * ce_bf + r1 * (af - c * c) + r2 * bc_ae;
-    auto nom2 = r0 * be_cd + r1 * bc_ae + r2 * (ad - b * b);
+    auto d1 = ScalarT(1.0) / a11;
+    auto l21 = a21 * -d1;
+    a22 = fma(a21, l21, a22);
 
-    return {nom0 * denom, nom1 * denom, nom2 * denom};
+    auto d2 = ScalarT(1.0) / a22;
+
+    x1 = fma(l10, x0, x1);
+    x2 = fma(l20, x0, x2);
+    x2 = fma(l21, x1, x2);
+
+    x0 *= d0;
+    x1 *= d1;
+    x2 *= d2;
+
+    x0 = fma(l20, x2, x0);
+    x1 = fma(l21, x2, x1);
+    x0 = fma(l10, x1, x0);
+
+    return {x0, x1, x2};
 }
 template <class ScalarT>
 [[nodiscard]] constexpr pos<2, ScalarT> closest_point(quadric<2, ScalarT> const& q)

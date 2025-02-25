@@ -264,6 +264,25 @@ public:
         // TODO: maybe positional uncertainty
         c += d * d + distance_sqr_to_origin(pos) * s2;
     }
+    void add_plane(pos_t pos, vec_t normal, scalar_t sigma, scalar_t weight)
+    {
+        auto d = dot(pos - pos_t::zero, normal);
+        auto s2 = sigma * sigma;
+
+        A00 += (normal.x * normal.x + s2) * weight;
+        A01 += (normal.x * normal.y) * weight;
+        A02 += (normal.x * normal.z) * weight;
+        A11 += (normal.y * normal.y + s2) * weight;
+        A12 += (normal.y * normal.z) * weight;
+        A22 += (normal.z * normal.z + s2) * weight;
+
+        b0 += (normal.x * d + pos.x * s2) * weight;
+        b1 += (normal.y * d + pos.y * s2) * weight;
+        b2 += (normal.z * d + pos.z * s2) * weight;
+
+        // TODO: maybe positional uncertainty
+        c += (d * d + distance_sqr_to_origin(pos) * s2) * weight;
+    }
 
     /// Adds two quadrics
     void add(quadric const& rhs)
