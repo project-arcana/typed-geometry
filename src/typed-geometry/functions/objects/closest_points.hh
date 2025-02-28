@@ -82,15 +82,15 @@ template <class ScalarT>
     // Thanks to @jdumas and @sarah-ek for this optimized implementation!
     using std::fma;
 
-    auto a00 = A00;
-    auto a10 = A01;
-    auto a20 = A02;
-    auto a11 = A11;
-    auto a21 = A12;
-    auto a22 = A22;
-    auto x0 = b0;
-    auto x1 = b1;
-    auto x2 = b2;
+    auto a00 = q.A00;
+    auto a10 = q.A01;
+    auto a20 = q.A02;
+    auto a11 = q.A11;
+    auto a21 = q.A12;
+    auto a22 = q.A22;
+    auto x0 = q.b0;
+    auto x1 = q.b1;
+    auto x2 = q.b2;
 
     auto d0 = ScalarT(1.0) / a00;
     auto l10 = a10 * -d0;
