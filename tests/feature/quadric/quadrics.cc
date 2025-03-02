@@ -1,6 +1,8 @@
 #include <nexus/ext/tg-approx.hh>
 #include <nexus/fuzz_test.hh>
 
+#include <rich-log/log.hh>
+
 #include <typed-geometry/feature/objects.hh>
 #include <typed-geometry/feature/quadric.hh>
 #include <typed-geometry/feature/vector.hh>
@@ -81,7 +83,8 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricZeroMat")(tg::rng& rng)
 
 FUZZ_TEST("Quadrics - ProbPlaneQuadricNonZero")(tg::rng& rng)
 {
-    auto const bb = tg::aabb3(-10, 10);
+    // NOTE: double because quadrics are quite unstable
+    auto const bb = tg::daabb3(-10, 10);
 
     auto const p = uniform(rng, bb);
     auto const n = uniform_vec(rng, bb);
@@ -95,13 +98,19 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricNonZero")(tg::rng& rng)
         auto const p2 = uniform(rng, bb);
         CHECK(Q(p2) >= distance_sqr(P, p2) * length_sqr(n) - 0.1);
     }
+
+    auto const q = closest_point(Q);
+    for (auto i : {0, 1, 2})
+        CHECK(q[i] == nx::approx(p[i]).abs(1e-2f));
 }
 
 FUZZ_TEST("Quadrics - ProbPlaneQuadricNonZeroMat")(tg::rng& rng)
 {
-    auto const bb = tg::aabb3(-10, 10);
+    // NOTE: double because quadrics are quite unstable
+    auto const bb = tg::daabb3(-10, 10);
 
-    auto const sigma = 0.05f * tg::mat3::ones;
+    // NOTE: tg::dmat3::ones alone is not positive definite
+    auto const sigma = 0.05f * (tg::dmat3::ones + tg::dmat3::identity);
 
     auto const p = uniform(rng, bb);
     auto const n = uniform_vec(rng, bb);
@@ -115,6 +124,10 @@ FUZZ_TEST("Quadrics - ProbPlaneQuadricNonZeroMat")(tg::rng& rng)
         auto const p2 = uniform(rng, bb);
         CHECK(Q(p2) >= distance_sqr(P, p2) * length_sqr(n) - 0.1);
     }
+
+    auto const q = closest_point(Q);
+    for (auto i : {0, 1, 2})
+        CHECK(q[i] == nx::approx(p[i]).abs(1e-2f));
 }
 
 FUZZ_TEST("Quadrics - TriangleQuadric")(tg::rng& rng)
