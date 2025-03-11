@@ -42,9 +42,9 @@ template <int D, class ScalarT>
 [[nodiscard]] constexpr triangle<D, ScalarT> operator-(triangle<D, ScalarT> const& a, pos<D, ScalarT> const& b)
 {
     triangle<D, ScalarT> r;
-    r.pos0 = a.pos0 - b;
-    r.pos1 = a.pos1 - b;
-    r.pos2 = a.pos2 - b;
+    r.pos0 = a.pos0 - vec<D, ScalarT>(b);
+    r.pos1 = a.pos1 - vec<D, ScalarT>(b);
+    r.pos2 = a.pos2 - vec<D, ScalarT>(b);
     return r;
 }
 
