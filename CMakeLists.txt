@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.10...3.30)
 project(TypedGeometry)
 
 if (NOT TARGET clean-core)
