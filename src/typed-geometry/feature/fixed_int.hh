@@ -2,7 +2,7 @@
 
 #include <clean-core/macros.hh>
 
-#ifdef CC_COMPILER_MSVC
+#if defined(CC_COMPILER_MSVC) || defined(CC_COMPILER_CLANG_CL)
 #define TG_MUL_U128 _umul128
 #else
 #define TG_MUL_U128 _mulx_u64
