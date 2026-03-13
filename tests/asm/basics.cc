@@ -1,4 +1,4 @@
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(__APPLE__)
 #include <asm_test.hh>
 
 TEST("TypedGeometryAsm.Basics")

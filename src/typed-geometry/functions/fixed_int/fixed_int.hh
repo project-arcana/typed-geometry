@@ -1,10 +1,7 @@
 #pragma once
 
-#ifdef _MSC_VER
-#include <intrin.h>
-#else
-#include <x86intrin.h>
-#endif
+#include <clean-core/bits.hh>
+#include <clean-core/intrinsics.hh>
 
 #include <typed-geometry/functions/basic/minmax.hh>
 #include <typed-geometry/types/scalars/fixed_int.hh>
@@ -200,9 +197,10 @@ template <int w>
 [[nodiscard]] constexpr int sign(fixed_int<w> const& v);
 
 
-//#############################################################################
-//#                             implemenation                                 #
-//#############################################################################
+// #############################################################################
+// #                             implemenation                                 #
+// #############################################################################
+
 
 template <int words>
 template <int rhs_words, class, class>
@@ -413,14 +411,14 @@ constexpr auto operator+(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noe
     fixed_int<w_out> res;
     fixed_int<w_out> l = lhs;
     fixed_int<w_out> r = rhs;
-    decltype(_addcarry_u64(0, 0, 0, nullptr)) c = 0;
-    c = _addcarry_u64(c, l.d[0], r.d[0], &res.d[0]);
+    decltype(cc::add_with_carry(0, 0, 0, nullptr)) c = 0;
+    c = cc::add_with_carry(c, l.d[0], r.d[0], &res.d[0]);
     if constexpr (w_out > 1)
-        c = _addcarry_u64(c, l.d[1], r.d[1], &res.d[1]);
+        c = cc::add_with_carry(c, l.d[1], r.d[1], &res.d[1]);
     if constexpr (w_out > 2)
-        c = _addcarry_u64(c, l.d[2], r.d[2], &res.d[2]);
+        c = cc::add_with_carry(c, l.d[2], r.d[2], &res.d[2]);
     if constexpr (w_out > 3)
-        c = _addcarry_u64(c, l.d[3], r.d[3], &res.d[3]);
+        c = cc::add_with_carry(c, l.d[3], r.d[3], &res.d[3]);
     return res;
 }
 
@@ -443,14 +441,14 @@ constexpr auto operator-(fixed_int<w0> const& lhs, fixed_int<w1> const& rhs) noe
     fixed_int<w_out> res;
     fixed_int<w_out> l = lhs;
     fixed_int<w_out> r = rhs;
-    decltype(_subborrow_u64(0, 0, 0, nullptr)) c = 0;
-    c = _subborrow_u64(c, l.d[0], r.d[0], &res.d[0]);
+    decltype(cc::sub_with_borrow(0, 0, 0, nullptr)) c = 0;
+    c = cc::sub_with_borrow(c, l.d[0], r.d[0], &res.d[0]);
     if constexpr (w_out > 1)
-        c = _subborrow_u64(c, l.d[1], r.d[1], &res.d[1]);
+        c = cc::sub_with_borrow(c, l.d[1], r.d[1], &res.d[1]);
     if constexpr (w_out > 2)
-        c = _subborrow_u64(c, l.d[2], r.d[2], &res.d[2]);
+        c = cc::sub_with_borrow(c, l.d[2], r.d[2], &res.d[2]);
     if constexpr (w_out > 3)
-        c = _subborrow_u64(c, l.d[3], r.d[3], &res.d[3]);
+        c = cc::sub_with_borrow(c, l.d[3], r.d[3], &res.d[3]);
     return res;
 }
 
@@ -1209,23 +1207,23 @@ u64 leading_zeros_count(fixed_int<w> const& v)
     u64 zeros = 0;
     if constexpr (w > 3)
     {
-        zeros += _lzcnt_u64(v.d[3]);
+        zeros += cc::count_leading_zeros(v.d[3]);
         if (zeros < 64)
             return zeros;
     }
     if constexpr (w > 2)
     {
-        zeros += _lzcnt_u64(v.d[2]);
+        zeros += cc::count_leading_zeros(v.d[2]);
         if (zeros < ((w - 2) * 64))
             return zeros;
     }
     if constexpr (w > 1)
     {
-        zeros += _lzcnt_u64(v.d[1]);
+        zeros += cc::count_leading_zeros(v.d[1]);
         if (zeros < ((w - 1) * 64))
             return zeros;
     }
-    return zeros + _lzcnt_u64(v.d[0]);
+    return zeros + cc::count_leading_zeros(v.d[0]);
 }
 
 template <int w>
@@ -1234,23 +1232,23 @@ u64 leading_ones_count(fixed_int<w> const& v)
     u64 ones = 0;
     if constexpr (w > 3)
     {
-        ones += _lzcnt_u64(~v.d[3]);
+        ones += cc::count_leading_zeros(~v.d[3]);
         if (ones < 64)
             return ones;
     }
     if constexpr (w > 2)
     {
-        ones += _lzcnt_u64(~v.d[2]);
+        ones += cc::count_leading_zeros(~v.d[2]);
         if (ones < ((w - 2) * 64))
             return ones;
     }
     if constexpr (w > 1)
     {
-        ones += _lzcnt_u64(~v.d[1]);
+        ones += cc::count_leading_zeros(~v.d[1]);
         if (ones < ((w - 1) * 64))
             return ones;
     }
-    return ones + _lzcnt_u64(~v.d[0]);
+    return ones + cc::count_leading_zeros(~v.d[0]);
 }
 
 template <int w>
