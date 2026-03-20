@@ -24,7 +24,7 @@ struct fixed_int
 {
     static_assert(words <= 4, "only up to 256 bit supported");
 
-    using word_t = unsigned long long; // intrinsics parameter type
+    using word_t = uint64_t; // intrinsics parameter type
 
     word_t d[words] = {};
 
