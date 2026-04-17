@@ -101,6 +101,13 @@ public:
 
     constexpr u64 state() const { return m_seed; }
 
+    // Force the internal state directly. Intended for replay/debugging
+    // (reproducing a run by restoring a state previously obtained from state()).
+    // For normal seeding use seed() / the seeding constructor instead.
+    // Caller is responsible for not setting invalid states (e.g. 0 makes
+    // xorshift degenerate and produce all zeros forever).
+    constexpr void set_state(u64 s) { m_seed = s; }
+
 private:
     u64 m_seed;
 };
